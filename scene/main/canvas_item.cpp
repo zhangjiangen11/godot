@@ -1043,7 +1043,9 @@ void CanvasItem::_physics_interpolated_changed() {
 
 Rect2 CanvasItem::get_viewport_rect() const {
 	ERR_READ_THREAD_GUARD_V(Rect2());
-	ERR_FAIL_COND_V(!is_inside_tree(), Rect2());
+	if (!is_inside_tree()) {
+		return Rect2();
+	}
 	return get_viewport()->get_visible_rect();
 }
 

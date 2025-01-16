@@ -337,6 +337,7 @@ public:
 	_FORCE_INLINE_ int size() const { return _cowdata.size(); }
 	Error resize(int p_size) { return _cowdata.resize(p_size); }
 
+
 	_FORCE_INLINE_ const char32_t &operator[](int p_index) const {
 		if (unlikely(p_index == _cowdata.size())) {
 			return _null;
@@ -519,6 +520,8 @@ public:
 	String get_basename() const;
 	String path_join(const String &p_file) const;
 	char32_t unicode_at(int p_idx) const;
+	// 刪除注釋
+	String remove_annotate() const;
 
 	CharString ascii(bool p_allow_extended = false) const;
 	CharString utf8() const;

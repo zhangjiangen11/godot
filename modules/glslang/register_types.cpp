@@ -85,7 +85,10 @@ static Vector<uint8_t> _compile_shader_glsl(RenderingDevice::ShaderStage p_stage
 	}
 
 	glslang::TShader shader(stages[p_stage]);
-	CharString cs = p_source_code.ascii();
+
+	String code = p_source_code.remove_annotate();
+
+	CharString cs = code.ascii();
 	const char *cs_strings = cs.get_data();
 	std::string preamble = "";
 

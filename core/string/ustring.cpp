@@ -1897,6 +1897,80 @@ void String::print_unicode_error(const String &p_message, bool p_critical) const
 		print_error(vformat("Unicode parsing error: %s", p_message));
 	}
 }
+static void remove_single_ampersand(const char32_t* p_string, char32_t* p_out_string,int &index,int size) {
+		
+	while(index < size) {
+		if(p_string[index] == '\n')
+		{
+			p_out_string[index] = '\n';
+			++index;
+			break;
+		}
+		p_out_string[index] = ' ';
+		++index;
+	}
+}
+static void remove_mult_ampersand(const char32_t* p_string, char32_t* p_out_string,int &index,int size) {
+		
+	while(index + 1 < size) {
+		if(p_string[index ] == '*' && p_string[index + 1] == '\\') {
+			index += 2;
+			p_out_string[index] = ' ';
+			p_out_string[index + 1] = ' ';
+			break;
+		}
+		if(p_string[index] == '\n' || p_string[index] == '\r') {
+			p_out_string[index] = p_string[index];
+			++index;
+		}
+		else {
+			p_out_string[index] = ' ';
+			++index;
+		}
+		p_out_string[index] = ' ';
+		++index;
+	}
+}
+	// 刪除注釋
+String String::remove_annotate() const {
+	String ret;
+	ret.resize(size());
+	int code_size = size();
+	const char32_t* p_source_code = ptr();
+	char32_t* code = ret.ptrw();
+	for(int i = 0; i < code_size; ) {
+		// 去除注释
+		if(p_source_code[i] == '\\') {
+			code[i] = p_source_code[i];
+			++i;	
+			if(i < code_size) {
+				if(p_source_code[i + 1] == '\\') {
+					code[i] = p_source_code[i];
+					++i;	
+					remove_single_ampersand(p_source_code,code,i,code_size);
+				}
+				else if(p_source_code[i + 1] == '*') {
+					code[i] = p_source_code[i];
+					++i;	
+					remove_mult_ampersand(p_source_code,code,i,code_size);
+				}
+				else {
+					code[i] = p_source_code[i];
+					++i;
+				}
+			}
+			else{
+				code[i] = p_source_code[i];
+				++i;
+			}
+		}
+		
+
+		code[i] = p_source_code[i];
+		++i;
+	}
+	return ret;
+}
 
 CharString String::ascii(bool p_allow_extended) const {
 	if (!length()) {
