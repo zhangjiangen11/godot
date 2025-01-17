@@ -42,6 +42,7 @@
 #include "core/os/thread_safe.h"
 #include "core/variant/typed_array.h"
 
+
 namespace core_bind {
 
 ////// ResourceLoader //////
@@ -1450,6 +1451,58 @@ PackedStringArray ClassDB::get_inheriters_from_class(const StringName &p_class) 
 
 	return ret;
 }
+PackedStringArray ClassDB::get_script_inheriters_from_class(const StringName &p_class) const {
+	List<StringName> classes;
+	ScriptServer::get_inheriters_list(p_class,&classes);
+
+	PackedStringArray ret;
+	ret.resize(classes.size());
+	int idx = 0;
+	for (const StringName &E : classes) {
+		ret.set(idx++, E);
+	}
+
+	return ret;
+}
+
+static Ref<Script> script_class_load_script(const String& p_class) {
+	if (!ScriptServer::is_global_class(p_class)) {
+		return Ref<Script>();
+	}
+
+	String path = ScriptServer::get_global_class_path(p_class);
+	return ::ResourceLoader::load(path, "Script");
+}
+
+Variant ClassDB::create_class_instance(StringName p_class_name) {
+	Variant obj;
+
+	if (ScriptServer::is_global_class(p_class_name)) {
+		if (ScriptServer::is_global_class(p_class_name)) {
+			Ref<Script> _script = script_class_load_script(p_class_name);
+			if (_script.is_valid()) {
+				// Store in a variant to initialize the refcount if needed.
+				Variant obj = ClassDB::instantiate(_script->get_instance_base_type());
+				if (obj) {
+					Object::cast_to<Object>(obj)->set_meta(StringName("_custom_type_script"), _script);
+					obj.operator Object* ()->set_script(_script);
+				}
+				return obj;
+			}
+		}
+	}
+	else {
+		obj = ClassDB::instantiate(p_class_name);
+	}
+
+	return obj;
+
+}
+
+
+Variant ClassDB::get_instance(ObjectID object_id) {
+	return ObjectDB::get_instance(object_id);
+}
 
 StringName ClassDB::get_parent_class(const StringName &p_class) const {
 	return ::ClassDB::get_parent_class(p_class);
@@ -1697,6 +1750,9 @@ void ClassDB::get_argument_options(const StringName &p_function, int p_idx, List
 void ClassDB::_bind_methods() {
 	::ClassDB::bind_method(D_METHOD("get_class_list"), &ClassDB::get_class_list);
 	::ClassDB::bind_method(D_METHOD("get_inheriters_from_class", "class"), &ClassDB::get_inheriters_from_class);
+	::ClassDB::bind_method(D_METHOD("get_instance", "object_id"), &ClassDB::get_instance);
+	::ClassDB::bind_method(D_METHOD("get_script_inheriters_from_class", "class"), &ClassDB::get_script_inheriters_from_class);
+	::ClassDB::bind_method(D_METHOD("create_class_instance", "class"), &ClassDB::create_class_instance);
 	::ClassDB::bind_method(D_METHOD("get_parent_class", "class"), &ClassDB::get_parent_class);
 	::ClassDB::bind_method(D_METHOD("class_exists", "class"), &ClassDB::class_exists);
 	::ClassDB::bind_method(D_METHOD("is_parent_class", "class", "inherits"), &ClassDB::is_parent_class);

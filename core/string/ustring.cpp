@@ -1927,8 +1927,6 @@ static void remove_mult_ampersand(const char32_t* p_string, char32_t* p_out_stri
 			p_out_string[index] = ' ';
 			++index;
 		}
-		p_out_string[index] = ' ';
-		++index;
 	}
 }
 	// 刪除注釋
