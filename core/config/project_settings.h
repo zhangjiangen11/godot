@@ -61,7 +61,7 @@ public:
 		bool is_singleton = false;
 	};
 
-protected:
+public:
 	struct VariantContainer {
 		int order = 0;
 		bool persist = false;
