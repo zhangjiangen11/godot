@@ -72,6 +72,7 @@ public:
 		Vector3 prev_tail;
 		Vector3 current_tail;
 		Vector3 forward_vector;
+		Quaternion prev_rot;
 		float length = 0.0;
 	};
 
@@ -163,6 +164,9 @@ protected:
 	virtual void move_child_notify(Node *p_child) override;
 	virtual void remove_child_notify(Node *p_child) override;
 
+	void _validate_rotation_axes(Skeleton3D *p_skeleton) const;
+	void _validate_rotation_axis(Skeleton3D *p_skeleton, int p_index, int p_joint) const;
+
 public:
 	// Setting.
 	void set_root_bone_name(int p_index, const String &p_bone_name);
@@ -181,8 +185,6 @@ public:
 	BoneDirection get_end_bone_direction(int p_index) const;
 	void set_end_bone_length(int p_index, float p_length);
 	float get_end_bone_length(int p_index) const;
-	void set_end_bone_tip_radius(int p_index, float p_radius);
-	float get_end_bone_tip_radius(int p_index) const;
 	Vector3 get_end_bone_axis(int p_end_bone, BoneDirection p_direction) const; // Helper.
 
 	void set_center_from(int p_index, CenterFrom p_center_from);
@@ -266,7 +268,7 @@ public:
 
 	// Helper.
 	static Quaternion get_local_pose_rotation(Skeleton3D *p_skeleton, int p_bone, const Quaternion &p_global_pose_rotation);
-	static Quaternion get_from_to_rotation(const Vector3 &p_from, const Vector3 &p_to);
+	static Quaternion get_from_to_rotation(const Vector3 &p_from, const Vector3 &p_to, const Quaternion &p_prev_rot);
 	static Vector3 snap_position_to_plane(const Transform3D &p_rest, RotationAxis p_axis, const Vector3 &p_position);
 	static Vector3 limit_length(const Vector3 &p_origin, const Vector3 &p_destination, float p_length);
 

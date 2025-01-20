@@ -169,7 +169,6 @@ static RenderingServer *rendering_server = nullptr;
 static RenderCallbackManager* render_callback_manager = nullptr;
 static TextServerManager *tsman = nullptr;
 static ThemeDB *theme_db = nullptr;
-static NavigationServer2D *navigation_server_2d = nullptr;
 static PhysicsServer2DManager *physics_server_2d_manager = nullptr;
 static PhysicsServer2D *physics_server_2d = nullptr;
 static NavigationServer3D *navigation_server_3d = nullptr;
@@ -240,6 +239,8 @@ static bool init_use_custom_pos = false;
 static bool init_use_custom_screen = false;
 static Vector2 init_custom_pos;
 static int64_t init_embed_parent_window_id = 0;
+static bool use_custom_res = true;
+static bool force_res = false;
 
 // Debug
 
@@ -385,44 +386,6 @@ void finalize_display() {
 	memdelete(render_callback_manager);
 
 	memdelete(display_server);
-}
-
-void initialize_navigation_server() {
-	ERR_FAIL_COND(navigation_server_3d != nullptr);
-	ERR_FAIL_COND(navigation_server_2d != nullptr);
-
-	// Init 3D Navigation Server
-	navigation_server_3d = NavigationServer3DManager::new_default_server();
-
-	// Fall back to dummy if no default server has been registered.
-	if (!navigation_server_3d) {
-		navigation_server_3d = memnew(NavigationServer3DDummy);
-	}
-
-	// Should be impossible, but make sure it's not null.
-	ERR_FAIL_NULL_MSG(navigation_server_3d, "Failed to initialize NavigationServer3D.");
-	navigation_server_3d->init();
-
-	// Init 2D Navigation Server
-	navigation_server_2d = NavigationServer2DManager::new_default_server();
-	if (!navigation_server_2d) {
-		navigation_server_2d = memnew(NavigationServer2DDummy);
-	}
-
-	ERR_FAIL_NULL_MSG(navigation_server_2d, "Failed to initialize NavigationServer2D.");
-	navigation_server_2d->init();
-}
-
-void finalize_navigation_server() {
-	ERR_FAIL_NULL(navigation_server_3d);
-	navigation_server_3d->finish();
-	memdelete(navigation_server_3d);
-	navigation_server_3d = nullptr;
-
-	ERR_FAIL_NULL(navigation_server_2d);
-	navigation_server_2d->finish();
-	memdelete(navigation_server_2d);
-	navigation_server_2d = nullptr;
 }
 
 void initialize_theme_db() {
@@ -799,6 +762,8 @@ Error Main::test_setup() {
 
 	initialize_lua_api();
 
+	NavigationServer3DManager::initialize_server(); // 3D server first because 2D depends on it.
+	NavigationServer2DManager::initialize_server();
 
 	register_scene_types();
 	register_driver_types();
@@ -821,8 +786,6 @@ Error Main::test_setup() {
 
 	// Theme needs modules to be initialized so that sub-resources can be loaded.
 	theme_db->initialize_theme_noproject();
-
-	initialize_navigation_server();
 
 	ERR_FAIL_COND_V(TextServerManager::get_singleton()->get_interface_count() == 0, ERR_CANT_CREATE);
 
@@ -887,7 +850,8 @@ void Main::test_cleanup() {
 
 	finalize_lua_api();
 
-	finalize_navigation_server();
+	NavigationServer2DManager::finalize_server(); // 2D goes first as it uses the 3D server behind the scene.
+	NavigationServer3DManager::finalize_server();
 
 	GDExtensionManager::get_singleton()->deinitialize_extensions(GDExtension::INITIALIZATION_LEVEL_SERVERS);
 	uninitialize_modules(MODULE_INITIALIZATION_LEVEL_SERVERS);
@@ -1052,8 +1016,6 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	String remotefs_pass;
 
 	Vector<String> breakpoints;
-	bool use_custom_res = true;
-	bool force_res = false;
 	bool delta_smoothing_override = false;
 
 	String default_renderer = "";
@@ -2584,12 +2546,16 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 		OS::get_singleton()->set_environment("DISABLE_RTSS_LAYER", "1"); // GH-57937.
 		OS::get_singleton()->set_environment("DISABLE_VKBASALT", "1");
 		OS::get_singleton()->set_environment("DISABLE_VK_LAYER_reshade_1", "1"); // GH-70849.
+		OS::get_singleton()->set_environment("VK_LAYER_bandicam_helper_DEBUG_1", "1"); // GH-101480.
+		OS::get_singleton()->set_environment("DISABLE_VK_LAYER_bandicam_helper_1", "1"); // GH-101480.
 	} else {
 		// Re-allow using Vulkan overlays, disabled while using the editor.
 		OS::get_singleton()->unset_environment("DISABLE_MANGOHUD");
 		OS::get_singleton()->unset_environment("DISABLE_RTSS_LAYER");
 		OS::get_singleton()->unset_environment("DISABLE_VKBASALT");
 		OS::get_singleton()->unset_environment("DISABLE_VK_LAYER_reshade_1");
+		OS::get_singleton()->unset_environment("VK_LAYER_bandicam_helper_DEBUG_1");
+		OS::get_singleton()->unset_environment("DISABLE_VK_LAYER_bandicam_helper_1");
 	}
 #endif
 
@@ -3435,6 +3401,10 @@ Error Main::setup2(bool p_show_boot_logo) {
 
 	initialize_lua_api();
 
+	MAIN_PRINT("Main: Load Navigation");
+
+	NavigationServer3DManager::initialize_server(); // 3D server first because 2D depends on it.
+	NavigationServer2DManager::initialize_server();
 
 	register_scene_types();
 	register_driver_types();
@@ -3505,10 +3475,6 @@ Error Main::setup2(bool p_show_boot_logo) {
 	MAIN_PRINT("Main: Load Physics");
 
 	initialize_physics();
-
-	MAIN_PRINT("Main: Load Navigation");
-
-	initialize_navigation_server();
 
 	register_server_singletons();
 
@@ -4356,7 +4322,7 @@ int Main::start() {
 				translation_server->get_editor_domain()->set_pseudolocalization_enabled(true);
 			}
 
-			ProjectManager *pmanager = memnew(ProjectManager);
+			ProjectManager *pmanager = memnew(ProjectManager(force_res || use_custom_res));
 			ProgressDialog *progress_dialog = memnew(ProgressDialog);
 			pmanager->add_child(progress_dialog);
 
@@ -4753,7 +4719,8 @@ void Main::cleanup(bool p_force) {
 	finalize_lua_api();
 
 	// Before deinitializing server extensions, finalize servers which may be loaded as extensions.
-	finalize_navigation_server();
+	NavigationServer2DManager::finalize_server(); // 2D goes first as it uses the 3D server behind the scene.
+	NavigationServer3DManager::finalize_server();
 	finalize_physics();
 
 	GDExtensionManager::get_singleton()->deinitialize_extensions(GDExtension::INITIALIZATION_LEVEL_SERVERS);
