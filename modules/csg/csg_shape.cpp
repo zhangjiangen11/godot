@@ -34,6 +34,9 @@
 #include "core/io/json.h"
 #endif // DEV_ENABLED
 #include "core/math/geometry_2d.h"
+#include "scene/resources/3d/navigation_mesh_source_geometry_data_3d.h"
+#include "scene/resources/navigation_mesh.h"
+#include "servers/navigation_server_3d.h"
 
 void CSGShape3D::set_use_collision(bool p_enable) {
 	if (use_collision == p_enable) {
