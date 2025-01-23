@@ -1552,7 +1552,8 @@ Error Object::connect(const StringName &p_signal, const Callable &p_callable, ui
 			s->slot_map[*p_callable.get_base_comparator()].reference_count++;
 			return OK;
 		} else {
-			ERR_FAIL_V_MSG(ERR_INVALID_PARAMETER, vformat("Signal '%s' is already connected to given callable '%s' in that object.", p_signal, p_callable));
+			return OK;
+			//ERR_FAIL_V_MSG(ERR_INVALID_PARAMETER, vformat("Signal '%s' is already connected to given callable '%s' in that object.", p_signal, p_callable));
 		}
 	}
 
