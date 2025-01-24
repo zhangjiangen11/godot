@@ -468,11 +468,6 @@ void OptionButton::show_popup() {
 		return;
 	}
 	cb_popup_pressed.call(this);
-	Rect2 rect = get_screen_rect();
-	rect.position.y += rect.size.height;
-	rect.size.height = 0;
-	popup->set_position(rect.position);
-	popup->set_size(rect.size);
 
 	// If not triggered by the mouse, start the popup with the checked item (or the first enabled one) focused.
 	if (current != NONE_SELECTED && !popup->is_item_disabled(current)) {
@@ -495,7 +490,10 @@ void OptionButton::show_popup() {
 		}
 	}
 
-	popup->popup();
+	Rect2 rect = get_screen_rect();
+	rect.position.y += rect.size.height;
+	rect.size.height = 0;
+	popup->popup(rect);
 }
 
 void OptionButton::_validate_property(PropertyInfo &p_property) const {
