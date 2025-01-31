@@ -499,7 +499,7 @@ public:
 	Size2 get_custom_minimum_size() const;
 
 	// Container sizing.
-
+	void set_layout_mode(LayoutMode p_mode) { _set_layout_mode(p_mode); }
 	void set_h_size_flags(BitField<SizeFlags> p_flags);
 	BitField<SizeFlags> get_h_size_flags() const;
 	void set_v_size_flags(BitField<SizeFlags> p_flags);
@@ -651,16 +651,6 @@ public:
 	void set_tooltip_text(const String &text);
 	virtual String get_tooltip(const Point2 &p_pos) const;
 	virtual Control *make_custom_tooltip(const String &p_text) const;
-
-	
-	void set_layout_mode(LayoutMode p_mode)
-	{
-		_set_layout_mode(p_mode);
-	}
-	LayoutMode get_layout_mode() const
-	{
-		return _get_layout_mode();
-	}
 
 	Control();
 	~Control();
