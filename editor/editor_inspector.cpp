@@ -4865,6 +4865,11 @@ void EditorInspector::_bind_methods() {
 	ClassDB::bind_method("_edit_request_change", &EditorInspector::_edit_request_change);
 	ClassDB::bind_method("get_selected_path", &EditorInspector::get_selected_path);
 	ClassDB::bind_method("get_edited_object", &EditorInspector::get_edited_object);
+	ClassDB::bind_method("set_autoclear", &EditorInspector::set_autoclear);
+	ClassDB::bind_method("set_show_categories", &EditorInspector::set_show_categories);
+	ClassDB::bind_method("set_hide_script", &EditorInspector::set_hide_script);
+	ClassDB::bind_method("set_hide_metadata", &EditorInspector::set_hide_metadata);
+	ClassDB::bind_method("set_use_folding", &EditorInspector::set_use_folding);
 
 	ClassDB::bind_static_method("EditorInspector", D_METHOD("instantiate_property_editor", "object", "type", "path", "hint", "hint_text", "usage", "wide"), &EditorInspector::instantiate_property_editor, DEFVAL(false));
 
