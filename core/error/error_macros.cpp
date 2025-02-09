@@ -52,7 +52,7 @@
 
     static void initialize();
 
-    static LocalVector<StackFrame> getStackTrace(); 
+    static void getStackTrace(LocalVector<StackFrame>& stackTrace);
 	
 
 
@@ -67,8 +67,7 @@
 
         }
 
-        static LocalVector<StackFrame> getStackTrace() {
-            LocalVector<StackFrame> stackTrace;
+        static void getStackTrace(LocalVector<StackFrame> &stackTrace) {
 
             HANDLE process = GetCurrentProcess();
             HANDLE thread = GetCurrentThread();
@@ -77,7 +76,7 @@
             context.ContextFlags = CONTEXT_FULL;
             RtlCaptureContext(&context);
 
-            SymSetOptions(SYMOPT_CASE_INSENSITIVE | SYMOPT_UNDNAME | SYMOPT_LOAD_LINES | SYMOPT_LOAD_ANYTHING);
+			SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_EXACT_SYMBOLS);
             SymInitialize(process, nullptr, TRUE);
 
             DWORD image;
@@ -91,6 +90,24 @@
             stackFrame.AddrFrame.Mode = AddrModeFlat;
             stackFrame.AddrStack.Offset = context.Rsp;
             stackFrame.AddrStack.Mode = AddrModeFlat;
+#if defined(_M_X64)
+			stackFrame.AddrPC.Offset = context.Rip;
+			stackFrame.AddrStack.Offset = context.Rsp;
+			stackFrame.AddrFrame.Offset = context.Rbp;
+#elif defined(_M_ARM64) || defined(_M_ARM64EC)
+			stackFrame.AddrPC.Offset = context.Pc;
+			stackFrame.AddrStack.Offset = context.Sp;
+			stackFrame.AddrFrame.Offset = context->Fp;
+#elif defined(_M_ARM)
+			stackFrame.AddrPC.Offset = context.Pc;
+			stackFrame.AddrStack.Offset = context.Sp;
+			stackFrame.AddrFrame.Offset = context->R11;
+#else
+			stackFrame.AddrPC.Offset = context.Eip;
+			stackFrame.AddrStack.Offset = context.Esp;
+			stackFrame.AddrFrame.Offset = context.Ebp;
+
+#endif
 
 			typedef SYMBOL_INFO sym_type;
 			sym_type *symbol = (sym_type *) alloca(sizeof(sym_type) + 1024);
@@ -144,7 +161,7 @@
 
             SymCleanup(process);
 
-            return stackTrace;
+            return ;
         }
 
     
@@ -163,8 +180,7 @@
 
             }
 
-            static LocalVector<StackFrame> getStackTrace() {
-                LocalVector<StackFrame> result;
+            static void getStackTrace(LocalVector<StackFrame>& stackFrame) {
 
 				void *bt_buffer[256];
                 const size_t count = backtrace(bt_buffer, 256);
@@ -186,7 +202,7 @@
 					}
                 }
 
-                return result;
+                return ;
             }
 
         
@@ -198,7 +214,7 @@
 
 
         static void initialize() { }
-        static LocalVector<StackFrame> getStackTrace() { return { StackFrame { "??", "Stacktrace collecting not available!", 0 } }; }
+        static void getStackTrace(LocalVector<StackFrame> &stackFrame) { stackFrame.push_back({ "??", "Stacktrace collecting not available!", 0 } ); }
 
 #endif
 
@@ -267,7 +283,10 @@ void _err_print_error(const char *p_function, const char *p_file, int p_line, co
             temp += ": ";
             temp += p_message;
         }
-		LocalVector<StackFrame> stackFrame = getStackTrace();
+		LocalVector<StackFrame> stackFrame;
+		_global_lock();
+		getStackTrace(stackFrame);
+		_global_unlock();
 		for(uint32_t i = 0; i < stackFrame.size(); ++i)
 		{
 			stackFrame[i].to_string(temp);

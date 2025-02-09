@@ -1913,13 +1913,13 @@ static void remove_single_ampersand(const char32_t* p_string, char32_t* p_out_st
 static void remove_mult_ampersand(const char32_t* p_string, char32_t* p_out_string,int &index,int size) {
 		
 	while(index + 1 < size) {
-		if(p_string[index ] == '*' && p_string[index + 1] == '\\') {
+		if(p_string[index ] == '*' && p_string[index + 1] == '/') {
+			p_out_string[index] = p_string[index];
+			p_out_string[index + 1] = p_string[index + 1];
 			index += 2;
-			p_out_string[index] = ' ';
-			p_out_string[index + 1] = ' ';
 			break;
 		}
-		if(p_string[index] == '\n' || p_string[index] == '\r') {
+		if(p_string[index] == '\n' || p_string[index] == '\r' || p_string[index] == '\t') {
 			p_out_string[index] = p_string[index];
 			++index;
 		}
@@ -1936,36 +1936,31 @@ String String::remove_annotate() const {
 	int code_size = size();
 	const char32_t* p_source_code = ptr();
 	char32_t* code = ret.ptrw();
-	for(int i = 0; i < code_size; ) {
+	int index = 0;
+	while(index < code_size) {
 		// 去除注释
-		if(p_source_code[i] == '\\') {
-			code[i] = p_source_code[i];
-			++i;	
-			if(i < code_size) {
-				if(p_source_code[i + 1] == '\\') {
-					code[i] = p_source_code[i];
-					++i;	
-					remove_single_ampersand(p_source_code,code,i,code_size);
+		if(p_source_code[index] == '/') {
+			if(index + 1 < code_size) {
+				if(p_source_code[index + 1] == '/') {
+					code[index] = p_source_code[index];
+					code[index + 1] = p_source_code[index + 1];
+					index += 2;
+					remove_single_ampersand(p_source_code,code, index,code_size);
+					continue;
 				}
-				else if(p_source_code[i + 1] == '*') {
-					code[i] = p_source_code[i];
-					++i;	
-					remove_mult_ampersand(p_source_code,code,i,code_size);
+				else if(p_source_code[index + 1] == '*') {
+					code[index] = p_source_code[index];
+					code[index + 1] = p_source_code[index + 1];
+					index += 2;
+					remove_mult_ampersand(p_source_code,code, index,code_size);
+					continue;
 				}
-				else {
-					code[i] = p_source_code[i];
-					++i;
-				}
-			}
-			else{
-				code[i] = p_source_code[i];
-				++i;
 			}
 		}
 		
 
-		code[i] = p_source_code[i];
-		++i;
+		code[index] = p_source_code[index];
+		++index;
 	}
 	return ret;
 }

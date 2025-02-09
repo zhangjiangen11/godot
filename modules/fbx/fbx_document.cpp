@@ -1123,9 +1123,13 @@ Error FBXDocument::_parse_images(Ref<FBXState> p_state, const String &p_base_pat
 Ref<Texture2D> FBXDocument::_get_texture(Ref<FBXState> p_state, const GLTFTextureIndex p_texture, int p_texture_types) {
 	ERR_FAIL_INDEX_V(p_texture, p_state->textures.size(), Ref<Texture2D>());
 	const GLTFImageIndex image = p_state->textures[p_texture]->get_src_image();
-	ERR_FAIL_INDEX_V(image, p_state->images.size(), Ref<Texture2D>());
+	if (image >= p_state->images.size()) {
+		return  Ref<Texture2D>();
+	}
 	if (FBXState::GLTFHandleBinary(p_state->handle_binary_image) == FBXState::HANDLE_BINARY_EMBED_AS_BASISU) {
-		ERR_FAIL_INDEX_V(image, p_state->source_images.size(), Ref<Texture2D>());
+		if (image >= p_state->source_images.size()) {
+			return  Ref<Texture2D>();
+		}
 		Ref<PortableCompressedTexture2D> portable_texture;
 		portable_texture.instantiate();
 		portable_texture->set_keep_compressed_buffer(true);

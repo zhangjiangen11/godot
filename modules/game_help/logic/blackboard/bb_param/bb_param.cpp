@@ -395,7 +395,7 @@ if (Engine::get_singleton()->is_editor_hint()) {
 		}
 
 		EditorData &ed = EditorNode::get_editor_data();
-		Ref<Texture2D> script_icon = ed.get_script_icon(s);
+		Ref<Texture2D> script_icon = ed.get_script_icon(p_class_or_script_path);
 		if (script_icon.is_valid()) {
 			return script_icon;
 		}

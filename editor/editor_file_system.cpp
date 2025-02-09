@@ -2650,7 +2650,10 @@ Error EditorFileSystem::_reimport_file(const String &p_file, const HashMap<Strin
 	int cpos = -1;
 	if (p_update_file_system) {
 		bool found = _find_file(p_file, &fs, cpos);
-		ERR_FAIL_COND_V_MSG(!found, ERR_FILE_NOT_FOUND, vformat("Can't find file '%s' during file reimport.", p_file));
+		if (!found) {
+			WARN_PRINT(vformat("Can't find file '%s' during file reimport.", p_file));
+			return ERR_FILE_NOT_FOUND;
+		}
 	}
 
 	//try to obtain existing params

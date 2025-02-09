@@ -81,7 +81,9 @@ bool FileAccessWindows::is_path_invalid(const String &p_path) {
 
 String FileAccessWindows::fix_path(const String &p_path) const {
 	String r_path = FileAccess::fix_path(p_path);
-
+	if (r_path.is_empty()) {
+		return r_path;
+	}
 	if (r_path.is_relative_path()) {
 		Char16String current_dir_name;
 		size_t str_len = GetCurrentDirectoryW(0, nullptr);
@@ -111,6 +113,9 @@ Error FileAccessWindows::open_internal(const String &p_path, int p_mode_flags) {
 
 	path_src = p_path;
 	path = fix_path(p_path);
+	if (path.is_empty()) {
+		return ERR_FILE_NOT_FOUND;
+	}
 
 	const WCHAR *mode_string;
 
@@ -402,6 +407,9 @@ bool FileAccessWindows::file_exists(const String &p_name) {
 	}
 
 	String filename = fix_path(p_name);
+	if (filename.is_empty()) {
+		return false;
+	}
 	DWORD file_attr = GetFileAttributesW((LPCWSTR)(filename.utf16().get_data()));
 	return (file_attr != INVALID_FILE_ATTRIBUTES) && !(file_attr & FILE_ATTRIBUTE_DIRECTORY);
 }
