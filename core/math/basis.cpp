@@ -475,6 +475,11 @@ void Basis::get_rotation_axis_angle_local(Vector3 &p_axis, real_t &p_angle) cons
 }
 
 Vector3 Basis::get_euler(EulerOrder p_order) const {
+	// This epsilon value results in angles within a +/- 0.04 degree range being simplified/truncated.
+	// Based on testing, this is the largest the epsilon can be without the angle truncation becoming
+	// visually noticeable.
+	const real_t epsilon = 0.00000025;
+
 	switch (p_order) {
 		case EulerOrder::XYZ: {
 			// Euler angles in XYZ convention.
@@ -486,8 +491,8 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 
 			Vector3 euler;
 			real_t sy = rows[0][2];
-			if (sy < (1.0f - (real_t)CMP_EPSILON)) {
-				if (sy > -(1.0f - (real_t)CMP_EPSILON)) {
+			if (sy < (1.0f - epsilon)) {
+				if (sy > -(1.0f - epsilon)) {
 					// is this a pure Y rotation?
 					if (rows[1][0] == 0 && rows[0][1] == 0 && rows[1][2] == 0 && rows[2][1] == 0 && rows[1][1] == 1) {
 						// return the simplest form (human friendlier in editor and scripts)
@@ -521,8 +526,8 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 
 			Vector3 euler;
 			real_t sz = rows[0][1];
-			if (sz < (1.0f - (real_t)CMP_EPSILON)) {
-				if (sz > -(1.0f - (real_t)CMP_EPSILON)) {
+			if (sz < (1.0f - epsilon)) {
+				if (sz > -(1.0f - epsilon)) {
 					euler.x = Math::atan2(rows[2][1], rows[1][1]);
 					euler.y = Math::atan2(rows[0][2], rows[0][0]);
 					euler.z = Math::asin(-sz);
@@ -552,8 +557,8 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 
 			real_t m12 = rows[1][2];
 
-			if (m12 < (1 - (real_t)CMP_EPSILON)) {
-				if (m12 > -(1 - (real_t)CMP_EPSILON)) {
+			if (m12 < (1 - epsilon)) {
+				if (m12 > -(1 - epsilon)) {
 					// is this a pure X rotation?
 					if (rows[1][0] == 0 && rows[0][1] == 0 && rows[0][2] == 0 && rows[2][0] == 0 && rows[0][0] == 1) {
 						// return the simplest form (human friendlier in editor and scripts)
@@ -588,8 +593,8 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 
 			Vector3 euler;
 			real_t sz = rows[1][0];
-			if (sz < (1.0f - (real_t)CMP_EPSILON)) {
-				if (sz > -(1.0f - (real_t)CMP_EPSILON)) {
+			if (sz < (1.0f - epsilon)) {
+				if (sz > -(1.0f - epsilon)) {
 					euler.x = Math::atan2(-rows[1][2], rows[1][1]);
 					euler.y = Math::atan2(-rows[2][0], rows[0][0]);
 					euler.z = Math::asin(sz);
@@ -616,8 +621,8 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 			//        -cx*sy            sx                    cx*cy
 			Vector3 euler;
 			real_t sx = rows[2][1];
-			if (sx < (1.0f - (real_t)CMP_EPSILON)) {
-				if (sx > -(1.0f - (real_t)CMP_EPSILON)) {
+			if (sx < (1.0f - epsilon)) {
+				if (sx > -(1.0f - epsilon)) {
 					euler.x = Math::asin(sx);
 					euler.y = Math::atan2(-rows[2][0], rows[2][2]);
 					euler.z = Math::atan2(-rows[0][1], rows[1][1]);
@@ -644,8 +649,8 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 			//        -sy               cy*sx                 cy*cx
 			Vector3 euler;
 			real_t sy = rows[2][0];
-			if (sy < (1.0f - (real_t)CMP_EPSILON)) {
-				if (sy > -(1.0f - (real_t)CMP_EPSILON)) {
+			if (sy < (1.0f - epsilon)) {
+				if (sy > -(1.0f - epsilon)) {
 					euler.x = Math::atan2(rows[2][1], rows[2][2]);
 					euler.y = Math::asin(-sy);
 					euler.z = Math::atan2(rows[1][0], rows[0][0]);

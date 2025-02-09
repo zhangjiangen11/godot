@@ -1473,15 +1473,10 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 		file->add_filter("*." + E, E.to_upper());
 		preferred.push_back(E);
 	}
-	// Lowest priority extension.
+	// Lowest provided extension priority.
 	List<String>::Element *res_element = preferred.find("res");
 	if (res_element) {
 		preferred.move_to_back(res_element);
-	}
-	// Highest priority extension.
-	List<String>::Element *tres_element = preferred.find("tres");
-	if (tres_element) {
-		preferred.move_to_front(tres_element);
 	}
 
 	if (!p_at_path.is_empty()) {
@@ -2077,6 +2072,13 @@ void EditorNode::restart_editor(bool p_goto_project_manager) {
 
 	if (p_goto_project_manager) {
 		args.push_back("--project-manager");
+
+		// Setup working directory.
+		const String exec_dir = OS::get_singleton()->get_executable_path().get_base_dir();
+		if (!exec_dir.is_empty()) {
+			args.push_back("--path");
+			args.push_back(exec_dir);
+		}
 	} else {
 		args.push_back("--path");
 		args.push_back(ProjectSettings::get_singleton()->get_resource_path());
@@ -3711,7 +3713,9 @@ void EditorNode::set_addon_plugin_enabled(const String &p_addon, bool p_enabled,
 	// Only try to load the script if it has a name. Else, the plugin has no init script.
 	if (script_path.length() > 0) {
 		script_path = addon_path.get_base_dir().path_join(script_path);
-		scr = ResourceLoader::load(script_path, "Script", ResourceFormatLoader::CACHE_MODE_IGNORE);
+		// We should not use the cached version on startup to prevent a script reload
+		// if it is already loaded and potentially running from autoloads. See GH-100750.
+		scr = ResourceLoader::load(script_path, "Script", EditorFileSystem::get_singleton()->doing_first_scan() ? ResourceFormatLoader::CACHE_MODE_REUSE : ResourceFormatLoader::CACHE_MODE_IGNORE);
 
 		if (scr.is_null()) {
 			show_warning(vformat(TTR("Unable to load addon script from path: '%s'."), script_path));
@@ -4837,13 +4841,13 @@ void EditorNode::_pick_main_scene_custom_action(const String &p_custom_action_na
 	}
 }
 
-Ref<Texture2D> EditorNode::_get_class_or_script_icon(const String &p_class, const Ref<Script> &p_script, const String &p_fallback, bool p_fallback_script_to_theme) {
+Ref<Texture2D> EditorNode::_get_class_or_script_icon(const String &p_class, const String &p_script_path, const String &p_fallback, bool p_fallback_script_to_theme) {
 	ERR_FAIL_COND_V_MSG(p_class.is_empty(), nullptr, "Class name cannot be empty.");
 	EditorData &ed = EditorNode::get_editor_data();
 
 	// Check for a script icon first.
-	if (p_script.is_valid()) {
-		Ref<Texture2D> script_icon = ed.get_script_icon(p_script);
+	if (!p_script_path.is_empty()) {
+		Ref<Texture2D> script_icon = ed.get_script_icon(p_script_path);
 		if (script_icon.is_valid()) {
 			return script_icon;
 		}
@@ -4851,14 +4855,15 @@ Ref<Texture2D> EditorNode::_get_class_or_script_icon(const String &p_class, cons
 		if (p_fallback_script_to_theme) {
 			// Look for the native base type in the editor theme. This is relevant for
 			// scripts extending other scripts and for built-in classes.
-			String script_class_name = p_script->get_language()->get_global_class_name(p_script->get_path());
 			String base_type;
-			if (script_class_name.is_empty()) {
-				base_type = p_script->get_instance_base_type();
+			if (ScriptServer::is_global_class(p_class)) {
+				base_type = ScriptServer::get_global_class_native_base(p_class);
 			} else {
-				base_type = ScriptServer::get_global_class_native_base(script_class_name);
+				Ref<Script> scr = ResourceLoader::load(p_script_path, "Script");
+				if (scr.is_valid()) {
+					base_type = scr->get_instance_base_type();
+				}
 			}
-
 			if (theme.is_valid() && theme->has_icon(base_type, EditorStringName(EditorIcons))) {
 				return theme->get_icon(base_type, EditorStringName(EditorIcons));
 			}
@@ -4931,21 +4936,21 @@ Ref<Texture2D> EditorNode::get_object_icon(const Object *p_object, const String 
 	if (Object::cast_to<MultiNodeEdit>(p_object)) {
 		return get_class_icon(Object::cast_to<MultiNodeEdit>(p_object)->get_edited_class_name(), p_fallback);
 	} else {
-		return _get_class_or_script_icon(p_object->get_class(), scr, p_fallback);
+		return _get_class_or_script_icon(p_object->get_class(), scr.is_valid() ? scr->get_path() : String(), p_fallback);
 	}
 }
 
 Ref<Texture2D> EditorNode::get_class_icon(const String &p_class, const String &p_fallback) {
 	ERR_FAIL_COND_V_MSG(p_class.is_empty(), nullptr, "Class name cannot be empty.");
 
-	Ref<Script> scr;
+	String script_path;
 	if (ScriptServer::is_global_class(p_class)) {
-		scr = EditorNode::get_editor_data().script_class_load_script(p_class);
+		script_path = ScriptServer::get_global_class_path(p_class);
 	} else if (ResourceLoader::exists(p_class)) { // If the script is not a class_name we check if the script resource exists.
-		scr = ResourceLoader::load(p_class);
+		script_path = p_class;
 	}
 
-	return _get_class_or_script_icon(p_class, scr, p_fallback, true);
+	return _get_class_or_script_icon(p_class, script_path, p_fallback, true);
 }
 
 bool EditorNode::is_object_of_custom_type(const Object *p_object, const StringName &p_class) {
@@ -5734,7 +5739,9 @@ void EditorNode::_cancel_close_scene_tab() {
 }
 
 void EditorNode::_prepare_save_confirmation_popup() {
-	save_confirmation->reparent(get_last_exclusive_window());
+	if (save_confirmation->get_window() != get_last_exclusive_window()) {
+		save_confirmation->reparent(get_last_exclusive_window());
+	}
 }
 
 void EditorNode::_toggle_distraction_free_mode() {

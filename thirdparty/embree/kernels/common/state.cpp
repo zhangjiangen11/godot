@@ -196,13 +196,13 @@ namespace embree
   bool State::parseFile(const FileName& fileName)
   { 
     Ref<Stream<int> > file;
-    try {
+    //try {
       file = new FileStream(fileName);
-    }
-    catch (std::runtime_error& e) {
-      (void) e;
-      return false;
-    }
+    //}
+    //catch (std::runtime_error& e) {
+    //  (void) e;
+    //  return false;
+    //}
     
     std::vector<std::string> syms;
     for (size_t i=0; i<sizeof(symbols)/sizeof(void*); i++) 
