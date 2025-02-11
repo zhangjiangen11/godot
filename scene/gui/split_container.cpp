@@ -219,7 +219,7 @@ void ResetParentOffsetDragger::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "parent_name"), "set_parent_name", "get_parent_name");
 }
-PackedStringArray ResetParentOffsetDragger::get_configuration_warnings() const override {
+PackedStringArray ResetParentOffsetDragger::get_configuration_warnings() const {
 
 	PackedStringArray warnings = Node::get_configuration_warnings();
 	if(parent_name.is_empty()) {
