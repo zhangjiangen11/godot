@@ -68,6 +68,7 @@ private:
 	Side dragger_dir = SIDE_LEFT;
 	String parent_name;
 	Control* get_parent_control() const;
+	PackedStringArray get_configuration_warnings() const override;
 public:
 	void set_dragger_dir(Side p_dir) {
 		dragger_dir = p_dir;
@@ -82,6 +83,9 @@ public:
 		return parent_name;
 	}
 	virtual CursorShape get_cursor_shape(const Point2 &p_pos = Point2i()) const override;
+	ResetParentOffsetDragger() {
+		set_custom_minimum_size(Size2(2, 2));
+	}
 };
 
 class SplitContainer : public Container {

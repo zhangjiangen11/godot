@@ -216,6 +216,31 @@ void ResetParentOffsetDragger::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_parent_name"), &ResetParentOffsetDragger::get_parent_name);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "dragger_dir", PROPERTY_HINT_ENUM, "Left,Right,Top,Bottom"), "set_dragger_dir", "get_dragger_dir");
+
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "parent_name"), "set_parent_name", "get_parent_name");
+}
+PackedStringArray ResetParentOffsetDragger::get_configuration_warnings() const override {
+
+	PackedStringArray warnings = Node3D::get_configuration_warnings();
+	if(parent_name.is_empty()) {
+		warnings.push_back(L"没有设置父节点名称:parent_name");
+	}
+	Node *parent = get_parent();
+	while (parent) {
+		Control *c = Object::cast_to<Control>(parent);
+		if (c && c->get_name() == parent_name) {
+			if(c->get_layout_mode() != LAYOUT_MODE_ANCHORS) {
+				warnings.push_back(L"父节点布局模式必须是描点模式");
+				return warnings;
+			}
+			return warnings;
+		}
+		parent = parent->get_parent();
+	}
+	
+	warnings.push_back(L"没有找到父节点");
+
+	return warnings;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
