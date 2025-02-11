@@ -124,6 +124,102 @@ void SplitContainerDragger::_notification(int p_what) {
 	}
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void ResetParentOffsetDragger::gui_input(const Ref<InputEvent> &p_event) {
+	ERR_FAIL_COND(p_event.is_null());
+
+	Control *sc = get_parent_control();
+
+	if (sc == nullptr) {
+		return;
+	}
+
+	Ref<InputEventMouseButton> mb = p_event;
+
+	if (mb.is_valid()) {
+		if (mb->get_button_index() == MouseButton::LEFT) {
+			if (mb->is_pressed()) {
+				dragging = true;
+				sc->emit_signal(SNAME("drag_started"));
+				drag_ofs = sc->get_offset(dragger_dir);
+				if(dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
+					drag_from =  get_global_mouse_position().y;
+					
+				}
+				else {
+					drag_from =  get_global_mouse_position().x;
+				}
+			} else {
+				dragging = false;
+				queue_redraw();
+				sc->emit_signal(SNAME("drag_ended"));
+			}
+		}
+	}
+
+	Ref<InputEventMouseMotion> mm = p_event;
+
+	if (mm.is_valid()) {
+		if (!dragging) {
+			return;
+		}
+
+		Vector2i in_parent_pos = get_transform().xform(mm->get_position());
+		if(dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
+			sc->set_offset(dragger_dir, drag_ofs + (in_parent_pos.y  - drag_from));
+		} else {
+			sc->set_offset(dragger_dir, drag_ofs - (in_parent_pos.x - drag_from));
+		}
+	}
+}
+
+Control* ResetParentOffsetDragger::get_parent_control() const{
+	if(parent_name.is_empty()) {
+		return nullptr;
+	}
+
+	Node *parent = get_parent();
+	while (parent) {
+		Control *c = Object::cast_to<Control>(parent);
+		if (c && c->get_name() == parent_name) {
+			if(c->get_layout_mode() != LAYOUT_MODE_ANCHORS) {
+				return nullptr;
+			}
+			return c;
+		}
+		parent = parent->get_parent();
+	}
+
+	return nullptr;
+}
+Control::CursorShape ResetParentOffsetDragger::get_cursor_shape(const Point2 &p_pos) const {
+	
+	Control *sc = get_parent_control();
+	
+	if (sc) {
+		if(dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
+			return CURSOR_VSPLIT;
+		}
+		if(dragger_dir == SIDE_LEFT || dragger_dir == SIDE_RIGHT) {
+			return CURSOR_HSPLIT;
+		}
+	}
+	return Control::get_cursor_shape(p_pos);
+}
+
+void ResetParentOffsetDragger::_bind_methods() {
+
+	ClassDB::bind_method(D_METHOD("set_dragger_dir", "dir"), &ResetParentOffsetDragger::set_dragger_dir);
+	ClassDB::bind_method(D_METHOD("get_dragger_dir"), &ResetParentOffsetDragger::get_dragger_dir);
+
+	ClassDB::bind_method(D_METHOD("set_parent_name", "name"), &ResetParentOffsetDragger::set_parent_name);
+	ClassDB::bind_method(D_METHOD("get_parent_name"), &ResetParentOffsetDragger::get_parent_name);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "dragger_dir", PROPERTY_HINT_ENUM, "Left,Right,Top,Bottom"), "set_dragger_dir", "get_dragger_dir");
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Control *SplitContainer::_get_sortable_child(int p_idx, SortableVisibilityMode p_visibility_mode) const {
 	int idx = 0;
 	for (int i = 0; i < get_child_count(false); i++) {

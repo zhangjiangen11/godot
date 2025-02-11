@@ -32,6 +32,7 @@
 #define SPLIT_CONTAINER_H
 
 #include "scene/gui/container.h"
+#include "scene/gui/box_container.h"
 
 class SplitContainerDragger : public Control {
 	GDCLASS(SplitContainerDragger, Control);
@@ -49,6 +50,37 @@ private:
 	bool mouse_inside = false;
 
 public:
+	virtual CursorShape get_cursor_shape(const Point2 &p_pos = Point2i()) const override;
+};
+// 拖拽父节点的偏移量信息,父节点必须是描点模式
+class ResetParentOffsetDragger : public BoxContainer {
+	GDCLASS(ResetParentOffsetDragger, BoxContainer);
+
+	static void _bind_methods();
+protected:
+	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	
+private:
+	bool dragging = false;
+	int drag_from = 0;
+	int drag_ofs = 0;
+	bool mouse_inside = false;
+	Side dragger_dir = SIDE_LEFT;
+	String parent_name;
+	Control* get_parent_control() const;
+public:
+	void set_dragger_dir(Side p_dir) {
+		dragger_dir = p_dir;
+	}
+	Side get_dragger_dir() {
+		return dragger_dir;
+	}
+	void set_parent_name(String p_name) {
+		parent_name = p_name;
+	}
+	String get_parent_name() {
+		return parent_name;
+	}
 	virtual CursorShape get_cursor_shape(const Point2 &p_pos = Point2i()) const override;
 };
 

@@ -500,6 +500,7 @@ public:
 
 	// Container sizing.
 	void set_layout_mode(LayoutMode p_mode) { _set_layout_mode(p_mode); }
+	LayoutMode get_layout_mode() { return _get_layout_mode(); }
 	void set_h_size_flags(BitField<SizeFlags> p_flags);
 	BitField<SizeFlags> get_h_size_flags() const;
 	void set_v_size_flags(BitField<SizeFlags> p_flags);

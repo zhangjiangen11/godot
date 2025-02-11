@@ -483,6 +483,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(ConfirmationDialog);
 
 	GDREGISTER_CLASS(SubViewportContainer);
+	GDREGISTER_CLASS(ResetParentOffsetDragger);
 	GDREGISTER_CLASS(SplitContainer);
 	GDREGISTER_CLASS(HSplitContainer);
 	GDREGISTER_CLASS(VSplitContainer);
