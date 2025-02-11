@@ -221,7 +221,7 @@ void ResetParentOffsetDragger::_bind_methods() {
 }
 PackedStringArray ResetParentOffsetDragger::get_configuration_warnings() const override {
 
-	PackedStringArray warnings = Node3D::get_configuration_warnings();
+	PackedStringArray warnings = Node::get_configuration_warnings();
 	if(parent_name.is_empty()) {
 		warnings.push_back(L"没有设置父节点名称:parent_name");
 	}
