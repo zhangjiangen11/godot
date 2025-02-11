@@ -83,8 +83,8 @@
 	#define JPH_PLATFORM_ANDROID
 #elif defined(__linux__)
 	#define JPH_PLATFORM_LINUX
-#elif defined(__FreeBSD__)
-	#define JPH_PLATFORM_FREEBSD
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+	#define JPH_PLATFORM_BSD
 #elif defined(__APPLE__)
 	#include <TargetConditionals.h>
 	#if defined(TARGET_OS_IPHONE) && !TARGET_OS_IPHONE
@@ -195,7 +195,11 @@
 #elif defined(JPH_PLATFORM_WASM)
 	// WebAssembly CPU architecture
 	#define JPH_CPU_WASM
-	#define JPH_CPU_ADDRESS_BITS 32
+	#if defined(__wasm64__)
+		#define JPH_CPU_ADDRESS_BITS 64
+	#else
+		#define JPH_CPU_ADDRESS_BITS 32
+	#endif
 	#define JPH_VECTOR_ALIGNMENT 16
 	#define JPH_DVECTOR_ALIGNMENT 32
 	#ifdef __wasm_simd128__
@@ -203,6 +207,29 @@
 		#define JPH_USE_SSE4_1
 		#define JPH_USE_SSE4_2
 	#endif
+#elif defined(__powerpc__) || defined(__powerpc64__)
+	// PowerPC CPU architecture
+	#define JPH_CPU_PPC
+	#if defined(__powerpc64__)
+		#define JPH_CPU_ADDRESS_BITS 64
+	#else
+		#define JPH_CPU_ADDRESS_BITS 32
+	#endif
+	#ifdef _BIG_ENDIAN
+		#define JPH_CPU_BIG_ENDIAN
+	#endif
+	#define JPH_VECTOR_ALIGNMENT 16
+	#define JPH_DVECTOR_ALIGNMENT 8
+#elif defined(__loongarch__)
+	// LoongArch CPU architecture
+	#define JPH_CPU_LOONGARCH
+	#if defined(__loongarch64)
+		#define JPH_CPU_ADDRESS_BITS 64
+	#else
+		#define JPH_CPU_ADDRESS_BITS 32
+	#endif
+	#define JPH_VECTOR_ALIGNMENT 16
+	#define JPH_DVECTOR_ALIGNMENT 8
 #elif defined(__e2k__)
 	// E2K CPU architecture (MCST Elbrus 2000)
 	#define JPH_CPU_E2K
@@ -216,13 +243,6 @@
 	#endif
 #else
 	#error Unsupported CPU architecture
-#endif
-
-// CPU helper macros
-#ifdef JPH_CPU_RISCV
-	#define JPH_IF_RISCV(x) x
-#else
-	#define JPH_IF_RISCV(x)
 #endif
 
 // If this define is set, Jolt is compiled as a shared library
@@ -339,7 +359,6 @@
 	JPH_GCC_SUPPRESS_WARNING("-Wpedantic")														\
 	JPH_GCC_SUPPRESS_WARNING("-Wunused-parameter")												\
 	JPH_GCC_SUPPRESS_WARNING("-Wmaybe-uninitialized")											\
-	JPH_IF_RISCV(JPH_GCC_SUPPRESS_WARNING("-Wuninitialized"))									\
 																								\
 	JPH_MSVC_SUPPRESS_WARNING(4619) /* #pragma warning: there is no warning number 'XXXX' */	\
 	JPH_MSVC_SUPPRESS_WARNING(4514) /* 'X' : unreferenced inline function has been removed */	\
@@ -373,12 +392,12 @@
 	// Configuration for a popular game console.
 	// This file is not distributed because it would violate an NDA.
 	// Creating one should only be a couple of minutes of work if you have the documentation for the platform
-	// (you only need to define JPH_BREAKPOINT, JPH_PLATFORM_BLUE_GET_TICKS, JPH_PLATFORM_BLUE_MUTEX*, JPH_PLATFORM_BLUE_RWLOCK* and include the right header).
+	// (you only need to define JPH_BREAKPOINT, JPH_PLATFORM_BLUE_GET_TICKS, JPH_PLATFORM_BLUE_MUTEX*, JPH_PLATFORM_BLUE_RWLOCK*, JPH_PLATFORM_BLUE_SEMAPHORE* and include the right header).
 	#include <Jolt/Core/PlatformBlue.h>
-#elif defined(JPH_PLATFORM_LINUX) || defined(JPH_PLATFORM_ANDROID) || defined(JPH_PLATFORM_MACOS) || defined(JPH_PLATFORM_IOS) || defined(JPH_PLATFORM_FREEBSD)
+#elif defined(JPH_PLATFORM_LINUX) || defined(JPH_PLATFORM_ANDROID) || defined(JPH_PLATFORM_MACOS) || defined(JPH_PLATFORM_IOS) || defined(JPH_PLATFORM_BSD)
 	#if defined(JPH_CPU_X86)
 		#define JPH_BREAKPOINT	__asm volatile ("int $0x3")
-	#elif defined(JPH_CPU_ARM) || defined(JPH_CPU_RISCV) || defined(JPH_CPU_E2K)
+	#elif defined(JPH_CPU_ARM) || defined(JPH_CPU_RISCV) || defined(JPH_CPU_E2K) || defined(JPH_CPU_PPC) || defined(JPH_CPU_LOONGARCH)
 		#define JPH_BREAKPOINT	__builtin_trap()
 	#else
 		#error Unknown CPU architecture

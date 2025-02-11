@@ -9,6 +9,9 @@ JPH_NAMESPACE_BEGIN
 /// The constant \f$\pi\f$
 static constexpr float JPH_PI = 3.14159265358979323846f;
 
+/// A large floating point value which, when squared, is still much smaller than FLT_MAX
+static constexpr float cLargeFloat = 1.0e15f;
+
 /// Convert a value from degrees to radians
 JPH_INLINE constexpr float DegreesToRadians(float inV)
 {
@@ -120,7 +123,7 @@ inline uint CountTrailingZeros(uint32 inValue)
 			return 32;
 		return __builtin_ctz(inValue);
 	#endif
-#elif defined(JPH_CPU_E2K) || defined(JPH_CPU_RISCV)
+#elif defined(JPH_CPU_E2K) || defined(JPH_CPU_RISCV) || defined(JPH_CPU_PPC) || defined(JPH_CPU_LOONGARCH)
 	return inValue ? __builtin_ctz(inValue) : 32;
 #else
 	#error Undefined
@@ -150,7 +153,7 @@ inline uint CountLeadingZeros(uint32 inValue)
 	#else
 		return __builtin_clz(inValue);
 	#endif
-#elif defined(JPH_CPU_E2K) || defined(JPH_CPU_RISCV)
+#elif defined(JPH_CPU_E2K) || defined(JPH_CPU_RISCV) || defined(JPH_CPU_PPC) || defined(JPH_CPU_LOONGARCH)
 	return inValue ? __builtin_clz(inValue) : 32;
 #else
 	#error Undefined

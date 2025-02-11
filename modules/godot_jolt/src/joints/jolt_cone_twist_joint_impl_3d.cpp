@@ -62,7 +62,7 @@ void JoltConeTwistJointImpl3D::set_param(
 			if (!Math::is_equal_approx(p_value, DEFAULT_BIAS)) {
 				WARN_PRINT(vformat(
 					"Cone twist joint bias is not supported by Godot Jolt. "
-					"Any such value will be ignored. "
+					"Any such value will be ignored. ",
 					"This joint connects %s.",
 					_bodies_to_string()
 				));
