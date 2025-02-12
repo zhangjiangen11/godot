@@ -35,6 +35,8 @@ env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/gr
 env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/navmesh/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/octmesh/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/path/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/hlod/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/editor/*.cpp")
 
 env_game_help.add_source_files(env.modules_sources, "yaml/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "yaml/std/*.cpp")

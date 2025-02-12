@@ -281,10 +281,10 @@ Vector3 MGrassLodSetting::get_rand_scale_end(){
     return rand_scale_end;
 }
 
-double MGrassLodSetting::rand_float(double a,double b,int seed){
+double MGrassLodSetting::rand_float(double a,double b,int _seed){
    Ref<RandomNumberGenerator> rand;
    rand.instantiate();
-   rand->set_seed(seed);
+   rand->set_seed(_seed);
    return rand->randf_range(a,b);
 }
 

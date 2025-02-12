@@ -6,6 +6,7 @@
 
 #include "mtool.h"
 #include "octmesh/moctmesh.h"
+#include "hlod/mhlod_scene.h"
 #include "path/mcurve.h"
 #define RSS RenderingServer::get_singleton()
 
@@ -36,6 +37,7 @@ void MOctree::_bind_methods(){
 	ClassDB::bind_method(D_METHOD("set_world_boundary","start","end"), &MOctree::set_world_boundary);
 	ClassDB::bind_method(D_METHOD("enable_as_octmesh_updater"), &MOctree::enable_as_octmesh_updater);
 	ClassDB::bind_method(D_METHOD("enable_as_curve_updater"), &MOctree::enable_as_curve_updater);
+	ClassDB::bind_method(D_METHOD("enable_as_hlod_updater"), &MOctree::enable_as_hlod_updater);
 
 	ClassDB::bind_method(D_METHOD("set_debug_draw","input"), &MOctree::set_debug_draw);
 	ClassDB::bind_method(D_METHOD("get_debug_draw"), &MOctree::get_debug_draw);
@@ -52,15 +54,11 @@ p_id(_p_id),oct_id(_oct_id),old_pos(_old_pos),new_pos(_new_pos)
 
 }
 
-uint64_t MOctree::PointMoveReq::hash() const{
-	uint64_t uid = (uint64_t)((uint32_t)p_id) << 16;
-	return uid | (uint64_t)oct_id;
-}
+MOctree::PointMoveReq::PointMoveReq(int32_t _p_id,uint16_t _oct_id):
+p_id(_p_id),oct_id(_oct_id)
+{
 
-bool MOctree::PointMoveReq::operator<(const PointMoveReq& other) const{
-	return hash() < other.hash();
 }
-
 
 MOctree::Octant::Octant(){
 }
@@ -585,7 +583,7 @@ void MOctree::Octant::get_oct_id_points_count(uint16_t oct_id,int& count){
 MOctree::Octant* MOctree::Octant::get_mergeable(int capacity){
 	int count = 0;
 	get_points_count(count);
-	//VariantUtilityFunctions::_print("Check mergable ",count," --- ", capacity, " res ",count < capacity);
+	//UtilityFunctions::print("Check mergable ",count," --- ", capacity, " res ",count < capacity);
 	if(count < capacity){ // it is undividable and it is parent also may be undevidable
 		if(parent==nullptr){ // Arrived at root
 			return this;
@@ -698,6 +696,12 @@ bool MOctree::remove_point(int32_t id,const Vector3& pos,uint16_t oct_id){
 	if(disable_octree){
 		return true;
 	}
+	{
+		std::lock_guard<std::mutex> lock2(move_req_mutex);
+		//PointMoveReq rm_mv_req(id,oct_id,Vector3(),Vector3());
+		PointMoveReq rm_mv_req(id,oct_id);
+		moves_req_cache.erase(rm_mv_req);
+	}
 	Octant* res = root.remove_point(id,pos,oct_id);
 	if(unlikely(!res)){
 		WARN_PRINT("Can not find point with ID "+itos(id)+" OCT_ID "+itos(oct_id)+" to remove!");
@@ -742,6 +746,12 @@ void MOctree::enable_as_octmesh_updater(){
 void MOctree::enable_as_curve_updater(){
 	is_path_updater = true;
 	MCurve::set_octree(this);
+}
+
+void MOctree::enable_as_hlod_updater(){
+	if(MHlodScene::set_octree(this)){
+		is_hlod_updater = true;
+	}
 }
 
 void MOctree::update_camera_position(){
@@ -955,29 +965,29 @@ void MOctree::change_point_id(int16_t oct_id,const Vector3& point_pos,int32_t ol
 
 //Must be called only in update_lod
 //in case it is not updated updated_lod = -1
-void MOctree::move_point(const PointMoveReq& mp,int8_t _updated_lod,uint8_t update_id){
+void MOctree::move_point(const PointMoveReq& mp,int8_t updated_lod,uint8_t _update_id){
 	int point_index = -1;
 	Octant* poct = nullptr;
 	poct = root.find_octant_by_point(mp.p_id,mp.oct_id,mp.old_pos,point_index);
 	if(poct==nullptr){
 		poct = root.find_octant_by_point_classic(mp.p_id,mp.oct_id,point_index);
-		if(poct!=nullptr){
-			WARN_PRINT("Used Classic method to find octant of move point! Maybe you not provide the excat oct_tree position for move");
+		if(poct!=nullptr && mp.p_id==1238){
+			WARN_PRINT("Used Classic method to find octant of move point! Maybe you not provide the excat oct_tree position for move, also make sure to send make move request after inserting points.");
 		}
 	}
 	ERR_FAIL_COND_MSG(poct==nullptr,"can not find octant of moved point!");
 	if(poct->has_point(mp.new_pos)){ // No Octant change just update new_pos
 		OctPoint* p = poct->points.ptrw() + point_index;
 		p->position = mp.new_pos;
-		if(_updated_lod!=-1 && _updated_lod!=p->lod){
+		if(updated_lod!=-1 && updated_lod!=p->lod){
 			PointUpdate up;
 			up.id = p->id;
 			up.last_lod = p->lod;
-			up.lod = _updated_lod;
+			up.lod = updated_lod;
 			update_change_info[p->oct_id].push_back(up);
-			p->lod = _updated_lod;
+			p->lod = updated_lod;
 		}
-		p->update_id = update_id;
+		p->update_id = _update_id;
 		return;
 	}
 	OctPoint p = poct->points[point_index];
@@ -1006,16 +1016,16 @@ void MOctree::move_point(const PointMoveReq& mp,int8_t _updated_lod,uint8_t upda
 			VariantUtilityFunctions::_print("Can not consume point.",root.has_point(tree_p.position));
 		}
 	}
-	if(_updated_lod!=-1 && _updated_lod!=p.lod){
+	if(updated_lod!=-1 && updated_lod!=p.lod){
 		PointUpdate up;
 		up.id = p.id;
 		up.last_lod = p.lod;
-		up.lod = _updated_lod;
+		up.lod = updated_lod;
 		update_change_info[p.oct_id].push_back(up);
-		p.lod = _updated_lod;
+		p.lod = updated_lod;
 	}
-	p.update_id = update_id;
-	//VariantUtilityFunctions::_print("oct change ",p.position);
+	p.update_id = _update_id;
+	//UtilityFunctions::print("oct change ",p.position);
 	bool res = root.insert_point(p,fcapacity);
 	// Check if we can merge again some octs
 	if(!is_reacreate){
@@ -1032,7 +1042,7 @@ void MOctree::add_move_req(const PointMoveReq& mv_data){
 		auto el = moves_req_cache.find(mv_data);
 		el->get().new_pos = mv_data.new_pos;
 		auto el2 = moves_req_cache.find(mv_data);
-		//VariantUtilityFunctions::_print("2old ",el2->get().old_pos," new ",el2->get().new_pos);
+		//UtilityFunctions::print("2old ",el2->get().old_pos," new ",el2->get().new_pos);
 	} else {
 		moves_req_cache.insert(mv_data);
 	}
@@ -1192,6 +1202,10 @@ void MOctree::set_lod_setting(const PackedFloat32Array _lod_setting){
 	lod_setting = _lod_setting;
 }
 
+PackedFloat32Array MOctree::get_lod_setting() const{
+	return lod_setting;
+}
+
 void MOctree::set_custom_capacity(int input){
 	input = CLAMP(input, 0 , MAX_CAPACITY);
 	custom_capacity = input;
@@ -1274,10 +1288,16 @@ void MOctree::process_tick(){
 		if(is_valid_octmesh_updater()){
 			MOctMesh::update_tick();
 		}
+		if(is_hlod_updater){
+			MHlodScene::update_tick();
+		}
 	}
 	if(is_first_update){
 		if(is_valid_octmesh_updater()){
 			MOctMesh::insert_points();
+		}
+		if(is_hlod_updater){
+			MHlodScene::insert_points();
 		}
 		update_camera_position();
 		is_first_update = false;
@@ -1285,7 +1305,7 @@ void MOctree::process_tick(){
 		is_updating = false;
 		is_point_process_wait = true;
 		waiting_oct_ids = oct_ids;
-		send_update_signal();
+		send_first_update_signal();
 		check_point_process_finished();
 	}
 }
@@ -1346,10 +1366,24 @@ void MOctree::check_point_process_finished(){
 	}
 }
 
+void MOctree::send_first_update_signal(){
+	update_scenario();
+	if(is_valid_octmesh_updater()){
+		MOctMesh::octree_update(&update_change_info[MOctMesh::get_oct_id()]);
+	}
+	if(is_hlod_updater){
+		MHlodScene::first_octree_update(&update_change_info[MHlodScene::get_oct_id()]);
+	}
+	emit_signal("update_finished");
+}
+
 void MOctree::send_update_signal(){
 	update_scenario();
 	if(is_valid_octmesh_updater()){
 		MOctMesh::octree_update(&update_change_info[MOctMesh::get_oct_id()]);
+	}
+	if(is_hlod_updater){
+		MHlodScene::octree_update(&update_change_info[MHlodScene::get_oct_id()]);
 	}
 	emit_signal("update_finished");
 }
@@ -1363,7 +1397,7 @@ Array MOctree::get_point_update_dictionary_array(int oct_id){
 	Array arr;
 	uint16_t id = oct_id;
 	ERR_FAIL_COND_V(!update_change_info.has(id), arr);
-	//VariantUtilityFunctions::_print("OCT SIZE ",update_change_info.get(id).size(), " FOR OCT ID ",oct_id);
+	//UtilityFunctions::print("OCT SIZE ",update_change_info.get(id).size(), " FOR OCT ID ",oct_id);
 	for(int i=0; i < update_change_info[id].size(); i++){
 		PointUpdate p = update_change_info[id].get(i);
 		Dictionary dic;

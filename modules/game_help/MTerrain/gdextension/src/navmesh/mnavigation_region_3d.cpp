@@ -195,14 +195,14 @@ void MNavigationRegion3D::update_navmesh(Vector3 p_cam_pos){
     update_thread = std::async(std::launch::async, &MNavigationRegion3D::_update_navmesh, this, p_cam_pos);
 }
 
-void MNavigationRegion3D::_update_navmesh(Vector3 cam_pos){
+void MNavigationRegion3D::_update_navmesh(Vector3 _cam_pos){
     tmp_nav = get_navigation_mesh()->duplicate();
     uint32_t l = round(tmp_nav->get_detail_sample_distance()/h_scale);
     
-    Vector2i top_left = grid->get_closest_pixel(cam_pos - Vector3(navigation_radius,0,navigation_radius));
-    Vector2i bottom_right = grid->get_closest_pixel(cam_pos + Vector3(navigation_radius,0,navigation_radius));
+    Vector2i top_left = grid->get_closest_pixel(_cam_pos - Vector3(navigation_radius,0,navigation_radius));
+    Vector2i bottom_right = grid->get_closest_pixel(_cam_pos + Vector3(navigation_radius,0,navigation_radius));
     if(bottom_right.x < 0 || bottom_right.y <0 || top_left.x > (int)grid->grid_pixel_region.right || top_left.y > (int)grid->grid_pixel_region.bottom){
-        last_update_pos = cam_pos;
+        last_update_pos = _cam_pos;
         tmp_nav->clear_polygons();
         call_deferred("_finish_update",tmp_nav);
         return;
@@ -245,7 +245,7 @@ void MNavigationRegion3D::_update_navmesh(Vector3 cam_pos){
         }
     }
     if(faces.size()==0){
-        last_update_pos = cam_pos;
+        last_update_pos = _cam_pos;
         tmp_nav->clear_polygons();
         call_deferred("_finish_update",tmp_nav);
         return;
@@ -265,7 +265,7 @@ void MNavigationRegion3D::_update_navmesh(Vector3 cam_pos){
         Vector3 obr(r,h0,r);
         Vector3 obl(-r,h0,r);
         Vector3 ou(0,h,0);
-        PackedVector3Array positions = g->get_physic_positions(cam_pos,navigation_radius);
+        PackedVector3Array positions = g->get_physic_positions(_cam_pos,navigation_radius);
         for(int k=0;k<positions.size();k++){
             Vector3 fpos = positions[k];
             Vector3 tl=fpos+otl;
@@ -347,7 +347,7 @@ void MNavigationRegion3D::_update_navmesh(Vector3 cam_pos){
         geo_data->add_faces(obs_faces,_tt);
     }
     NavigationServer3D::get_singleton()->bake_from_source_geometry_data(tmp_nav,geo_data);
-    last_update_pos = cam_pos;
+    last_update_pos = _cam_pos;
     obs_info.clear();
     obst_info.clear();
     call_deferred("_finish_update",tmp_nav);

@@ -45,9 +45,141 @@
 #include "core/templates/search_array.h"
 #include "core/templates/sort_array.h"
 
+#include "core/math/math_funcs.h"
+
 #include <climits>
 #include <initializer_list>
 #include <utility>
+
+
+struct CodeHelp
+{
+	union MarshallFloat {
+		uint32_t i; ///< int
+		float f; ///< float
+	};
+
+	union MarshallDouble {
+		uint64_t l; ///< long long
+		double d; ///< double
+	};
+
+	// Behaves like one of the above, depending on compilation setting.
+	union MarshallReal {
+#ifdef REAL_T_IS_DOUBLE
+		uint64_t i;
+#else
+		uint32_t i;
+#endif
+		real_t r;
+	};
+	static inline unsigned int encode_uint16(uint16_t p_uint, uint8_t* p_arr) {
+		for (int i = 0; i < 2; i++) {
+			*p_arr = p_uint & 0xFF;
+			p_arr++;
+			p_uint >>= 8;
+		}
+
+		return sizeof(uint16_t);
+	}
+
+	static inline unsigned int encode_uint32(uint32_t p_uint, uint8_t* p_arr) {
+		for (int i = 0; i < 4; i++) {
+			*p_arr = p_uint & 0xFF;
+			p_arr++;
+			p_uint >>= 8;
+		}
+
+		return sizeof(uint32_t);
+	}
+
+	static inline unsigned int encode_half(float p_float, uint8_t* p_arr) {
+		encode_uint16(Math::make_half_float(p_float), p_arr);
+
+		return sizeof(uint16_t);
+	}
+
+	static inline unsigned int encode_float(float p_float, uint8_t* p_arr) {
+		MarshallFloat mf;
+		mf.f = p_float;
+		encode_uint32(mf.i, p_arr);
+
+		return sizeof(uint32_t);
+	}
+
+	static inline unsigned int encode_uint64(uint64_t p_uint, uint8_t* p_arr) {
+		for (int i = 0; i < 8; i++) {
+			*p_arr = p_uint & 0xFF;
+			p_arr++;
+			p_uint >>= 8;
+		}
+
+		return sizeof(uint64_t);
+	}
+
+	static inline unsigned int encode_double(double p_double, uint8_t* p_arr) {
+		MarshallDouble md;
+		md.d = p_double;
+		encode_uint64(md.l, p_arr);
+
+		return sizeof(uint64_t);
+	}
+
+
+
+	static inline uint16_t decode_uint16(const uint8_t* p_arr) {
+		uint16_t u = 0;
+
+		for (int i = 0; i < 2; i++) {
+			uint16_t b = *p_arr;
+			b <<= (i * 8);
+			u |= b;
+			p_arr++;
+		}
+
+		return u;
+	}
+	static inline uint32_t decode_uint32(const uint8_t* p_arr) {
+		uint32_t u = 0;
+
+		for (int i = 0; i < 4; i++) {
+			uint32_t b = *p_arr;
+			b <<= (i * 8);
+			u |= b;
+			p_arr++;
+		}
+
+		return u;
+	}
+	static inline float decode_half(const uint8_t* p_arr) {
+		return Math::half_to_float(decode_uint16(p_arr));
+	}
+	static inline float decode_float(const uint8_t* p_arr) {
+		MarshallFloat mf;
+		mf.i = decode_uint32(p_arr);
+		return mf.f;
+	}
+	static inline uint64_t decode_uint64(const uint8_t* p_arr) {
+		uint64_t u = 0;
+
+		for (int i = 0; i < 8; i++) {
+			uint64_t b = (*p_arr) & 0xFF;
+			b <<= (i * 8);
+			u |= b;
+			p_arr++;
+		}
+
+		return u;
+	}
+	static inline double decode_double(const uint8_t* p_arr) {
+		MarshallDouble md;
+		md.l = decode_uint64(p_arr);
+		return md.d;
+	}
+};
+
+
+
 
 template <typename T>
 class VectorWriteProxy {
@@ -307,6 +439,217 @@ public:
 			_cowdata(std::move(p_from._cowdata)) {}
 
 	_FORCE_INLINE_ ~Vector() {}
+
+	private:
+	public:
+
+		int64_t decode_u8(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return r[p_offset];
+		}
+		int64_t decode_s8(int64_t p_offset)  const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return *((const int8_t*)&r[p_offset]);
+		}
+		int64_t decode_u16(int64_t p_offset)  const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return CodeHelp::code_uint16(&r[p_offset]);
+		}
+		int64_t decode_s16(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return (int16_t)CodeHelp::decode_uint16(&r[p_offset]);
+		}
+		int64_t decode_u32(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return CodeHelp::decode_uint32(&r[p_offset]);
+		}
+		int64_t  decode_s32(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return (int32_t)CodeHelp::decode_uint32(&r[p_offset]);
+		}
+		int64_t decode_u64(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return (int64_t)CodeHelp::decode_uint64(&r[p_offset]);
+		}
+		int64_t decode_s64(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return (int64_t)CodeHelp::decode_uint64(&r[p_offset]);
+		}
+		double decode_half(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return Math::half_to_float(CodeHelp::decode_uint16(&r[p_offset]));
+		}
+		double decode_float(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return CodeHelp::decode_float(&r[p_offset]);
+		}
+
+		double decode_double(int64_t p_offset) const {
+			if (sizeof(T) != 1) {
+				return 0;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset >(int64_t(_size) - 4)) return 0;
+			const uint8_t* r = (const uint8_t*)ptr();
+			return CodeHelp::decode_double(&r[p_offset]);
+		}
+
+	public:
+		void encode_u8(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			*((uint8_t*)&w[p_offset]) = p_value;
+		}
+		void encode_s8(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			*((int8_t*)&w[p_offset]) = p_value;
+		}
+
+		void encode_u16(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_uint16((uint16_t)p_value, &w[p_offset]);
+		}
+		void encode_s16(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_uint16((int16_t)p_value, &w[p_offset]);
+		}
+
+		void encode_u32(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_uint32((uint32_t)p_value, &w[p_offset]);
+		}
+		void encode_s32(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_uint32((int32_t)p_value, &w[p_offset]);
+		}
+
+		void encode_u64(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_uint64((uint64_t)p_value, &w[p_offset]);
+		}
+		void encode_s64(int64_t p_offset, int64_t p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_uint64((int64_t)p_value, &w[p_offset]);
+		}
+
+		void encode_half(int64_t p_offset, double p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_uint16(Math::make_half_float(p_value), &w[p_offset]);
+		}
+		void encode_float(int64_t p_offset, double p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_float(p_value, &w[p_offset]);
+		}
+		void encode_double(int64_t p_offset, double p_value) {
+			if (sizeof(T) != 1) {
+				return;
+			}
+			uint64_t _size = size();
+			if (p_offset < 0 || p_offset > int64_t(_size) - 1) return;
+			uint8_t* w = (uint8_t*)ptrw();
+			CodeHelp::encode_double(p_value, &w[p_offset]);
+		}
+
+
 };
 
 template <typename T>

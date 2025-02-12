@@ -35,14 +35,35 @@
 #include "path/mcurve_mesh_override.h"
 #include "path/mcurve_terrain.h"
 
+#include "hlod/mhlod_scene.h"
+#include "hlod/mhlod_node3d.h"
+#include "hlod/mhlod_collision_setting.h"
+#include "hlod/mmesh.h"
+#include "hlod/mdecal.h"
+#include "hlod/mdecal_instance.h"
 
-using namespace godot;
+#ifdef DEBUG_ENABLED
+#include "editor/mmesh_joiner.h"
+#include "editor/masset_mesh_updater.h"
+#include "editor/masset_table.h"
+#include "editor/masset_mesh.h"
+#endif
 
 void initialize_mterrain_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
 	
+	#ifdef DEBUG_ENABLED
+	ClassDB::register_class<MMeshJoiner>();
+	ClassDB::register_class<MAssetMeshUpdater>();
+	ClassDB::register_class<MAssetMesh>();
+	ClassDB::register_class<MAssetMeshData>();
+	ClassDB::register_class<MAssetTable>();
+	#endif
+
+
+
 	ClassDB::register_class<MTerrain>();
 	ClassDB::register_class<MResource>();
 	ClassDB::register_class<MChunkGenerator>();
@@ -69,6 +90,14 @@ void initialize_mterrain_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<MCurveMesh>();
 	ClassDB::register_class<MCurveMeshOverride>();
 	ClassDB::register_class<MCurveTerrain>();
+
+	ClassDB::register_class<MHlod>();
+	ClassDB::register_class<MHlodCollisionSetting>();
+	ClassDB::register_class<MHlodScene>();
+	ClassDB::register_class<MHlodNode3D>();
+	ClassDB::register_class<MMesh>();
+	ClassDB::register_class<MDecal>();
+	ClassDB::register_class<MDecalInstance>();
 }
 
 void uninitialize_mterrain_module(ModuleInitializationLevel p_level) {

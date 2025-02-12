@@ -23,7 +23,6 @@
 #include <chrono>
 
 
-using namespace godot;
 
 
 class MOctree : public Node3D {
@@ -62,18 +61,30 @@ class MOctree : public Node3D {
         int8_t lod;
         int8_t last_lod;
         int32_t id;
+        _FORCE_INLINE_ bool operator<(const PointUpdate& other) const{
+            return id < other.id;
+        }
     };
+
 
     struct PointMoveReq
     {
-        int32_t p_id;
-        uint16_t oct_id;
+        union
+        {
+            struct{
+                int32_t p_id;
+                uint16_t oct_id;
+            };
+            uint64_t __hash;
+        };
         Vector3 old_pos;
         Vector3 new_pos;
         PointMoveReq();
         PointMoveReq(int32_t _p_id,uint16_t _oct_id,Vector3 _old_pos,Vector3 _new_pos);
-        _FORCE_INLINE_ uint64_t hash() const;
-        bool operator<(const PointMoveReq& other) const;
+        PointMoveReq(int32_t _p_id,uint16_t _oct_id);
+        _FORCE_INLINE_ bool operator<(const PointMoveReq& other) const{
+            return __hash < other.__hash;
+        }
     };
 
     private:
@@ -162,6 +173,7 @@ class MOctree : public Node3D {
     bool is_ready = false;
     bool is_octmesh_updater = false;
     bool is_path_updater = false;
+    bool is_hlod_updater = false;
     bool disable_octree = false;
 
     bool debug_draw = false;
@@ -182,6 +194,7 @@ class MOctree : public Node3D {
     void set_world_boundary(const Vector3& start,const Vector3& end);
     void enable_as_octmesh_updater();
     void enable_as_curve_updater();
+    void enable_as_hlod_updater();
     void update_camera_position();
     uint32_t get_capacity(int p_count);
     //Insert point and id is point index
@@ -207,6 +220,7 @@ class MOctree : public Node3D {
     PackedVector3Array get_tree_lines();
 
     void set_lod_setting(const PackedFloat32Array _lod_setting);
+    PackedFloat32Array get_lod_setting() const;
     void set_custom_capacity(int input);
 
     void set_debug_draw(bool input);
@@ -220,7 +234,8 @@ class MOctree : public Node3D {
     void process_tick();
     void point_process_finished(int oct_id);
     void check_point_process_finished();
-    void send_update_signal();
+    inline void send_first_update_signal();
+    inline void send_update_signal();
     Vector<PointUpdate> get_point_update(uint16_t oct_id);
     Array get_point_update_dictionary_array(int oct_id);
 
