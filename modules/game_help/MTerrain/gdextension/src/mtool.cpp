@@ -13,12 +13,15 @@ bool MTool::editor_plugin_active = false;
 Node3D* MTool::cached_editor_camera = nullptr;
 
 void MTool::_bind_methods() {
+   ClassDB::bind_static_method("MTool", D_METHOD("print_edmsg","msg"), &MTool::print_edmsg);
    ClassDB::bind_static_method("MTool", D_METHOD("get_r16_image","file_path","width","height","min_height","max_height","is_half"), &MTool::get_r16_image);
    ClassDB::bind_static_method("MTool", D_METHOD("write_r16","file_path","data","min_height","max_height"), &MTool::write_r16);
    ClassDB::bind_static_method("MTool", D_METHOD("normalize_rf_data","data","min_height","max_height"), &MTool::normalize_rf_data);
    ClassDB::bind_static_method("MTool", D_METHOD("find_camera","changed_camera"), &MTool::find_editor_camera);
    ClassDB::bind_static_method("MTool", D_METHOD("enable_editor_plugin"), &MTool::enable_editor_plugin);
    ClassDB::bind_static_method("MTool", D_METHOD("ray_collision_y_zero_plane","ray_origin","ray"), &MTool::ray_collision_y_zero_plane);
+
+   ClassDB::bind_static_method("MTool", D_METHOD("get_global_aabb","aabb","global_transform"), &MTool::get_global_aabb);
 }
 
 
@@ -30,6 +33,9 @@ MTool::~MTool()
 {
 }
 
+void MTool::print_edmsg(const String& msg){
+    ERR_FAIL_EDMSG(msg);
+}
 
 	static void _PackedByteArray_encode_u16(PackedByteArray *p_instance, int64_t p_offset, int64_t p_value) {
 		uint64_t size = p_instance->size();
@@ -167,4 +173,41 @@ Ref<MCollision> MTool::ray_collision_y_zero_plane(const Vector3& ray_origin,cons
     col->collision_position = ray_origin - (ray_origin.y/ray.y)*ray;
     col->collided = true;
     return col;
+}
+
+PackedInt64Array MTool::packed_32_to_64(const PackedInt32Array& p32){
+    PackedInt64Array out;
+    out.resize(p32.size());
+    for(int i=0; i < p32.size(); i++){
+        out.set(i,(int64_t)p32[i]);
+    }
+    return out;
+}
+
+PackedInt32Array MTool::packed_64_to_32(const PackedInt64Array& p64){
+    PackedInt32Array out;
+    out.resize(p64.size());
+    for(int i=0; i < p64.size(); i++){
+        out.set(i,(int32_t)p64[i]);
+    }
+    return out;
+}
+AABB MTool::get_global_aabb(const AABB& aabb,const Transform3D& global_transform){
+    Vector3 points[8];
+    for(int i=0; i < 8; i++){
+        points[i] = global_transform.xform(aabb.get_endpoint(i));
+    }
+    Vector3 pmax = points[0];
+    Vector3 pmin = points[0];
+    for(int i=1; i < 8; i++){
+        for(int j=0; j < 3; j++){
+            if(pmax[j] < points[i][j]){
+                pmax[j] = points[i][j];
+            }
+            else if(pmin[j] > points[i][j]){
+                pmin[j] = points[i][j];
+            }
+        }
+    }
+    return AABB(pmin,pmax - pmin);
 }

@@ -38,6 +38,11 @@ env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/pa
 env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/hlod/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/editor/*.cpp")
 
+
+env_game_help.add_source_files(env.modules_sources, "PathMesh3D/extrude_profiles/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "PathMesh3D/gen/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "PathMesh3D/*.cpp")
+
 env_game_help.add_source_files(env.modules_sources, "yaml/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "yaml/std/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "yaml/detail/*.cpp")

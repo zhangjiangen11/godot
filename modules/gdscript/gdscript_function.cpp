@@ -32,6 +32,7 @@
 
 #include "gdscript.h"
 
+#define EDITOR_DEBUG_FUCTION_STACK true
 Variant GDScriptFunction::get_constant(int p_idx) const {
 	ERR_FAIL_INDEX_V(p_idx, constants.size(), "<errconst>");
 	return constants[p_idx];
@@ -238,7 +239,7 @@ Variant GDScriptFunctionState::resume(const Variant &p_arg) {
 		}
 
 #ifdef DEBUG_ENABLED
-		if (EngineDebugger::is_active()) {
+		if (EDITOR_DEBUG_FUCTION_STACK || EngineDebugger::is_active()) {
 			GDScriptLanguage::get_singleton()->exit_function();
 		}
 

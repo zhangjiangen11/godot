@@ -90,6 +90,7 @@
 
 
 #include "modules/game_help/MTerrain/gdextension/src/register_types.h"
+#include "modules/game_help/PathMesh3D/register_types.hpp"
 
 #include "logic/blackboard/blackboard.h"
 #include "logic/blackboard/blackboard_plan.h"
@@ -174,6 +175,7 @@ void initialize_game_help_module(ModuleInitializationLevel p_level) {
 		initialize_mterrain_module(p_level);
 		//initialize_terrain_3d(p_level);
 		initialize_filiage_manager(p_level);
+		initialize_path_mesh_3d(p_level);
 		ClassDB::register_class<AnimationManager>();
 
 		ClassDB::register_class<DataTableManager>();
@@ -320,7 +322,6 @@ void initialize_game_help_module(ModuleInitializationLevel p_level) {
 		Engine::get_singleton()->add_singleton(Engine::Singleton("DataTableManager", data_table_manager));
 		Engine::get_singleton()->add_singleton(Engine::Singleton("PathManager", path_manager));
 		Engine::get_singleton()->add_singleton(Engine::Singleton("CharacterManager", character_manager));
-
 
 
 		if (Engine::get_singleton())
