@@ -33,6 +33,9 @@
 #include "core/object/script_language.h"
 
 bool RefCounted::init_ref() {
+	if (self_is_destory.is_set()) {
+		return true;
+	}
 	if (reference()) {
 		if (!is_referenced() && refcount_init.unref()) {
 			unreference(); // first referencing is already 1, so compensate for the ref above
@@ -57,6 +60,9 @@ int RefCounted::get_reference_count() const {
 }
 
 bool RefCounted::reference() {
+	if (self_is_destory.is_set()) {
+		return true;
+	}
 	uint32_t rc_val = refcount.refval();
 	bool success = rc_val != 0;
 
@@ -75,8 +81,14 @@ bool RefCounted::reference() {
 }
 
 bool RefCounted::unreference() {
+	if (self_is_destory.is_set()) {
+		return false;
+	}
 	uint32_t rc_val = refcount.unrefval();
 	bool die = rc_val == 0;
+	if (die) {
+		self_is_destory.set();
+	}
 
 	if (rc_val <= 1 /* higher is not relevant */) {
 		if (get_script_instance()) {
@@ -144,7 +156,7 @@ Ref<RefCounted> RefCounted::duplicate(bool p_subresources) const {
 return r;
 }
 RefCounted::RefCounted() :
-		Object(true) {
+		Object(true), self_is_destory(false){
 	refcount.init();
 	refcount_init.init();
 }

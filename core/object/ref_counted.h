@@ -38,6 +38,7 @@ class RefCounted : public Object {
 	GDCLASS(RefCounted, Object);
 	SafeRefCount refcount;
 	SafeRefCount refcount_init;
+	SafeFlag self_is_destory;
 
 protected:
 	static void _bind_methods();

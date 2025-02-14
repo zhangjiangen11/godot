@@ -423,6 +423,7 @@ if (Engine::get_singleton()->is_editor_hint()) {
 	return theme->get_icon(SNAME("Resource"), SNAME("EditorIcons"));
 }
 #endif
+return Ref<Texture2D>();
 }
 
 

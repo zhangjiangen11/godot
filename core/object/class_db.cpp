@@ -2221,7 +2221,12 @@ Variant ClassDB::class_get_default_property_value(const StringName &p_class, con
 			}
 
 			if (cleanup_c) {
-				memdelete(c);
+				Ref<RefCounted> t;
+				t = c;
+				if (t.is_null()) {
+					// 只有非RefCount类型的才能删除,防止中间过程被其他管理器保存了实例,导致出现野指针,
+					memdelete(c);
+				}
 			}
 		}
 

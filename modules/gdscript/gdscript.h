@@ -218,8 +218,8 @@ private:
 	void _get_script_signal_list(List<MethodInfo> *r_list, bool p_include_base) const;
 
 	GDScript *_get_gdscript_from_variant(const Variant &p_variant);
-	void _collect_function_dependencies(GDScriptFunction *p_func, RBSet<GDScript *> &p_dependencies, const GDScript *p_except);
-	void _collect_dependencies(RBSet<GDScript *> &p_dependencies, const GDScript *p_except);
+	void _collect_function_dependencies(GDScriptFunction *p_func, RBSet<Ref<GDScript>>  &p_dependencies, const GDScript *p_except);
+	void _collect_dependencies(RBSet<Ref<GDScript>>  &p_dependencies, const GDScript *p_except);
 
 protected:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
@@ -270,9 +270,9 @@ public:
 	_FORCE_INLINE_ const GDScriptFunction *get_implicit_ready() const { return implicit_ready; }
 	_FORCE_INLINE_ const GDScriptFunction *get_static_initializer() const { return static_initializer; }
 
-	RBSet<GDScript *> get_dependencies();
-	HashMap<GDScript *, RBSet<GDScript *>> get_all_dependencies();
-	RBSet<GDScript *> get_must_clear_dependencies();
+	RBSet<Ref<GDScript>>  get_dependencies();
+	HashMap<GDScript *, RBSet<Ref<GDScript>> > get_all_dependencies();
+	RBSet<Ref<GDScript>>  get_must_clear_dependencies();
 
 	virtual bool has_script_signal(const StringName &p_signal) const override;
 	virtual void get_script_signal_list(List<MethodInfo> *r_signals) const override;
