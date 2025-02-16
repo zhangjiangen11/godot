@@ -412,8 +412,8 @@ void EditorProperty::_notification(int p_what) {
 			} else {
 				color = get_theme_color(is_read_only() ? SNAME("readonly_color") : SNAME("property_color"));
 			}
-			String draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
-			if (draw_label.contains(".")) {
+			String _draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
+			if (_draw_label.contains(".")) {
 				// FIXME: Move this to the project settings editor, as this is only used
 				// for project settings feature tag overrides.
 				color.a = 0.5;
@@ -489,7 +489,7 @@ void EditorProperty::_notification(int p_what) {
 				Ref<Texture2D> pinned_icon = get_editor_theme_icon(SNAME("Pin"));
 				int margin_w = get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
 				int total_icon_w = margin_w + pinned_icon->get_width();
-				int text_w = font->get_string_size(draw_label, rtl ? HORIZONTAL_ALIGNMENT_RIGHT : HORIZONTAL_ALIGNMENT_LEFT, text_limit - total_icon_w, font_size).x;
+				int text_w = font->get_string_size(_draw_label, rtl ? HORIZONTAL_ALIGNMENT_RIGHT : HORIZONTAL_ALIGNMENT_LEFT, text_limit - total_icon_w, font_size).x;
 				int y = (size.height - pinned_icon->get_height()) / 2;
 				if (rtl) {
 					draw_texture(pinned_icon, Vector2(size.width - ofs - text_w - total_icon_w, y), color);
@@ -501,9 +501,9 @@ void EditorProperty::_notification(int p_what) {
 
 			int v_ofs = (size.height - font->get_height(font_size)) / 2;
 			if (rtl) {
-				draw_string(font, Point2(size.width - ofs - text_limit, v_ofs + font->get_ascent(font_size)), draw_label, HORIZONTAL_ALIGNMENT_RIGHT, text_limit, font_size, color);
+				draw_string(font, Point2(size.width - ofs - text_limit, v_ofs + font->get_ascent(font_size)), _draw_label, HORIZONTAL_ALIGNMENT_RIGHT, text_limit, font_size, color);
 			} else {
-				draw_string(font, Point2(ofs, v_ofs + font->get_ascent(font_size)), draw_label, HORIZONTAL_ALIGNMENT_LEFT, text_limit, font_size, color);
+				draw_string(font, Point2(ofs, v_ofs + font->get_ascent(font_size)), _draw_label, HORIZONTAL_ALIGNMENT_LEFT, text_limit, font_size, color);
 			}
 
 			ofs = size.width;
