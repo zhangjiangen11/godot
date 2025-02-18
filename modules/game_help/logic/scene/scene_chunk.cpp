@@ -101,7 +101,15 @@ void SceneChunk::MeshInstance::update_mesh_instance() {
         RenderingServer::get_singleton()->instance_geometry_set_flag(instance, RenderingServer::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, false);
     }
 
-    multimesh->set_instance_count(mesh_transforms.size());
+    int block_count = 0;
+    for(auto& it : blocks) {
+        if(it == nullptr) {
+            continue;
+        }        
+        block_count +=  it->get_instance_count();
+    }
+    multimesh->set_instance_count(mesh_transforms.size() + block_count);
+
     int i = 0;
     mesh_id_maps.clear();
     for(auto& it : mesh_transforms) {
@@ -110,6 +118,21 @@ void SceneChunk::MeshInstance::update_mesh_instance() {
         multimesh->set_instance_custom_data(i,it.value.custom_data);
         mesh_id_maps[it.key] = i;
         ++i;
+    }
+    for(auto& it : blocks) {
+        if(it == nullptr) {
+            continue;
+        }        
+        const LocalVector<Transform3D>& trans =  it->get_transform();
+        const LocalVector<Color>& color = it->get_color() ;
+        const LocalVector<Color>& curstom_colo = it->get_curstom_color() ;
+
+        for(int j = 0; j < trans.size(); j++) {
+            multimesh->set_instance_transform(i,trans[j]);
+            multimesh->set_instance_color(i,color[j]);
+            multimesh->set_instance_custom_data(i,curstom_colo[j]);
+            ++i;
+        }
     }
 }
 void SceneChunk::MeshInstance::set_mesh_transform(int mesh_id,const Transform3D& t) {
@@ -245,6 +268,30 @@ void SceneChunk::remove_multimesh_instance(const String& res_path, int id) {
         mesh_instance->remove_instance(id);
         unuse_id_list.push_back(id);
     }
+}
+void SceneChunk::add_multmesh_instance_block(const String& res_path, const Ref<Foliage::SceneInstanceBlock>& t) {
+
+    Ref<MeshInstance> mesh_instance;
+    if(!mult_mesh_instances.has(res_path)) {
+        Ref<ResourceLoader::LoadToken> token = ResourceLoader::_load_start(res_path,"",ResourceLoader::LOAD_THREAD_FROM_CURRENT, ResourceFormatLoader::CACHE_MODE_IGNORE);
+        if(token.is_null()) {
+            return ;
+        }
+        mesh_instance = Ref<MeshInstance>(memnew(MeshInstance));
+        mesh_instance->load_token = token;
+        mult_mesh_instances[res_path] = mesh_instance;
+    }
+    else {
+        mesh_instance = mult_mesh_instances[res_path];
+    }
+    mesh_instance->blocks.insert(t);
+}
+void SceneChunk::remove_multmesh_instance_block(const String& res_path, const Ref<Foliage::SceneInstanceBlock>& t) {
+    if(mult_mesh_instances.has(res_path)) {
+        Ref<MeshInstance> mesh_instance = mult_mesh_instances[res_path];
+        mesh_instance->blocks.erase(t);
+    }
+
 }
 
 int SceneChunk::add_collision_instance(const Transform3D& t,SceneDataCompoent::CollisionShapeType type,const Vector3& box_size,float height,float radius) {
@@ -384,4 +431,18 @@ void SceneChunk::remove_mesh_collision_instance( int id,const String& p_path) {
             mesh_collision_resource->mesh_transforms.erase(id);
         }
     }   
+}
+
+void SceneChunk::_bind_methods() {
+    ClassDB::bind_method(D_METHOD("add_multimesh_instance","res_path","transform"), &SceneChunk::add_multimesh_instance);
+    ClassDB::bind_method(D_METHOD("remove_multimesh_instance","res_path","id"), &SceneChunk::remove_multimesh_instance);
+    
+    ClassDB::bind_method(D_METHOD("add_collision_instance","transform","type"), &SceneChunk::add_collision_instance);
+    ClassDB::bind_method(D_METHOD("remove_collision_instance","id"), &SceneChunk::remove_collision_instance);
+
+    ClassDB::bind_method(D_METHOD("add_mesh_collision_instance","transform","res_path"), &SceneChunk::add_mesh_collision_instance);
+    ClassDB::bind_method(D_METHOD("remove_mesh_collision_instance","id","res_path"), &SceneChunk::remove_mesh_collision_instance);
+
+    ClassDB::bind_method(D_METHOD("add_multmesh_instance_block","res_path","block"), &SceneChunk::add_multmesh_instance_block);
+    ClassDB::bind_method(D_METHOD("remove_multmesh_instance_block","res_path","block"), &SceneChunk::remove_multmesh_instance_block);
 }

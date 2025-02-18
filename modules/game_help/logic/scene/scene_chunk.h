@@ -2,6 +2,9 @@
 #include "scene/3d/node_3d.h"
 #include "scene/3d/multimesh_instance_3d.h"
 #include "scene/resources/3d/shape_3d.h"
+#include "../../foliage_manager/foliage_cell_asset.h"
+
+
 class SceneChunk;
 class SceneChunkGroupInstance;
 class MeshCollisionResource : public Resource{
@@ -268,7 +271,7 @@ public:
 
 class SceneChunk : public Node3D {
     GDCLASS(SceneChunk, Node3D);
-    static void _bind_methods() {}
+	static void _bind_methods();
 
 public:
     SceneChunk() {}
@@ -286,6 +289,9 @@ public:
     
     int add_mesh_collision_instance(const Transform3D& t,const String& p_path) ;
     void remove_mesh_collision_instance( int id,const String& p_path) ;
+
+    void add_multmesh_instance_block(const String& res_path, const Ref<Foliage::SceneInstanceBlock>& t) ;
+    void remove_multmesh_instance_block(const String& res_path, const Ref<Foliage::SceneInstanceBlock>& t) ;
 
     int get_free_id() {
         int id = 0;
@@ -348,6 +354,8 @@ public:
         ObjectID mult_mesh_instances_id;
         HashMap<int32_t,MeshInstanceInfo> mesh_transforms;
         HashMap<int32_t,int32_t> mesh_id_maps;
+        // 自定义的数据块
+        RBSet<Ref<Foliage::SceneInstanceBlock>> blocks;
         RID instance;
         Ref<MultiMesh> multimesh;
         Ref<ResourceLoader::LoadToken> load_token;
@@ -393,3 +401,4 @@ public:
 
     LocalVector<Ref<SceneChunkResource>> chunk;
 };
+VARIANT_ENUM_CAST(SceneDataCompoent::CollisionShapeType)

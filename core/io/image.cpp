@@ -4367,3 +4367,60 @@ Dictionary Image::compute_image_metrics(const Ref<Image> p_compared_image, bool 
 	result["peak_snr"] = image_metric_peak_snr;
 	return result;
 }
+
+Vector3 Image::get_height_map_normal(int x, int z,float p_scale_height, float stepX, float stepZ) const {
+	
+	Vector3 p0(x * stepX, get_pixel(x,z).r * p_scale_height, z * stepZ);
+	Vector3 sumNormal(0, 0, 0);
+	Vector3 normals = Vector3(0,0,0);
+	int validTriangleCount = 0;
+
+
+	// 左上三角形
+	if (x > 0 && z > 0) {
+		Vector3 pLeft((x - 1) * stepX, get_pixel(x - 1, z).r * p_scale_height, z * stepZ);
+		Vector3 pTop(x * stepX, get_pixel(x, z - 1).r * p_scale_height, (z - 1) * stepZ);
+		Vector3 normal = (pLeft - p0).cross(pTop - p0);
+		normal.normalize();
+		sumNormal = sumNormal + normal;
+		validTriangleCount++;
+	}
+
+	// 右上三角形
+	if (x < width - 1 && z > 0) {
+		Vector3 pRight((x + 1) * stepX, get_pixel(x + 1, z).r * p_scale_height, z * stepZ);
+		Vector3 pTop(x * stepX, get_pixel(x, z - 1).r * p_scale_height, (z - 1) * stepZ);
+		Vector3 normal = (pTop - p0).cross(pRight - p0);
+		normal.normalize();
+		sumNormal = sumNormal + normal;
+		validTriangleCount++;
+	}
+
+	// 右下三角形
+	if (x < width - 1 && z < height - 1) {
+		Vector3 pRight((x + 1) * stepX, get_pixel(x + 1, z).r * p_scale_height, z * stepZ);
+		Vector3 pBottom(x * stepX, get_pixel(x, z + 1).r * p_scale_height, (z + 1) * stepZ);
+		Vector3 normal = (pRight - p0).cross(pBottom - p0);
+		normal.normalize();
+		sumNormal = sumNormal + normal;
+		validTriangleCount++;
+	}
+
+	// 左下三角形
+	if (x > 0 && z < height - 1) {
+		Vector3 pLeft((x - 1) * stepX, get_pixel(x - 1, z).r * p_scale_height, z * stepZ);
+		Vector3 pBottom(x * stepX, get_pixel(x, z + 1).r * p_scale_height, (z + 1) * stepZ);
+		Vector3 normal = (pBottom - p0).cross(pLeft - p0);
+		normal.normalize();
+		sumNormal = sumNormal + normal;
+		validTriangleCount++;
+	}
+
+	if (validTriangleCount > 0) {
+		sumNormal.normalize();
+	}
+	else {
+		sumNormal = Vector3(0, 1, 0);
+	}
+	return normals;
+}

@@ -17,6 +17,32 @@
 
 namespace Foliage
 {
+	class SceneInstanceBlock : public RefCounted{
+		GDCLASS(SceneInstanceBlock, RefCounted);
+	  public:
+	  
+		  void set_instance_count(int p_instance_count) { 
+			  transform.resize(p_instance_count); 
+			  color.resize(p_instance_count);
+			  curstom_color.resize(p_instance_count);
+		  }
+		  int get_instance_count() const { return transform.size(); }
+	  
+		  const LocalVector<Transform3D>& get_transform() const { return transform; }
+		  const LocalVector<Color>& get_color() const { return color; }
+		  const LocalVector<Color>& get_curstom_color() const { return curstom_color; }
+		  
+		  void add_instance(const Transform3D& p_transform, const Color& p_color, const Color& p_curstom_color) {
+			  transform.push_back(p_transform);
+			  color.push_back(p_color);
+			  curstom_color.push_back(p_curstom_color);
+		  }
+	  
+		  
+		  LocalVector<Transform3D> transform;
+		  LocalVector<Color> color;
+		  LocalVector<Color> curstom_color;
+	  };
     class FoliageGlobals
     {
 		/// <summary>
@@ -303,7 +329,7 @@ namespace Foliage
 			/// </summary>
 			/// <param name="_cellPos"></param>
 			/// <returns></returns>
-			Vector3 Decompress(FoliageCellPos& _cellPos)
+			Vector3 Decompress(const FoliageCellPos& _cellPos) const
 			{
 				Vector3 _result;
 				_result.x = FoliageGlobals::CELL_SIZE * ((float)x / 32767 + _cellPos.x);
@@ -316,7 +342,7 @@ namespace Foliage
 			/// </summary>
 			/// <param name="_cellPos"></param>
 			/// <returns></returns>
-			Vector3 DecompressLocal()
+			Vector3 DecompressLocal() const
 			{
 				Vector3 _result;
 				_result.x = FoliageGlobals::CELL_SIZE * ((float)x / 32767 );
@@ -352,7 +378,7 @@ namespace Foliage
 			/// 获取解压后的角度
 			/// </summary>
 			/// <returns></returns>
-			Quaternion Decompress()
+			Quaternion Decompress() const
 			{
 				return Quaternion(x / 255.0f * 2.0f - 1.0f, y / 255.0f * 2.0f - 1.0f,
 					z / 255.0f * 2.0f - 1.0f, w / 255.0f * 2.0f - 1.0f);
@@ -381,7 +407,7 @@ namespace Foliage
 			/// 获取解压后的缩放
 			/// </summary>
 			/// <returns></returns>
-			Vector3 Decompress()
+			Vector3 Decompress() const
 			{
 				return Vector3(x, y, z);
 			}
@@ -427,7 +453,8 @@ namespace Foliage
 			/// <summary>
 			/// 实例所在地表颜色,alpha通道保存实例距离地形道路的衰减因子
 			/// </summary>
-			color32 color;
+			Color color;
+			Color custom_color;
 
 			/// <summary>
 			/// 材质渲染索引
@@ -460,13 +487,25 @@ namespace Foliage
                 s.y = file->get_float();
                 s.z = file->get_float();
 
-                file->get_buffer((uint8_t*)&color, 4);
+				color.r = file->get_float();
+				color.g = file->get_float();
+				color.b = file->get_float();
+				color.a = file->get_float();
+
+				custom_color.r = file->get_float();
+				custom_color.g = file->get_float();
+				custom_color.b = file->get_float();
+				custom_color.a = file->get_float();
 
                 materialRenderIndex = file->get_32();
                 renderGroupID = file->get_16();
                 renderLodID = file->get_16();
             }
 
+			void create_transform(const FoliageCellPos& p_cell_pos,Transform3D& _transform) const{
+				_transform.origin = p.Decompress(p_cell_pos);
+				_transform.basis = Basis(r.Decompress(), s.Decompress());
+			}
 
 			static int Compare(InstanceData& _left, InstanceData& _right)
 			{
@@ -477,6 +516,7 @@ namespace Foliage
 					delta_ = Math::fast_ftoi(_left.p.y - _right.p.y);
 				return delta_;
 			}
+
 		};
 
 		/// <summary>
@@ -598,6 +638,23 @@ namespace Foliage
                 }
 
             }
+			Ref<SceneInstanceBlock> create_instance_block(const FoliageCellPos& cell_position, int proto_type_index,int render_level) {
+				if(proto_type_index >= prototypes.size())
+				{
+					return Ref<SceneInstanceBlock>();
+				}
+				const PrototypeData& prototype = prototypes[proto_type_index];
+				Ref<SceneInstanceBlock> block = memnew(SceneInstanceBlock);
+				Transform3D transform;
+				for(int i = prototype.instanceRange.x; i < prototype.instanceRange.y; i++)
+				{
+					const InstanceData& instance = instances[i];
+					if(instance.renderLodID <= render_level) {
+						instance.create_transform(position,transform);
+						block->add_instance(transform,instance.color,instance.custom_color);
+					}
+				}
+			}
             void clear()
             {
                 index = 0;
@@ -640,6 +697,7 @@ namespace Foliage
 		{
 			region_offset = Vector2i(_x, _z);
 		}
+		Ref<SceneInstanceBlock> create_instance_block(int cell_index,int proto_type_index,int render_level) ;
 	protected:
         void load_imp(Ref<FileAccess> & file,uint32_t version,bool is_big_endian) override;
 		/// <summary>
