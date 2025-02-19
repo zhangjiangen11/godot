@@ -654,8 +654,6 @@ private:
 	uint32_t _edited_version = 0;
 	HashSet<String> editor_section_folding;
 #endif
-	StringName master_script_name;
-	ScriptInstance *master_script_instance = nullptr;
 	ScriptInstance *script_instance = nullptr;
 	Variant script; // Reference does not exist yet, store it in a Variant.
 	HashMap<StringName, Variant> metadata;
@@ -930,13 +928,9 @@ public:
 	// This function is used to check when something changed beyond a point, it's used mainly for generating previews.
 	uint32_t get_edited_version() const;
 #endif
-	void set_master_script(StringName name);
-	StringName get_master_script()const{return master_script_name;}
 
 	void set_script_instance(ScriptInstance *p_instance);
 	_FORCE_INLINE_ ScriptInstance *get_script_instance() const { return script_instance; }
-	void set_master_script_instance(ScriptInstance *p_instance);
-	_FORCE_INLINE_ ScriptInstance *get_master_script_instance() const { return master_script_instance; }
 
 	// Some script languages can't control instance creation, so this function eases the process.
 	void set_script_and_instance(const Variant &p_script, ScriptInstance *p_instance);
@@ -1060,8 +1054,6 @@ class ObjectDB {
 
 public:
 	typedef void (*DebugFunc)(Object *p_obj);
-	typedef void (*CreateMasterFunc)(Object *p_obj,StringName name);
-	static CreateMasterFunc s_create_master_func;
 
 	_ALWAYS_INLINE_ static Object *get_instance(ObjectID p_instance_id) {
 		uint64_t id = p_instance_id;

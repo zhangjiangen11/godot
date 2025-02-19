@@ -60,6 +60,7 @@ void MeshInstance3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 	p_gizmo->clear();
 
 	Ref<Mesh> m = mesh->get_mesh();
+
 	if (m.is_null()) {
 		return; //none
 	}

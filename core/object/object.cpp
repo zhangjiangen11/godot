@@ -260,15 +260,6 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 
 	_edited = true;
 #endif
-	if(master_script_instance)
-	{
-		if (master_script_instance->set(p_name, p_value)) {
-			if (r_valid) {
-				*r_valid = true;
-			}
-			return;
-		}
-	}
 
 	if (script_instance) {
 		if (script_instance->set(p_name, p_value)) {
@@ -293,13 +284,6 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 		if (ClassDB::set_property(this, p_name, p_value, r_valid)) {
 			return;
 		}
-	}
-	if(p_name == CoreStringNames::get_singleton()->_master_script) {
-		set_master_script(p_value);
-		if (r_valid) {
-			*r_valid = true;
-		}
-		return;
 	}
 
 	if (p_name == CoreStringName(script)) {
@@ -356,15 +340,6 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 
 Variant Object::get(const StringName &p_name, bool *r_valid) const {
 	Variant ret;
-	if(master_script_instance)
-	{
-		if (master_script_instance->get(p_name, ret)) {
-			if (r_valid) {
-				*r_valid = true;
-			}
-			return ret;
-		}
-	}
 
 	if (script_instance) {
 		if (script_instance->get(p_name, ret)) {
@@ -391,13 +366,6 @@ Variant Object::get(const StringName &p_name, bool *r_valid) const {
 			}
 			return ret;
 		}
-	}
-	if (p_name == CoreStringNames::get_singleton()->_master_script) {
-		ret = get_master_script();
-		if (r_valid) {
-			*r_valid = true;
-		}
-		return ret;
 	}
 
 	if (p_name == CoreStringName(script)) {
@@ -573,9 +541,6 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 
 	if (!is_class("Script")) { // can still be set, but this is for user-friendliness
 		p_list->push_back(PropertyInfo(Variant::OBJECT, "script", PROPERTY_HINT_RESOURCE_TYPE, "Script", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
-		
-		// lua 配置
-		//p_list->push_back(PropertyInfo(Variant::STRING_NAME, "master_script", PROPERTY_HINT_RESOURCE_TYPE, "Lua Table Name", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
 	}
 
 	if (script_instance && !p_reversed) {
@@ -717,9 +682,7 @@ bool Object::has_method(const StringName &p_method) const {
 	if (p_method == CoreStringName(free_)) {
 		return true;
 	}
-	if(master_script_instance && master_script_instance->has_method(p_method)) {
-		return true;
-	}
+
 	if (script_instance && script_instance->has_method(p_method)) {
 		return true;
 	}
@@ -832,12 +795,7 @@ Variant Object::callp(const StringName &p_method, const Variant **p_args, int p_
 	r_error.error = Callable::CallError::CALL_OK;
 
 	if (p_method == CoreStringName(free_)) {
-		// 执行一下退出函数
-		if(master_script_instance) {
-			OBJ_DEBUG_LOCK
-			master_script_instance->callp(p_method, p_args, p_argcount, r_error);
-		}
-		//free must be here, before anything, always ready
+//free must be here, before anything, always ready
 #ifdef DEBUG_ENABLED
 		if (p_argcount != 0) {
 			r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
@@ -864,24 +822,6 @@ Variant Object::callp(const StringName &p_method, const Variant **p_args, int p_
 
 	Variant ret;
 	OBJ_DEBUG_LOCK
-
-	if(master_script_instance) {
-		ret = master_script_instance->callp(p_method, p_args, p_argcount, r_error);
-		//force jumptable
-		switch (r_error.error) {
-			case Callable::CallError::CALL_OK:
-				return ret;
-			case Callable::CallError::CALL_ERROR_INVALID_METHOD:
-				break;
-			case Callable::CallError::CALL_ERROR_INVALID_ARGUMENT:
-			case Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS:
-			case Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS:
-			case Callable::CallError::CALL_ERROR_METHOD_NOT_CONST:
-				return ret;
-			case Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL: {
-			}
-		}
-	}
 
 	if (script_instance) {
 		ret = script_instance->callp(p_method, p_args, p_argcount, r_error);
@@ -926,25 +866,6 @@ Variant Object::call_const(const StringName &p_method, const Variant **p_args, i
 	Variant ret;
 	OBJ_DEBUG_LOCK
 
-	if (master_script_instance) {
-		ret = master_script_instance->call_const(p_method, p_args, p_argcount, r_error);
-		//force jumptable
-		switch (r_error.error) {
-			case Callable::CallError::CALL_OK:
-				return ret;
-			case Callable::CallError::CALL_ERROR_INVALID_METHOD:
-				break;
-			case Callable::CallError::CALL_ERROR_METHOD_NOT_CONST:
-				break;
-			case Callable::CallError::CALL_ERROR_INVALID_ARGUMENT:
-			case Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS:
-			case Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS:
-				return ret;
-			case Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL: {
-			}
-		}
-	}
-
 	if (script_instance) {
 		ret = script_instance->call_const(p_method, p_args, p_argcount, r_error);
 		//force jumptable
@@ -982,7 +903,6 @@ Variant Object::call_const(const StringName &p_method, const Variant **p_args, i
 }
 
 void Object::notification(int p_notification, bool p_reversed) {
-
 	if (p_reversed) {
 		if (script_instance) {
 			script_instance->notification(p_notification, p_reversed);
@@ -1070,20 +990,6 @@ void Object::set_script(const Variant &p_script) {
 	emit_signal(CoreStringName(script_changed));
 }
 
-
-void Object::set_master_script(StringName name)
-{
-	master_script_name = name;
-	if(ObjectDB::s_create_master_func != nullptr)
-	{
-		set_master_script_instance(nullptr);
-		if(name == StringName()) {
-			return;
-		}
-		(*ObjectDB::s_create_master_func)(this,name);
-	}
-}
-
 void Object::set_script_instance(ScriptInstance *p_instance) {
 	if (script_instance == p_instance) {
 		return;
@@ -1102,16 +1008,6 @@ void Object::set_script_instance(ScriptInstance *p_instance) {
 	}
 }
 
-void Object::set_master_script_instance(ScriptInstance *p_instance)
-{
-	if (master_script_instance == p_instance) {
-		return;
-	}
-	if(master_script_instance) {
-		memdelete(master_script_instance);
-	}
-	master_script_instance = p_instance;
-}
 Variant Object::get_script() const {
 	return script;
 }
@@ -1877,9 +1773,6 @@ void Object::_bind_methods() {
 
 	ClassDB::add_virtual_method("Object", MethodInfo("free"), false);
 
-	ClassDB::bind_method(D_METHOD("set_master_script", "script"), &Object::set_master_script);
-	ClassDB::bind_method(D_METHOD("get_master_script"), &Object::get_master_script);
-
 	ADD_SIGNAL(MethodInfo("script_changed"));
 	ADD_SIGNAL(MethodInfo("property_list_changed"));
 
@@ -2244,12 +2137,6 @@ void Object::detach_from_objectdb() {
 }
 
 Object::~Object() {
-	
-	if(master_script_instance) {
-		memdelete(master_script_instance);
-	}
-	master_script_instance = nullptr;
-
 	if (script_instance) {
 		memdelete(script_instance);
 	}
@@ -2396,7 +2283,7 @@ void Object::get_argument_options(const StringName &p_function, int p_idx, List<
 	}
 }
 #endif
-ObjectDB::CreateMasterFunc ObjectDB::s_create_master_func = nullptr;
+
 SpinLock ObjectDB::spin_lock;
 uint32_t ObjectDB::slot_count = 0;
 uint32_t ObjectDB::slot_max = 0;

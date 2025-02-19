@@ -91,16 +91,15 @@ private:
 		uint32_t distance = 0;
 
 		while (true) {
-			auto& h = hashes[pos];
-			if (h == EMPTY_HASH) {
+			if (hashes[pos] == EMPTY_HASH) {
 				return false;
 			}
 
-			if (distance > _get_probe_length(pos, h, capacity, capacity_inv)) {
+			if (distance > _get_probe_length(pos, hashes[pos], capacity, capacity_inv)) {
 				return false;
 			}
 
-			if (h == hash && Comparator::compare(keys[hash_to_key[pos]], p_key)) {
+			if (hashes[pos] == hash && Comparator::compare(keys[hash_to_key[pos]], p_key)) {
 				r_pos = hash_to_key[pos];
 				return true;
 			}
@@ -119,19 +118,18 @@ private:
 		uint32_t pos = fastmod(hash, capacity_inv, capacity);
 
 		while (true) {
-			auto& h = hashes[pos];
-			if (h == EMPTY_HASH) {
-				h = hash;
+			if (hashes[pos] == EMPTY_HASH) {
+				hashes[pos] = hash;
 				key_to_hash[index] = pos;
 				hash_to_key[pos] = index;
 				return pos;
 			}
 
 			// Not an empty slot, let's check the probing length of the existing one.
-			uint32_t existing_probe_len = _get_probe_length(pos, h, capacity, capacity_inv);
+			uint32_t existing_probe_len = _get_probe_length(pos, hashes[pos], capacity, capacity_inv);
 			if (existing_probe_len < distance) {
 				key_to_hash[index] = pos;
-				SWAP(hash, h);
+				SWAP(hash, hashes[pos]);
 				SWAP(index, hash_to_key[pos]);
 				distance = existing_probe_len;
 			}

@@ -767,7 +767,6 @@ void SceneImportSettingsDialog::open_settings(const String &p_path, const String
 			}
 		}
 	}
-	
 
 	scene = ResourceImporterScene::get_scene_singleton()->pre_import(p_path, defaults); // Use the scene singleton here because we want to see the full thing.
 	if (scene == nullptr) {

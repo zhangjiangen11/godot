@@ -295,7 +295,7 @@ namespace embree
     if (nIds >= 1) __cpuid (cpuid_leaf_1,0x00000001);
 #if _WIN32
 #if _MSC_VER && (_MSC_FULL_VER < 160040219)
-#else
+#elif defined(_MSC_VER)
     if (nIds >= 7) __cpuidex(cpuid_leaf_7,0x00000007,0);
 #endif
 #else
@@ -344,19 +344,6 @@ namespace embree
     if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512VL  ) cpu_features |= CPU_FEATURE_AVX512VL;
     if (cpuid_leaf_7[ECX] & CPU_FEATURE_BIT_AVX512VBMI) cpu_features |= CPU_FEATURE_AVX512VBMI;
 
-#if defined(__MACOSX__)
-    if (   (cpu_features & CPU_FEATURE_AVX512F)
-        || (cpu_features & CPU_FEATURE_AVX512DQ)
-        || (cpu_features & CPU_FEATURE_AVX512CD)
-        || (cpu_features & CPU_FEATURE_AVX512BW)
-        || (cpu_features & CPU_FEATURE_AVX512VL) )
-      {
-        // on macOS AVX512 will be enabled automatically by the kernel when the first AVX512 instruction is called
-        // see https://github.com/apple/darwin-xnu/blob/0a798f6738bc1db01281fc08ae024145e84df927/osfmk/i386/fpu.c#L176
-        // therefore we ignore the state of XCR0
-        cpu_features |= CPU_FEATURE_ZMM_ENABLED;
-      }
-#endif
     return cpu_features;
 
 #elif defined(__ARM_NEON) || defined(__EMSCRIPTEN__)

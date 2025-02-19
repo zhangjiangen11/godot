@@ -287,15 +287,13 @@ RTC_NAMESPACE_BEGIN;
     RTC_CATCH_BEGIN;
     RTC_TRACE(rtcGetSceneFlags);
     RTC_VERIFY_HANDLE(hscene);
-    //RTC_ENTER_DEVICE(hscene);
+    RTC_ENTER_DEVICE(hscene);
     return scene->getSceneFlags();
     RTC_CATCH_END2(scene);
     return RTC_SCENE_FLAG_NONE;
   }
-
-  RTC_API_EXTERN_C bool prefetchUSMSharedOnGPU(RTCScene scene);
-
-  RTC_API void rtcCommitScene (RTCScene hscene)
+  
+  RTC_API void rtcCommitScene (RTCScene hscene) 
   {
     Scene* scene = (Scene*) hscene;
     RTC_CATCH_BEGIN;
@@ -303,11 +301,6 @@ RTC_NAMESPACE_BEGIN;
     RTC_VERIFY_HANDLE(hscene);
     RTC_ENTER_DEVICE(hscene);
     scene->commit(false);
-
-#if defined(EMBREE_SYCL_SUPPORT)
-    prefetchUSMSharedOnGPU(hscene);
-#endif
-
     RTC_CATCH_END2(scene);
   }
 

@@ -49,10 +49,6 @@ struct DictionaryPrivate {
 	Variant *typed_fallback = nullptr; // Allows a typed dictionary to return dummy values when attempting an invalid access.
 };
 
-void* Dictionary::get_raw_hash()
-{
-	return &_p->variant_map;
-}
 void Dictionary::get_key_list(List<Variant> *p_keys) const {
 	if (_p->variant_map.is_empty()) {
 		return;
@@ -323,7 +319,7 @@ Dictionary Dictionary::merged(const Dictionary &p_dictionary, bool p_overwrite) 
 }
 
 void Dictionary::_unref() const {
-	if (_p) {
+	if (_p == nullptr) {
 		return;
 	}
 	if (_p->refcount.unref()) {
@@ -713,15 +709,19 @@ Dictionary::Dictionary(const Dictionary &p_from) {
 	_p = nullptr;
 	_ref(p_from);
 }
-Dictionary::Dictionary(std::initializer_list<KeyValue<Variant,Variant>> p_from)
-{		
-	for (auto&& item : p_from)
-		(*this)[item.key] = item.value;
-}
 
 Dictionary::Dictionary() {
 	_p = memnew(DictionaryPrivate);
 	_p->refcount.init();
+}
+
+Dictionary::Dictionary(std::initializer_list<KeyValue<Variant, Variant>> p_init) {
+	_p = memnew(DictionaryPrivate);
+	_p->refcount.init();
+
+	for (const KeyValue<Variant, Variant> &E : p_init) {
+		operator[](E.key) = E.value;
+	}
 }
 
 Dictionary::~Dictionary() {

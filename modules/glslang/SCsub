@@ -54,6 +54,7 @@ if env["builtin_glslang"]:
         "SPIRV/SPVRemapper.cpp",
         "SPIRV/SpvTools.cpp",
     ]
+
     if env["platform"] == "windows":
         thirdparty_sources.append("glslang/OSDependent/Windows/ossource.cpp")
     else:
@@ -69,6 +70,7 @@ if env["builtin_glslang"]:
     else:
         env_glslang.Prepend(CPPPATH=[thirdparty_dir, "#thirdparty"])
 
+    env_glslang.Append(CPPDEFINES=["ENABLE_OPT=0"])
 
     env_thirdparty = env_glslang.Clone()
     env_thirdparty.disable_warnings()
@@ -85,4 +87,3 @@ env.modules_sources += module_obj
 
 # Needed to force rebuilding the module files when the thirdparty library is updated.
 env.Depends(module_obj, thirdparty_obj)
-

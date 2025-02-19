@@ -105,7 +105,7 @@ enum opcode {
 struct opcode_t
 {
     instr           impl[2];
-    uint8_t           param_sz;
+    uint8           param_sz;
     char            name[MAX_NAME_LEN];
 };
 

@@ -320,6 +320,7 @@ public:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 	virtual void _validate_property(PropertyInfo &p_property) const override;
 	void _notification(int p_what);
+
 	static void _bind_methods();
 
 	virtual void _set_active(bool p_active) override;

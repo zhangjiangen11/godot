@@ -47,7 +47,7 @@ struct regbank  {
     SlotMap       & smap;
     slotref * const map_base;
     const instr * & ip;
-    uint8_t           direction;
+    uint8           direction;
     int8            flags;
     Machine::status_t & status;
 };

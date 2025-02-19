@@ -5359,10 +5359,10 @@ void TParseContext::storage16BitAssignmentCheck(const TSourceLoc& loc, const TTy
         requireInt8Arithmetic(loc, op, "can't use with arrays containing int8");
 
     if (type.getBasicType() == EbtStruct && containsFieldWithBasicType(type, EbtUint8))
-        requireInt8Arithmetic(loc, op, "can't use with structs containing uint8_t");
+        requireInt8Arithmetic(loc, op, "can't use with structs containing uint8");
 
     if (type.isArray() && type.getBasicType() == EbtUint8)
-        requireInt8Arithmetic(loc, op, "can't use with arrays containing uint8_t");
+        requireInt8Arithmetic(loc, op, "can't use with arrays containing uint8");
 }
 
 void TParseContext::specializationCheck(const TSourceLoc& loc, const TType& type, const char* op)

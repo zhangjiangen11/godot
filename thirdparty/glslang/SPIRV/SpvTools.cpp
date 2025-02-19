@@ -43,7 +43,7 @@
 #include <iostream>
 
 #include "SpvTools.h"
-#include "thirdparty/spirv-tools/include/spirv-tools/optimizer.hpp"
+#include "spirv-tools/optimizer.hpp"
 
 namespace glslang {
 

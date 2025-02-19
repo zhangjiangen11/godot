@@ -297,8 +297,6 @@
 #include "scene/3d/xr_face_modifier_3d.h"
 #include "scene/3d/xr_hand_modifier_3d.h"
 #include "scene/3d/xr_nodes.h"
-
-
 #include "scene/animation/root_motion_view.h"
 #include "scene/resources/3d/box_shape_3d.h"
 #include "scene/resources/3d/capsule_shape_3d.h"
@@ -371,7 +369,6 @@ void register_scene_types() {
 
 	GDREGISTER_CLASS(Object);
 
-	GDREGISTER_CLASS(NodeComponent);
 	GDREGISTER_CLASS(Node);
 	GDREGISTER_VIRTUAL_CLASS(MissingNode);
 	GDREGISTER_ABSTRACT_CLASS(InstancePlaceholder);

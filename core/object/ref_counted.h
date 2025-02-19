@@ -153,7 +153,6 @@ public:
 		ref_pointer<false>(Object::cast_to<T>(object));
 	}
 
-	
 	template <typename T_Other>
 	void reference_ptr(T_Other *p_ptr) {
 		if (reference == p_ptr) {

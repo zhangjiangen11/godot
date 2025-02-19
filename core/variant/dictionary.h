@@ -35,8 +35,6 @@
 #include "core/templates/list.h"
 #include "core/templates/pair.h"
 #include "core/variant/array.h"
-#include "core/templates/pair.h"
-#include <initializer_list>
 
 class Variant;
 
@@ -63,7 +61,6 @@ public:
 	Variant get_valid(const Variant &p_key) const;
 	Variant get(const Variant &p_key, const Variant &p_default) const;
 	Variant get_or_add(const Variant &p_key, const Variant &p_default);
-	void* get_raw_hash();
 	bool set(const Variant &p_key, const Variant &p_value);
 
 	int size() const;

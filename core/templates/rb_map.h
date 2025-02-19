@@ -34,7 +34,6 @@
 #include "core/error/error_macros.h"
 #include "core/os/memory.h"
 #include "core/templates/pair.h"
-#include <initializer_list>
 
 #include <initializer_list>
 

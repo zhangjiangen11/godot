@@ -37,8 +37,6 @@
 class ConfigFile;
 class EditorPlugin;
 class EditorUndoRedoManager;
-class Script;
-class EditorContextMenuPlugin;
 class PopupMenu;
 
 /**

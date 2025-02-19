@@ -591,8 +591,6 @@ Patches:
 See `linuxbsd_headers/README.md`.
 
 
-<<<<<<< HEAD
-=======
 ## manifold
 
 - Upstream: https://github.com/elalish/manifold
@@ -605,7 +603,6 @@ File extracted from upstream source:
 - `AUTHORS`, `LICENSE`
 
 
->>>>>>> godotengine-master
 ## mbedtls
 
 - Upstream: https://github.com/Mbed-TLS/mbedtls

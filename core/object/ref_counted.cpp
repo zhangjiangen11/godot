@@ -86,9 +86,6 @@ bool RefCounted::unreference() {
 	}
 	uint32_t rc_val = refcount.unrefval();
 	bool die = rc_val == 0;
-	if (die) {
-		self_is_destory.set();
-	}
 
 	if (rc_val <= 1 /* higher is not relevant */) {
 		if (get_script_instance()) {
@@ -101,6 +98,9 @@ bool RefCounted::unreference() {
 
 		bool binding_ret = _instance_binding_reference(false);
 		die = die && binding_ret;
+	}
+	if (die) {
+		self_is_destory.set();
 	}
 
 	return die;

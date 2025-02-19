@@ -61,8 +61,8 @@ struct HashMapElement {
 	HashMapElement(const TKey &p_key, const TValue &p_value) :
 			data(p_key, p_value) {}
 };
-bool _hashmap_variant_less_than(const Variant &p_left, const Variant &p_right);
 
+bool _hashmap_variant_less_than(const Variant &p_left, const Variant &p_right);
 
 template <typename TKey, typename TValue,
 		typename Hasher = HashMapHasherDefault,
@@ -111,16 +111,15 @@ private:
 		uint32_t distance = 0;
 
 		while (true) {
-			auto& h = hashes[pos];
-			if (h == EMPTY_HASH) {
+			if (hashes[pos] == EMPTY_HASH) {
 				return false;
 			}
 
-			if (distance > _get_probe_length(pos, h, capacity, capacity_inv)) {
+			if (distance > _get_probe_length(pos, hashes[pos], capacity, capacity_inv)) {
 				return false;
 			}
 
-			if (h == hash && Comparator::compare(elements[pos]->data.key, p_key)) {
+			if (hashes[pos] == hash && Comparator::compare(elements[pos]->data.key, p_key)) {
 				r_pos = pos;
 				return true;
 			}
@@ -139,10 +138,9 @@ private:
 		uint32_t pos = fastmod(hash, capacity_inv, capacity);
 
 		while (true) {
-			auto& h = hashes[pos];
-			if (h == EMPTY_HASH) {
+			if (hashes[pos] == EMPTY_HASH) {
 				elements[pos] = value;
-				h = hash;
+				hashes[pos] = hash;
 
 				num_elements++;
 
@@ -150,9 +148,9 @@ private:
 			}
 
 			// Not an empty slot, let's check the probing length of the existing one.
-			uint32_t existing_probe_len = _get_probe_length(pos, h, capacity, capacity_inv);
+			uint32_t existing_probe_len = _get_probe_length(pos, hashes[pos], capacity, capacity_inv);
 			if (existing_probe_len < distance) {
-				SWAP(hash, h);
+				SWAP(hash, hashes[pos]);
 				SWAP(value, elements[pos]);
 				distance = existing_probe_len;
 			}
@@ -407,6 +405,7 @@ public:
 		num_elements--;
 		return true;
 	}
+
 	// Replace the key of an entry in-place, without invalidating iterators or changing the entries position during iteration.
 	// p_old_key must exist in the map and p_new_key must not, unless it is equal to p_old_key.
 	bool replace_key(const TKey &p_old_key, const TKey &p_new_key) {

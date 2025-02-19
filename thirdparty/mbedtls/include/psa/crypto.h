@@ -58,7 +58,6 @@ extern "C" {
 /* The file "crypto_values.h" declares macros to build and analyze values
  * of integral types defined in "crypto_types.h". */
 #include "crypto_values.h"
-#include "crypto_struct.h"
 
 /** \defgroup initialization Library initialization
  * @{

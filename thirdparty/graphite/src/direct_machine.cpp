@@ -58,7 +58,7 @@ const void * direct_run(const bool          get_table_mode,
                         const byte        * data,
                         Machine::stack_t  * stack,
                         slotref         * & __map,
-                        uint8_t                _dir,
+                        uint8                _dir,
                         Machine::status_t & status,
                         SlotMap           * __smap=0)
 {
@@ -78,7 +78,7 @@ const void * direct_run(const bool          get_table_mode,
     slotref                 is = *__map,
                          * map = __map,
                   * const mapb = smap.begin()+smap.context();
-    uint8_t                  dir = _dir;
+    uint8                  dir = _dir;
     int8                 flags = 0;
 
     // start the program

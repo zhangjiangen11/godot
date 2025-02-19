@@ -794,7 +794,7 @@ bool FileSystemDock::_update_filtered_items(TreeItem *p_tree_item) {
 }
 
 void FileSystemDock::navigate_to_path(const String &p_path) {
-
+	file_list_search_box->clear();
 	_navigate_to_path(p_path);
 
 	// Ensure that the FileSystem dock is visible.

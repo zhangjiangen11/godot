@@ -826,8 +826,7 @@ namespace embree
     );
 
 #if defined(EMBREE_SYCL_SUPPORT)
-    DeviceGPU* gpu_device = dynamic_cast<DeviceGPU*>(device);
-    if (gpu_device)
+    if (DeviceGPU* gpu_device = dynamic_cast<DeviceGPU*>(device))
       build_gpu_accels();
     else
 #endif
