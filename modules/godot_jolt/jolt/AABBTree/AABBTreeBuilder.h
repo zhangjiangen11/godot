@@ -95,6 +95,9 @@ public:
 	};
 
 	/// Constructor
+	AABBTreeBuilder() {
+
+	}
 							AABBTreeBuilder(TriangleSplitter &inSplitter, uint inMaxTrianglesPerLeaf = 16);
 
 	/// Recursively build tree, returns the root node of the tree
@@ -106,11 +109,20 @@ public:
 	/// Get all triangles
 	const Array<IndexedTriangle> &GetTriangles() const				{ return mTriangles; }
 
+	void Reset(TriangleSplitter &inSplitter, uint inMaxTrianglesPerLeaf = 16) {
+		mTriangleSplitter = &inSplitter;
+		mMaxTrianglesPerLeaf = inMaxTrianglesPerLeaf;
+		mNodes.clear();
+		mTriangles.clear();
+	}
+	static AABBTreeBuilder* Get(TriangleSplitter &inSplitter, uint inMaxTrianglesPerLeaf = 16) ;
+
+	static void Return(AABBTreeBuilder* builder) ;
 private:
 	uint					BuildInternal(const TriangleSplitter::Range &inTriangles);
 
-	TriangleSplitter &		mTriangleSplitter;
-	const uint				mMaxTrianglesPerLeaf;
+	TriangleSplitter *		mTriangleSplitter = nullptr;
+	uint				mMaxTrianglesPerLeaf;
 	Array<Node>				mNodes;
 	Array<IndexedTriangle>	mTriangles;
 };

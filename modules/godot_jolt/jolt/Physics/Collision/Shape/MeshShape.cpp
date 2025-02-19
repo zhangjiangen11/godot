@@ -218,7 +218,7 @@ MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult
 	}
 
 	// Build tree
-	AABBTreeBuilder builder(*splitter, inSettings.mMaxTrianglesPerLeaf);
+	AABBTreeBuilder& builder = *AABBTreeBuilder::Get(*splitter, inSettings.mMaxTrianglesPerLeaf);
 	AABBTreeBuilderStats builder_stats;
 	const AABBTreeBuilder::Node *root = builder.Build(builder_stats);
 	splitter->~TriangleSplitter();
@@ -228,6 +228,7 @@ MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult
 	const char *error = nullptr;
 	if (!buffer.Convert(builder.GetTriangles(), builder.GetNodes(), inSettings.mTriangleVertices, root, inSettings.mPerTriangleUserData, error))
 	{
+		AABBTreeBuilder::Return(&builder);
 		outResult.SetError(error);
 		return;
 	}
@@ -238,9 +239,11 @@ MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult
 	// Check if we're not exceeding the amount of sub shape id bits
 	if (GetSubShapeIDBitsRecursive() > SubShapeID::MaxBits)
 	{
+		AABBTreeBuilder::Return(&builder);
 		outResult.SetError("Mesh is too big and exceeds the amount of available sub shape ID bits");
 		return;
 	}
+	AABBTreeBuilder::Return(&builder);
 
 	outResult.Set(this);
 }

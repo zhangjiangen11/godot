@@ -23,6 +23,10 @@ public:
 	}
 
 	void AddHit(const Hit& p_hit) override { hits.push_back(p_hit); }
+	explicit JoltQueryCollectorAll(int32_t p_max_hits = TInlineCapacity){
+			hits.reserve(p_max_hits);
+	}
+
 
 private:
 	InlineVector<Hit, TInlineCapacity> hits;
@@ -64,7 +68,9 @@ public:
 	using Hit = typename TBase::ResultType;
 
 	explicit JoltQueryCollectorAnyMulti(int32_t p_max_hits = TInlineCapacity)
-		: max_hits(p_max_hits) { }
+		: max_hits(p_max_hits) {
+			hits.reserve(p_max_hits);
+		 }
 
 	bool had_hit() const { return hits.size() > 0; }
 
@@ -136,7 +142,9 @@ public:
 	using Hit = typename TBase::ResultType;
 
 	explicit JoltQueryCollectorClosestMulti(int32_t p_max_hits = TInlineCapacity)
-		: max_hits(p_max_hits) { }
+		: max_hits(p_max_hits) {
+			hits.reserve(p_max_hits + 1);
+		 }
 
 	bool had_hit() const { return hits.size() > 0; }
 
