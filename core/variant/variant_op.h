@@ -412,7 +412,7 @@ public:
 		const B &b = *VariantGetInternalPtr<B>::get_ptr(&p_right);
 
 #if defined(DEBUG_ENABLED)
-		if (b < 0 || a < 0) {
+		if (b < 0) {
 			*r_ret = "Invalid operands for bit shifting. Only positive operands are supported.";
 			r_valid = false;
 			return;
@@ -438,7 +438,7 @@ public:
 		const B &b = *VariantGetInternalPtr<B>::get_ptr(&p_right);
 
 #if defined(DEBUG_ENABLED)
-		if (b < 0 || a < 0) {
+		if (b < 0) {
 			*r_ret = "Invalid operands for bit shifting. Only positive operands are supported.";
 			r_valid = false;
 			return;

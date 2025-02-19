@@ -136,10 +136,6 @@
 #endif // TOOLS_ENABLED && !GDSCRIPT_NO_LSP
 #endif // MODULE_GDSCRIPT_ENABLED
 
-
-
-#include "modules/godot_luaAPI/src/classes/luaAPI.h"
-
 /* Static members */
 
 // Singletons
@@ -166,17 +162,10 @@ static AudioServer *audio_server = nullptr;
 static CameraServer *camera_server = nullptr;
 static DisplayServer *display_server = nullptr;
 static RenderingServer *rendering_server = nullptr;
-static RenderCallbackManager* render_callback_manager = nullptr;
 static TextServerManager *tsman = nullptr;
 static ThemeDB *theme_db = nullptr;
 static PhysicsServer2DManager *physics_server_2d_manager = nullptr;
 static PhysicsServer2D *physics_server_2d = nullptr;
-static NavigationServer3D *navigation_server_3d = nullptr;
-
-
-
-//static LuaAPI* lua_api = nullptr;
-
 #ifndef _3D_DISABLED
 static PhysicsServer3DManager *physics_server_3d_manager = nullptr;
 static PhysicsServer3D *physics_server_3d = nullptr;
@@ -383,7 +372,6 @@ void finalize_physics() {
 void finalize_display() {
 	rendering_server->finish();
 	memdelete(rendering_server);
-	memdelete(render_callback_manager);
 
 	memdelete(display_server);
 }
@@ -396,21 +384,6 @@ void finalize_theme_db() {
 	memdelete(theme_db);
 	theme_db = nullptr;
 }
-
-
-
-
-
-// void initialize_lua_api() {
-// 	lua_api = memnew(LuaAPI);
-// }
-
-// void finalize_lua_api() {
-// 	memdelete(lua_api);
-// 	lua_api = nullptr;
-// }
-
-
 
 //#define DEBUG_INIT
 #ifdef DEBUG_INIT
@@ -759,9 +732,6 @@ Error Main::test_setup() {
 	// Default theme will be initialized later, after modules and ScriptServer are ready.
 	initialize_theme_db();
 
-
-	//initialize_lua_api();
-
 	NavigationServer3DManager::initialize_server(); // 3D server first because 2D depends on it.
 	NavigationServer2DManager::initialize_server();
 
@@ -846,9 +816,6 @@ void Main::test_cleanup() {
 	unregister_scene_types();
 
 	finalize_theme_db();
-
-
-	//finalize_lua_api();
 
 	NavigationServer2DManager::finalize_server(); // 2D goes first as it uses the 3D server behind the scene.
 	NavigationServer3DManager::finalize_server();
@@ -3183,7 +3150,6 @@ Error Main::setup2(bool p_show_boot_logo) {
 
 	{
 		OS::get_singleton()->benchmark_begin_measure("Servers", "Rendering");
-		render_callback_manager = memnew(RenderCallbackManager);
 
 		rendering_server = memnew(RenderingServerDefault(OS::get_singleton()->is_separate_thread_rendering_enabled()));
 
@@ -3402,9 +3368,6 @@ Error Main::setup2(bool p_show_boot_logo) {
 	// Initialize ThemeDB early so that scene types can register their theme items.
 	// Default theme will be initialized later, after modules and ScriptServer are ready.
 	initialize_theme_db();
-
-
-	//initialize_lua_api();
 
 	MAIN_PRINT("Main: Load Navigation");
 
@@ -4418,7 +4381,6 @@ bool Main::is_iterating() {
 static uint64_t physics_process_max = 0;
 static uint64_t process_max = 0;
 static uint64_t navigation_process_max = 0;
-static double navigation_last_time = 0;
 
 // Return false means iterating further, returning true means `OS::run`
 // will terminate the program. In case of failure, the OS exit code needs
@@ -4468,9 +4430,6 @@ bool Main::iteration() {
 
 	NavigationServer2D::get_singleton()->sync();
 	NavigationServer3D::get_singleton()->sync();
-	double curr_time = OS::get_singleton()->get_unix_time();
-	double time_delta = MIN(0.1, curr_time - navigation_last_time) * time_scale;
-	navigation_last_time = curr_time;
 
 	for (int iters = 0; iters < advance.physics_steps; ++iters) {
 		if (Input::get_singleton()->is_agile_input_event_flushing()) {
@@ -4508,7 +4467,7 @@ bool Main::iteration() {
 
 		uint64_t navigation_begin = OS::get_singleton()->get_ticks_usec();
 
-		NavigationServer3D::get_singleton()->process(time_delta);
+		NavigationServer3D::get_singleton()->process(physics_step * time_scale);
 
 		navigation_process_ticks = MAX(navigation_process_ticks, OS::get_singleton()->get_ticks_usec() - navigation_begin); // keep the largest one for reference
 		navigation_process_max = MAX(OS::get_singleton()->get_ticks_usec() - navigation_begin, navigation_process_max);
@@ -4517,11 +4476,11 @@ bool Main::iteration() {
 
 #ifndef _3D_DISABLED
 		PhysicsServer3D::get_singleton()->end_sync();
-		PhysicsServer3D::get_singleton()->step(navigation_last_time);
+		PhysicsServer3D::get_singleton()->step(physics_step * time_scale);
 #endif // _3D_DISABLED
 
 		PhysicsServer2D::get_singleton()->end_sync();
-		PhysicsServer2D::get_singleton()->step(navigation_last_time);
+		PhysicsServer2D::get_singleton()->step(physics_step * time_scale);
 
 		message_queue->flush();
 
@@ -4746,9 +4705,6 @@ void Main::cleanup(bool p_force) {
 	unregister_scene_types();
 
 	finalize_theme_db();
-
-
-	//finalize_lua_api();
 
 	// Before deinitializing server extensions, finalize servers which may be loaded as extensions.
 	NavigationServer2DManager::finalize_server(); // 2D goes first as it uses the 3D server behind the scene.

@@ -2907,52 +2907,6 @@ Node *Node::_duplicate(int p_flags, HashMap<const Node *, Node *> *r_duplimap) c
 			parent->move_child(dup, pos);
 		}
 	}
-
-	//for (List<const Node *>::Element *N = node_tree.front(); N; N = N->next()) {
-	//	Node *current_node = node->get_node(get_path_to(N->get()));
-	//	ERR_CONTINUE(!current_node);
-
-	//	if (p_flags & DUPLICATE_SCRIPTS) {
-	//		bool is_valid = false;
-	//		Variant scr = N->get()->get(script_property_name, &is_valid);
-	//		if (is_valid) {
-	//			current_node->set(script_property_name, scr);
-	//		}
-	//		N->get()->get(CoreStringNames::get_singleton()->_master_script, &is_valid);
-	//		if (is_valid) {
-	//			current_node->set(CoreStringNames::get_singleton()->_master_script, scr);
-	//		}
-	//	}
-
-	//	List<PropertyInfo> plist;
-	//	N->get()->get_property_list(&plist);
-
-	//	for (const PropertyInfo &E : plist) {
-	//		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
-	//			continue;
-	//		}
-	//		String name = E.name;
-	//		if (name == script_property_name) {
-	//			continue;
-	//		}
-	//		if (name == CoreStringNames::get_singleton()->_master_script) {
-	//			continue;
-	//		}
-
-	//		Variant value = N->get()->get(name).duplicate(true);
-
-	//		if (E.usage & PROPERTY_USAGE_ALWAYS_DUPLICATE) {
-	//			Resource *res = Object::cast_to<Resource>(value);
-	//			if (res) { // Duplicate only if it's a resource
-	//				current_node->set(name, res->duplicate());
-	//			}
-
-	//		} else {
-	//			current_node->set(name, value);
-	//		}
-	//	}
-	//}
-
 	return node;
 }
 
@@ -3067,11 +3021,6 @@ void Node::_duplicate_properties(const Node *p_root, const Node *p_original, Nod
 		if (is_valid) {
 			p_copy->set(script_property_name, scr);
 		}
-
-		scr = p_original->get(CoreStringNames::get_singleton()->_master_script, &is_valid);
-		if (is_valid) {
-			p_copy->set(CoreStringNames::get_singleton()->_master_script, scr);
-		}
 	}
 	for (const PropertyInfo &E : props) {
 		if (!(E.usage & PROPERTY_USAGE_STORAGE)) {
@@ -3080,9 +3029,6 @@ void Node::_duplicate_properties(const Node *p_root, const Node *p_original, Nod
 		const StringName name = E.name;
 
 		if (name == script_property_name) {
-			continue;
-		}
-		if (name == CoreStringNames::get_singleton()->_master_script) {
 			continue;
 		}
 
@@ -3880,9 +3826,6 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_thread_safe", "property", "value"), &Node::set_thread_safe);
 	ClassDB::bind_method(D_METHOD("notify_thread_safe", "what"), &Node::notify_thread_safe);
 
-	ClassDB::bind_method(D_METHOD("set_components", "components"), &Node::set_components);
-	ClassDB::bind_method(D_METHOD("get_components"), &Node::get_components);
-
 	ClassDB::bind_method(D_METHOD("log_node","space"), &Node::log_node,DEFVAL(""));
 
 	BIND_CONSTANT(NOTIFICATION_ENTER_TREE);
@@ -4087,61 +4030,6 @@ Node::~Node() {
 }
 
 
-void Node::set_components(const TypedArray<NodeComponent>& p_compoent)
-{
-
-	// 处理移除的组件消息回调
-	for(auto & comp : component_data)
-	{
-		if(comp.component.is_null())
-			continue;
-		if(p_compoent.find(comp.component)==-1)
-		{
-			comp.component->remove_to_node((Node*)this,comp.properties);
-		}
-	}
-
-
-	List<NodeComponentData> old_component_data = component_data;
-	component_data.clear();
-	for(int i=0;i<p_compoent.size();i++)
-	{
-		Ref<NodeComponent> comp = p_compoent[i];
-		if(!comp.is_valid())
-		{
-			component_data.push_back(NodeComponentData());
-		}
-		else if(comp->is_supper_class(this))
-		{
-			
-			auto it = old_component_data.find(comp);
-			if(it != nullptr)
-			{
-				component_data.push_back(it->get());
-			}
-			else
-			{
-				NodeComponentData _data;
-				_data.component = p_compoent[i];
-				component_data.push_back(_data);
-			}
-		}
-		else
-		{
-			component_data.push_back(NodeComponentData());
-		}
-	}
-}
-TypedArray<NodeComponent> Node::get_components()
-{
-	TypedArray<NodeComponent> ret;
-	for(auto & comp : component_data)
-	{
-		ret.push_back(comp.component);
-	}
-	return ret;
-}
-
 
 String Node::log_node(const String & _space)
 {
@@ -4161,118 +4049,40 @@ String Node::log_node(const String & _space)
 
 }
 
-bool operator == (const Node::NodeComponentData &p_a, const Node::NodeComponentData &p_b) {
-	return p_a.component == p_b.component;
-}
-bool operator == (const Node::NodeComponentData &p_a, const Ref<NodeComponent> &p_b) {
-	return p_a.component == p_b;
-}
-bool operator == (const Ref<NodeComponent> &p_a, const Node::NodeComponentData &p_b) {
-	return p_a == p_b.component;
-}
 
 void Node::node_process(double delta)const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())		
-			comp.component->node_process((Node*)this,delta,comp.properties);
-	}
 }
 void Node::node_physics_process(double delta)const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())		
-			comp.component->node_physics_process((Node*)this,delta,comp.properties);
-	}
 }
 void Node::node_enter_tree()const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())		
-			comp.component->node_enter_tree((Node*)this,comp.properties);
-	}
 }
 void Node::node_exit_tree()const
 {
 
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())		
-			comp.component->node_exit_tree((Node*)this,comp.properties);
-	}
-
 }
 void Node::node_ready()const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())	
-			comp.component->node_ready((Node*)this,comp.properties);
-	}
 }
 Vector<String> Node::node_get_configuration_warnings()const
 {
 	Vector<String> rs;
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())	
-			rs.append_array(comp.component->node_get_configuration_warnings((Node*)this,comp.properties));
-	}
 	return rs;
 }
 
 void Node::node_input(const Ref<InputEvent> &p_event)const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())	
-			comp.component->node_input((Node*)this,p_event,comp.properties);
-	}
 }
 void Node::node_shortcut_input(const Ref<InputEvent> &p_key_event)const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())	
-			comp.component->node_shortcut_input((Node*)this,p_key_event,comp.properties);
-
-	}
 }
 void Node::node_unhandled_input(const Ref<InputEvent> &p_event)const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())		
-			comp.component->node_unhandled_input((Node*)this,p_event,comp.properties);
-	}
 }
 void Node::node_unhandled_key_input(const Ref<InputEvent> &p_key_event)const
 {
-	for(auto comp : component_data)
-	{
-		if(comp.component.is_valid())		
-			comp.component->node_unhandled_key_input((Node*)this,p_key_event,comp.properties);
-	}
-}
-
-void NodeComponent::_bind_methods()
-{
-	GDVIRTUAL_BIND(_is_supper_class,"node");
-	GDVIRTUAL_BIND(_add_to_node,"node","com_member");
-	GDVIRTUAL_BIND(_remove_to_node,"node","com_member");
-	GDVIRTUAL_BIND(_node_process,"node","delta","com_member");
-	GDVIRTUAL_BIND(_node_physics_process,"node","delta","com_member");
-	GDVIRTUAL_BIND(_node_enter_tree,"node","com_member");
-	GDVIRTUAL_BIND(_node_exit_tree,"node","com_member");
-	GDVIRTUAL_BIND(_node_ready,"node","com_member");
-	GDVIRTUAL_BIND(_node_get_configuration_warnings,"node","com_member");
-	GDVIRTUAL_BIND(_node_input,"node","event","com_member");
-	GDVIRTUAL_BIND(_node_shortcut_input,"node","event","com_member");
-	GDVIRTUAL_BIND(_node_unhandled_input,"node","event","com_member");
-	GDVIRTUAL_BIND(_node_unhandled_key_input,"node","event","com_member");
 }
 
 

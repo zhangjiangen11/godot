@@ -41,11 +41,9 @@ class Window;
 class SceneState;
 class Tween;
 class PropertyTweener;
-class NodeComponent;
 
 SAFE_FLAG_TYPE_PUN_GUARANTEES
 SAFE_NUMERIC_TYPE_PUN_GUARANTEES(uint32_t)
-// 节点组件
 
 class Node : public Object {
 	GDCLASS(Node, Object);
@@ -352,19 +350,6 @@ private:
 
 	Variant _call_deferred_thread_group_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 	Variant _call_thread_safe_bind(const Variant **p_args, int p_argcount, Callable::CallError &r_error);
-public:
-	// 节点组件数据
-	struct NodeComponentData {
-		Ref<NodeComponent> component;
-		Dictionary properties;
-		friend bool operator == (const NodeComponentData &p_a, const NodeComponentData &p_b);
-		friend bool operator == (const NodeComponentData &p_a, const Ref<NodeComponent> &p_b);
-		friend bool operator == (const Ref<NodeComponent> &p_a, const NodeComponentData &p_b) ;
-	};
-	mutable List<NodeComponentData> component_data;
-
-	void set_components(const TypedArray<NodeComponent>& p_compoent);
-	TypedArray<NodeComponent> get_components();
 
 	// Editor only signal to keep the SceneTreeEditor in sync.
 #ifdef TOOLS_ENABLED
@@ -395,6 +380,7 @@ protected:
 	static String _get_name_num_separator();
 
 	friend class SceneState;
+
 	void _add_child_nocheck(Node *p_child, const StringName &p_name, InternalMode p_internal_mode = INTERNAL_MODE_DISABLED);
 	void _set_owner_nocheck(Node *p_owner);
 	void _set_name_nocheck(const StringName &p_name);
@@ -869,128 +855,6 @@ public:
 #endif
 	Node();
 	~Node();
-};
-class NodeComponent : public Resource
-{
-	GDCLASS(NodeComponent, Resource);
-	static void _bind_methods();
-public:
-	virtual bool is_supper_class(Node* node) 
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_is_supper_class))
-		{
-			bool ret = false;
-			GDVIRTUAL_CALL(_is_supper_class,node,ret);
-			return ret;
-		}
-		return true; 
-	}
-	virtual void add_to_node(Node* node,Dictionary& com_property) 
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_add_to_node))
-		{
-			GDVIRTUAL_CALL(_add_to_node,node,com_property);
-		}
-		
-	}
-	virtual void remove_to_node(Node* node,Dictionary& com_property) 
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_remove_to_node))
-		{
-			GDVIRTUAL_CALL(_remove_to_node,node,com_property);
-		}
-		
-	}
-	virtual void node_process( Node* node,double delta,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_process))
-		{
-			GDVIRTUAL_CALL(_node_process,node,delta,com_property);
-		}
-	}
-	virtual void node_physics_process(Node* node, double delta,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_physics_process))
-		{
-			GDVIRTUAL_CALL(_node_physics_process,node,delta,com_property);
-		}
-	}
-	virtual void node_enter_tree(Node* node,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_enter_tree))
-		{
-			GDVIRTUAL_CALL(_node_enter_tree,node,com_property);
-		}
-	}
-	virtual void node_exit_tree(Node* node,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_exit_tree))
-		{
-			GDVIRTUAL_CALL(_node_exit_tree,node,com_property);
-		}
-	}
-	virtual void node_ready(Node* node,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_ready))
-		{
-			GDVIRTUAL_CALL(_node_ready,node,com_property);
-		}
-	}
-	virtual Vector<String> node_get_configuration_warnings(Node* node,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_get_configuration_warnings))
-		{
-			Vector<String> warnings;
-			GDVIRTUAL_CALL(_node_get_configuration_warnings,node,com_property,warnings);
-			return warnings;
-		}
-		return Vector<String>();
-	}
-	
-	virtual void node_input(Node* node,const Ref<InputEvent> &p_event,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_input))
-		{
-			GDVIRTUAL_CALL(_node_input,node,p_event,com_property);
-		}
-	}
-	virtual void node_shortcut_input(Node* node,const Ref<InputEvent> &p_key_event,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_shortcut_input))
-		{
-			GDVIRTUAL_CALL(_node_shortcut_input,node,p_key_event,com_property);
-		}
-	}
-	virtual void node_unhandled_input(Node* node,const Ref<InputEvent> &p_event,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_unhandled_input))
-		{
-			GDVIRTUAL_CALL(_node_unhandled_input,node,p_event,com_property);
-		}
-	}
-	virtual void node_unhandled_key_input(Node* node,const Ref<InputEvent> &p_key_event,Dictionary& com_property)
-	{
-		if(GDVIRTUAL_IS_OVERRIDDEN(_node_unhandled_key_input))
-		{
-			GDVIRTUAL_CALL(_node_unhandled_key_input,node,p_key_event,com_property);
-		}
-	}
-
-
-	GDVIRTUAL1RC(bool,_is_supper_class, Node*)
-	GDVIRTUAL2(_add_to_node, Node*,Dictionary)
-	GDVIRTUAL2(_remove_to_node, Node*,Dictionary)
-	GDVIRTUAL3(_node_process, Node*,double,Dictionary)
-	GDVIRTUAL3(_node_physics_process,Node*, double,Dictionary)
-	GDVIRTUAL2(_node_enter_tree,Node*,Dictionary)
-	GDVIRTUAL2(_node_exit_tree,Node*,Dictionary)
-	GDVIRTUAL2(_node_ready,Node*,Dictionary)
-	GDVIRTUAL2RC(Vector<String>, _node_get_configuration_warnings,Node*,Dictionary)
-
-	GDVIRTUAL3(_node_input,Node*,Ref<InputEvent>,Dictionary)
-	GDVIRTUAL3(_node_shortcut_input,Node*, Ref<InputEvent>,Dictionary)
-	GDVIRTUAL3(_node_unhandled_input,Node*, Ref<InputEvent>,Dictionary)
-	GDVIRTUAL3(_node_unhandled_key_input,Node*, Ref<InputEvent>,Dictionary)
 };
 
 VARIANT_ENUM_CAST(Node::DuplicateFlags);

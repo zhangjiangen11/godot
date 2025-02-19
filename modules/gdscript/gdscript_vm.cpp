@@ -33,7 +33,7 @@
 #include "gdscript_lambda_callable.h"
 
 #include "core/os/os.h"
-#define EDITOR_DEBUG_FUCTION_STACK true
+
 #ifdef DEBUG_ENABLED
 
 static bool _profile_count_as_native(const Object *p_base_obj, const StringName &p_methodname) {
@@ -623,7 +623,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 
 #ifdef DEBUG_ENABLED
 
-	if (EDITOR_DEBUG_FUCTION_STACK || EngineDebugger::is_active()) {
+	if (EngineDebugger::is_active()) {
 		GDScriptLanguage::get_singleton()->enter_function(p_instance, this, stack, &ip, &line);
 	}
 
@@ -3873,7 +3873,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 	// If that is the case then we exit the function as normal. Otherwise we postpone it until the last `await` is completed.
 	// This ensures the call stack can be properly shown when using `await`, showing what resumed the function.
 	if (!p_state || awaited) {
-		if (EDITOR_DEBUG_FUCTION_STACK || EngineDebugger::is_active()) {
+		if (EngineDebugger::is_active()) {
 			GDScriptLanguage::get_singleton()->exit_function();
 		}
 #endif

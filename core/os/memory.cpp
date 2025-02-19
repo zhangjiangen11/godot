@@ -302,833 +302,6 @@ static _FORCE_INLINE_ SmallMemoryManager& get_small_memory_manager()
 }
 
 
-// void Memory::memset(void *p_ptr, int p_value, size_t p_size)
-// {
-	
-// 	embree::vfloat8 t16(embree::zero);
-// 	if(p_ptr == nullptr || p_size <= 0)
-// 	{
-// 		return;
-// 	}
-// 	uint8_t* dest = (uint8_t*)p_ptr;
-// #if defined (__AVX512F__)
-// 	while (p_size > 64)
-// 	{
-// 		new(dest) embree::vfloat16(embree::zero);
-// 		p_size -= 64;
-// 		dest += 64;
-// 	}
-// #endif
-
-// #if defined(__AVX__)
-// 	while(p_size > 32)
-// 	{
-// 		embree::vfloat8::storeu((void*)dest, (embree::vfloat8&)t16);
-// 		p_size -= 32;
-// 		dest += 32;
-// 	}
-// #else
-// 	while(p_size > 16)
-// 	{
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;
-// 	}
-// #endif
-
-// 	switch (p_size)
-// 	{
-// 	case 31:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-
-// 		dest[0] = 0; // 29
-// 		dest[1] = 0; // 30
-// 		dest[2] = 0; // 31
-// 		break;
-// 	case 30:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-
-// 		dest[0] = 0; // 29
-// 		dest[1] = 0; // 30
-// 		break;
-// 	case 29:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-
-// 		dest[0] = 0; // 29
-// 		break;
-// 	case 28:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-
-// 		break;
-// 	case 27:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-// 		dest[0] = 0; // 25
-// 		dest[1] = 0; // 26
-// 		dest[2] = 0; // 27
-
-// 		break;
-// 	case 26:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-// 		dest[0] = 0; // 25
-// 		dest[1] = 0; // 26
-// 		break;
-
-
-// 	case 25:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-// 		dest[0] = 0; // 25
-
-// 		break;
-
-// 	case 24:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-
-// 		break;
-
-// 	case 23:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-
-// 		dest[0] = 0; // 21
-// 		dest[1] = 0; // 22
-// 		dest[2] = 0; // 23
-// 		break;
-
-// 	case 22:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-
-// 		dest[0] = 0; // 21
-// 		dest[1] = 0; // 22
-// 		break;
-
-// 	case 21:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-
-// 		dest[0] = 0; // 21
-// 		break;
-
-
-// 	case 20:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-
-// 		break;
-
-// 	case 19:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		dest[0] = 0; // 17
-// 		dest[1] = 0; // 18
-// 		dest[2] = 0; // 19
-// 		break;
-
-// 	case 18:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		dest[0] = 0; // 17
-// 		dest[1] = 0; // 18
-// 		break;
-
-// 	case 17:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		dest[0] = 0; // 17
-// 		break;
-
-// 	case 16:
-// 		embree::vfloat4::storeu((void*)dest, (embree::vfloat4&)t16);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-
-// 		break;
-
-// 	case 15:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-		
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-
-// 		dest[4] = 0; // 13
-// 		dest[5] = 0; // 14
-// 		dest[6] = 0; // 15
-// 		break;
-
-// 	case 14:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-
-// 		dest[4] = 0; // 13
-// 		dest[5] = 0; // 14
-// 		break;
-
-// 	case 13:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-
-// 		dest[4] = 0; // 13
-// 		break;
-
-// 	case 12:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-
-// 		break;
-
-// 	case 11:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-
-// 		dest[0] = 0; // 9
-// 		dest[1] = 0; // 10
-// 		dest[2] = 0; // 11
-// 		break;
-
-// 	case 10:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-
-// 		dest[0] = 0; // 9
-// 		dest[1] = 0; // 10
-// 		break;
-
-// 	case 9:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-
-// 		dest[0] = 0; // 9
-// 		break;
-
-// 	case 8:
-// 		*(uint64_t*)dest = 0ULL;
-// 		p_size -= 8;
-// 		dest += 8;// 8
-
-// 		break;
-
-// 	case 7:
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-
-// 		dest[0] = 0; // 5
-// 		dest[1] = 0; // 6
-// 		dest[2] = 0; // 7
-// 		break;
-
-// 	case 6:
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-
-// 		dest[0] = 0; // 5
-// 		dest[1] = 0; // 6
-// 		break;
-
-// 	case 5:
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-
-// 		dest[0] = 0; // 5
-// 		break;
-
-// 	case 4:
-// 		*(uint32_t*)dest = 0;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-
-// 		break;
-
-// 	case 3:
-// 		*(uint16_t*)dest = 0;
-// 		p_size -= 2;
-// 		dest += 2;// 2
-
-// 		dest[0] = 0; // 3
-// 		dest[1] = 0; // 4
-// 		break;
-
-// 	case 2:
-// 		*(uint16_t*)dest = 0;
-// 		p_size -= 2;
-// 		dest += 2;// 2
-// 		break;
-
-// 	case 1:
-// 		*(uint8_t*)dest = 0;
-// 		p_size -= 1;
-// 		dest += 1;// 1
-// 		break;
-
-// 	default:
-// 		break;
-// 	}
-
-// }
-// void memcpy(void *p_dest, const void *p_src, size_t p_size)
-// {
-// 	if(p_dest == nullptr || p_src == nullptr || p_size <= 0)
-// 	{
-// 		return;
-// 	}
-// 	uint8_t* dest = (uint8_t*)p_dest;
-// 	uint8_t* src = (uint8_t*)p_src;
-// #if defined (__AVX512F__)
-// 	while (p_size > 64)
-// 	{
-// 		embree::vfloatx::storeu(dest, *(embree::vfloat16*)src);
-// 		p_size -= 64;
-// 		dest += 64;
-// 		src += 64;
-// 	}
-// #endif
-
-// #if defined(__AVX__)
-// 	while (p_size > 32)
-// 	{
-// 		embree::vfloat8::storeu(dest, *(embree::vfloat8*)src);
-// 		p_size -= 32;
-// 		dest += 32;
-// 		src += 32;
-// 	}
-// #else
-// 	while (p_size > 16)
-// 	{
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;
-// 		src += 16;
-// 	}
-// #endif
-// 	switch (p_size)
-// 	{
-// 	case 31:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-// 		src += 4;// 28
-
-// 		dest[0] = src[0]; // 29
-// 		dest[1] = src[1]; // 30
-// 		dest[2] = src[2]; // 31
-// 		break;
-
-// 	case 30:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-// 		src += 4;// 28
-
-// 		dest[0] = src[0]; // 29
-// 		dest[1] = src[1]; // 30
-// 		break;
-
-// 	case 29:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-// 		src += 4;// 28
-
-// 		dest[0] = src[0]; // 29
-// 		break;
-
-// 	case 28:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 28
-// 		src += 4;// 28
-// 		break;
-// 	case 27:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-
-// 		dest[0] = src[0]; // 25
-// 		dest[1] = src[1]; // 26
-// 		dest[2] = src[2]; // 27
-
-// 		break;
-
-// 	case 26:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-
-// 		dest[0] = src[0]; // 25
-// 		dest[1] = src[1]; // 26
-// 		break;
-// 	case 25:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-
-// 		dest[0] = src[0]; // 25
-// 		break;
-
-// 	case 24:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 24
-// 		src += 8; // 24
-// 		break;
-
-// 	case 23:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-// 		src += 4;// 20
-
-// 		dest[0] = src[0]; // 21
-// 		dest[1] = src[1]; // 22
-// 		dest[2] = src[2]; // 23
-// 		break;
-
-// 	case 22:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-// 		src += 4;// 20
-
-// 		dest[0] = src[0]; // 21
-// 		dest[1] = src[1]; // 22
-// 		break;
-
-// 	case 21:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-// 		src += 4;// 20
-
-// 		dest[0] = src[0]; // 21
-// 		break;
-// 	case 20:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 20
-// 		src += 4;// 20
-// 		break;
-		
-// 	case 19:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-		
-// 		dest[0] = src[0]; // 17
-// 		dest[1] = src[1]; // 18
-// 		dest[2] = src[2]; // 19
-// 		break;
-		
-// 	case 18:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-		
-// 		dest[0] = src[0]; // 17
-// 		dest[1] = src[1]; // 18
-// 		break;
-		
-// 	case 17:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-		
-// 		dest[0] = src[0]; // 17
-// 		break;
-
-// 	case 16:
-// 		embree::vfloat4::storeu((void*)dest, *(embree::vfloat4*)src);
-// 		p_size -= 16;
-// 		dest += 16;// 16
-// 		src += 16;// 16
-// 		break;
-
-// 	case 15:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-// 		src += 4;// 12
-
-// 		dest[0] = src[0]; // 13
-// 		dest[1] = src[1]; // 14
-// 		dest[2] = src[2]; // 15
-// 		break;
-
-// 	case 14:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-// 		src += 4;// 12
-
-// 		dest[0] = src[0]; // 13
-// 		dest[1] = src[1]; // 14
-// 		break;
-
-// 	case 13:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-// 		src += 4;// 12
-
-// 		dest[0] = src[0]; // 13
-// 		break;
-
-// 	case 12:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 12
-// 		src += 4;// 12
-// 		break;
-
-// 	case 11:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-
-// 		dest[0] = src[0]; // 9
-// 		dest[1] = src[1]; // 10
-// 		dest[2] = src[2]; // 11
-// 		break;
-
-// 	case 10:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-
-// 		dest[0] = src[0]; // 9
-// 		dest[1] = src[1]; // 10
-// 		break;
-
-// 	case 9:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-
-// 		dest[0] = src[0]; // 9
-// 		break;
-
-
-// 	case 8:
-// 		*(uint64_t*)dest = *(uint64_t*)src;
-// 		p_size -= 8;
-// 		dest += 8; // 8
-// 		src += 8; // 8
-// 		break;
-
-
-// 	case 7:
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-// 		src += 4;// 4
-
-// 		dest[0] = src[0]; // 5
-// 		dest[1] = src[1]; // 6
-// 		dest[2] = src[2]; // 7
-// 		break;
-
-// 	case 6:
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-// 		src += 4;// 4
-
-// 		dest[0] = src[0]; // 5
-// 		dest[1] = src[1]; // 6
-// 		break;
-
-// 	case 5:
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-// 		src += 4;// 4
-
-// 		dest[0] = src[0]; // 5
-// 		break;
-
-
-// 	case 4:
-// 		*(uint32_t*)dest = *(uint32_t*)src;
-// 		p_size -= 4;
-// 		p_size -= 4;
-// 		dest += 4;// 4
-// 		src += 4;// 4
-// 		break;
-
-// 	case 3:
-// 		*(uint16_t*)dest = *(uint16_t*)src;
-// 		p_size -= 2;
-// 		p_size -= 2;
-// 		dest += 2;// 2
-// 		src += 2;// 2
-
-// 		dest[0] = src[0]; // 3
-// 		dest[1] = src[1]; // 4
-// 		break;
-
-// 	case 2:
-// 		*(uint16_t*)dest = *(uint16_t*)src;
-// 		p_size -= 2;
-// 		p_size -= 2;
-// 		dest += 2;// 2
-// 		src += 2;// 2
-// 		break;
-
-// 	case 1:
-// 		*(uint8_t*)dest = *(uint8_t*)src;
-// 		p_size -= 1;
-// 		p_size -= 1;
-// 		dest += 1;// 1
-// 		src += 1;// 1
-// 		break;
-
-// 	default:
-// 		break;
-// 	}
-	
-// }
 
 
 void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
@@ -1170,28 +343,26 @@ void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
 	bool prepad = p_pad_align;
 #endif
 
-	//void *mem = malloc(p_bytes + (prepad ? DATA_OFFSET : 0));
-	void *mem = get_small_memory_manager().alloc_mem(p_bytes);
+	void *mem = malloc(p_bytes + (prepad ? DATA_OFFSET : 0));
 
 	ERR_FAIL_NULL_V(mem, nullptr);
 
 	alloc_count.increment();
-	return mem;
 
-// 	if (prepad) {
-// 		uint8_t *s8 = (uint8_t *)mem;
+	if (prepad) {
+		uint8_t *s8 = (uint8_t *)mem;
 
-// 		uint64_t *s = (uint64_t *)(s8 + SIZE_OFFSET);
-// 		*s = p_bytes;
+		uint64_t *s = (uint64_t *)(s8 + SIZE_OFFSET);
+		*s = p_bytes;
 
-// #ifdef DEBUG_ENABLED
-// 		uint64_t new_mem_usage = mem_usage.add(p_bytes);
-// 		max_usage.exchange_if_greater(new_mem_usage);
-// #endif
-// 		return s8 + DATA_OFFSET;
-// 	} else {
-// 		return mem;
-// 	}
+#ifdef DEBUG_ENABLED
+		uint64_t new_mem_usage = mem_usage.add(p_bytes);
+		max_usage.exchange_if_greater(new_mem_usage);
+#endif
+		return s8 + DATA_OFFSET;
+	} else {
+		return mem;
+	}
 }
 
 void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
@@ -1200,54 +371,75 @@ void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
 	}
 
 	uint8_t *mem = (uint8_t *)p_memory;
-	if (p_bytes == 0) {
-		free(mem);
-		return nullptr;
-	} 
-	else {
-		auto old_count = get_small_memory_manager().get_buffer_count(mem);
 
-		int index = get_small_memory_manager().get_buffer_type_index(old_count);
-		if(index >= 0 && index == get_small_memory_manager().get_buffer_type_index(p_bytes) )
-		{
-			return p_memory;
+#ifdef DEBUG_ENABLED
+	bool prepad = true;
+#else
+	bool prepad = p_pad_align;
+#endif
+
+	if (prepad) {
+		mem -= DATA_OFFSET;
+		uint64_t *s = (uint64_t *)(mem + SIZE_OFFSET);
+
+#ifdef DEBUG_ENABLED
+		if (p_bytes > *s) {
+			uint64_t new_mem_usage = mem_usage.add(p_bytes - *s);
+			max_usage.exchange_if_greater(new_mem_usage);
+		} else {
+			mem_usage.sub(*s - p_bytes);
 		}
+#endif
 
-		void* new_mem = get_small_memory_manager().alloc_mem(p_bytes);
-		memcpy(new_mem, p_memory, MIN(old_count, p_bytes));
-		get_small_memory_manager().free_mem(p_memory);
-		return new_mem;
+		if (p_bytes == 0) {
+			free(mem);
+			return nullptr;
+		} else {
+			*s = p_bytes;
+
+			mem = (uint8_t *)realloc(mem, p_bytes + DATA_OFFSET);
+			ERR_FAIL_NULL_V(mem, nullptr);
+
+			s = (uint64_t *)(mem + SIZE_OFFSET);
+
+			*s = p_bytes;
+
+			return mem + DATA_OFFSET;
+		}
+	} else {
+		mem = (uint8_t *)realloc(mem, p_bytes);
+
+		ERR_FAIL_COND_V(mem == nullptr && p_bytes > 0, nullptr);
+
+		return mem;
 	}
 }
 
 void Memory::free_static(void *p_ptr, bool p_pad_align) {
 	ERR_FAIL_NULL(p_ptr);
-	
-	get_small_memory_manager().free_mem(p_ptr);
- 	alloc_count.decrement();
 
-// 	uint8_t *mem = (uint8_t *)p_ptr;
+	uint8_t *mem = (uint8_t *)p_ptr;
 
-// #ifdef DEBUG_ENABLED
-// 	bool prepad = true;
-// #else
-// 	bool prepad = p_pad_align;
-// #endif
+#ifdef DEBUG_ENABLED
+	bool prepad = true;
+#else
+	bool prepad = p_pad_align;
+#endif
 
-// 	alloc_count.decrement();
+	alloc_count.decrement();
 
-// 	if (prepad) {
-// 		mem -= DATA_OFFSET;
+	if (prepad) {
+		mem -= DATA_OFFSET;
 
-// #ifdef DEBUG_ENABLED
-// 		uint64_t *s = (uint64_t *)(mem + SIZE_OFFSET);
-// 		mem_usage.sub(*s);
-// #endif
+#ifdef DEBUG_ENABLED
+		uint64_t *s = (uint64_t *)(mem + SIZE_OFFSET);
+		mem_usage.sub(*s);
+#endif
 
-// 		free(mem);
-// 	} else {
-// 		free(mem);
-// 	}
+		free(mem);
+	} else {
+		free(mem);
+	}
 }
 
 uint64_t Memory::get_mem_available() {

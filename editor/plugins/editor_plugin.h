@@ -54,8 +54,6 @@ class EditorToolAddons;
 class EditorTranslationParserPlugin;
 class EditorUndoRedoManager;
 class ScriptCreateDialog;
-class Script;
-class EditorContextMenuPlugin;
 
 class EditorPlugin : public Node {
 	GDCLASS(EditorPlugin, Node);

@@ -218,8 +218,8 @@ private:
 	void _get_script_signal_list(List<MethodInfo> *r_list, bool p_include_base) const;
 
 	GDScript *_get_gdscript_from_variant(const Variant &p_variant);
-	void _collect_function_dependencies(GDScriptFunction *p_func, RBSet<Ref<GDScript>>  &p_dependencies, const GDScript *p_except);
-	void _collect_dependencies(RBSet<Ref<GDScript>>  &p_dependencies, const GDScript *p_except);
+	void _collect_function_dependencies(GDScriptFunction *p_func, RBSet<GDScript *> &p_dependencies, const GDScript *p_except);
+	void _collect_dependencies(RBSet<GDScript *> &p_dependencies, const GDScript *p_except);
 
 protected:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
@@ -270,9 +270,9 @@ public:
 	_FORCE_INLINE_ const GDScriptFunction *get_implicit_ready() const { return implicit_ready; }
 	_FORCE_INLINE_ const GDScriptFunction *get_static_initializer() const { return static_initializer; }
 
-	RBSet<Ref<GDScript>>  get_dependencies();
-	HashMap<GDScript *, RBSet<Ref<GDScript>> > get_all_dependencies();
-	RBSet<Ref<GDScript>>  get_must_clear_dependencies();
+	RBSet<GDScript *> get_dependencies();
+	HashMap<GDScript *, RBSet<GDScript *>> get_all_dependencies();
+	RBSet<GDScript *> get_must_clear_dependencies();
 
 	virtual bool has_script_signal(const StringName &p_signal) const override;
 	virtual void get_script_signal_list(List<MethodInfo> *r_signals) const override;
@@ -491,17 +491,16 @@ public:
 		if (unlikely(_call_stack.levels == nullptr)) {
 			_call_stack.levels = memnew_arr(CallLevel, _debug_max_call_stack + 1);
 		}
-		if (EngineDebugger::get_script_debugger()) {
-			if (EngineDebugger::get_script_debugger()->get_lines_left() > 0 && EngineDebugger::get_script_debugger()->get_depth() >= 0) {
-				EngineDebugger::get_script_debugger()->set_depth(EngineDebugger::get_script_debugger()->get_depth() + 1);
-			}
 
-			if (_call_stack.stack_pos >= _debug_max_call_stack) {
-				//stack overflow
-				_debug_error = vformat("Stack overflow (stack size: %s). Check for infinite recursion in your script.", _debug_max_call_stack);
-				EngineDebugger::get_script_debugger()->debug(this);
-				return;
-			}
+		if (EngineDebugger::get_script_debugger()->get_lines_left() > 0 && EngineDebugger::get_script_debugger()->get_depth() >= 0) {
+			EngineDebugger::get_script_debugger()->set_depth(EngineDebugger::get_script_debugger()->get_depth() + 1);
+		}
+
+		if (_call_stack.stack_pos >= _debug_max_call_stack) {
+			//stack overflow
+			_debug_error = vformat("Stack overflow (stack size: %s). Check for infinite recursion in your script.", _debug_max_call_stack);
+			EngineDebugger::get_script_debugger()->debug(this);
+			return;
 		}
 
 		_call_stack.levels[_call_stack.stack_pos].stack = p_stack;
@@ -513,16 +512,14 @@ public:
 	}
 
 	_FORCE_INLINE_ void exit_function() {
-		if (EngineDebugger::get_script_debugger()) {
-			if (EngineDebugger::get_script_debugger()->get_lines_left() > 0 && EngineDebugger::get_script_debugger()->get_depth() >= 0) {
-				EngineDebugger::get_script_debugger()->set_depth(EngineDebugger::get_script_debugger()->get_depth() - 1);
-			}
+		if (EngineDebugger::get_script_debugger()->get_lines_left() > 0 && EngineDebugger::get_script_debugger()->get_depth() >= 0) {
+			EngineDebugger::get_script_debugger()->set_depth(EngineDebugger::get_script_debugger()->get_depth() - 1);
+		}
 
-			if (_call_stack.stack_pos == 0) {
-				_debug_error = "Stack Underflow (Engine Bug)";
-				EngineDebugger::get_script_debugger()->debug(this);
-				return;
-			}
+		if (_call_stack.stack_pos == 0) {
+			_debug_error = "Stack Underflow (Engine Bug)";
+			EngineDebugger::get_script_debugger()->debug(this);
+			return;
 		}
 
 		_call_stack.stack_pos--;
