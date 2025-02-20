@@ -17,33 +17,10 @@
 
 namespace Foliage
 {
-	class SceneInstanceBlock : public RefCounted{
-		GDCLASS(SceneInstanceBlock, RefCounted);
-	  public:
-	  
-		  void set_instance_count(int p_instance_count) { 
-			  transform.resize(p_instance_count); 
-			  color.resize(p_instance_count);
-			  curstom_color.resize(p_instance_count);
-		  }
-		  int get_instance_count() const { return transform.size(); }
-	  
-		  const LocalVector<Transform3D>& get_transform() const { return transform; }
-		  const LocalVector<Color>& get_color() const { return color; }
-		  const LocalVector<Color>& get_curstom_color() const { return curstom_color; }
-		  
-		  void add_instance(const Transform3D& p_transform, const Color& p_color, const Color& p_curstom_color) {
-			  transform.push_back(p_transform);
-			  color.push_back(p_color);
-			  curstom_color.push_back(p_curstom_color);
-		  }
-	  
-		  
-		  LocalVector<Transform3D> transform;
-		  LocalVector<Color> color;
-		  LocalVector<Color> curstom_color;
-	  };
-    class FoliageGlobals
+	class SceneInstanceBlock;
+
+
+	class FoliageGlobals
     {
 		/// <summary>
 		/// 植被分块大小(米)，地图中的植被按块进行存储
@@ -315,7 +292,7 @@ namespace Foliage
 
 			}
 
-			CompressedPosition(FoliageCellPos& _cellPos, Vector3& _uncompressedPos)
+			CompressedPosition(const FoliageCellPos& _cellPos,const Vector3& _uncompressedPos)
 			{
 				float _relativeX = _uncompressedPos.x - FoliageGlobals::CELL_SIZE * _cellPos.x;
 				float _relativeZ = _uncompressedPos.z - FoliageGlobals::CELL_SIZE * _cellPos.z;
@@ -366,7 +343,7 @@ namespace Foliage
 			{
 				
 			}
-			CompressedRotation( Quaternion& _q)
+			CompressedRotation( const Quaternion& _q)
 			{
 				x = (uint8_t)((_q.x * 0.5f + 0.5f) * 255.0f);
 				y = (uint8_t)((_q.y * 0.5f + 0.5f) * 255.0f);
@@ -396,7 +373,7 @@ namespace Foliage
 			{
 				
 			}
-			CompressedScaling( Vector3& _scaling)
+			CompressedScaling( const Vector3& _scaling)
 			{
 				x = _scaling.x;
 				y = _scaling.y;
@@ -457,10 +434,6 @@ namespace Foliage
 			Color custom_color;
 
 			/// <summary>
-			/// 材质渲染索引
-			/// </summary>
-			int materialRenderIndex;
-			/// <summary>
 			/// 渲染分组ID
 			/// </summary>
 			
@@ -497,7 +470,6 @@ namespace Foliage
 				custom_color.b = file->get_float();
 				custom_color.a = file->get_float();
 
-                materialRenderIndex = file->get_32();
                 renderGroupID = file->get_16();
                 renderLodID = file->get_16();
             }
@@ -591,7 +563,7 @@ namespace Foliage
 			Vector<PrototypeData> prototypes;
 		public:
 			bool is_load = false;
-			MemoryPool::Block* block = nullptr;
+			MemoryPool::Block* data_block = nullptr;
 		public:
 
 
@@ -638,23 +610,9 @@ namespace Foliage
                 }
 
             }
-			Ref<SceneInstanceBlock> create_instance_block(const FoliageCellPos& cell_position, int proto_type_index,int render_level) {
-				if(proto_type_index >= prototypes.size())
-				{
-					return Ref<SceneInstanceBlock>();
-				}
-				const PrototypeData& prototype = prototypes[proto_type_index];
-				Ref<SceneInstanceBlock> block = memnew(SceneInstanceBlock);
-				Transform3D transform;
-				for(int i = prototype.instanceRange.x; i < prototype.instanceRange.y; i++)
-				{
-					const InstanceData& instance = instances[i];
-					if(instance.renderLodID <= render_level) {
-						instance.create_transform(position,transform);
-						block->add_instance(transform,instance.color,instance.custom_color);
-					}
-				}
-			}
+			Ref<SceneInstanceBlock> create_instance_block(const FoliageCellPos& cell_position, int proto_type_index,int render_level);
+			void add_instance_block(FoliageCellPos& _cellPos, const Ref<SceneInstanceBlock>& block);
+
             void clear()
             {
                 index = 0;
@@ -697,7 +655,23 @@ namespace Foliage
 		{
 			region_offset = Vector2i(_x, _z);
 		}
-		Ref<SceneInstanceBlock> create_instance_block(int cell_index,int proto_type_index,int render_level) ;
+		Vector2 get_region_offset() { return region_offset; }
+		
+		int32_t add_data(int _x, int _z) {
+			CellData data;
+			data.x = _x;
+			data.z = _z;
+			datas.push_back(data);
+			return datas.size() - 1;
+		}
+		Ref<SceneInstanceBlock> create_instance_block(int cell_index,int proto_type_index,int render_level) {
+
+			FoliageCellPos cell_position;
+			cell_position.x = datas[cell_index].x + region_offset.x;
+			cell_position.z = datas[cell_index].z + region_offset.y;
+			return datas[cell_index].create_instance_block(cell_position,proto_type_index,render_level);
+		}
+		void add_instance_block(int cell_index,const Ref<SceneInstanceBlock>& block);
 	protected:
         void load_imp(Ref<FileAccess> & file,uint32_t version,bool is_big_endian) override;
 		/// <summary>
@@ -706,5 +680,61 @@ namespace Foliage
 		void unload_imp() override;
 	public:
     };
+	class SceneInstanceBlock : public RefCounted{
+		GDCLASS(SceneInstanceBlock, RefCounted);
+		static void _bind_methods();
+	  public:
+	  
+		void set_instance_count(int p_instance_count) { 
+			transform.resize(p_instance_count); 
+			color.resize(p_instance_count);
+			curstom_color.resize(p_instance_count);
+			render_level.resize(p_instance_count);
+			render_level.fill(0);
+		}
+		int get_instance_count() const { return transform.size(); }
+	
+		const LocalVector<Transform3D>& get_transform() const { return transform; }
+		const LocalVector<Color>& get_color() const { return color; }
+		const LocalVector<Color>& get_curstom_color() const { return curstom_color; }
+		
+		void add_instance(const Transform3D& p_transform, const Color& p_color, const Color& p_curstom_color,int8_t p_render_level = 0) {
+			transform.push_back(p_transform);
+			color.push_back(p_color);
+			curstom_color.push_back(p_curstom_color);
+			render_level.push_back(p_render_level);
+		}
+
+		void set_instance_render_level(int p_index, int8_t p_visible) { render_level[p_index] = p_visible; }
+		int8_t get_instance_render_level(int p_index) const { return render_level[p_index]; }
+
+		void set_instance_color(int p_index, const Color& p_color) { color[p_index] = p_color; }
+		const Color& get_instance_color(int p_index) const { return color[p_index]; }
+
+		void set_instance_curstom_color(int p_index, const Color& p_curstom_color) { curstom_color[p_index] = p_curstom_color; }
+		const Color& get_instance_curstom_color(int p_index) const { return curstom_color[p_index]; }
+
+		void set_instance_transform(int p_index, const Transform3D& p_transform) { transform[p_index] = p_transform; }
+		const Transform3D& get_instance_transform(int p_index) const { return transform[p_index]; }
+
+		void set_guid(const String& p_guid) { guid = p_guid; }
+		const String& get_guid() const { return guid; }
+
+		void set_proto_type_index(int p_proto_type_index) { proto_type_index = p_proto_type_index; }
+		int get_proto_type_index() const { return proto_type_index; }
+
+		// 移除隐藏的实例
+		void remove_hiden_instances();
+
+		LocalVector<Transform3D> transform;
+		LocalVector<Color> color;
+		LocalVector<Color> curstom_color;
+		// -1 为隐藏,>=0 为显示,0-2 为显示等级
+		LocalVector<int8_t> render_level;
+
+		String guid;
+		int proto_type_index = -1;
+	};
+    
 }
 #endif

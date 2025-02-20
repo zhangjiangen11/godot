@@ -68,6 +68,9 @@
 #include "modules/game_help/logic/beehave/leaves/blackboard_condition.h"
 #include "modules/game_help/logic/beehave/leaves/move_position.h"
 
+#include "modules/game_help/foliage_manager/foliage_cell_asset.h"
+#include "modules/game_help/foliage_manager/foliage_cell_layer.h"
+
 
 
 #include "modules/game_help/logic/character_ai/blackboard_set_item/animator_blackboard_item_bool.h"
@@ -176,6 +179,12 @@ void initialize_game_help_module(ModuleInitializationLevel p_level) {
 		//initialize_terrain_3d(p_level);
 		initialize_filiage_manager(p_level);
 		initialize_path_mesh_3d(p_level);
+
+
+		ClassDB::register_class<Foliage::SceneInstanceBlock>();
+		ClassDB::register_class<Foliage::FoliageResource>();
+		ClassDB::register_class<Foliage::FoliageCellAsset>();
+
 		ClassDB::register_class<AnimationManager>();
 
 		ClassDB::register_class<DataTableManager>();

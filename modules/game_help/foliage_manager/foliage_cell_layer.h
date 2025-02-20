@@ -59,10 +59,10 @@ namespace Foliage
             FoliageCellPos worldpos = _cell->position;
             worldpos.Offset(map_offset_pos);
             _cell->is_load = false;
-            _cell->block = memoryPoolData.allocal(_cell->prototypes.size());
+            _cell->data_block = memoryPoolData.allocal(_cell->prototypes.size());
             cell_datas[key] = *_cell;
-            m_pendingDictLoadCells[key] = _cell->block;
-            auto buf_ptr = memoryPoolData.get_buffer(_cell->block);
+            m_pendingDictLoadCells[key] = _cell->data_block;
+            auto buf_ptr = memoryPoolData.get_buffer(_cell->data_block);
             for(int i = 0; i < _cell->prototypes.size(); ++i)
             {
                 auto& protype = prototypes[_cell->prototypes[i].guid];
@@ -89,7 +89,7 @@ namespace Foliage
             }
 
 
-            return _cell->block;
+            return _cell->data_block;
         }
         FoliageCellAsset::CellData * get_cell(FoliageCellPos& world_pos)
         {        
@@ -105,7 +105,7 @@ namespace Foliage
             auto it = cell_datas.find(world_pos.DecodeInt());
             if(it != cell_datas.end())
             {
-                return it->value.block;
+                return it->value.data_block;
             }
             return nullptr;
         }
@@ -114,7 +114,7 @@ namespace Foliage
             auto it = cell_datas.find(world_pos.DecodeInt());
             if(it != cell_datas.end())
             {
-                memoryPoolData.free(it->value.block);
+                memoryPoolData.free(it->value.data_block);
                 cell_datas.erase(it->key);
                 m_pendingDictLoadCells.erase(world_pos.DecodeInt());
             }
@@ -124,7 +124,7 @@ namespace Foliage
         {
             for(auto & it : cell_datas)
             {
-                memoryPoolData.free(it.value.block);
+                memoryPoolData.free(it.value.data_block);
             }
             cell_datas.clear();
             m_pendingDictLoadCells.clear();
