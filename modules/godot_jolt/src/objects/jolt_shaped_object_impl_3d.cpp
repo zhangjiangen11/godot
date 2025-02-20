@@ -327,10 +327,7 @@ void JoltShapedObjectImpl3D::set_shape_transform(int32_t p_index, Transform3D p_
 #ifdef TOOLS_ENABLED
 	if (unlikely(p_transform.basis.determinant() == 0.0f)) {
 		ERR_PRINT(vformat(
-			"Failed to set transform for shape at index %d of body '%s'. "
-			"Its basis was found to be singular, which is not supported by Godot Jolt. "
-			"This is likely caused by one or more axes having a scale of zero. "
-			"Its basis (and thus its scale) will be treated as identity.",
+			"Failed to correctly set transform for shape at index %d in body '%s'.",
 			p_index,
 			to_string()
 		));

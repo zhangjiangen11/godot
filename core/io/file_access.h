@@ -179,6 +179,14 @@ public:
 
 	virtual uint64_t get_buffer(uint8_t *p_dst, uint64_t p_length) const = 0; ///< get an array of bytes, needs to be overwritten by children.
 	Vector<uint8_t> get_buffer(int64_t p_length) const;
+
+	String get_utf8_string_buffer() {
+		uint64_t len = get_32();
+		Vector<uint8_t> buf;
+		buf.resize(len);
+		get_buffer(buf.ptrw(), len);
+		return String::utf8((const char *)buf.ptr(), len);
+	}
 	virtual String get_line() const;
 	virtual String get_token() const;
 	virtual Vector<String> get_csv_line(const String &p_delim = ",") const;
@@ -209,6 +217,11 @@ public:
 	virtual bool store_real(real_t p_real);
 
 	virtual bool store_string(const String &p_string);
+	void store_utf8_string_buffer(const String &p_string) {
+		CharString cs = p_string.utf8();
+		store_32(cs.length());
+		store_buffer((uint8_t *)&cs[0], cs.length());
+	}
 	virtual bool store_line(const String &p_line);
 	virtual bool store_csv_line(const Vector<String> &p_values, const String &p_delim = ",");
 

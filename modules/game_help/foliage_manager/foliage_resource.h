@@ -29,7 +29,9 @@ namespace Foliage
         };
     public:
 		// 加載文件
-		void load_file(String _file);
+		void load_file(const String& _file);
+        const String& get_file() const { return configFile; }
+		void save();
         void clear()
         {
             wait_load_finish();
@@ -54,6 +56,7 @@ namespace Foliage
     	static void job_load_func(void* data,uint32_t index);
     public:
         virtual void load_imp(Ref<FileAccess> & file,uint32_t version,bool is_big_endian){}
+        virtual void save_imp(Ref<FileAccess> & file,uint32_t version){}
         virtual void on_load_finish(){}
         virtual void unload_imp(){}
         virtual void tick_imp(){}

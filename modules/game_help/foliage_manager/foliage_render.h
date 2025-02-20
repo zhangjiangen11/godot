@@ -170,7 +170,7 @@ namespace Foliage
             Vector<LODRenderInfo> lodRenderInfos;
         };
         // 對應的原型信息
-        FoliagePrototype * prototype = nullptr;
+        Ref<FoliagePrototype> prototype = nullptr;
         int renderIndex = 0;
         FiliageRenderGpuResource gpuResource;
         int heightType = 0;

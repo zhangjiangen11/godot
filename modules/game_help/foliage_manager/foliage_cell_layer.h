@@ -45,7 +45,7 @@ namespace Foliage
         int32_t layerIndex;
         bool is_remove = false;
         MemoryPool::Block* add_cell(Vector3& map_offset_pos, FoliageCellAsset::CellData * _cell
-        ,MemoryPoolData<PendingProtoBox>& memoryPoolData,HashMap<String,FoliagePrototype>& prototypes)
+        ,MemoryPoolData<PendingProtoBox>& memoryPoolData,HashMap<String,Ref<FoliagePrototype>>& prototypes)
         {
             FoliageCellPos pos = _cell->position;
             pos.Offset(map_offset_pos);
@@ -67,19 +67,19 @@ namespace Foliage
             {
                 auto& protype = prototypes[_cell->prototypes[i].guid];
                 // 计算原型的最大加载距离
-                auto dis = protype.lodEndDistance();
-                dis.y = protype.lod1Enabled ? dis.y : 0;
-                dis.z = protype.lod2Enabled ? dis.z : 0;
-                dis.w = protype.lod3Enabled ? dis.w : 0;
+                auto dis = protype->lodEndDistance();
+                dis.y = protype->lod1Enabled ? dis.y : 0;
+                dis.z = protype->lod2Enabled ? dis.z : 0;
+                dis.w = protype->lod3Enabled ? dis.w : 0;
                 float _maxLoadDistSq = MAX(dis.x, MAX(dis.y, MAX(dis.z, dis.w)));
                 _maxLoadDistSq *= _maxLoadDistSq;
 
                 auto& pd = _cell->prototypes[i];
 
-                buf_ptr[i].protoID = protype.protypeId;
-                auto box = protype.boxOS;
+                buf_ptr[i].protoID = protype->protypeId;
+                auto box = protype->boxOS;
                 box.position += worldpos.worldPosition();
-                buf_ptr[i].box = protype.boxOS;
+                buf_ptr[i].box = protype->boxOS;
                 buf_ptr[i].distance = _maxLoadDistSq;
                 buf_ptr[i].loadTag = FoliageGlobals::LOAD_TAG_NONE;
                 buf_ptr[i].layerId = layerIndex;

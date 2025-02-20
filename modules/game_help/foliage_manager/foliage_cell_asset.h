@@ -659,19 +659,25 @@ namespace Foliage
 		
 		int32_t add_data(int _x, int _z) {
 			CellData data;
-			data.x = _x;
-			data.z = _z;
+			data.position.x = _x;
+			data.position.z = _z;
 			datas.push_back(data);
 			return datas.size() - 1;
+		}
+		void add_instance_block(int cell_index,const Ref<SceneInstanceBlock>& block) {
+
+			FoliageCellPos cell_position;
+			cell_position.x = datas[cell_index].position.x + region_offset.x;
+			cell_position.z = datas[cell_index].position.z + region_offset.y;
+			datas.write[cell_index].add_instance_block(cell_position,block);
 		}
 		Ref<SceneInstanceBlock> create_instance_block(int cell_index,int proto_type_index,int render_level) {
 
 			FoliageCellPos cell_position;
-			cell_position.x = datas[cell_index].x + region_offset.x;
-			cell_position.z = datas[cell_index].z + region_offset.y;
-			return datas[cell_index].create_instance_block(cell_position,proto_type_index,render_level);
+			cell_position.x = datas[cell_index].position.x + region_offset.x;
+			cell_position.z = datas[cell_index].position.z + region_offset.y;
+			return datas.write[cell_index].create_instance_block(cell_position,proto_type_index,render_level);
 		}
-		void add_instance_block(int cell_index,const Ref<SceneInstanceBlock>& block);
 	protected:
         void load_imp(Ref<FileAccess> & file,uint32_t version,bool is_big_endian) override;
 		/// <summary>
@@ -725,6 +731,13 @@ namespace Foliage
 
 		// 移除隐藏的实例
 		void remove_hiden_instances();
+
+		void compute_rotation(int p_index,const Vector3& p_normal,float p_angle) {
+			
+			Basis& basis = transform[p_index].basis;
+			basis.rotate(Vector3(0, 1, 0), p_angle);
+			basis.rotate_to_align( Vector3(0, 1, 0),p_normal);
+		}
 
 		LocalVector<Transform3D> transform;
 		LocalVector<Color> color;

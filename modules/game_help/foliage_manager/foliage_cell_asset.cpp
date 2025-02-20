@@ -48,6 +48,7 @@ namespace Foliage
         ClassDB::bind_method(D_METHOD("get_proto_type_index"), &SceneInstanceBlock::get_proto_type_index);
 
         ClassDB::bind_method(D_METHOD("remove_hiden_instances"), &SceneInstanceBlock::remove_hiden_instances);
+        ClassDB::bind_method(D_METHOD("compute_rotation","p_index","p_normal","p_angle"), &SceneInstanceBlock::compute_rotation);
 
         ADD_PROPERTY(PropertyInfo(Variant::INT, "instance_count"), "set_instance_count", "get_instance_count");
         ADD_PROPERTY(PropertyInfo(Variant::INT, "guid"), "set_guid", "get_guid");
@@ -65,7 +66,7 @@ namespace Foliage
 
         ClassDB::bind_method(D_METHOD("add_data", "x", "z"), &FoliageCellAsset::add_data);
 
-        ClassDB::bind_method(D_METHOD("create_instance_block", "cell_index", "proto_type_index","render_level"), &FoliageCellAsset::CellData::create_instance_block);
+        ClassDB::bind_method(D_METHOD("create_instance_block", "cell_index", "proto_type_index","render_level"), &FoliageCellAsset::create_instance_block);
         ClassDB::bind_method(D_METHOD("add_instance_block", "cell_index", "block"), &FoliageCellAsset::add_instance_block);
     }
 

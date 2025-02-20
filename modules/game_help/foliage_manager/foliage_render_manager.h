@@ -82,17 +82,16 @@ namespace Foliage
 
         // 原型操作相關函數
     public:
-        void add_protype(FoliagePrototype * _prototype)
+        void add_protype(const Ref<FoliagePrototype>& _prototype)
         {
             auto it = prototypes.find(_prototype->guid);
             if(it == prototypes.end())
             {
-                ++it->value.refCount;
                 return;
             }
             _prototype->protypeId = get_protypeid(_prototype->guid);
             _prototype->refCount = 0;
-            prototypes[_prototype->guid] = *_prototype;
+            prototypes[_prototype->get_guid()] = *_prototype;
             renderArgBufferUpdate = true;
         }
         void remove_prototype(String _guid)
@@ -152,7 +151,7 @@ namespace Foliage
         {
             for(int i = 0; i < foliageRenderList.size(); ++i)
             {
-                if(foliageRenderList[i].prototype)
+                if(foliageRenderList[i].prototype.is_valid())
                 {
                     foliageRenderList[i].prototype->reset_use();
                 }   
@@ -188,7 +187,7 @@ namespace Foliage
                 render->renderIndex = foliageRenderList.size() - 1;
             }
             render->renderIndex = foliageRenderList.size();
-            render->prototype = &prototypes[_guid];
+            render->prototype = prototypes[_guid];
             render->prototype->set_use();
             guidToRender[_guid] = render;
             return true;
@@ -199,7 +198,7 @@ namespace Foliage
         {
             for(int i = 0; i < foliageRenderList.size(); ++i)
             {
-                if(foliageRenderList[i].prototype)
+                if(foliageRenderList[i].prototype.is_valid())
                 {
                     if(!foliageRenderList.write[i].prototype->is_use())
                     {
@@ -221,7 +220,7 @@ namespace Foliage
             for(int _rIter = 0; _rIter < foliageRenderList.size(); ++_rIter)
             {
 
-                if(foliageRenderList[_rIter].prototype)
+                if(foliageRenderList[_rIter].prototype.is_valid())
                 {
                     auto& _renderer = foliageRenderList.write[_rIter];
                     auto protype = foliageRenderList[_rIter].prototype;
@@ -507,7 +506,7 @@ namespace Foliage
         HashMap<int,int> cellLayerIDMap;
 
         // 记载的原型信息
-        HashMap<String,FoliagePrototype> prototypes;
+        HashMap<String,Ref<FoliagePrototype>> prototypes;
         // 原型對應的索引ID
         HashMap<String,int> prototypesIndexID;
         // 加载的原型渲染信息

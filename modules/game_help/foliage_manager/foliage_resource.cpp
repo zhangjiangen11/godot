@@ -3,7 +3,7 @@ namespace Foliage
 {
     
 
-    void FoliageResource::load_file(String _file)
+    void FoliageResource::load_file(const String& _file)
     {
         if(loadState != LoadNone)
         {
@@ -54,6 +54,11 @@ namespace Foliage
         uint32_t version = file->get_32();
         load_imp(file,version,big_endian);
 
+    }
+    void FoliageResource::save() {
+        Ref<FileAccess> file = FileAccess::open(configFile, FileAccess::WRITE);
+        file->store_32(1);
+        save_imp(file,1);
     }
     
     void FoliageResource::_bind_methods()
