@@ -5,6 +5,8 @@
 #include "scene/resources/3d/box_shape_3d.h"
 #include "scene/resources/3d/sphere_shape_3d.h"
 
+#include "scene/main/viewport.h"
+
 
 
 void SceneDataCompoent::show(int p_show_level,const Transform3D& p_parent,SceneChunkGroupInstance * instance) {
@@ -242,6 +244,9 @@ void SceneChunkGroupInstance::clear_show_instance_ids() {
 
 /*********************************************************************************************************/
 
+SceneChunk::SceneChunk() {
+    set_process(true);
+}
 int SceneChunk::add_multimesh_instance(const String& res_path, const Transform3D& t) {
 
     Ref<MeshInstance> mesh_instance;
@@ -431,6 +436,11 @@ void SceneChunk::remove_mesh_collision_instance( int id,const String& p_path) {
             mesh_collision_resource->mesh_transforms.erase(id);
         }
     }   
+}
+
+void SceneChunk::process(double p_delta) {
+    // 處理裁剪
+    Camera3D * camera = get_viewport()->get_camera_3d();
 }
 
 void SceneChunk::_bind_methods() {

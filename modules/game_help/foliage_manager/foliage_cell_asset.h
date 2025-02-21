@@ -13,6 +13,8 @@
 #include "foliage_resource.h"
 
 #include "memory_pool.h"
+#include "scene/3d/camera_3d.h"
+#include "scene/main/viewport.h"
 
 
 namespace Foliage
@@ -747,6 +749,48 @@ namespace Foliage
 
 		String guid;
 		int proto_type_index = -1;
+	};
+
+	class FoliageCellMask : public RefCounted {
+		GDCLASS(FoliageCellMask, RefCounted);
+		static void _bind_methods() ;
+	public:
+		void init(int p_width, int p_height,bool p_is_bit) ;
+		void set_pixel(int p_x, int p_y, uint8_t p_value) ;
+
+
+		uint8_t get_pixel(int p_x, int p_y) ;
+
+		void set_data(const Vector<uint8_t>& p_data) { data = p_data; }
+		Vector<uint8_t> get_data() { return data; }
+
+		void set_width(int p_width) { width = p_width; }
+		void set_height(int p_height) { height = p_height; }
+
+		int get_width() { return width; }
+		int get_height() { return height; }
+
+		void set_real_width(int p_real_width) { real_width = p_real_width; }
+		int get_real_width() { return real_width; }
+
+		void set_is_bit(bool p_is_bit) { is_bit = p_is_bit; }
+		bool get_is_bit() { return is_bit; }
+
+		// 矩形
+		void set_rect_pixel(int p_x, int p_y, int p_width, int p_height, uint8_t p_value) ;
+
+		// 圆环
+		void set_circle_pixel(int p_x, int p_y, int p_radius, uint8_t p_value) ;
+
+		void set_form_texture_pixel(const Ref<Image>& p_texture,const Rect2& p_dest_rect,const Rect2& p_src_rect,int image_slot) ;
+	private:
+		Vector<uint8_t> data;
+		int width = 0;
+		int height = 0;
+
+		int real_width = 0;
+
+		bool is_bit = false;
 	};
     
 }

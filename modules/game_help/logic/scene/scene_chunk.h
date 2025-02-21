@@ -274,7 +274,7 @@ class SceneChunk : public Node3D {
 	static void _bind_methods();
 
 public:
-    SceneChunk() {}
+    SceneChunk();
 
     MultiMeshInstance3D* get_multimesh_instance(const String& name) {
         return Object::cast_to<MultiMeshInstance3D>(get_node(name));
@@ -292,6 +292,8 @@ public:
 
     void add_multmesh_instance_block(const String& res_path, const Ref<Foliage::SceneInstanceBlock>& t) ;
     void remove_multmesh_instance_block(const String& res_path, const Ref<Foliage::SceneInstanceBlock>& t) ;
+
+	virtual void process(double p_delta);
 
     int get_free_id() {
         int id = 0;

@@ -99,8 +99,8 @@ namespace Foliage
 		bool _isUse = false;
 	public:
 
-		void set_guid(const String& guid) {
-			this->guid = guid;
+		void set_guid(const String& p_guid) {
+			guid = p_guid;
 		}
 		const String& get_guid() const{
 			return guid;
