@@ -27,13 +27,17 @@ namespace Foliage
     }
     // 隐藏不显示的实例
     void SceneInstanceBlock::hide_instance_by_cell_mask(const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) {
-        if (transform.size() != p_cell_mask.get_data().size()) {
+        if (transform.size() != p_cell_mask->get_data().size()) {
             return;
         }
 
-        for (int i = 0; i < transform.size(); i++) {
-            if (p_cell_mask->get_data()[i] < p_visble_value_min || p_cell_mask->get_data()[i] > p_visble_value_max) {
-                render_level[i] = -1;
+        for(int32_t w = 0; w < p_cell_mask->get_width(); w++) {
+            for(int32_t h = 0; h < p_cell_mask->get_height(); h++) {
+                uint8_t v = p_cell_mask->get_pixel(w, h);
+                if (v < p_visble_value_min || v > p_visble_value_max) {
+                    int index = w + h * p_cell_mask->get_width();
+                    render_level[index] = -1;
+                }
             }
         }
     }
