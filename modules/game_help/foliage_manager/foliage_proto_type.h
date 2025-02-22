@@ -221,7 +221,12 @@ namespace Foliage
 
         static void _bind_methods()
         {
+			ClassDB::bind_method(D_METHOD("set_region", "region"), &FoliagePrototypeAsset::set_region);
+			ClassDB::bind_method(D_METHOD("get_region"), &FoliagePrototypeAsset::get_region);
+			ClassDB::bind_method(D_METHOD("add_prototype", "prototype"), &FoliagePrototypeAsset::add_prototype);
+			ClassDB::bind_method(D_METHOD("get_prototype", "index"), &FoliagePrototypeAsset::get_prototype);
 
+			ADD_PROPERTY(PropertyInfo(Variant::RECT2, "region"), "set_region", "get_region");
         }
 	public:
 		void set_region(const Rect2& p_region) {

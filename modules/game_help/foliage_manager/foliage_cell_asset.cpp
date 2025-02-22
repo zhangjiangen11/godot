@@ -25,6 +25,19 @@ namespace Foliage
         }
         render_level.resize(transform.size());
     }
+    // 隐藏不显示的实例
+    void SceneInstanceBlock::hide_instance_by_cell_mask(const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) {
+        if (transform.size() != p_cell_mask.get_data().size()) {
+            return;
+        }
+
+        for (int i = 0; i < transform.size(); i++) {
+            if (p_cell_mask->get_data()[i] < p_visble_value_min || p_cell_mask->get_data()[i] > p_visble_value_max) {
+                render_level[i] = -1;
+            }
+        }
+    }
+
 	void SceneInstanceBlock::_bind_methods() {
         ClassDB::bind_method(D_METHOD("set_instance_count", "instance_count"), &SceneInstanceBlock::set_instance_count);
         ClassDB::bind_method(D_METHOD("get_instance_count"), &SceneInstanceBlock::get_instance_count);
@@ -49,6 +62,7 @@ namespace Foliage
 
         ClassDB::bind_method(D_METHOD("remove_hiden_instances"), &SceneInstanceBlock::remove_hiden_instances);
         ClassDB::bind_method(D_METHOD("compute_rotation","p_index","p_normal","p_angle"), &SceneInstanceBlock::compute_rotation);
+        ClassDB::bind_method(D_METHOD("hide_instance_by_cell_mask","p_cell_mask","p_visble_value_min","p_visble_value_max"), &SceneInstanceBlock::hide_instance_by_cell_mask);
 
         ADD_PROPERTY(PropertyInfo(Variant::INT, "instance_count"), "set_instance_count", "get_instance_count");
         ADD_PROPERTY(PropertyInfo(Variant::INT, "guid"), "set_guid", "get_guid");
@@ -146,6 +160,9 @@ namespace Foliage
     void FoliageCellMask::_bind_methods() {
         ClassDB::bind_method(D_METHOD("init", "width", "height","is_bit"), &FoliageCellMask::init);
         ClassDB::bind_method(D_METHOD("set_pixel", "x", "y", "value"), &FoliageCellMask::set_pixel);
+        ClassDB::bind_method(D_METHOD("set_rect_pixel", "x", "y", "width", "height", "value"), &FoliageCellMask::set_rect_pixel);
+        ClassDB::bind_method(D_METHOD("set_circle_pixel", "x", "y", "radius", "value"), &FoliageCellMask::set_circle_pixel);
+        ClassDB::bind_method(D_METHOD("set_form_texture_pixel","texture","dest_rect","source_rect","image_slot"), &FoliageCellMask::set_form_texture_pixel);
         ClassDB::bind_method(D_METHOD("get_pixel", "x", "y"), &FoliageCellMask::get_pixel);
 
         ClassDB::bind_method(D_METHOD("set_data", "data"), &FoliageCellMask::set_data);

@@ -20,6 +20,7 @@
 namespace Foliage
 {
 	class SceneInstanceBlock;
+	class FoliageCellMask;
 
 
 	class FoliageGlobals
@@ -740,6 +741,8 @@ namespace Foliage
 			basis.rotate(Vector3(0, 1, 0), p_angle);
 			basis.rotate_to_align( Vector3(0, 1, 0),p_normal);
 		}
+		// 隐藏不显示的实例
+		void hide_instance_by_cell_mask(const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) ;
 
 		LocalVector<Transform3D> transform;
 		LocalVector<Color> color;
@@ -757,12 +760,19 @@ namespace Foliage
 	public:
 		void init(int p_width, int p_height,bool p_is_bit) ;
 		void set_pixel(int p_x, int p_y, uint8_t p_value) ;
+		// 矩形
+		void set_rect_pixel(int p_x, int p_y, int p_width, int p_height, uint8_t p_value) ;
+
+		// 圆环
+		void set_circle_pixel(int p_x, int p_y, int p_radius, uint8_t p_value) ;
+
+		void set_form_texture_pixel(const Ref<Image>& p_texture,const Rect2& p_dest_rect,const Rect2& p_src_rect,int image_slot) ;
 
 
 		uint8_t get_pixel(int p_x, int p_y) ;
 
 		void set_data(const Vector<uint8_t>& p_data) { data = p_data; }
-		Vector<uint8_t> get_data() { return data; }
+		const Vector<uint8_t>& get_data() { return data; }
 
 		void set_width(int p_width) { width = p_width; }
 		void set_height(int p_height) { height = p_height; }
@@ -776,13 +786,6 @@ namespace Foliage
 		void set_is_bit(bool p_is_bit) { is_bit = p_is_bit; }
 		bool get_is_bit() { return is_bit; }
 
-		// 矩形
-		void set_rect_pixel(int p_x, int p_y, int p_width, int p_height, uint8_t p_value) ;
-
-		// 圆环
-		void set_circle_pixel(int p_x, int p_y, int p_radius, uint8_t p_value) ;
-
-		void set_form_texture_pixel(const Ref<Image>& p_texture,const Rect2& p_dest_rect,const Rect2& p_src_rect,int image_slot) ;
 	private:
 		Vector<uint8_t> data;
 		int width = 0;

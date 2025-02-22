@@ -64,7 +64,11 @@ namespace Foliage
     void FoliageResource::_bind_methods()
     {
         ClassDB::bind_method(D_METHOD("load_file", "path"), &FoliageResource::load_file);
+        ClassDB::bind_method(D_METHOD("save"), &FoliageResource::save);
         ClassDB::bind_method(D_METHOD("clear"), &FoliageResource::clear);
+        ClassDB::bind_method(D_METHOD("wait_load_finish"), &FoliageResource::wait_load_finish);
+        ClassDB::bind_method(D_METHOD("is_load_finish"), &FoliageResource::is_load_finish);
+        ClassDB::bind_method(D_METHOD("tick"), &FoliageResource::tick);
         
     }
 }
