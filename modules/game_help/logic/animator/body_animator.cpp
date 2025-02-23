@@ -449,7 +449,6 @@ void CharacterAnimatorLayerConfigInstance::set_body(class CharacterBodyMain* p_b
 }
 void CharacterAnimatorLayerConfigInstance::auto_init()
 {
-    CharacterAnimatorLayer* layer = get_layer();
     class CharacterBodyMain* m_Body = get_body();
 	if (m_Body == nullptr || config.is_null())
 	{
@@ -459,10 +458,11 @@ void CharacterAnimatorLayerConfigInstance::auto_init()
 	if (skeleton == nullptr) {
 		return;
 	}
-	layer = memnew(CharacterAnimatorLayer);
+	CharacterAnimatorLayer* layer = memnew(CharacterAnimatorLayer);
 	m_Body->add_child(layer);
 	layer->set_owner(m_Body);
 	layer->init(skeleton, m_Body->get_animator().ptr(), config);
+	layer_id = layer->get_instance_id();
 }
 CharacterAnimatorLayer* CharacterAnimatorLayerConfigInstance::get_layer()
 {
