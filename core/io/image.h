@@ -425,6 +425,7 @@ public:
 	}
 	Color get_pixelv(const Point2i &p_point) const;
 	Color get_pixel(int p_x, int p_y) const;
+	Color sample_pixel(float p_x, float p_y) const;
 	void set_pixelv(const Point2i &p_point, const Color &p_color);
 	void set_pixel(int p_x, int p_y, const Color &p_color);
 

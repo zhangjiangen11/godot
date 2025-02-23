@@ -726,6 +726,8 @@ namespace Foliage
 		void set_instance_transform(int p_index, const Transform3D& p_transform) { transform[p_index] = p_transform; }
 		const Transform3D& get_instance_transform(int p_index) const { return transform[p_index]; }
 
+		void set_instance_scale(int p_index, const Vector3& p_scale) { transform[p_index].basis.scale(p_scale); }
+
 		void set_guid(const String& p_guid) { guid = p_guid; }
 		const String& get_guid() const { return guid; }
 
@@ -741,8 +743,18 @@ namespace Foliage
 			basis.rotate(Vector3(0, 1, 0), p_angle);
 			basis.rotate_to_align( Vector3(0, 1, 0),p_normal);
 		}
+		void compute_rotation_align_normal(int p_index,const Vector3& p_normal) {
+			
+			Basis& basis = transform[p_index].basis;
+			basis.rotate_to_align( Vector3(0, 1, 0),p_normal);
+		}
 		// 隐藏不显示的实例
-		void hide_instance_by_cell_mask(const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) ;
+		void hide_instance_by_cell_mask(const Vector3& p_position_move,const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) ;
+
+		void rendom_instance_rotation(float p_angle_min,float p_angle_max) ;
+		void rendom_instance_scale(float p_scale_min,float p_scale_max) ;
+
+		void rendom_instance_move(float p_move_distance) ;
 
 		LocalVector<Transform3D> transform;
 		LocalVector<Color> color;
@@ -786,6 +798,10 @@ namespace Foliage
 		void set_is_bit(bool p_is_bit) { is_bit = p_is_bit; }
 		bool get_is_bit() { return is_bit; }
 
+		int get_data_size() { return width * height; }
+
+		void scale_instance(const Ref<SceneInstanceBlock>& p_block, float p_sacle_min,float p_scale_max,bool is_invert = false) ;
+
 	private:
 		Vector<uint8_t> data;
 		int width = 0;
@@ -794,6 +810,48 @@ namespace Foliage
 		int real_width = 0;
 
 		bool is_bit = false;
+	};
+
+	class FoliageHeightMap : public RefCounted {
+		GDCLASS(FoliageHeightMap, RefCounted);
+		static void _bind_methods() ;
+	public:
+		void init(int p_width, int p_height) ;
+		void init_form_image(int p_width, int p_height,const Ref<Image>& p_image,const Rect2i& p_rect);
+		void set_pixel(int p_x, int p_y, float p_value);
+		float get_pixel(int p_x, int p_y);
+		int get_width() { return width; }
+		int get_height() { return height; }
+		void set_width(int p_width) { width = p_width; }
+		void set_height(int p_height) { height = p_height; }
+		// 隐藏不在高度范围内的实例
+		void hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max);
+		// 隱藏非平地的实例
+		void hide_instance_by_flatland(const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference) ;
+
+	private:
+		int width = 0;
+		int height = 0;
+		Vector<float> data;
+	};
+	class FoliageNormalMap : public RefCounted {
+		GDCLASS(FoliageNormalMap, RefCounted);
+		static void _bind_methods();
+	public:
+		void init(int p_width, int p_height);
+		void init_form_image(int p_width, int p_height, const Ref<Image>& p_image, const Rect2i& p_rect);
+		void set_pixel(int p_x, int p_y, Vector3 p_value);
+		Vector3 get_pixel(int p_x, int p_y);
+		int get_width() { return width; }
+		int get_height() { return height; }
+		void set_width(int p_width) { width = p_width; }
+		void set_height(int p_height) { height = p_height; }
+		// 通过坡度隐藏实例
+		void hide_instance_by_slope(const Ref<SceneInstanceBlock>& p_block, float p_visble_slope_min, float p_visble_slope_max);
+	private:
+		int width = 0;
+		int height = 0;
+		Vector<Vector3> data;
 	};
     
 }

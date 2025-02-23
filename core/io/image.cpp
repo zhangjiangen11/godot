@@ -3338,6 +3338,31 @@ Color Image::get_pixel(int p_x, int p_y) const {
 	uint32_t ofs = p_y * width + p_x;
 	return _get_color_at_ofs(data.ptr(), ofs);
 }
+Color Image::sample_pixel(float p_u, float p_v) const {
+	p_u = CLAMP(p_u, 0.0, 1.0);
+	p_v = CLAMP(p_v, 0.0, 1.0);
+	float x = p_u * (width - 1);
+	float y = p_v * (height - 1);
+
+	int x1 = int(x);
+	int x2 = x1 + 1;
+	int y1 = int(y);
+	int y2 = y1 + 1;
+	// 计算插值系数
+	float dx = x - x1;
+	float dy = y - y1;
+
+	Color c00 = get_pixel(x1, y1);
+	Color c01 = get_pixel(x1, y2);
+	Color c10 = get_pixel(x2, y1);
+	Color c11 = get_pixel(x2, y2);
+
+	Color c0 = c00.lerp(c10, dx);
+	Color c1 = c01.lerp(c11, dx);
+
+	return c0.lerp(c1, dy);
+
+}
 
 void Image::set_pixelv(const Point2i &p_point, const Color &p_color) {
 	set_pixel(p_point.x, p_point.y, p_color);

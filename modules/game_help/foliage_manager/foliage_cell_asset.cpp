@@ -26,18 +26,56 @@ namespace Foliage
         render_level.resize(transform.size());
     }
     // 隐藏不显示的实例
-    void SceneInstanceBlock::hide_instance_by_cell_mask(const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) {
-        if (transform.size() != p_cell_mask->get_data().size()) {
+    void SceneInstanceBlock::hide_instance_by_cell_mask(const Vector3& p_position_move,const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) {
+        if (transform.size() != p_cell_mask->get_data_size()) {
             return;
         }
 
-        for(int32_t w = 0; w < p_cell_mask->get_width(); w++) {
-            for(int32_t h = 0; h < p_cell_mask->get_height(); h++) {
-                uint8_t v = p_cell_mask->get_pixel(w, h);
+        for(int i = 0; i < transform.size(); i++) {
+            if (render_level[i] >= 0) {
+                Vector3 pos = transform[i].origin - p_position_move;
+                int x = pos.x / p_cell_mask->get_width();
+                int z = pos.z / p_cell_mask->get_height();
+                x = CLAMP(x, 0, p_cell_mask->get_width() - 1);
+                z = CLAMP(z, 0, p_cell_mask->get_height() - 1);
+
+                uint8_t v = p_cell_mask->get_pixel(x, z);
                 if (v < p_visble_value_min || v > p_visble_value_max) {
-                    int index = w + h * p_cell_mask->get_width();
+                    int index = x + z * p_cell_mask->get_width();
                     render_level[index] = -1;
                 }
+            }
+        }
+    }
+    void SceneInstanceBlock::rendom_instance_rotation(float p_angle_min,float p_angle_max) {
+
+        for(int i = 0; i < transform.size(); i++) {
+            if (render_level[i] >= 0) {
+                transform[i].basis = transform[i].basis.rotated(Vector3(0, 1, 0), p_angle_min + Math::randf() * (p_angle_max - p_angle_min)) ;
+            }
+        }
+    }
+    
+	void SceneInstanceBlock::rendom_instance_scale(float p_scale_min,float p_scale_max) {
+
+        for(int i = 0; i < transform.size(); i++) {
+            if (render_level[i] >= 0) {
+                float scale = p_scale_min + Math::randf() * (p_scale_max - p_scale_min);
+                transform[i].basis = transform[i].basis.scaled(Vector3(scale, scale, scale));
+            }
+        }
+    }
+    void SceneInstanceBlock::rendom_instance_move(float p_move_distance) {
+
+        for(int i = 0; i < transform.size(); i++) {
+            if (render_level[i] >= 0) {
+                float range = p_move_distance * 0.5f;
+                float x = Math::randf() * range - range * 0.5f;
+
+                float z = Math::randf() * range - range * 0.5f;
+
+                Vector3 move = Vector3(x, 0, z);
+                transform[i].origin += move;
             }
         }
     }
@@ -168,6 +206,7 @@ namespace Foliage
         ClassDB::bind_method(D_METHOD("set_circle_pixel", "x", "y", "radius", "value"), &FoliageCellMask::set_circle_pixel);
         ClassDB::bind_method(D_METHOD("set_form_texture_pixel","texture","dest_rect","source_rect","image_slot"), &FoliageCellMask::set_form_texture_pixel);
         ClassDB::bind_method(D_METHOD("get_pixel", "x", "y"), &FoliageCellMask::get_pixel);
+        ClassDB::bind_method(D_METHOD("get_data_size"), &FoliageCellMask::get_data_size);
 
         ClassDB::bind_method(D_METHOD("set_data", "data"), &FoliageCellMask::set_data);
         ClassDB::bind_method(D_METHOD("get_data"), &FoliageCellMask::get_data);
@@ -301,6 +340,178 @@ namespace Foliage
         }  
     }
 
+    void FoliageCellMask::scale_instance(const Ref<SceneInstanceBlock>& p_block, float p_sacle_min,float p_scale_max,bool is_invert) {
+        if(is_bit) {
+            return;
+        }
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                if(p_block->get_instance_render_level(y * width + x) == -1) {
+                    continue;
+                }
+                uint8_t value = data[y * width + x];
+                if(is_invert) {
+                    value = 255 - value;
+                }
+                float fvalue = value / 255.0;
+                float scale = fvalue * (p_scale_max - p_sacle_min) + p_sacle_min;
+                p_block->set_instance_scale(y * width + x, Vector3(scale, scale, scale));
+            }
+        }
+    }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    void FoliageHeightMap::_bind_methods() {
+        ClassDB::bind_method(D_METHOD("init", "width", "height"), &FoliageHeightMap::init);
+        ClassDB::bind_method(D_METHOD("init_form_image", "width", "height", "image", "rect"), &FoliageHeightMap::init_form_image);
+        ClassDB::bind_method(D_METHOD("set_pixel", "x", "y", "value"), &FoliageHeightMap::set_pixel);
+        ClassDB::bind_method(D_METHOD("get_pixel", "x", "y"), &FoliageHeightMap::get_pixel);
+        ClassDB::bind_method(D_METHOD("get_width"), &FoliageHeightMap::get_width);
+        ClassDB::bind_method(D_METHOD("get_height"), &FoliageHeightMap::get_height);
+        ClassDB::bind_method(D_METHOD("set_width", "width"), &FoliageHeightMap::set_width);
+        ClassDB::bind_method(D_METHOD("set_height", "height"), &FoliageHeightMap::set_height);
+
+        ClassDB::bind_method(D_METHOD("hide_instance_by_height_range", "min_height", "max_height"), &FoliageHeightMap::hide_instance_by_height_range);
+        ClassDB::bind_method(D_METHOD("hide_instance_by_flatland","instance_range","flatland_height"), &FoliageHeightMap::hide_instance_by_flatland);
+    }
+    void FoliageHeightMap::init(int p_width, int p_height) {
+        width = p_width;
+        height = p_height;
+        data.resize(height * width);
+    }
+    void FoliageHeightMap::init_form_image(int p_width, int p_height,const Ref<Image>& p_image,const Rect2i& p_rect) {
+        width = p_width;
+        height = p_height;
+        int start_x = p_rect.position.x;
+        int start_y = p_rect.position.y;
+        data.resize(height * width);
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                data.write[y * width + x] = p_image->get_pixel(start_x + x, start_y + y).r;
+            }
+        }
+    }
+    void FoliageHeightMap::set_pixel(int p_x, int p_y, float p_value) {
+        if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+            return;
+        }
+        data.write[p_x + p_y * width] = p_value;
+    }
+    float FoliageHeightMap::get_pixel(int p_x, int p_y) {
+        if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+            return 0;
+        }
+        return data[p_x + p_y * width];
+    }
+    // 隐藏不在高度范围内的实例
+    void FoliageHeightMap::hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max) {
+        if(data.size() == p_block->get_instance_count()) {
+            return;
+        }
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                if(p_block->get_instance_render_level(y * width + x) == -1) {
+                    continue;
+                }
+                float height = data[y * width + x];
+                if(height < p_visble_height_min || height > p_visble_height_max) {
+                    p_block->set_instance_render_level(y * width + x, -1);
+                }
+            }
+        }
+    }
+    // 隱藏非平地的实例
+    void FoliageHeightMap::hide_instance_by_flatland(const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference) {
+        if(data.size() == p_block->get_instance_count()) {
+            return;
+        }
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                if(p_block->get_instance_render_level(y * width + x) == -1) {
+                    continue;
+                }
+                float min_height = data[y * width + x];
+                float max_height = min_height;
+                bool is_flat = true;
+                for(int x2 = x - p_instance_range; x2 <= x + p_instance_range; x2++) {
+                    for(int y2 = y - p_instance_range; y2 <= y + p_instance_range; y2++) {
+                        if(x2 < 0 || x2 >= width || y2 < 0 || y2 >= height) {
+                            continue;
+                        }
+                        float height = data[y2 * width + x2];
+                        min_height = MIN(min_height, height);
+                        max_height = MAX(max_height, height);
+                    }
+                }
+                if(abs(max_height - min_height) > p_height_difference) {
+                    is_flat = false;
+                }
+                if(!is_flat) {
+                    p_block->set_instance_render_level(y * width + x, -1);
+                }
+            }
+        }
+        
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    void FoliageNormalMap::_bind_methods() {
+        ClassDB::bind_method(D_METHOD("init", "width", "height"), &FoliageNormalMap::init);
+        ClassDB::bind_method(D_METHOD("init_form_image", "width", "height", "image", "rect"), &FoliageNormalMap::init_form_image);
+        ClassDB::bind_method(D_METHOD("set_pixel", "x", "y", "value"), &FoliageNormalMap::set_pixel);
+        ClassDB::bind_method(D_METHOD("get_pixel", "x", "y"), &FoliageNormalMap::get_pixel);
+        ClassDB::bind_method(D_METHOD("get_width"), &FoliageNormalMap::get_width);
+        ClassDB::bind_method(D_METHOD("get_height"), &FoliageNormalMap::get_height);
+        ClassDB::bind_method(D_METHOD("set_width", "width"), &FoliageNormalMap::set_width);
+        ClassDB::bind_method(D_METHOD("set_height", "height"), &FoliageNormalMap::set_height);
+    }
+    void FoliageNormalMap::init(int p_width, int p_height) {
+        width = p_width;
+        height = p_height;
+        data.resize(height * width);
+    }
+    void FoliageNormalMap::init_form_image(int p_width, int p_height,const Ref<Image>& p_image,const Rect2i& p_rect) {
+        width = p_width;
+        height = p_height;
+        int start_x = p_rect.position.x;
+        int start_y = p_rect.position.y;
+        data.resize(height * width);
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                Color c = p_image->get_pixel(start_x + x, start_y + y);
+                data.write[y * width + x] = Vector3(c.r,c.g,c.b);
+            }
+        }
+    }
+    void FoliageNormalMap::set_pixel(int p_x, int p_y, Vector3 p_value) {
+        if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+            return;
+        }
+        data.write[p_x + p_y * width] = p_value;			
+    }
+    Vector3 FoliageNormalMap::get_pixel(int p_x, int p_y){
+        if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+            return Vector3(0,0,0);
+        }
+        return data[p_x + p_y * width];
+    }
+    void FoliageNormalMap::hide_instance_by_slope(const Ref<SceneInstanceBlock>& p_block, float p_visble_slope_min, float p_visble_slope_max) {
+        if(data.size() != p_block->get_instance_count()) {
+            return;
+        }
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                if(p_block->get_instance_render_level(y * width + x) == -1) {
+                    continue;
+                }
+                const Vector3& slope = data[y * width + x];
+                if(slope.y < p_visble_slope_min || slope.y > p_visble_slope_max) {
+                    p_block->set_instance_render_level(y * width + x, -1);
+                }
+            }
+        }
+    }
 
 }
