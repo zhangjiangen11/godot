@@ -694,12 +694,21 @@ namespace Foliage
 		static void _bind_methods();
 	  public:
 	  
-		void set_instance_count(int p_instance_count) { 
+		void set_instance_count(int p_cell_width, int p_cell_height) {
+			int p_instance_count = p_cell_width * p_cell_height;
+			cell_width = p_cell_width;
+			cell_height = p_cell_height;
 			transform.resize(p_instance_count); 
 			color.resize(p_instance_count);
 			curstom_color.resize(p_instance_count);
 			render_level.resize(p_instance_count);
-			render_level.fill(0);
+			render_level.fill(-1);
+
+			for(int i = 0; i < p_instance_count; i++) {
+				transform[i] = Transform3D();
+				color[i] = Color(1,1,1,1);
+				curstom_color[i] = Color(1,1,1,1);
+			}
 		}
 		int get_instance_count() const { return transform.size(); }
 	
@@ -756,11 +765,27 @@ namespace Foliage
 
 		void rendom_instance_move(float p_move_distance) ;
 
+		int get_cell_width() const { return cell_width; }
+		int get_cell_height() const { return cell_height; }
+
+		void init_xz_position(const Vector2& p_start_position,float cell_step_x,float cell_step_z) {
+			for(int w = 0;w < cell_width;w++) {
+				for(int h = 0;h < cell_height;h++) {
+					Transform3D trans;
+					trans.origin = Vector3(w * cell_step_x, 0, h * cell_step_z);
+					transform[h * cell_width + w] = trans;
+				}
+			}
+		}
+
 		LocalVector<Transform3D> transform;
 		LocalVector<Color> color;
 		LocalVector<Color> curstom_color;
 		// -1 为隐藏,>=0 为显示,0-2 为显示等级
 		LocalVector<int8_t> render_level;
+
+		int cell_width = 0;
+		int cell_height = 0;
 
 		String guid;
 		int proto_type_index = -1;
@@ -824,10 +849,17 @@ namespace Foliage
 		int get_height() { return height; }
 		void set_width(int p_width) { width = p_width; }
 		void set_height(int p_height) { height = p_height; }
+		void set_data(const Vector<float>& p_data) { data = p_data; }
+		const Vector<float>& get_data() { return data; }
 		// 隐藏不在高度范围内的实例
 		void hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max);
 		// 隱藏非平地的实例
 		void hide_instance_by_flatland(const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference) ;
+
+		void update_height(const Ref<SceneInstanceBlock>& p_block,float p_base_height,float p_height_range,const Rect2i& p_image_rect,const Vector2& p_instance_start_pos) ;
+
+		float sample_height(float u,float v) ;
+
 
 	private:
 		int width = 0;
@@ -838,14 +870,18 @@ namespace Foliage
 		GDCLASS(FoliageNormalMap, RefCounted);
 		static void _bind_methods();
 	public:
-		void init(int p_width, int p_height);
-		void init_form_image(int p_width, int p_height, const Ref<Image>& p_image, const Rect2i& p_rect);
-		void set_pixel(int p_x, int p_y, Vector3 p_value);
-		Vector3 get_pixel(int p_x, int p_y);
 		int get_width() { return width; }
 		int get_height() { return height; }
 		void set_width(int p_width) { width = p_width; }
 		void set_height(int p_height) { height = p_height; }
+
+		void set_data(const Vector<Vector3>& p_data) { data = p_data; }
+		const Vector<Vector3>& get_data() { return data; }
+
+		void init(int p_width, int p_height);
+		void init_form_image(int p_width, int p_height, const Ref<Image>& p_image, const Rect2i& p_rect);
+		void set_pixel(int p_x, int p_y, Vector3 p_value);
+		Vector3 get_pixel(int p_x, int p_y);
 		// 通过坡度隐藏实例
 		void hide_instance_by_slope(const Ref<SceneInstanceBlock>& p_block, float p_visble_slope_min, float p_visble_slope_max);
 	private:

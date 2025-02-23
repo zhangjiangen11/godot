@@ -184,6 +184,9 @@ void initialize_game_help_module(ModuleInitializationLevel p_level) {
 		ClassDB::register_class<Foliage::SceneInstanceBlock>();
 		ClassDB::register_class<Foliage::FoliageCellMask>();
 		ClassDB::register_class<Foliage::FoliageResource>();
+		ClassDB::register_class<Foliage::FoliageHeightMap>();
+		ClassDB::register_class<Foliage::FoliageNormalMap>();
+		
 		ClassDB::register_class<Foliage::FoliageCellAsset>();
 		ClassDB::register_class<Foliage::FoliagePrototype>();
 		ClassDB::register_class<Foliage::FoliagePrototypeAsset>();

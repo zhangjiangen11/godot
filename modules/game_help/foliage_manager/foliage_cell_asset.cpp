@@ -81,7 +81,7 @@ namespace Foliage
     }
 
 	void SceneInstanceBlock::_bind_methods() {
-        ClassDB::bind_method(D_METHOD("set_instance_count", "instance_count"), &SceneInstanceBlock::set_instance_count);
+        ClassDB::bind_method(D_METHOD("set_instance_count", "cell_width", "cell_height"), &SceneInstanceBlock::set_instance_count);
         ClassDB::bind_method(D_METHOD("get_instance_count"), &SceneInstanceBlock::get_instance_count);
 
         ClassDB::bind_method(D_METHOD("set_instance_render_level", "index", "render_level"), &SceneInstanceBlock::set_instance_render_level);
@@ -102,11 +102,11 @@ namespace Foliage
         ClassDB::bind_method(D_METHOD("set_proto_type_index", "proto_type_index"), &SceneInstanceBlock::set_proto_type_index);
         ClassDB::bind_method(D_METHOD("get_proto_type_index"), &SceneInstanceBlock::get_proto_type_index);
 
+        ClassDB::bind_method(D_METHOD("init_xz_position","start_position","cell_step_x","cell_step_z"), &SceneInstanceBlock::init_xz_position);
         ClassDB::bind_method(D_METHOD("remove_hiden_instances"), &SceneInstanceBlock::remove_hiden_instances);
         ClassDB::bind_method(D_METHOD("compute_rotation","p_index","p_normal","p_angle"), &SceneInstanceBlock::compute_rotation);
         ClassDB::bind_method(D_METHOD("hide_instance_by_cell_mask","p_cell_mask","p_visble_value_min","p_visble_value_max"), &SceneInstanceBlock::hide_instance_by_cell_mask);
 
-        ADD_PROPERTY(PropertyInfo(Variant::INT, "instance_count"), "set_instance_count", "get_instance_count");
         ADD_PROPERTY(PropertyInfo(Variant::INT, "guid"), "set_guid", "get_guid");
         ADD_PROPERTY(PropertyInfo(Variant::INT, "proto_type_index"), "set_proto_type_index", "get_proto_type_index");
 
@@ -197,6 +197,7 @@ namespace Foliage
 
 
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     void FoliageCellMask::_bind_methods() {
@@ -363,17 +364,27 @@ namespace Foliage
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     void FoliageHeightMap::_bind_methods() {
+        ClassDB::bind_method(D_METHOD("set_width", "width"), &FoliageHeightMap::set_width);
+        ClassDB::bind_method(D_METHOD("get_width"), &FoliageHeightMap::get_width);
+
+        ClassDB::bind_method(D_METHOD("set_height", "height"), &FoliageHeightMap::set_height);
+        ClassDB::bind_method(D_METHOD("get_height"), &FoliageHeightMap::get_height);
+
+        ClassDB::bind_method(D_METHOD("set_data", "data"), &FoliageHeightMap::set_data);
+        ClassDB::bind_method(D_METHOD("get_data"), &FoliageHeightMap::get_data);
+
         ClassDB::bind_method(D_METHOD("init", "width", "height"), &FoliageHeightMap::init);
         ClassDB::bind_method(D_METHOD("init_form_image", "width", "height", "image", "rect"), &FoliageHeightMap::init_form_image);
         ClassDB::bind_method(D_METHOD("set_pixel", "x", "y", "value"), &FoliageHeightMap::set_pixel);
         ClassDB::bind_method(D_METHOD("get_pixel", "x", "y"), &FoliageHeightMap::get_pixel);
-        ClassDB::bind_method(D_METHOD("get_width"), &FoliageHeightMap::get_width);
-        ClassDB::bind_method(D_METHOD("get_height"), &FoliageHeightMap::get_height);
-        ClassDB::bind_method(D_METHOD("set_width", "width"), &FoliageHeightMap::set_width);
-        ClassDB::bind_method(D_METHOD("set_height", "height"), &FoliageHeightMap::set_height);
-
         ClassDB::bind_method(D_METHOD("hide_instance_by_height_range", "min_height", "max_height"), &FoliageHeightMap::hide_instance_by_height_range);
         ClassDB::bind_method(D_METHOD("hide_instance_by_flatland","instance_range","flatland_height"), &FoliageHeightMap::hide_instance_by_flatland);
+        ClassDB::bind_method(D_METHOD("sample_height", "u", "v"), &FoliageHeightMap::sample_height);
+        ClassDB::bind_method(D_METHOD("update_height", "block", "base_height", "height_range","image_rect","instance_start_pos"), &FoliageHeightMap::update_height);
+
+        ADD_PROPERTY(PropertyInfo(Variant::INT, "width"), "set_width", "get_width");
+        ADD_PROPERTY(PropertyInfo(Variant::INT, "height"), "set_height", "get_height");
+        ADD_PROPERTY(PropertyInfo(Variant::PACKED_BYTE_ARRAY, "data"), "set_data", "get_data");
     }
     void FoliageHeightMap::init(int p_width, int p_height) {
         width = p_width;
@@ -455,6 +466,54 @@ namespace Foliage
         
     }
 
+    void FoliageHeightMap::update_height(const Ref<SceneInstanceBlock>& p_block,float p_base_height,float p_height_range,const Rect2i& p_image_rect,const Vector2& p_instance_start_pos) {
+        float start_u = p_image_rect.position.x / (float)width;
+        float start_v = p_image_rect.position.y / (float)height;
+        float renge_u =  p_image_rect.size.x / (float)width;
+        float renge_v = p_image_rect.size.y / (float)height;
+        for(int x = 0; x <  p_image_rect.size.x; x++) {
+            for(int y = 0; y < p_image_rect.size.y; y++) {
+                if(p_block->get_instance_render_level(y * width + x) == -1) {
+                    continue;
+                }
+                Transform3D transform = p_block->get_instance_transform(y * width + x);
+                float x2 = transform.origin.x - p_instance_start_pos.x;
+                float y2 = transform.origin.y - p_instance_start_pos.y;
+
+                float u = start_u + x2 * renge_u;
+                float v = start_v + y2 * renge_v;
+                float height = sample_height(u, v);
+                transform.origin.y = p_base_height + height * p_height_range;
+                p_block->set_instance_transform(y * width + x, transform);
+            }
+        }
+    }
+
+    float FoliageHeightMap::sample_height(float p_u,float p_v) {
+        
+        p_u = CLAMP(p_u, 0.0, 1.0);
+        p_v = CLAMP(p_v, 0.0, 1.0);
+        float x = p_u * (width - 1);
+        float y = p_v * (height - 1);
+
+        int x1 = int(x);
+        int x2 = x1 + 1;
+        int y1 = int(y);
+        int y2 = y1 + 1;
+        // 计算插值系数
+        float dx = x - x1;
+        float dy = y - y1;
+
+        float c00 = get_pixel(x1, y1);
+        float c01 = get_pixel(x1, y2);
+        float c10 = get_pixel(x2, y1);
+        float c11 = get_pixel(x2, y2);
+
+        float c0 = Math::lerp(c00, c10, dx);
+        float c1 = Math::lerp(c01, c11, dx);
+
+        return Math::lerp(c0, c1, dy);
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     void FoliageNormalMap::_bind_methods() {
@@ -462,10 +521,19 @@ namespace Foliage
         ClassDB::bind_method(D_METHOD("init_form_image", "width", "height", "image", "rect"), &FoliageNormalMap::init_form_image);
         ClassDB::bind_method(D_METHOD("set_pixel", "x", "y", "value"), &FoliageNormalMap::set_pixel);
         ClassDB::bind_method(D_METHOD("get_pixel", "x", "y"), &FoliageNormalMap::get_pixel);
-        ClassDB::bind_method(D_METHOD("get_width"), &FoliageNormalMap::get_width);
-        ClassDB::bind_method(D_METHOD("get_height"), &FoliageNormalMap::get_height);
+
         ClassDB::bind_method(D_METHOD("set_width", "width"), &FoliageNormalMap::set_width);
+        ClassDB::bind_method(D_METHOD("get_width"), &FoliageNormalMap::get_width);
+
+        ClassDB::bind_method(D_METHOD("get_height"), &FoliageNormalMap::get_height);
         ClassDB::bind_method(D_METHOD("set_height", "height"), &FoliageNormalMap::set_height);
+
+        ClassDB::bind_method(D_METHOD("set_data", "data"), &FoliageNormalMap::set_data);
+        ClassDB::bind_method(D_METHOD("get_data"), &FoliageNormalMap::get_data);
+
+        ADD_PROPERTY(PropertyInfo(Variant::INT, "width"), "set_width", "get_width");
+        ADD_PROPERTY(PropertyInfo(Variant::INT, "height"), "set_height", "get_height");
+        ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR3_ARRAY, "data"), "set_data", "get_data");
     }
     void FoliageNormalMap::init(int p_width, int p_height) {
         width = p_width;
