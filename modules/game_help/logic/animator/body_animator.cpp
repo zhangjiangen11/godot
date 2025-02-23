@@ -300,13 +300,18 @@ void CharacterAnimatorLayer::_process_animator(const Ref<Blackboard> &p_playback
 }
 void CharacterAnimatorLayer::init(Skeleton3D* p_skeleton, CharacterAnimator* p_animator,const Ref<CharacterAnimatorLayerConfig>& _config)
 {
-        m_Animator = p_animator; 
-        config = _config;
-        skeleton_id = ObjectID();
-        if (p_skeleton != nullptr)
-        {
-            skeleton_id = p_skeleton->get_instance_id();
-        }
+	if (p_animator == nullptr) {
+		m_Animator_ID = ObjectID();
+	}
+	else {
+		m_Animator_ID = p_animator->get_instance_id();
+	}
+    config = _config;
+    skeleton_id = ObjectID();
+    if (p_skeleton != nullptr)
+    {
+        skeleton_id = p_skeleton->get_instance_id();
+    }
 }
 
 void CharacterAnimatorLayer::play_animationm(const Ref<Animation> &p_anim, const PlaybackInfo& p_playback_info,const Dictionary &bone_map)
@@ -384,6 +389,7 @@ bool CharacterAnimatorLayer::play_animation(const Ref<CharacterAnimatorNodeBase>
 
 void CharacterAnimatorLayer::play_animation(const StringName& p_node_name)
 {
+	CharacterAnimator* m_Animator = get_animation();
     if(m_Animator == nullptr)
     {
         return;
@@ -398,6 +404,10 @@ void CharacterAnimatorLayer::change_state(const StringName& p_state_name)
         logic_context.curr_name = p_state_name;
     }
 }
+void CharacterAnimatorLayer::on_destory() {
+	m_Animator_ID = ObjectID();
+
+}
 CharacterAnimatorLayer::CharacterAnimatorLayer()
 {
     update_tool.instantiate();
@@ -405,12 +415,14 @@ CharacterAnimatorLayer::CharacterAnimatorLayer()
 
 CharacterAnimatorLayer::~CharacterAnimatorLayer()
 {
+	CharacterAnimator* m_Animator = get_animation();
     if(m_Animator != nullptr)
         m_Animator->on_layer_delete(this);
 }
 
 void CharacterAnimatorLayerConfigInstance::editor_play_select_animation()
 {
+    CharacterAnimatorLayer* layer = get_layer();
     if(layer == nullptr)
     {
         return;
@@ -420,16 +432,25 @@ void CharacterAnimatorLayerConfigInstance::editor_play_select_animation()
 
 void CharacterAnimatorLayerConfigInstance::set_body(class CharacterBodyMain* p_body)
 {
-	m_Body = p_body;
+    CharacterAnimatorLayer* layer = get_layer();
 	if (layer)
 	{
+		layer->on_destory();
 		layer->queue_free();
 		layer = nullptr;
+	}
+	if (p_body == nullptr) {
+		m_Body_ID = ObjectID();
+	}
+	else {
+		m_Body_ID = p_body->get_instance_id();
 	}
 	auto_init();
 }
 void CharacterAnimatorLayerConfigInstance::auto_init()
 {
+    CharacterAnimatorLayer* layer = get_layer();
+    class CharacterBodyMain* m_Body = get_body();
 	if (m_Body == nullptr || config.is_null())
 	{
 		return;
@@ -443,17 +464,38 @@ void CharacterAnimatorLayerConfigInstance::auto_init()
 	layer->set_owner(m_Body);
 	layer->init(skeleton, m_Body->get_animator().ptr(), config);
 }
+CharacterAnimatorLayer* CharacterAnimatorLayerConfigInstance::get_layer()
+{
+    if(layer_id.is_null()) {
+        return nullptr;
+    }
+
+    return (CharacterAnimatorLayer*)Object::cast_to<CharacterAnimatorLayer>( ObjectDB::get_instance(layer_id));
+}
+class CharacterBodyMain* CharacterAnimatorLayerConfigInstance::get_body() {
+    if(m_Body_ID.is_null()) {
+        return nullptr;
+    }
+    return (CharacterBodyMain*)Object::cast_to<CharacterBodyMain>( ObjectDB::get_instance(m_Body_ID));
+}
 /**********************************************************************************************************/
 
 void CharacterAnimator::set_body(class CharacterBodyMain* p_body)
 {
-     m_Body = p_body;
+    if(p_body == nullptr)
+    {
+        m_Body_ID = ObjectID();
+    }
+    else
+    {
+        m_Body_ID = p_body->get_instance_id();
+    }
 	 auto it = m_LayerConfigInstanceList.begin();
 	 bool is_first = true;
 	 while (it != m_LayerConfigInstanceList.end())
 	 {
 		 Ref< CharacterAnimatorLayerConfigInstance> layer = *it;
-		 layer->set_body(m_Body);
+		 layer->set_body(p_body);
 		 ++it;
 	 }
 }
@@ -491,12 +533,13 @@ void CharacterAnimator::add_layer(const Ref<CharacterAnimatorLayerConfig>& _mask
 	Ref< CharacterAnimatorLayerConfigInstance> ins;
 	ins.instantiate();
 	ins->set_config(_mask);
-	ins->set_body(m_Body);
+	ins->set_body(get_body());
 	m_LayerConfigInstanceList.push_back(ins);
 }
 void CharacterAnimator::_thread_update_animator(float delta)
 {
     time_delta = delta;
+	class CharacterBodyMain* m_Body = get_body();
     if(m_Body == nullptr)
     {
         return;
@@ -513,6 +556,7 @@ void CharacterAnimator::_thread_update_animator(float delta)
 
 }
 void CharacterAnimator::_thread_update_animation(float delta) {
+	class CharacterBodyMain* m_Body = get_body();
     if(m_Body == nullptr)
     {
         return;
@@ -542,6 +586,7 @@ void CharacterAnimator::finish_update()
 }
 Ref<CharacterAnimationLibraryItem> CharacterAnimator::get_animation_by_name(const StringName& p_name)
 {
+    CharacterBodyMain* m_Body = get_body();
     if(m_Body == nullptr)
     {
         return Ref<CharacterAnimationLibraryItem>();
@@ -557,6 +602,7 @@ Ref<CharacterAnimationLibraryItem> CharacterAnimator::get_animation_by_name(cons
 
 void CharacterAnimator::set_animation_layer_arrays(TypedArray<CharacterAnimatorLayerConfigInstance> p_animation_layer_arrays) {
     m_LayerConfigInstanceList.clear();
+    CharacterBodyMain* m_Body = get_body();
     for (int i = 0; i < p_animation_layer_arrays.size(); ++i) {
         Ref< CharacterAnimatorLayerConfigInstance> ins = p_animation_layer_arrays[i];
         if (ins.is_null()) {
@@ -594,6 +640,12 @@ void CharacterAnimator::_bind_methods()
 CharacterAnimator::~CharacterAnimator() {
     set_body(nullptr);
     m_LayerConfigInstanceList.clear();
+}
+class CharacterBodyMain* CharacterAnimator::get_body() {
+    if(m_Body_ID.is_null()) {
+        return nullptr;
+    }
+    return Object::cast_to<CharacterBodyMain>( ObjectDB::get_instance(m_Body_ID));
 }
 
 

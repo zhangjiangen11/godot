@@ -154,6 +154,7 @@ public:
     bool play_animation(const Ref<CharacterAnimatorNodeBase>& p_node);
     void play_animation(const StringName& p_node_name);
     void change_state(const StringName& p_state_name);
+	void on_destory();
     CharacterAnimatorLayer();
     ~CharacterAnimatorLayer();
 public:
@@ -163,6 +164,10 @@ public:
     void set_editor_stop_animation(bool p_v)
     {
 		editor_stop_animation = p_v;
+    }
+protected:
+    CharacterAnimator* get_animation(){
+        return (CharacterAnimator*)Object::cast_to<CharacterAnimator>(ObjectDB::get_instance(m_Animator_ID)) ;
     }
 public:
     Vector<Vector2> m_ChildInputVectorArray;
@@ -179,7 +184,7 @@ protected:
     List<Ref<CharacterAnimatorNodeBase>> play_list;
     Vector<float> m_TotalAnimationWeight;
     List<CharacterAnimationInstance> m_AnimationInstances;
-    class CharacterAnimator* m_Animator = nullptr;
+    ObjectID m_Animator_ID;
     float blend_weight = 1.0f;
     bool editor_stop_animation = false;
 };
@@ -346,12 +351,9 @@ public:
         return play_animation;
     }
     
-	CharacterAnimatorLayer* get_layer()
-	{
-		return layer;
-	}
 	void _process_animator(const Ref<Blackboard>& p_playback_info, double p_delta, bool is_first = true)
 	{
+        CharacterAnimatorLayer* layer = get_layer();
 		if (layer == nullptr)
 		{
 			return;
@@ -364,6 +366,7 @@ public:
 	}
 	void _process_animation(const Ref<Blackboard>& p_playback_info,CharacterRootMotion& root_motion, HashMap<String, float>& bone_blend_weight, double p_delta, bool p_is_root_motion, bool is_first = true)
 	{
+        CharacterAnimatorLayer* layer = get_layer();
 		if (layer == nullptr)
 		{
 			return;
@@ -376,6 +379,7 @@ public:
 	}
 	void finish_update()
 	{
+        CharacterAnimatorLayer* layer = get_layer();
 		if (layer == nullptr)
 		{
 			return;
@@ -390,29 +394,33 @@ public:
 public:
 
     void editor_play_animation(const Ref<CharacterAnimatorNodeBase>& p_node) {
+        CharacterAnimatorLayer* layer = get_layer();
         layer->play_animation(p_node);
     }
     void editor_play_animation(const Ref<Animation>& p_node) {
 		play_animation = p_node;
+        CharacterAnimatorLayer* layer = get_layer();
         layer->play_animation(p_node,true);
     }
 
     void set_editor_stop_animation(bool p_v) {
+        CharacterAnimatorLayer* layer = get_layer();
 		if (layer != nullptr) {
 			layer->set_editor_stop_animation(p_v);
 		}
     }
 
+	CharacterAnimatorLayer* get_layer();
 protected:
 	void auto_init();
-
+    class CharacterBodyMain* get_body() ;
 protected:
     Ref<Animation> play_animation;
     DECL_MEMBER_BUTTON(editor_play_select_animation);
 protected:
     Ref<CharacterAnimatorLayerConfig> config;
-    CharacterAnimatorLayer* layer = nullptr;
-    class CharacterBodyMain* m_Body = nullptr;
+    ObjectID layer_id;
+    ObjectID m_Body_ID;
     bool is_init = false;
 };
 
@@ -424,7 +432,7 @@ class CharacterAnimator : public RefCounted
     List<Ref<CharacterAnimatorLayerConfigInstance>> m_LayerConfigInstanceList;
     CharacterRootMotion root_motion;
 	HashMap<String,float> bone_blend_weight;
-	class CharacterBodyMain* m_Body = nullptr;
+    ObjectID m_Body_ID;
     double time_delta = 0.0;
     bool is_using_root_motion = true;
 public:
@@ -482,6 +490,9 @@ public:
         }
 		m_LayerConfigInstanceList.front()->get()->set_editor_stop_animation(v);
     }
+    protected:
+    
+    class CharacterBodyMain* get_body() ;
 };
 VARIANT_ENUM_CAST(CharacterAnimatorNodeBase::LoopType)
 VARIANT_ENUM_CAST(CharacterAnimationLogicNode::AnimatorAIStopCheckType)
