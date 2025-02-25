@@ -86,7 +86,7 @@ struct SmallMemoryBuffer
 template <int SIZE_COUNT>
 struct SmallMemory
 {
-	void * alloc_mem(int p_count) {
+	_FORCE_INLINE_ void * alloc_mem(int p_count) {
 		{			
 			void * ret = nullptr;
 			mutex.lock();
@@ -94,7 +94,6 @@ struct SmallMemory
 			{
 				SmallMemoryBuffer<SIZE_COUNT> *b = buffers;
 				buffers = (SmallMemoryBuffer<SIZE_COUNT> *)b->size_or_next;
-				free_count.decrement();
 				ret = b->data;
 				b->size_or_next = p_count;
 			}
@@ -113,7 +112,7 @@ struct SmallMemory
 		return b->data;
 		
 	}
-	void free_mem(void *p_ptr) {
+	_FORCE_INLINE_ void free_mem(void *p_ptr) {
 		if(p_ptr == nullptr)
 		{
 			return;
@@ -131,7 +130,6 @@ struct SmallMemory
 		b->size_or_next = (uint64_t)buffers;
 		buffers = b;
 		mutex.unlock();
-		free_count.increment();
 	}
 	 
 	MutexSys mutex;
@@ -217,9 +215,29 @@ struct SmallMemoryManager
 			uint8_t* mem = (uint8_t*)p_ptr - sizeof(uint64_t);
 			free(mem);
 		}
-
-
-
+	}
+	void *realloc_mem(void *p_memory, size_t p_new_bytes) {
+		if (p_memory == nullptr) {
+			return alloc_mem(p_new_bytes);
+		}
+		uint8_t *mem = (uint8_t *)p_memory;
+		if(p_new_bytes == 0)
+		{
+			free_mem(p_memory);
+			return nullptr;
+		}	else {
+			auto old_count = get_buffer_count(p_memory);
+	
+			int index = get_buffer_type_index(old_count);
+			if(index >= 0 && index == get_buffer_type_index(p_new_bytes) )
+			{
+				return p_memory;
+			}
+			void* new_mem = alloc_mem(p_new_bytes);
+			memcpy(new_mem, p_memory, MIN(old_count, p_new_bytes));
+			free_mem(p_memory);
+			return new_mem;
+		}
 	}
 	_FORCE_INLINE_ uint64_t get_buffer_count(void* p_ptr)
 	{
@@ -305,6 +323,7 @@ static _FORCE_INLINE_ SmallMemoryManager& get_small_memory_manager()
 
 
 void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
+	return get_small_memory_manager().alloc_mem(p_bytes);
 	DEV_ASSERT(is_power_of_2(p_alignment));
 
 	void *p1, *p2;
@@ -318,6 +337,8 @@ void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
 }
 
 void *Memory::realloc_aligned_static(void *p_memory, size_t p_bytes, size_t p_prev_bytes, size_t p_alignment) {
+	return get_small_memory_manager().realloc_mem(p_memory,p_bytes);
+	
 	if (p_memory == nullptr) {
 		return alloc_aligned_static(p_bytes, p_alignment);
 	}
@@ -331,23 +352,26 @@ void *Memory::realloc_aligned_static(void *p_memory, size_t p_bytes, size_t p_pr
 }
 
 void Memory::free_aligned_static(void *p_memory) {
+	get_small_memory_manager().free_mem(p_memory);
+	return;
 	uint32_t offset = *((uint32_t *)p_memory - 1);
 	void *p = (void *)((uint8_t *)p_memory - offset);
 	free(p);
 }
 
 void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
+	return get_small_memory_manager().alloc_mem(p_bytes);
 #ifdef DEBUG_ENABLED
 	bool prepad = true;
 #else
 	bool prepad = p_pad_align;
 #endif
+	alloc_count.increment();
 
 	void *mem = malloc(p_bytes + (prepad ? DATA_OFFSET : 0));
 
 	ERR_FAIL_NULL_V(mem, nullptr);
 
-	alloc_count.increment();
 
 	if (prepad) {
 		uint8_t *s8 = (uint8_t *)mem;
@@ -366,6 +390,7 @@ void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
 }
 
 void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
+	return get_small_memory_manager().realloc_mem(p_memory,p_bytes);
 	if (p_memory == nullptr) {
 		return alloc_static(p_bytes, p_pad_align);
 	}
@@ -416,6 +441,8 @@ void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
 }
 
 void Memory::free_static(void *p_ptr, bool p_pad_align) {
+	get_small_memory_manager().free_mem(p_ptr);
+	return;
 	ERR_FAIL_NULL(p_ptr);
 
 	uint8_t *mem = (uint8_t *)p_ptr;
