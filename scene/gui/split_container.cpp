@@ -164,15 +164,24 @@ void ResetParentOffsetDragger::gui_input(const Ref<InputEvent> &p_event) {
 			return;
 		}
 
-		Vector2i in_parent_pos = get_transform().xform(mm->get_position());
+		Vector2i in_parent_pos = get_global_mouse_position();
 		if(dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
 			sc->set_offset(dragger_dir, drag_ofs + (in_parent_pos.y  - drag_from));
 		} else {
-			sc->set_offset(dragger_dir, drag_ofs - (in_parent_pos.x - drag_from));
+
+			sc->set_offset(dragger_dir, drag_ofs + (in_parent_pos.x - drag_from));
 		}
+		queue_redraw();
 	}
 }
 
+void ResetParentOffsetDragger::_notification(int p_what) {
+	switch (p_what) {
+	case NOTIFICATION_DRAW: {
+		draw_rect(Rect2(Vector2(0, 0), get_size()), dragging ? Color(1, 1, 0, 0.3) : Color(1, 0, 0, 0.3));
+	} break;
+	}
+}
 Control* ResetParentOffsetDragger::get_parent_control() const{
 	if(parent_name.is_empty()) {
 		return nullptr;
@@ -215,7 +224,7 @@ void ResetParentOffsetDragger::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_parent_name", "name"), &ResetParentOffsetDragger::set_parent_name);
 	ClassDB::bind_method(D_METHOD("get_parent_name"), &ResetParentOffsetDragger::get_parent_name);
 
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "dragger_dir", PROPERTY_HINT_ENUM, "Left,Right,Top,Bottom"), "set_dragger_dir", "get_dragger_dir");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "dragger_dir", PROPERTY_HINT_ENUM, "Left,Top,Right,Bottom"), "set_dragger_dir", "get_dragger_dir");
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "parent_name"), "set_parent_name", "get_parent_name");
 }

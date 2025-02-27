@@ -53,13 +53,13 @@ public:
 	virtual CursorShape get_cursor_shape(const Point2 &p_pos = Point2i()) const override;
 };
 // 拖拽父节点的偏移量信息,父节点必须是描点模式
-class ResetParentOffsetDragger : public BoxContainer {
-	GDCLASS(ResetParentOffsetDragger, BoxContainer);
+class ResetParentOffsetDragger : public Control {
 
+	GDCLASS(ResetParentOffsetDragger, Control);
 	static void _bind_methods();
 protected:
+	void _notification(int p_what);
 	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-	
 private:
 	bool dragging = false;
 	int drag_from = 0;
@@ -85,6 +85,7 @@ public:
 	virtual CursorShape get_cursor_shape(const Point2 &p_pos = Point2i()) const override;
 	ResetParentOffsetDragger() {
 		set_custom_minimum_size(Size2(2, 2));
+		set_mouse_filter(MOUSE_FILTER_STOP);
 	}
 };
 
