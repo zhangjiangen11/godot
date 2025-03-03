@@ -247,16 +247,23 @@ void PathExtrude3D::_bind_methods() {
 
 void PathExtrude3D::_notification(int p_what) {
     switch (p_what) {
-        case NOTIFICATION_INTERNAL_PROCESS: {
-            if (!initial_dirty) {
-                break;
-            }
-            initial_dirty = false;
-            set_process_internal(false);
-        }
+        case NOTIFICATION_ENTER_TREE: {
+            queue_rebuild();
+        } break;
+
         case NOTIFICATION_READY: {
             set_process_internal(true);
-            queue_rebuild();
+        } break;
+
+        case NOTIFICATION_INTERNAL_PROCESS: {
+            if (!initial_dirty) {
+                queue_rebuild();
+                initial_dirty = false;
+            }
+
+            if (path3d != nullptr && path3d->get_global_transform() != path_transform) {
+                queue_rebuild();
+            }
         } break;
     }
 }
@@ -295,9 +302,11 @@ void PathExtrude3D::_rebuild_mesh() {
 
     generated_mesh->clear_surfaces();
 
-    if (profile.is_null() || path3d == nullptr || path3d->get_curve().is_null()) {
+    if (profile.is_null() || path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree()) {
         return;
     }
+
+    path_transform = path3d->get_global_transform();
 
     Ref<Curve3D> curve = path3d->get_curve();
     if (curve->get_point_count() < 2) {
@@ -361,7 +370,7 @@ void PathExtrude3D::_rebuild_mesh() {
     Vector<Transform3D> transforms;
     transforms.resize(n_slices);
     for (uint64_t idx_slice = 0; idx_slice < n_slices; ++idx_slice) {
-        transforms.write[idx_slice] = curve->sample_baked_with_rotation(
+        transforms.write[idx_slice] = get_global_transform().affine_inverse() * path_transform * curve->sample_baked_with_rotation(
                 curve->get_closest_offset(tessellated_points[idx_slice]), sample_cubic, tilt);
     }
 
@@ -385,11 +394,16 @@ void PathExtrude3D::_rebuild_mesh() {
         const Transform3D &this_transform = transforms[idx_slice];
         const Transform3D &next_transform = transforms[idx_slice + 1];
 
-        double u = curve->get_closest_offset(this_transform.origin) / baked_l;
+        double this_u = curve->get_closest_offset(tessellated_points[idx_slice]) / baked_l;
+        double next_u = curve->get_closest_offset(tessellated_points[idx_slice + 1]) / baked_l;
 
         for (uint64_t idx_seg = 0; idx_seg < cross_section.size() - 1; ++idx_seg) {
             Vector2 p1 = cross_section[idx_seg];
             Vector2 p2 = cross_section[idx_seg + 1];
+            if (p1.is_equal_approx(p2)) {
+                continue;
+            }
+            
             Vector3 this_p1 = this_transform.xform(Vector3(p1.x, p1.y, 0.0));
             Vector3 this_p2 = this_transform.xform(Vector3(p2.x, p2.y, 0.0));
             Vector3 next_p1 = next_transform.xform(Vector3(p1.x, p1.y, 0.0));
@@ -460,6 +474,28 @@ void PathExtrude3D::_rebuild_mesh() {
                 new_tangents.write[k*4 + 23] = t14;
             }
 
+            if (has_column[Mesh::ARRAY_TEX_UV]) {
+                double v1 = CLAMP(old_v1[idx_seg] / 2.0, 0.0, 0.5);
+                double v2 = CLAMP(old_v1[idx_seg + 1] / 2.0, 0.0, 0.5);
+                new_uv1.write[k] = Vector2(this_u, v1);
+                new_uv1.write[k + 1] = Vector2(this_u, v2);
+                new_uv1.write[k + 2] = Vector2(next_u, v1);
+                new_uv1.write[k + 3] = Vector2(this_u, v2);
+                new_uv1.write[k + 4] = Vector2(next_u, v2);
+                new_uv1.write[k + 5] = Vector2(next_u, v1);
+            }
+            
+            if (has_column[Mesh::ARRAY_TEX_UV2]) {
+                double v1 = CLAMP(old_v2[idx_seg] / 2.0, 0.0, 0.5);
+                double v2 = CLAMP(old_v2[idx_seg + 1] / 2.0, 0.0, 0.5);
+                new_uv2.write[k] = Vector2(this_u, v1);
+                new_uv2.write[k + 1] = Vector2(this_u, v2);
+                new_uv2.write[k + 2] = Vector2(next_u, v1);
+                new_uv2.write[k + 3] = Vector2(this_u, v2);
+                new_uv2.write[k + 4] = Vector2(next_u, v2);
+                new_uv2.write[k + 5] = Vector2(next_u, v1);
+            }
+
             Vector<std::pair<uint64_t, uint64_t>> idx_verts { 
                 {k, idx_seg}, 
                 {k + 1, idx_seg + 1},
@@ -468,15 +504,6 @@ void PathExtrude3D::_rebuild_mesh() {
                 {k + 4, idx_seg + 1},
                 {k + 5, idx_seg},
             };
-
-            if (has_column[Mesh::ARRAY_TEX_UV]) {
-                for (const std::pair<uint64_t, uint64_t> &idx_vert : idx_verts) {
-                    const uint64_t tmp_k = idx_vert.first;
-                    const uint64_t i = idx_vert.second;
-                    new_uv1.write[tmp_k] = Vector2(u, old_v1[i] / 2.0); // top half of UV space
-                    new_uv2.write[tmp_k] = Vector2(u, old_v2[i] / 2.0);
-                }
-            }
 
             #define APPEND_ARRAY(m_new, m_old, m_idx) \
                 if (has_column[m_idx]) { \
@@ -515,7 +542,7 @@ void PathExtrude3D::_rebuild_mesh() {
         for (uint64_t idx = 0; idx < cap.size(); ++idx) {
             const int32_t i = cap[idx];
             Vector2 vec = cross_section[i];
-            cap_uv.write[idx] = Vector2((vec.x - ll.x) / (ur.x - ll.x), (vec.y - ll.y) / (ur.y - ll.y));
+            cap_uv.write[i] = Vector2(Math::inverse_lerp(ll.x, ur.x, vec.x), Math::inverse_lerp(ll.y, ur.y, vec.y));
         }
         Vector3 cap_normal = Vector3(0.0, 0.0, 1.0);
         if (profile->get_flip_normals()) {

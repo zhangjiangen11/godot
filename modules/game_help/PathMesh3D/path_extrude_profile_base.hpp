@@ -31,10 +31,12 @@ protected:
     void _notification(int p_what);
     static void _bind_methods();
 
+    PackedFloat64Array _generate_v(const PackedVector2Array &p_vertices);
+
 private:
     bool dirty = true;
     bool flip_normals = false;
-    Array mesh_array ;
+    Array mesh_array;
 
     void _regen();
 };

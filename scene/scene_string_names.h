@@ -60,6 +60,7 @@ public:
 	const StringName tree_exiting = StaticCString::create("tree_exiting");
 	const StringName tree_exited = StaticCString::create("tree_exited");
 	const StringName ready = StaticCString::create("ready");
+	const StringName process = StaticCString::create("process");
 	const StringName _ready = StaticCString::create("_ready");
 
 	const StringName item_rect_changed = StaticCString::create("item_rect_changed");

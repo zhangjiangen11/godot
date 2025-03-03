@@ -219,6 +219,15 @@ void PhysicsRayQueryParameters3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_hit_back_faces", "enable"), &PhysicsRayQueryParameters3D::set_hit_back_faces);
 	ClassDB::bind_method(D_METHOD("is_hit_back_faces_enabled"), &PhysicsRayQueryParameters3D::is_hit_back_faces_enabled);
 
+	ClassDB::bind_method(D_METHOD("set_only_position", "enable"), &PhysicsRayQueryParameters3D::set_only_position);
+	ClassDB::bind_method(D_METHOD("is_only_position_enabled"), &PhysicsRayQueryParameters3D::is_only_position_enabled);
+
+	ClassDB::bind_method(D_METHOD("set_is_hit", "enable"), &PhysicsRayQueryParameters3D::set_is_hit);
+	ClassDB::bind_method(D_METHOD("is_hit_enabled"), &PhysicsRayQueryParameters3D::is_hit_enabled);
+
+	ClassDB::bind_method(D_METHOD("set_hit_point", "point"), &PhysicsRayQueryParameters3D::set_hit_point);
+	ClassDB::bind_method(D_METHOD("get_hit_point"), &PhysicsRayQueryParameters3D::get_hit_point);
+
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "from"), "set_from", "get_from");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "to"), "set_to", "get_to");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "collision_mask", PROPERTY_HINT_LAYERS_3D_PHYSICS), "set_collision_mask", "get_collision_mask");
@@ -227,6 +236,9 @@ void PhysicsRayQueryParameters3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "collide_with_areas"), "set_collide_with_areas", "is_collide_with_areas_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hit_from_inside"), "set_hit_from_inside", "is_hit_from_inside_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hit_back_faces"), "set_hit_back_faces", "is_hit_back_faces_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "only_position"), "set_only_position", "is_only_position_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "is_hit"), "set_is_hit", "is_hit_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "hit_point"), "set_hit_point", "get_hit_point");
 }
 
 ///////////////////////////////////////////////////////
@@ -359,10 +371,12 @@ Dictionary PhysicsDirectSpaceState3D::_intersect_ray(const Ref<PhysicsRayQueryPa
 
 	RayResult result;
 	bool res = intersect_ray(p_ray_query->get_parameters(), result);
+	p_ray_query->set_is_hit(res);
 
 	if (!res) {
 		return Dictionary();
 	}
+	p_ray_query->set_hit_point(result.position);
 
 	Dictionary d;
 	d["position"] = result.position;
@@ -374,6 +388,36 @@ Dictionary PhysicsDirectSpaceState3D::_intersect_ray(const Ref<PhysicsRayQueryPa
 	d["rid"] = result.rid;
 
 	return d;
+}
+
+
+void PhysicsDirectSpaceState3D::_mult_intersect_ray_only_positions(const TypedArray<PhysicsRayQueryParameters3D> &p_queries,int start_index, int end_index){
+	if(end_index <= 0) {
+		end_index = p_queries.size();
+	}
+	else {
+		end_index = MIN(end_index,p_queries.size());
+	}
+
+	start_index = CLAMP(start_index,0,end_index);
+
+	RayResult result;
+	bool res ;
+	Ref<PhysicsRayQueryParameters3D> p_ray_query;
+	for(int i = start_index; i < end_index; i++) {
+		p_ray_query = p_queries[i];
+		if(p_ray_query.is_null()) {
+			continue;
+		}
+		p_ray_query->set_only_position(true);
+		res = intersect_ray(p_ray_query->get_parameters(), result);
+		p_ray_query->set_is_hit(res);
+	
+		if (res) {
+			p_ray_query->set_hit_point(result.position);
+		}
+	}
+
 }
 
 TypedArray<Dictionary> PhysicsDirectSpaceState3D::_intersect_point(const Ref<PhysicsPointQueryParameters3D> &p_point_query, int p_max_results) {
@@ -479,6 +523,7 @@ PhysicsDirectSpaceState3D::PhysicsDirectSpaceState3D() {
 }
 
 void PhysicsDirectSpaceState3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("_mult_intersect_ray_only_positions", "p_queries", "start_index", "end_index"), &PhysicsDirectSpaceState3D::_mult_intersect_ray_only_positions, DEFVAL(-1), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("intersect_point", "parameters", "max_results"), &PhysicsDirectSpaceState3D::_intersect_point, DEFVAL(32));
 	ClassDB::bind_method(D_METHOD("intersect_ray", "parameters"), &PhysicsDirectSpaceState3D::_intersect_ray);
 	ClassDB::bind_method(D_METHOD("intersect_shape", "parameters", "max_results"), &PhysicsDirectSpaceState3D::_intersect_shape, DEFVAL(32));

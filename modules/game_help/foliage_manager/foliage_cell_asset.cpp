@@ -16,7 +16,7 @@ namespace Foliage
         transform.clear();
         color.clear();
         curstom_color.clear();
-        for (int i = 0; i < transform.size(); i++) {
+        for (uint32_t i = 0; i < transform.size(); i++) {
             if (render_level[i] >= 0) {
                 transform.push_back(temp_transform[i]);
                 color.push_back(temp_color[i]);
@@ -31,7 +31,7 @@ namespace Foliage
             return;
         }
 
-        for(int i = 0; i < transform.size(); i++) {
+        for(uint32_t i = 0; i < transform.size(); i++) {
             if (render_level[i] >= 0) {
                 Vector3 pos = transform[i].origin - p_position_move;
                 int x = pos.x / p_cell_mask->get_width();
@@ -49,7 +49,7 @@ namespace Foliage
     }
     void SceneInstanceBlock::rendom_instance_rotation(float p_angle_min,float p_angle_max) {
 
-        for(int i = 0; i < transform.size(); i++) {
+        for(uint32_t i = 0; i < transform.size(); i++) {
             if (render_level[i] >= 0) {
                 transform[i].basis = transform[i].basis.rotated(Vector3(0, 1, 0), p_angle_min + Math::randf() * (p_angle_max - p_angle_min)) ;
             }
@@ -58,7 +58,7 @@ namespace Foliage
     
 	void SceneInstanceBlock::rendom_instance_scale(float p_scale_min,float p_scale_max) {
 
-        for(int i = 0; i < transform.size(); i++) {
+        for(uint32_t i = 0; i < transform.size(); i++) {
             if (render_level[i] >= 0) {
                 float scale = p_scale_min + Math::randf() * (p_scale_max - p_scale_min);
                 transform[i].basis = transform[i].basis.scaled(Vector3(scale, scale, scale));
@@ -67,7 +67,7 @@ namespace Foliage
     }
     void SceneInstanceBlock::rendom_instance_move(float p_move_distance) {
 
-        for(int i = 0; i < transform.size(); i++) {
+        for(uint32_t i = 0; i < transform.size(); i++) {
             if (render_level[i] >= 0) {
                 float range = p_move_distance * 0.5f;
                 float x = Math::randf() * range - range * 0.5f;
@@ -425,8 +425,8 @@ namespace Foliage
                 if(p_block->get_instance_render_level(y * width + x) == -1) {
                     continue;
                 }
-                float height = data[y * width + x];
-                if(height < p_visble_height_min || height > p_visble_height_max) {
+                float _height = data[y * width + x];
+                if(_height < p_visble_height_min || _height > p_visble_height_max) {
                     p_block->set_instance_render_level(y * width + x, -1);
                 }
             }

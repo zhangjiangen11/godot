@@ -121,6 +121,7 @@ class PhysicsDirectSpaceState3D : public Object {
 	GDCLASS(PhysicsDirectSpaceState3D, Object);
 
 private:
+	void _mult_intersect_ray_only_positions(const TypedArray<PhysicsRayQueryParameters3D> &p_queries,int start_index = 0, int end_index = -1);
 	Dictionary _intersect_ray(const Ref<PhysicsRayQueryParameters3D> &p_ray_query);
 	TypedArray<Dictionary> _intersect_point(const Ref<PhysicsPointQueryParameters3D> &p_point_query, int p_max_results = 32);
 	TypedArray<Dictionary> _intersect_shape(const Ref<PhysicsShapeQueryParameters3D> &p_shape_query, int p_max_results = 32);
@@ -145,6 +146,8 @@ public:
 		bool hit_back_faces = true;
 
 		bool pick_ray = false;
+
+		bool only_position = false;
 	};
 
 	struct RayResult {
@@ -818,6 +821,8 @@ class PhysicsRayQueryParameters3D : public RefCounted {
 	GDCLASS(PhysicsRayQueryParameters3D, RefCounted);
 
 	PhysicsDirectSpaceState3D::RayParameters parameters;
+	mutable Vector3 hit_point;
+	mutable bool is_hit = false;
 
 protected:
 	static void _bind_methods();
@@ -849,6 +854,15 @@ public:
 
 	void set_exclude(const TypedArray<RID> &p_exclude);
 	TypedArray<RID> get_exclude() const;
+
+	void set_only_position(bool p_enable) { parameters.only_position = p_enable; }
+	bool is_only_position_enabled() const { return parameters.only_position; }
+
+	void set_is_hit(bool p_is_hit) const { is_hit = p_is_hit; }
+	bool is_hit_enabled() const { return is_hit; }
+
+	void set_hit_point(const Vector3 &p_hit_point)const { hit_point = p_hit_point; }
+	const Vector3& get_hit_point()const { return hit_point; }
 };
 
 class PhysicsPointQueryParameters3D : public RefCounted {

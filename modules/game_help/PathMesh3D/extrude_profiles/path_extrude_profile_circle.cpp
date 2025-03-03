@@ -8,10 +8,7 @@ Array PathExtrudeProfileCircle::_generate_cross_section() {
 
     double swept_angle = ending_angle - starting_angle;
     if (swept_angle <= 0.0) {
-		Array ret;
-		ret.push_back(cs);
-		ret.push_back(norms);
-        return ret;
+        return Array();
     }
 
     double da = swept_angle / double(segments);
@@ -52,10 +49,12 @@ Array PathExtrudeProfileCircle::_generate_cross_section() {
         norms.push_back(end_segment_normal);
     }
 
-	Array ret;
-	ret.push_back(cs);
-	ret.push_back(norms);
-	return ret;
+    Array out;
+    out.resize(Mesh::ARRAY_MAX);
+    out[Mesh::ARRAY_VERTEX] = cs;
+    out[Mesh::ARRAY_NORMAL] = norms;
+    out[Mesh::ARRAY_TEX_UV] = _generate_v(cs);;
+    return out;
 }
 
 void PathExtrudeProfileCircle::_bind_methods() {

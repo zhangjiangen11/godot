@@ -494,6 +494,11 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 	}
 
 	const JPH::RayCastResult &hit = collector.get_hit();
+	const JPH::RVec3 position = ray.GetPointOnRay(hit.mFraction);
+	r_result.position = to_godot(position);
+	if(p_parameters.only_position) {
+		return true;
+	}
 
 	const JPH::BodyID &body_id = hit.mBodyID;
 	const JPH::SubShapeID &sub_shape_id = hit.mSubShapeID2;
@@ -502,7 +507,6 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 	const JoltObject3D *object = body.as_object();
 	ERR_FAIL_NULL_V(object, false);
 
-	const JPH::RVec3 position = ray.GetPointOnRay(hit.mFraction);
 
 	JPH::Vec3 normal = JPH::Vec3::sZero();
 
@@ -515,7 +519,6 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 		}
 	}
 
-	r_result.position = to_godot(position);
 	r_result.normal = to_godot(normal);
 	r_result.rid = object->get_rid();
 	r_result.collider_id = object->get_instance_id();

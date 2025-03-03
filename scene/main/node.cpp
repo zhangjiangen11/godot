@@ -54,6 +54,7 @@ void Node::_notification(int p_notification) {
 		case NOTIFICATION_PROCESS: {
 			process(get_process_delta_time());
 			GDVIRTUAL_CALL(_process, get_process_delta_time());
+			emit_signal(SceneStringName(process));
 			node_process(get_process_delta_time());
 		} break;
 
@@ -3907,6 +3908,7 @@ void Node::_bind_methods() {
 
 	ADD_SIGNAL(MethodInfo("on_free"));
 	ADD_SIGNAL(MethodInfo("ready"));
+	ADD_SIGNAL(MethodInfo("process"));
 	ADD_SIGNAL(MethodInfo("renamed"));
 	ADD_SIGNAL(MethodInfo("tree_entered"));
 	ADD_SIGNAL(MethodInfo("tree_exiting"));

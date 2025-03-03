@@ -37,19 +37,11 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 	const auto vector = JPH::Vec3(to - from);
 	const JPH::RRayCast ray(from, vector);
 
+	const JPH::EBackFaceMode back_face_mode = p_parameters.hit_back_faces ? JPH::EBackFaceMode::CollideWithBackFaces : JPH::EBackFaceMode::IgnoreBackFaces;
+
 	JPH::RayCastSettings settings;
 	settings.mTreatConvexAsSolid = p_parameters.hit_from_inside;
-	settings.mBackFaceModeTriangles = p_parameters.hit_back_faces
-		? JPH::EBackFaceMode::CollideWithBackFaces
-		: JPH::EBackFaceMode::IgnoreBackFaces;
-
-	
-
-	if (JoltProjectSettings::use_legacy_ray_casting()) {
-		settings.mBackFaceModeConvex = p_parameters.hit_back_faces
-			? JPH::EBackFaceMode::CollideWithBackFaces
-			: JPH::EBackFaceMode::IgnoreBackFaces;
-	}
+	settings.mBackFaceModeTriangles = back_face_mode;
 
 	JoltQueryCollectorClosest<JPH::CastRayCollector> collector;
 
@@ -61,6 +53,11 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 	}
 
 	const JPH::RayCastResult& hit = collector.get_hit();
+	const JPH::RVec3 position = ray.GetPointOnRay(hit.mFraction);
+	p_result.position = to_godot(position);
+	if(p_parameters.only_position) {
+		return true;
+	}
 
 	const JPH::BodyID& body_id = hit.mBodyID;
 	const JPH::SubShapeID& sub_shape_id = hit.mSubShapeID2;
@@ -69,7 +66,6 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 	const JoltObjectImpl3D* object = body.as_object();
 	ERR_FAIL_NULL_D(object);
 
-	const JPH::RVec3 position = ray.GetPointOnRay(hit.mFraction);
 
 	JPH::Vec3 normal = JPH::Vec3::sZero();
 
@@ -82,7 +78,6 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 		}
 	}
 
-	p_result.position = to_godot(position);
 	p_result.normal = to_godot(normal);
 	p_result.rid = object->get_rid();
 	p_result.collider_id = object->get_instance_id();
@@ -93,6 +88,7 @@ bool JoltPhysicsDirectSpaceState3D::intersect_ray(const RayParameters &p_paramet
 		const int32_t shape_index = shaped_object->find_shape_index(sub_shape_id);
 		ERR_FAIL_COND_D(shape_index == -1);
 		p_result.shape = shape_index;
+		p_result.face_index = try_get_face_index(*body, sub_shape_id);
 	}
 
 	return true;
@@ -127,9 +123,6 @@ int32_t JoltPhysicsDirectSpaceState3D::intersect_point(const PointParameters &p_
 
 		PhysicsServer3DExtensionShapeResult& result = *p_results++;
 
-		result.rid = object->get_rid();
-		result.collider_id = object->get_instance_id();
-		result.collider = object->get_instance_unsafe();
 		result.shape = 0;
 
 		if (const JoltShapedObjectImpl3D* shaped_object = object->as_shaped()) {
@@ -137,6 +130,9 @@ int32_t JoltPhysicsDirectSpaceState3D::intersect_point(const PointParameters &p_
 			ERR_FAIL_COND_D(shape_index == -1);
 			result.shape = shape_index;
 		}
+		result.rid = object->get_rid();
+		result.collider_id = object->get_instance_id();
+		result.collider = object->get_instance_unsafe();
 	}
 
 	return hit_count;
@@ -187,7 +183,7 @@ int32_t JoltPhysicsDirectSpaceState3D::intersect_shape(const ShapeParameters &p_
 			scale
 		));
 
-		scale = Vector3(1, 1, 1);
+		scale = Vector3(1,1,1);
 	}
 #endif // TOOLS_ENABLED
 
