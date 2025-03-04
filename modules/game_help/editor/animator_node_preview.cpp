@@ -422,14 +422,16 @@ AnimationNodePreview::AnimationNodePreview()
     charcter_parent->add_child(preview_character);
 
 
-    VBoxContainer *vb = memnew(VBoxContainer);
-    vb->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT, Control::PRESET_MODE_MINSIZE, 2);
-    vb->set_custom_minimum_size(Size2(150, 1) * EDSCALE);
-    vb->set_h_size_flags(SIZE_EXPAND_FILL);
-    add_child(vb);
+    root_vb = memnew(VBoxContainer);
+	root_vb->set_anchors_and_offsets_preset(Control::PRESET_FULL_RECT, Control::PRESET_MODE_MINSIZE, 2);
+	root_vb->set_custom_minimum_size(Size2(150, 1) * EDSCALE);
+	root_vb->set_h_size_flags(SIZE_EXPAND_FILL);
+    root_vb->set_visible(false);
+    add_child(root_vb);
+
     {
         HBoxContainer *hb = memnew(HBoxContainer);
-        vb->add_child(hb);
+		root_vb->add_child(hb);
 
         label = memnew(Label);
         label->set_text("Preview");
@@ -448,12 +450,17 @@ AnimationNodePreview::AnimationNodePreview()
         hb->add_child(drag_button);
 
     }
+    
+    HSeparator *sep = memnew(HSeparator);
+    sep->set_h_size_flags(SIZE_EXPAND_FILL);
+    root_vb->add_child(sep);
 
     set_custom_minimum_size(Size2(1, 150) * EDSCALE);
+
     HBoxContainer *root_hb = memnew(HBoxContainer);
     root_hb->set_modulate(Color(1, 1, 1, 0.7f));
     root_hb->set_v_size_flags(SIZE_EXPAND_FILL);
-    vb->add_child(root_hb);
+	root_vb->add_child(root_hb);
 
     {
         VBoxContainer *vb = memnew(VBoxContainer);
@@ -570,7 +577,8 @@ AnimationNodePreview::AnimationNodePreview()
 
     rot_x = 0;
     rot_y = 0;
-
+    this->connect("focus_entered", callable_mp(this, &AnimationNodePreview::_on_focus_entered));
+    this->connect("focus_exited", callable_mp(this, &AnimationNodePreview::_on_focus_exited));
     set_process(true);
 }
 

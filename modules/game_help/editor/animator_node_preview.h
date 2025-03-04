@@ -43,15 +43,15 @@ public:
     };
     Play_State play_state = Play_State::PS_Stop;
     PreviewType preview_type = PreviewType::PT_AnimationNode;
-    Label *label = nullptr;
-	SubViewport *viewport = nullptr;
 	Node3D *rotation = nullptr;
 	Node3D *charcter_parent = nullptr;
 	DirectionalLight3D *light1 = nullptr;
 	DirectionalLight3D *light2 = nullptr;
 	Camera3D *camera = nullptr;
 	Ref<CameraAttributesPractical> camera_attributes;
-
+    VBoxContainer *root_vb = nullptr;
+    Label *label = nullptr;
+	SubViewport *viewport = nullptr;
 	Button *light_1_switch = nullptr;
 	Button *light_2_switch = nullptr;
     Button *play_button = nullptr;
@@ -119,6 +119,14 @@ public:
     }
 
     void _on_drag_button_pressed() ;
+
+    void _on_focus_entered() {
+        root_vb->set_visible(true);
+        
+    }
+    void _on_focus_exited() {
+        root_vb->set_visible(false);
+    }
     
 
 	void _update_rotation();
