@@ -499,7 +499,9 @@ public:
 		if (_call_stack.stack_pos >= _debug_max_call_stack) {
 			//stack overflow
 			_debug_error = vformat("Stack overflow (stack size: %s). Check for infinite recursion in your script.", _debug_max_call_stack);
-			EngineDebugger::get_script_debugger()->debug(this);
+			if (EngineDebugger::get_script_debugger()) {
+				EngineDebugger::get_script_debugger()->debug(this);
+			}
 			return;
 		}
 
@@ -518,7 +520,9 @@ public:
 
 		if (_call_stack.stack_pos == 0) {
 			_debug_error = "Stack Underflow (Engine Bug)";
-			EngineDebugger::get_script_debugger()->debug(this);
+			if (EngineDebugger::get_script_debugger()) {
+				EngineDebugger::get_script_debugger()->debug(this);
+			}
 			return;
 		}
 

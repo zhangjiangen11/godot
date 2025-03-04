@@ -3930,11 +3930,6 @@ void Node::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", PROPERTY_USAGE_NONE), "", "get_multiplayer");
 
 
-	ADD_GROUP("Compoent List", "");
-
-	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "compoent_list", PROPERTY_HINT_ARRAY_TYPE, RESOURCE_TYPE_HINT("NodeComponent")), "set_components", "get_components");
-	
-	
 	ADD_GROUP("Process", "process_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_mode", PROPERTY_HINT_ENUM, "Inherit,Pausable,When Paused,Always,Disabled"), "set_process_mode", "get_process_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_priority"), "set_process_priority", "get_process_priority");

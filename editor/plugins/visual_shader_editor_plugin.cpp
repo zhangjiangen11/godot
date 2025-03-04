@@ -1596,7 +1596,9 @@ void VisualShaderEditor::clear_custom_types() {
 }
 
 void VisualShaderEditor::add_custom_type(const String &p_name, const String &p_type, const Ref<Script> &p_script, const String &p_description, int p_return_icon_type, const String &p_category, bool p_highend) {
-	ERR_FAIL_COND(!p_name.is_valid_ascii_identifier());
+	if (!p_name.is_valid_ascii_identifier()) {
+		ERR_FAIL_COND_MSG(!p_name.is_valid_ascii_identifier(), p_script->get_path());
+	}
 	ERR_FAIL_COND(p_type.is_empty() && p_script.is_null());
 
 	for (int i = 0; i < add_options.size(); i++) {

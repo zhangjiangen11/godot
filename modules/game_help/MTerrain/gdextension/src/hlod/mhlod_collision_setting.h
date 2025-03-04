@@ -14,15 +14,13 @@ class MHlodCollisionSetting : public Resource {
     RID body;
 
     public:
-    String name;
     int32_t collision_layer = 1;
     int32_t collision_mask = 1;
     Ref<PhysicsMaterial> physics_material;
     Vector3 constant_angular_velocity;
     Vector3 constant_linear_velocity;
 
-    void set_name(const String& input);
-    String get_name() const;
+
 
     void set_physics_material(Ref<PhysicsMaterial> input);
     Ref<PhysicsMaterial> get_physics_material() const;

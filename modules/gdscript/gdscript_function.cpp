@@ -238,7 +238,7 @@ Variant GDScriptFunctionState::resume(const Variant &p_arg) {
 		}
 
 #ifdef DEBUG_ENABLED
-		if (EngineDebugger::is_active()) {
+		if (true || EngineDebugger::is_active()) {
 			GDScriptLanguage::get_singleton()->exit_function();
 		}
 

@@ -50,9 +50,9 @@ void PathScene3D::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_rotation_mode"), &PathScene3D::get_rotation_mode);
     ADD_PROPERTY(PropertyInfo(Variant::INT, "rotation_mode", PROPERTY_HINT_ENUM, "Fixed,Path,Random"), "set_rotation_mode", "get_rotation_mode");
 
-    ClassDB::bind_method(D_METHOD("set_rotation", "rotation"), &PathScene3D::set_rotation);
-    ClassDB::bind_method(D_METHOD("get_rotation"), &PathScene3D::get_rotation);
-    ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "rotation", PROPERTY_HINT_RANGE, "0.0,360.0,0.01,radians_as_degrees"), "set_rotation", "get_rotation");
+    ClassDB::bind_method(D_METHOD("set_path_rotation", "rotation"), &PathScene3D::set_path_rotation);
+    ClassDB::bind_method(D_METHOD("get_path_rotation"), &PathScene3D::get_path_rotation);
+    ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "path_rotation", PROPERTY_HINT_RANGE, "0.0,360.0,0.01,radians_as_degrees"), "set_rotation", "get_rotation");
 
     ClassDB::bind_method(D_METHOD("set_sample_cubic", "sample_cubic"), &PathScene3D::set_sample_cubic);
     ClassDB::bind_method(D_METHOD("get_sample_cubic"), &PathScene3D::get_sample_cubic);

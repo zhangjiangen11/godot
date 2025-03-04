@@ -2,9 +2,6 @@
 #include "servers/physics_server_3d.h"
 
 void MHlodCollisionSetting::_bind_methods(){
-    ClassDB::bind_method(D_METHOD("set_name","input"), &MHlodCollisionSetting::set_name);
-    ClassDB::bind_method(D_METHOD("get_name"), &MHlodCollisionSetting::get_name);
-    ADD_PROPERTY(PropertyInfo(Variant::STRING,"name"),"set_name","get_name");
 
     ClassDB::bind_method(D_METHOD("set_physics_material","input"), &MHlodCollisionSetting::set_physics_material);
     ClassDB::bind_method(D_METHOD("get_physics_material"), &MHlodCollisionSetting::get_physics_material);
@@ -27,13 +24,6 @@ void MHlodCollisionSetting::_bind_methods(){
     ADD_PROPERTY(PropertyInfo(Variant::INT,"collision_mask",PROPERTY_HINT_LAYERS_3D_PHYSICS),"set_collision_mask","get_collision_mask");
 }
 
-void MHlodCollisionSetting::set_name(const String& input){
-    name = input;
-}
-
-String MHlodCollisionSetting::get_name() const{
-    return name;
-}
 
 void MHlodCollisionSetting::set_physics_material(Ref<PhysicsMaterial> input){
     physics_material = input;

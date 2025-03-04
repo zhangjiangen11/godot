@@ -100,13 +100,13 @@ public:
     }
     _ALWAYS_INLINE_ Rotation get_rotation_mode() const { return rotation_mode; }
 
-    _ALWAYS_INLINE_ void set_rotation(const Vector3 &p_rotation) { 
+    _ALWAYS_INLINE_ void set_path_rotation(const Vector3 &p_rotation) {
         if (rotation != p_rotation) {
             rotation = p_rotation;
             queue_rebuild();
         }
     }
-    _ALWAYS_INLINE_ Vector3 get_rotation() const { return rotation; }
+    _ALWAYS_INLINE_ Vector3 get_path_rotation() const { return rotation; }
 
     _ALWAYS_INLINE_ void set_sample_cubic(bool p_cubic) { 
         if (sample_cubic != p_cubic) {

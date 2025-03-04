@@ -33,6 +33,8 @@
 #include "core/io/logger.h"
 #include "core/os/os.h"
 #include "core/string/ustring.h"
+#include "core/object/script_instance.h"
+#include "core/object/script_language.h"
 
 
 
@@ -112,6 +114,7 @@
 			typedef SYMBOL_INFO sym_type;
 			sym_type *symbol = (sym_type *) alloca(sizeof(sym_type) + 1024);
 			int index = 0;
+			bool is_in_gdscript = false;
             while (true) {
                 if (StackWalk64(
                         image, process, thread,
@@ -123,7 +126,7 @@
                     break;
 					
 				++index;
-				if(index < 4)
+				if(index < 2)
 				{
 					continue;
 				}
@@ -155,8 +158,23 @@
                     lineNumber = -1;
                     fileName = "??";
                 }
+				if(is_in_gdscript == false && strcmp(symbolName, "GDScriptFunction::call") == 0)
+				{
+					is_in_gdscript = true;
+					for (int i = 0; i < ScriptServer::get_language_count(); i++) {
+						if(ScriptServer::get_language(i)->get_type() == "GDScript" )
+						{
+							Vector<ScriptLanguage::StackInfo> si = ScriptServer::get_language(i)->debug_get_current_stack_info();
+							for(int j = 0; j < si.size(); j++ ) {
+								stackTrace.push_back(StackFrame { si[j].file, si[j].func, si[j].line });
+							}							
+						}
+					}
+				}
+				{
+					stackTrace.push_back(StackFrame { fileName, symbolName, lineNumber });
+				}
 
-                stackTrace.push_back(StackFrame { fileName, symbolName, lineNumber });
             }
 
             SymCleanup(process);
@@ -277,12 +295,25 @@ void _err_print_error(const char *p_function, const char *p_file, int p_line, co
 	CharString data;
 	if(p_type == ERR_HANDLER_ERROR)
 	{
-		temp = p_error;
+		if(p_file) {
+			temp += p_file;
+			temp += "(";
+			temp += itos(p_line);
+			temp += "): ";
+		}
         if(p_message)
         {
             temp += ": ";
             temp += p_message;
+            temp += " ";
         }
+		if(p_function != nullptr) {
+			
+            temp += "->";
+            temp += p_function;		
+            temp += "()";	
+		}
+		temp += p_error;
 		LocalVector<StackFrame> stackFrame;
 		_global_lock();
 		getStackTrace(stackFrame);
