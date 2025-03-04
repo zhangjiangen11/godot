@@ -1,6 +1,7 @@
 #include "foliage_cell_asset.h"
 #include "foliage_engine.h"
 
+
 namespace Foliage
 {
 
@@ -373,6 +374,7 @@ namespace Foliage
         ClassDB::bind_method(D_METHOD("set_data", "data"), &FoliageHeightMap::set_data);
         ClassDB::bind_method(D_METHOD("get_data"), &FoliageHeightMap::get_data);
 
+
         ClassDB::bind_method(D_METHOD("init", "width", "height"), &FoliageHeightMap::init);
         ClassDB::bind_method(D_METHOD("init_form_image", "width", "height", "image", "rect"), &FoliageHeightMap::init_form_image);
         ClassDB::bind_method(D_METHOD("set_pixel", "x", "y", "value"), &FoliageHeightMap::set_pixel);
@@ -403,17 +405,21 @@ namespace Foliage
             }
         }
     }
-    void FoliageHeightMap::set_pixel(int p_x, int p_y, float p_value) {
-        if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
-            return;
+    void FoliageHeightMap::init_form_half_data(int p_width, int p_height,const Vector<uint8_t>& p_data) {
+        width = p_width;
+        height = p_height;
+
+        data.resize(height * width);
+        const uint8_t * ptr = p_data.ptr();
+        float* dst_ptr = data.ptrw();
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                int ofs = (y * width + x) * 2;                
+                uint16_t r = ((uint16_t *)ptr)[ofs];
+                dst_ptr[y * width + x] = Math::half_to_float(r) ;
+            }
         }
-        data.write[p_x + p_y * width] = p_value;
-    }
-    float FoliageHeightMap::get_pixel(int p_x, int p_y) {
-        if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
-            return 0;
-        }
-        return data[p_x + p_y * width];
+
     }
     // 隐藏不在高度范围内的实例
     void FoliageHeightMap::hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max) {
@@ -489,6 +495,123 @@ namespace Foliage
         }
     }
 
+    Vector3 FoliageHeightMap::get_height_map_normal(int x, int z,float p_scale_height, float stepX, float stepZ) const {
+
+        Vector3 p0(x * stepX, get_pixel(x,z) * p_scale_height, z * stepZ);
+        Vector3 sumNormal(0, 0, 0);
+        Vector3 normals = Vector3(0,0,0);
+        int validTriangleCount = 0;
+    
+    
+        // 左上三角形
+        if (x > 0 && z > 0) {
+            Vector3 pLeft((x - 1) * stepX, get_pixel(x - 1, z) * p_scale_height, z * stepZ);
+            Vector3 pTop(x * stepX, get_pixel(x, z - 1) * p_scale_height, (z - 1) * stepZ);
+            Vector3 normal = (pLeft - p0).cross(pTop - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        // 右上三角形
+        if (x < width - 1 && z > 0) {
+            Vector3 pRight((x + 1) * stepX, get_pixel(x + 1, z) * p_scale_height, z * stepZ);
+            Vector3 pTop(x * stepX, get_pixel(x, z - 1) * p_scale_height, (z - 1) * stepZ);
+            Vector3 normal = (pTop - p0).cross(pRight - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        // 右下三角形
+        if (x < width - 1 && z < height - 1) {
+            Vector3 pRight((x + 1) * stepX, get_pixel(x + 1, z) * p_scale_height, z * stepZ);
+            Vector3 pBottom(x * stepX, get_pixel(x, z + 1) * p_scale_height, (z + 1) * stepZ);
+            Vector3 normal = (pRight - p0).cross(pBottom - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        // 左下三角形
+        if (x > 0 && z < height - 1) {
+            Vector3 pLeft((x - 1) * stepX, get_pixel(x - 1, z) * p_scale_height, z * stepZ);
+            Vector3 pBottom(x * stepX, get_pixel(x, z + 1) * p_scale_height, (z + 1) * stepZ);
+            Vector3 normal = (pBottom - p0).cross(pLeft - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        if (validTriangleCount > 0) {
+            sumNormal.normalize();
+        }
+        else {
+            sumNormal = Vector3(0, 1, 0);
+        }
+        return normals;
+
+    }
+    static float get_height_form_data(const uint8_t* p_data,int p_width, int p_height,int x, int z,float p_scale_height, float stepX, float stepZ) {
+        uint16_t r = ((uint16_t *)p_data)[(z * p_width + x) * 2];
+        return Math::half_to_float(r) * p_scale_height;
+    }
+    Vector3 FoliageHeightMap::get_height_map_normal_form_data(const Vector<uint8_t>& p_data,int width, int height,int x, int z,float p_scale_height, float stepX, float stepZ) {
+        Vector3 p0(x * stepX, get_height_form_data(p_data.ptr(),width,height,x,z,p_scale_height, stepX, stepZ), z * stepZ);
+        Vector3 sumNormal(0, 0, 0);
+        Vector3 normals = Vector3(0,0,0);
+        int validTriangleCount = 0;
+    
+    
+        // 左上三角形
+        if (x > 0 && z > 0) {
+            Vector3 pLeft((x - 1) * stepX, get_height_form_data(p_data.ptr(),width,height,x - 1,z,p_scale_height, stepX, stepZ), z * stepZ);//get_pixel(x - 1, z) * p_scale_height, z * stepZ);
+            Vector3 pTop(x * stepX, get_height_form_data(p_data.ptr(),width,height,x,z - 1,p_scale_height, stepX, stepZ), (z - 1) * stepZ);//get_pixel(x, z - 1) * p_scale_height, (z - 1) * stepZ);
+            Vector3 normal = (pLeft - p0).cross(pTop - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        // 右上三角形
+        if (x < width - 1 && z > 0) {
+            Vector3 pRight((x + 1) * stepX, get_height_form_data(p_data.ptr(),width,height,x + 1,z,p_scale_height, stepX, stepZ), z * stepZ);//get_pixel(x + 1, z) * p_scale_height, z * stepZ);
+            Vector3 pTop(x * stepX, get_height_form_data(p_data.ptr(),width,height,x,z - 1,p_scale_height, stepX, stepZ), (z - 1) * stepZ);//get_pixel(x, z - 1) * p_scale_height, (z - 1) * stepZ);
+            Vector3 normal = (pTop - p0).cross(pRight - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        // 右下三角形
+        if (x < width - 1 && z < height - 1) {
+            Vector3 pRight((x + 1) * stepX, get_height_form_data(p_data.ptr(),width,height,x + 1,z,p_scale_height, stepX, stepZ), z * stepZ);//get_pixel(x + 1, z) * p_scale_height, z * stepZ);
+            Vector3 pBottom(x * stepX, get_height_form_data(p_data.ptr(),width,height,x,z + 1,p_scale_height, stepX, stepZ), (z + 1) * stepZ);//get_pixel(x, z + 1) * p_scale_height, (z + 1) * stepZ);
+            Vector3 normal = (pRight - p0).cross(pBottom - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        // 左下三角形
+        if (x > 0 && z < height - 1) {
+            Vector3 pLeft((x - 1) * stepX, get_height_form_data(p_data.ptr(),width,height,x - 1,z,p_scale_height, stepX, stepZ), z * stepZ);//get_pixel(x - 1, z) * p_scale_height, z * stepZ);
+            Vector3 pBottom(x * stepX, get_height_form_data(p_data.ptr(),width,height,x,z + 1,p_scale_height, stepX, stepZ), (z + 1) * stepZ);//get_pixel(x, z + 1) * p_scale_height, (z + 1) * stepZ);
+            Vector3 normal = (pBottom - p0).cross(pLeft - p0);
+            normal.normalize();
+            sumNormal = sumNormal + normal;
+            validTriangleCount++;
+        }
+    
+        if (validTriangleCount > 0) {
+            sumNormal.normalize();
+        }
+        else {
+            sumNormal = Vector3(0, 1, 0);
+        }
+        return normals;
+        
+    }
     float FoliageHeightMap::sample_height(float p_u,float p_v) {
         
         p_u = CLAMP(p_u, 0.0, 1.0);
@@ -519,8 +642,12 @@ namespace Foliage
     void FoliageNormalMap::_bind_methods() {
         ClassDB::bind_method(D_METHOD("init", "width", "height"), &FoliageNormalMap::init);
         ClassDB::bind_method(D_METHOD("init_form_image", "width", "height", "image", "rect"), &FoliageNormalMap::init_form_image);
+        ClassDB::bind_method(D_METHOD("init_form_height_map", "width", "height", "image", "rect","p_scale_height","stepX","stepZ"), &FoliageNormalMap::init_form_height_map);
+        ClassDB::bind_method(D_METHOD("init_form_half_data", "width", "height", "data", "rect","p_scale_height","stepX","stepZ"), &FoliageNormalMap::init_form_half_data);
         ClassDB::bind_method(D_METHOD("set_pixel", "x", "y", "value"), &FoliageNormalMap::set_pixel);
         ClassDB::bind_method(D_METHOD("get_pixel", "x", "y"), &FoliageNormalMap::get_pixel);
+        ClassDB::bind_method(D_METHOD("hide_instance_by_slope", "instance_range","flatland_height"), &FoliageNormalMap::hide_instance_by_slope);
+        ClassDB::bind_method(D_METHOD("get_xz_normal_map_texture"), &FoliageNormalMap::get_xz_normal_map_texture);
 
         ClassDB::bind_method(D_METHOD("set_width", "width"), &FoliageNormalMap::set_width);
         ClassDB::bind_method(D_METHOD("get_width"), &FoliageNormalMap::get_width);
@@ -546,10 +673,37 @@ namespace Foliage
         int start_x = p_rect.position.x;
         int start_y = p_rect.position.y;
         data.resize(height * width);
+        Vector3 * ptr = data.ptrw();
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 Color c = p_image->get_pixel(start_x + x, start_y + y);
-                data.write[y * width + x] = Vector3(c.r,c.g,c.b);
+                ptr[y * width + x] = Vector3(c.r * 2.0 - 1.0,c.g * 2.0 - 1.0,c.b * 2.0 - 1.0); 
+            }
+        }
+    }
+    void FoliageNormalMap::init_form_height_map(int p_width, int p_height,const Ref<FoliageHeightMap>& p_image,const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ) {
+        width = p_width;
+        height = p_height;
+        int start_x = p_rect.position.x;
+        int start_y = p_rect.position.y;
+        data.resize(height * width);
+        Vector3 * ptr = data.ptrw();
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                ptr[y * width + x] = p_image->get_height_map_normal(start_x + x, start_y + y, p_scale_height, stepX, stepZ);
+            }
+        }
+    }
+    void FoliageNormalMap::init_form_half_data(int p_width, int p_height, const Vector<uint8_t>& p_data, const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ) {
+        width = p_width;
+        height = p_height;
+        int start_x = p_rect.position.x;
+        int start_y = p_rect.position.y;
+        data.resize(height * width);
+        Vector3 * ptr = data.ptrw();
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                ptr[y * width + x] = FoliageHeightMap::get_height_map_normal_form_data(p_data,width, height, start_x + x, start_y + y, p_scale_height, stepX, stepZ);
             }
         }
     }
@@ -580,6 +734,26 @@ namespace Foliage
                 }
             }
         }
+    }
+    Ref<ImageTexture> FoliageNormalMap::get_xz_normal_map_texture() const{
+        // 法线贴图的y轴时钟向上,所以不需要存储y轴
+        const Vector3 * ptr = data.ptr();
+        Color c;
+        Vector<uint8_t> image_data;
+        image_data.resize(width * height * 2);
+        uint8_t * ptr2 = image_data.ptrw();
+        uint64_t ofs = 0;
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                ofs = (y * width + x) * 2;
+                ptr2[ofs] = ptr[y * width + x].x * 0.5 + 0.5;
+                ptr2[ofs + 1] = ptr[y * width + x].z * 0.5 + 0.5;
+            }
+        }
+        Ref<Image> image = Image::create_from_data(width, height, false, Image::FORMAT_RG8, image_data);
+        Ref<ImageTexture> normal_map = memnew(ImageTexture);
+        normal_map->create_from_image(image);
+        return normal_map;
     }
 
 }

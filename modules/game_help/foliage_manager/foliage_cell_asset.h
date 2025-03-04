@@ -15,6 +15,7 @@
 #include "memory_pool.h"
 #include "scene/3d/camera_3d.h"
 #include "scene/main/viewport.h"
+#include "scene/resources/image_texture.h"
 
 
 namespace Foliage
@@ -843,8 +844,21 @@ namespace Foliage
 	public:
 		void init(int p_width, int p_height) ;
 		void init_form_image(int p_width, int p_height,const Ref<Image>& p_image,const Rect2i& p_rect);
-		void set_pixel(int p_x, int p_y, float p_value);
-		float get_pixel(int p_x, int p_y);
+		void init_form_half_data(int p_width, int p_height,const Vector<uint8_t>& p_data) ;
+		_FORCE_INLINE_ void set_pixel(int p_x, int p_y, float p_value){
+			if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+				return;
+			}
+			uint64_t index = p_x + p_y * width;
+			data.write[index] = p_value;
+		}
+		_FORCE_INLINE_ float get_pixel(int p_x, int p_y) const{
+			if(p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+				return 0;
+			}
+			uint64_t index = p_x + p_y * width;
+			return data[index];
+		}
 		int get_width() { return width; }
 		int get_height() { return height; }
 		void set_width(int p_width) { width = p_width; }
@@ -858,6 +872,9 @@ namespace Foliage
 
 		void update_height(const Ref<SceneInstanceBlock>& p_block,float p_base_height,float p_height_range,const Rect2i& p_image_rect,const Vector2& p_instance_start_pos) ;
 
+
+		Vector3 get_height_map_normal(int p_x, int p_y,float p_scale_height, float stepX, float stepZ) const;
+		static Vector3 get_height_map_normal_form_data(const Vector<uint8_t>& p_data,int p_width, int p_height,int p_x, int p_y,float p_scale_height, float stepX, float stepZ) ;
 		float sample_height(float u,float v) ;
 
 
@@ -880,10 +897,13 @@ namespace Foliage
 
 		void init(int p_width, int p_height);
 		void init_form_image(int p_width, int p_height, const Ref<Image>& p_image, const Rect2i& p_rect);
+		void init_form_height_map(int p_width, int p_height, const Ref<FoliageHeightMap>& p_image, const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ);
+		void init_form_half_data(int p_width, int p_height, const Vector<uint8_t>& p_data, const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ);
 		void set_pixel(int p_x, int p_y, Vector3 p_value);
 		Vector3 get_pixel(int p_x, int p_y);
 		// 通过坡度隐藏实例
 		void hide_instance_by_slope(const Ref<SceneInstanceBlock>& p_block, float p_visble_slope_min, float p_visble_slope_max);
+		Ref<ImageTexture> get_xz_normal_map_texture() const;
 	private:
 		int width = 0;
 		int height = 0;

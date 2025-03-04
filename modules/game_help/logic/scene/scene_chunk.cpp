@@ -92,6 +92,8 @@ void SceneChunk::MeshInstance::update_mesh_instance() {
         }
         multimesh = memnew(MultiMesh);
         multimesh->set_mesh(mesh);
+        multimesh->set_use_colors(true);
+        multimesh->set_use_custom_data(true);
         
     }
     dirty = false;
