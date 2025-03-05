@@ -63,7 +63,7 @@ public:
 		INDIRECT_MULTIMESH_COMMAND_STRIDE = 5
 	};
 
-private:
+public:
 	static MeshStorage *singleton;
 
 	RID default_rd_storage_buffer;
@@ -651,6 +651,7 @@ public:
 	virtual void _multimesh_instance_set_transform_2d(RID p_multimesh, int p_index, const Transform2D &p_transform) override;
 	virtual void _multimesh_instance_set_color(RID p_multimesh, int p_index, const Color &p_color) override;
 	virtual void _multimesh_instance_set_custom_data(RID p_multimesh, int p_index, const Color &p_color) override;
+	virtual Ref<RDMultimeshUpdate> _multimesh_instance_get_update(RID p_multimesh) override;
 
 	virtual RID _multimesh_get_mesh(RID p_multimesh) const override;
 

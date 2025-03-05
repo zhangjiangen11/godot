@@ -174,6 +174,13 @@ void RendererMeshStorage::multimesh_instance_set_custom_data(RID p_multimesh, in
 
 	_multimesh_instance_set_custom_data(p_multimesh, p_index, p_color);
 }
+Ref<RDMultimeshUpdate> RendererMeshStorage::multimesh_instance_get_update(RID p_multimesh) {
+	MultiMeshInterpolator *mmi = _multimesh_get_interpolator(p_multimesh);
+	if (mmi && mmi->interpolated) {
+		return Ref<RDMultimeshUpdate>();
+	}
+	return _multimesh_instance_get_update(p_multimesh);
+}
 
 void RendererMeshStorage::multimesh_set_custom_aabb(RID p_multimesh, const AABB &p_aabb) {
 	_multimesh_set_custom_aabb(p_multimesh, p_aabb);

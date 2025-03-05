@@ -55,7 +55,33 @@
 #define ERR_NOT_ON_RENDER_THREAD
 #define ERR_NOT_ON_RENDER_THREAD_V(m_ret)
 #endif
+// 处理静态物件的更新
+class RDMultimeshUpdate : public RefCounted {
+	GDCLASS(RDMultimeshUpdate, RefCounted);
+	static void _bind_methods() {
+		ClassDB::bind_method(D_METHOD("update_static_instance", "index_start", "index_count", "transform_data", "color_data", "custom_data"), &RDMultimeshUpdate::update_static_instance);
+		ClassDB::bind_method(D_METHOD("update_static_instance", "index_start", "index_count", "transform_data", "color_data", "custom_data", "pre_transform_data", "pre_color_data", "pre_custom_data"), &RDMultimeshUpdate::update_dynamic_instance);
+	}
+public:
+	virtual ~RDMultimeshUpdate() {}
+	// 更新静态实例
+	void update_static_instance(int index_start, int index_count, const Vector<float>& transform_data, const Vector<float>& color_data, const Vector<float>& custom_data) {
+		_update_dynamic_instance(index_start, index_count, transform_data, color_data, custom_data, transform_data, color_data, custom_data);
+	}
 
+	void update_dynamic_instance(int index_start, int index_count, const Vector<float>& transform_data, const Vector<float>& color_data,
+		const Vector<float>& custom_data, const Vector<float>& pre_transform_data,
+		const Vector<float>& pre_color_data,
+		const Vector<float>& pre_custom_data) {
+		_update_dynamic_instance(index_start, index_count, transform_data, color_data, custom_data, pre_transform_data, pre_color_data, pre_custom_data);
+	}
+protected:
+	virtual void _update_dynamic_instance(int index_start, int index_count, const Vector<float>& transform_data, const Vector<float>& color_data,
+		const Vector<float>& custom_data, const Vector<float>& pre_transform_data,
+		const Vector<float>& pre_color_data,
+		const Vector<float>& pre_custom_data) {}
+
+};
 class RenderingServer : public Object {
 	GDCLASS(RenderingServer, Object);
 
@@ -470,6 +496,7 @@ public:
 	virtual void multimesh_instance_set_transform_2d(RID p_multimesh, int p_index, const Transform2D &p_transform) = 0;
 	virtual void multimesh_instance_set_color(RID p_multimesh, int p_index, const Color &p_color) = 0;
 	virtual void multimesh_instance_set_custom_data(RID p_multimesh, int p_index, const Color &p_color) = 0;
+	virtual Ref<RDMultimeshUpdate> multimesh_instance_get_update(RID p_multimesh) = 0;
 
 	virtual RID multimesh_get_mesh(RID p_multimesh) const = 0;
 	virtual AABB multimesh_get_aabb(RID p_multimesh) const = 0;

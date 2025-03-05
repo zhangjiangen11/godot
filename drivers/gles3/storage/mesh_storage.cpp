@@ -35,6 +35,53 @@
 #include "texture_storage.h"
 #include "utilities.h"
 
+class RDMultimeshUpdateGLES3 : public RDMultimeshUpdate
+{
+	GDCLASS(RDMultimeshUpdateGLES3, RDMultimeshUpdate);
+	static void _bind_methods() {}
+public:
+	RDMultimeshUpdateGLES3(GLES3::MultiMesh* p_multimesh) :multimesh(p_multimesh) {
+
+	}
+protected:
+	virtual void _update_dynamic_instance(int index_start, int index_count, const Vector<float>& transform_data, const Vector<float>& color_data,
+		const Vector<float>& custom_data, const Vector<float>& pre_transform_data,
+		const Vector<float>& pre_color_data,
+		const Vector<float>& pre_custom_data) {
+
+		GLES3::MeshStorage::get_singleton()->_multimesh_make_local(multimesh);
+
+		for (int p_index = index_start; index_start < (index_start + index_count); ++p_index) {
+			float* w = multimesh->data_cache.ptrw();
+			ERR_FAIL_INDEX(p_index, multimesh->instances);
+			{
+				float* dataptr = w + p_index * multimesh->stride_cache;
+				const float* source_ptr = color_data.ptr() + p_index * 12;
+				memcpy(dataptr, source_ptr, 12 * 4);
+			}
+
+			if (multimesh->uses_colors) {
+				// Colors are packed into 2 floats.			
+				float* dataptr = w + p_index * multimesh->stride_cache + multimesh->color_offset_cache;
+				const float* source_ptr = color_data.ptr() + p_index * 4;
+				uint16_t val[4] = { Math::make_half_float(*source_ptr), Math::make_half_float(*(source_ptr + 1)), Math::make_half_float(*(source_ptr + 2)), Math::make_half_float(*(source_ptr + 3)) };
+				memcpy(dataptr, val, 2 * 4);
+			}
+			if (multimesh->uses_custom_data) {
+				float* dataptr = w + p_index * multimesh->stride_cache + multimesh->custom_data_offset_cache;
+				const float* source_ptr = custom_data.ptr() + p_index * 4;
+				uint16_t val[4] = { Math::make_half_float(*source_ptr), Math::make_half_float(*(source_ptr + 1)), Math::make_half_float(*(source_ptr + 2)), Math::make_half_float(*(source_ptr + 3)) };
+				memcpy(dataptr, val, 2 * 4);
+			}
+			GLES3::MeshStorage::get_singleton()->_multimesh_mark_dirty(multimesh, p_index, false);
+		}
+
+
+	}
+	GLES3::MultiMesh* multimesh = nullptr;
+
+};
+
 using namespace GLES3;
 
 MeshStorage *MeshStorage::singleton = nullptr;
@@ -1814,6 +1861,13 @@ void MeshStorage::_multimesh_instance_set_custom_data(RID p_multimesh, int p_ind
 	}
 
 	_multimesh_mark_dirty(multimesh, p_index, false);
+}
+Ref<RDMultimeshUpdate> MeshStorage::_multimesh_instance_get_update(RID p_multimesh) {
+	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
+	ERR_FAIL_NULL_V(multimesh, Ref<RDMultimeshUpdate>());
+	RDMultimeshUpdate* r = memnew(RDMultimeshUpdateGLES3(multimesh));
+	Ref<RDMultimeshUpdate> ret = r;
+	return ret;
 }
 
 RID MeshStorage::_multimesh_get_mesh(RID p_multimesh) const {
