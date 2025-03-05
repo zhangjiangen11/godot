@@ -142,7 +142,7 @@ class MHlodScene : public Node3D {
         void enable_sub_proc();
         void disable_sub_proc();
         _FORCE_INLINE_ void add_item(MHlod::Item* item,const int item_id,const bool immediate=false); // can be called in non-game loop thread as it generate apply info which will be affected in main game-loop
-        _FORCE_INLINE_ void remove_item(MHlod::Item* item,const int item_id,const bool immediate=false,const bool is_destruction=false);
+        _FORCE_INLINE_ void remove_item(MHlod::Item* item,const int item_id,const bool immediate=false,const bool is_destruction=false); // should clear creation_info afer calling this
         _FORCE_INLINE_ Transform3D get_item_transform(const int32_t transform_index) const;
         // use bellow rather than upper
         _FORCE_INLINE_ Transform3D get_item_transform(const MHlod::Item* item) const;
@@ -215,6 +215,7 @@ class MHlodScene : public Node3D {
     static bool set_octree(MOctree* input);
     static MOctree* get_octree();
     static uint16_t get_oct_id();
+    static int32_t get_free_oct_point_id();
     static int32_t add_proc(Proc* _proc,int oct_point_id);
     static void remove_proc(int32_t octpoint_id);
     static void move_proc(int32_t octpoint_id,const Vector3& old_pos,const Vector3& new_pos);
@@ -225,7 +226,6 @@ class MHlodScene : public Node3D {
     static void update_tick();
     static void apply_remove_item_users();
     static void apply_update();
-    static void flush();
 
     static void sleep();
     static void awake();
@@ -294,24 +294,24 @@ class MHlodScene : public Node3D {
         while (checked_children_to_add_index != procs.size() - 1)
         {
             ++checked_children_to_add_index;
-            Proc& current_proc = procs.ptrw()[checked_children_to_add_index];
-            Ref<MHlod> current_hlod = current_proc.hlod;
+            Ref<MHlod> current_hlod = procs.ptrw()[checked_children_to_add_index].hlod;
             ERR_CONTINUE(current_hlod.is_null());
             int sub_proc_size = current_hlod->sub_hlods.size();
             int sub_proc_index = procs.size();
-            current_proc.init_sub_proc(sub_proc_index,sub_proc_size,checked_children_to_add_index);
+            procs.ptrw()[checked_children_to_add_index].init_sub_proc(sub_proc_index,sub_proc_size,checked_children_to_add_index);
             // pushing back childrens
             for(int i=0; i < sub_proc_size; i++){
                 Ref<MHlod> s = current_hlod->sub_hlods[i];
                 ERR_FAIL_COND(s.is_null());
                 uint16_t s_layers = current_hlod->sub_hlods_scene_layers[i];
-                Transform3D s_transform = current_proc.transform * current_hlod->sub_hlods_transforms[i];
+                Transform3D s_transform = procs.ptrw()[checked_children_to_add_index].transform * current_hlod->sub_hlods_transforms[i];
                 int32_t proc_id = sub_proc_index + i;
                 procs.push_back(Proc(this,s,proc_id,s_layers,s_transform));
             }
         }
         // enabling procs, don't use recursive, important for ordering!
         for(int i=0; i < procs.size(); i++){
+            procs.ptrw()[i].oct_point_id = get_free_oct_point_id();
             procs.ptrw()[i].enable(false);
         }
         is_init = true;
@@ -329,8 +329,9 @@ class MHlodScene : public Node3D {
         }
         std::conditional_t<UseLock,std::lock_guard<std::mutex>,MDummyType<std::mutex>> lock(MHlodScene::update_mutex);
         is_init = false;
+        apply_update();
         get_root_proc()->disable(true,true,true);
-        flush();
+        apply_remove_item_users();
         procs.resize(1);
     }
 };

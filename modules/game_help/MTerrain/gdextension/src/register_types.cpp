@@ -7,6 +7,14 @@
 
 
 
+
+#ifdef DEBUG_ENABLED
+#include "editor/mmesh_joiner.h"
+#include "editor/masset_mesh.h"
+#include "editor/masset_mesh_updater.h"
+#include "editor/masset_table.h"
+#endif
+
 #include "mterrain.h"
 #include "mresource.h"
 #include "mchunk_generator.h"
@@ -42,12 +50,6 @@
 #include "hlod/mdecal.h"
 #include "hlod/mdecal_instance.h"
 
-#ifdef DEBUG_ENABLED
-#include "editor/mmesh_joiner.h"
-#include "editor/masset_mesh_updater.h"
-#include "editor/masset_table.h"
-#include "editor/masset_mesh.h"
-#endif
 
 void initialize_mterrain_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {

@@ -35,6 +35,7 @@ void MAssetTable::_bind_methods(){
     ClassDB::bind_static_method("MAssetTable",D_METHOD("mesh_item_get_max_lod"), &MAssetTable::mesh_item_get_max_lod);
     ClassDB::bind_static_method("MAssetTable",D_METHOD("get_last_free_mesh_id_and_increase"), &MAssetTable::get_last_free_mesh_id_and_increase);
     ClassDB::bind_static_method("MAssetTable",D_METHOD("mesh_item_get_first_lod","item_id"), &MAssetTable::mesh_item_get_first_lod);
+    ClassDB::bind_static_method("MAssetTable",D_METHOD("mesh_item_get_first_valid_id","item_id"), &MAssetTable::mesh_item_get_first_valid_id);
     ClassDB::bind_static_method("MAssetTable",D_METHOD("mesh_item_get_stop_lod","item_id"), &MAssetTable::mesh_item_get_stop_lod);
     ClassDB::bind_static_method("MAssetTable",D_METHOD("mesh_item_ids_no_replace","item_id"), &MAssetTable::mesh_item_ids_no_replace);
     ClassDB::bind_static_method("MAssetTable",D_METHOD("mesh_item_meshes_no_replace","item_id"), &MAssetTable::mesh_item_meshes_no_replace);
@@ -54,7 +55,7 @@ void MAssetTable::_bind_methods(){
 
     ClassDB::bind_static_method("MAssetTable",D_METHOD("get_last_free_decal_id"), &MAssetTable::get_last_free_decal_id);
     ClassDB::bind_static_method("MAssetTable",D_METHOD("get_last_free_packed_scene_id"), &MAssetTable::get_last_free_packed_scene_id);
-    ClassDB::bind_static_method("MAssetTable",D_METHOD("get_last_free_hlod_id","last_hlod_id","baker_scene_path"), &MAssetTable::get_last_free_hlod_id);
+    ClassDB::bind_static_method("MAssetTable",D_METHOD("get_last_free_hlod_id"), &MAssetTable::get_last_free_hlod_id);
 
     ClassDB::bind_method(D_METHOD("has_collection","collection_id"), &MAssetTable::has_collection);
     ClassDB::bind_method(D_METHOD("tag_add","name"), &MAssetTable::tag_add);
@@ -525,6 +526,17 @@ int32_t MAssetTable::mesh_item_get_first_lod(int item_id){
     return item_id - item_id%MAX_MESH_LOD;
 }
 
+int32_t MAssetTable::mesh_item_get_first_valid_id(int item_id){
+    item_id = mesh_item_get_first_lod(item_id);
+    for(int i=0; i < MAX_MESH_LOD; i++){
+        String mpath = MHlod::get_mesh_path(i + item_id);
+        if(FileAccess::exists(mpath)){
+            return i + item_id;
+        }
+    }
+    return -1;
+}
+
 int32_t MAssetTable::mesh_item_get_stop_lod(int item_id){
     int32_t _first_id = mesh_item_get_first_lod(item_id);
     String stop_ext = ".stop";
@@ -759,20 +771,8 @@ int32_t MAssetTable::get_last_free_packed_scene_id(){
     return get_last_id_in_dir(MHlod::get_packed_scene_root_dir());
 }
 
-int32_t MAssetTable::get_last_free_hlod_id(int32_t last_hlod_id,const String& baker_scene_path){
-    if(last_hlod_id==-1){ // is a new hlod
-        return get_last_id_in_dir(MHlod::get_hlod_root_dir());
-    }
-    String last_hlod_path = MHlod::get_hlod_path(last_hlod_id);
-    if(!FileAccess::exists(last_hlod_path)){ // if does not exist safe to save there
-        return last_hlod_id;
-    }
-    // if exist we should check if we are the saver
-    Ref<MHlod> hres = ResourceLoader::load(last_hlod_path);
-    if(hres.is_null() || hres->get_baker_path()!=baker_scene_path){ // if hres->get_baker_path()!=baker_scene_path then this is not ours to modify
-        return get_last_id_in_dir(MHlod::get_hlod_root_dir());
-    }
-    return last_hlod_id;
+int32_t MAssetTable::get_last_free_hlod_id(){
+    return get_last_id_in_dir(MHlod::get_hlod_root_dir());
 }
 
 
@@ -1010,10 +1010,11 @@ void MAssetTable::collection_add_collision(int collection_id,CollisionType col_t
     ERR_FAIL_COND(!has_collection(collection_id));
     // Getting sign with correct sing
     // Godot Basis class does not have this so we have to write it by outself
+    float det = col_transform.basis.determinant();
+    ERR_FAIL_COND_MSG(Math::is_equal_approx(det,0.0f),"Can not add collision shape determinant is zero");
+    det = det < 0 ? -1.0f : 1.0f;
     Vector3 size_signs;
-    {
-        float det = col_transform.basis.determinant() < 0 ? -1.0f : 1.0f;
-        ERR_FAIL_COND(Math::is_equal_approx(det,0.0f));
+    if(det < 0){
         Basis bx = col_transform.basis;
         bx.set_column(0,Vector3(1,1,1));
         Basis by = col_transform.basis;
@@ -1034,17 +1035,21 @@ void MAssetTable::collection_add_collision(int collection_id,CollisionType col_t
         size.y = col_transform.basis.get_column(1).length();
         size.z = col_transform.basis.get_column(2).length();
     }
-    if(size_signs.x < 0){
-        col_transform.basis.scale(Vector3(-1,1,1));
-    }
-    if(size_signs.y < 0){
-        col_transform.basis.scale(Vector3(1,-1,1));
-    }
-    if(size_signs.z < 0){
-        col_transform.basis.scale(Vector3(1,1,-1));
+    if(det < 0){
+        if(size_signs.x < 0){
+            col_transform.basis.scale(Vector3(-1,1,1));
+        }
+        if(size_signs.y < 0){
+            col_transform.basis.scale(Vector3(1,-1,1));
+        }
+        if(size_signs.z < 0){
+            col_transform.basis.scale(Vector3(1,1,-1));
+        }
     }
     size = col_transform.get_basis().get_scale();
-    
+    size.x = std::abs(size.x);
+    size.y = std::abs(size.y);
+    size.z = std::abs(size.z);
     Transform3D t = base_transform.inverse() * col_transform;
     t.orthonormalize();
     // Shape

@@ -37,13 +37,6 @@ void MTool::print_edmsg(const String& msg){
     ERR_FAIL_EDMSG(msg);
 }
 
-	static void _PackedByteArray_encode_u16(PackedByteArray *p_instance, int64_t p_offset, int64_t p_value) {
-		uint64_t size = p_instance->size();
-		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 2);
-		uint8_t *w = p_instance->ptrw();
-		encode_uint16((uint16_t)p_value, &w[p_offset]);
-	}
-
 Ref<Image> MTool::get_r16_image(const String& file_path, const uint64_t width, const uint64_t height,double min_height, double max_height,const bool is_half) {
     Ref<Image> img;
     VariantUtilityFunctions::_print("open: ", file_path);
@@ -77,7 +70,7 @@ Ref<Image> MTool::get_r16_image(const String& file_path, const uint64_t width, c
             double p = (double)file->get_16()/65535;
             p *= (max_height - min_height);
             p += min_height;
-            _PackedByteArray_encode_u16(&data,offset, p);
+            data.encode_half(offset, p);
             offset += 2;
         }
         img = Image::create_from_data(final_width,final_height,false, Image::FORMAT_RH, data);
@@ -192,6 +185,7 @@ PackedInt32Array MTool::packed_64_to_32(const PackedInt64Array& p64){
     }
     return out;
 }
+
 AABB MTool::get_global_aabb(const AABB& aabb,const Transform3D& global_transform){
     Vector3 points[8];
     for(int i=0; i < 8; i++){

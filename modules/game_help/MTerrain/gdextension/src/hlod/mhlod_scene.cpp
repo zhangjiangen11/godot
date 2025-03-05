@@ -69,7 +69,7 @@ void MHlodScene::Proc::init_sub_proc(int32_t _sub_proc_index,uint64_t _sub_proc_
 
 void MHlodScene::Proc::change_transform(const Transform3D& new_transform){
     is_transform_changed = true;
-    if(MHlodScene::octree!=nullptr && oct_point_id!=-1 && is_octree_inserted){
+    if(MHlodScene::octree!=nullptr && is_enable && is_octree_inserted){
         MOctree::PointMoveReq mv_req(oct_point_id,MHlodScene::oct_id,transform.origin,new_transform.origin);
         MHlodScene::octree->add_move_req(mv_req);
     }
@@ -86,7 +86,9 @@ void MHlodScene::Proc::enable(const bool recursive){
     }
     is_enable = true;
     is_sub_proc_enable = true;
-    oct_point_id = MHlodScene::add_proc(this,oct_point_id);
+    // oct_point_id is defined in init_proc function
+    // oct_point_id should not be changed in lifetime of proc
+    MHlodScene::add_proc(this,oct_point_id);
     if(recursive){
         for(int i=0; i < sub_procs_size; i++){
             get_subprocs_ptrw()[i].enable();
@@ -98,6 +100,7 @@ void MHlodScene::Proc::disable(const bool recursive,const bool immediate,const b
     if(!is_enable){
         return;
     }
+    ERR_FAIL_COND(hlod.is_null());
     is_enable = false;
     is_sub_proc_enable = false;
     remove_all_items(immediate,is_destruction);
@@ -158,7 +161,29 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
                 if(!item_exist){
                     instance = RS->instance_create();
                     RS->instance_set_scenario(instance,octree->get_scenario());
+                    RS->instance_geometry_set_cast_shadows_setting(instance,(RenderingServer::ShadowCastingSetting)item->mesh.shadow_setting);
                     RS->instance_set_transform(instance,get_item_transform(item));
+                    switch (item->mesh.gi_mode)
+                    {
+                    case MHLOD_CONST_GI_MODE_DISABLED:
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_DYNAMIC_GI, false);
+                        break;
+                    case MHLOD_CONST_GI_MODE_STATIC:
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_BAKED_LIGHT, true);
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_DYNAMIC_GI, false);
+                        break;
+                    case MHLOD_CONST_GI_MODE_DYNAMIC:
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_DYNAMIC_GI, true);
+                        break;
+                    case MHLOD_CONST_GI_MODE_STATIC_DYNAMIC:
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_BAKED_LIGHT, true);
+                        RS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_DYNAMIC_GI, true);
+                        break;
+                    default:
+                        WARN_PRINT("Invalid GI Mode");
+                    }
                     // in this case we need to insert this inside creation info as it changed
                     ci.set_rid(instance);
                     // Generating apply info
@@ -177,7 +202,7 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
                     instance = ci.get_rid();
                     RS->instance_set_base(instance,item_res.rid);
                     ERR_FAIL_COND(ci.item_id==-1);
-                    hlod->item_list.ptrw()[ci.item_id].remove_user();
+                    removing_users.push_back(hlod->item_list.ptrw() + ci.item_id);
                 }
                 /// Setting material
                 Vector<RID> surfaces_materials;
@@ -190,6 +215,7 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
             } else {
                 // Basically this should not happen
                 remove_item(item,item_id);
+                items_creation_info.erase(item->transform_index); // can ci be shared between multiple LOD meshes
                 ERR_FAIL_MSG("Item empty mesh");
             }
         }
@@ -207,7 +233,7 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
             }
         } else {
             // Basically this should not happen
-            remove_item(item,item_id);
+            remove_item(item,item_id); // no need to items_creation_info.erase(item->transform_index); as we add creation info later
             ERR_FAIL_MSG("Item empty light or decal");
         }
         break;
@@ -225,7 +251,7 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
         } else {
             // Basically this should not happen
             remove_item(item,item_id);
-            ERR_FAIL_MSG("Item empty Shape");
+            ERR_FAIL_MSG("Item empty Shape"); // no need to items_creation_info.erase(item->transform_index); as we add creation info later
         }
         break;
     case MHlod::Type::PACKED_SCENE:
@@ -234,7 +260,7 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
             ERR_FAIL_COND(node==nullptr);
             MHlodNode3D* hlod_node = Object::cast_to<MHlodNode3D>(node);
             if(hlod_node==nullptr){
-                //WARN_PRINT(node->get_name()+String(" Can not cast to MHlodNode3D"));
+               // WARN_PRINT(node->get_name()+String(" Can not cast to MHlodNode3D"));
                 node->queue_free();
                 return;
             }
@@ -251,7 +277,7 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
             ci.root_node->call_deferred("_notify_update_lod",lod);
         } else {
             // Basically this should not happen
-            remove_item(item,item_id);
+            remove_item(item,item_id); // no need to items_creation_info.erase(item->transform_index); as we add creation info later
             ERR_FAIL_MSG("Item empty Packed Scene");
         }
         break;
@@ -269,6 +295,7 @@ void MHlodScene::Proc::add_item(MHlod::Item* item,const int item_id,const bool i
     }
 }
 
+// should clear creation_info afer calling this
 void MHlodScene::Proc::remove_item(MHlod::Item* item,const int item_id,const bool immediate,const bool is_destruction){
     if(!items_creation_info.has(item->transform_index)){
         return;
@@ -320,7 +347,6 @@ void MHlodScene::Proc::remove_item(MHlod::Item* item,const int item_id,const boo
             ERR_FAIL_COND(shape_index_in_body==-1);
             PhysicsServer3D::get_singleton()->body_remove_shape(body_info.rid,shape_index_in_body);
             body_info.shapes.remove_at(shape_index_in_body);
-            item->remove_user();
         }
         break;
     case MHlod::Type::PACKED_SCENE:
@@ -341,7 +367,8 @@ void MHlodScene::Proc::remove_item(MHlod::Item* item,const int item_id,const boo
     default:
         break;
     }
-    items_creation_info.erase(item->transform_index);
+    removing_users.push_back(item);
+    // items_creation_info erase(__item->transform_index); should be called from outside after this
 }
 // Must be protect with packed_scene_mutex if Item is_bound = true
 void MHlodScene::Proc::update_item_transform(const int32_t transform_index,const Transform3D& new_transform){
@@ -378,7 +405,7 @@ void MHlodScene::Proc::update_item_transform(const int32_t transform_index,const
 }
 
 void MHlodScene::Proc::update_all_transform(){
-    if(lod<0 || lod >= hlod->lods.size() || hlod->lods[lod].size() == 0){
+    if(!is_enable || lod<0 || lod >= hlod->lods.size() || hlod->lods[lod].size() == 0){
         return;
     }
     VSet<int32_t> lod_table = hlod->lods[lod];
@@ -409,16 +436,10 @@ void MHlodScene::Proc::reload_meshes(const bool recursive){
 }
 
 void MHlodScene::Proc::remove_all_items(const bool immediate,const bool is_destruction){
-    if(hlod.is_null()){
-        return;
-    }
-    if(lod<0 || lod >= hlod->lods.size() || hlod->lods[lod].size() == 0){
-        return; // Nothing to remove
-    }
-    VSet<int32_t> lod_table = hlod->lods[lod];
     for(HashMap<int32_t,CreationInfo>::Iterator it=items_creation_info.begin();it!=items_creation_info.end();++it){
         remove_item(hlod->item_list.ptrw() + it->value.item_id,it->value.item_id,immediate,is_destruction);
     }
+    items_creation_info.clear();
 }
 
 // Will return if it is diry or not (has something to apply in the main game loop)
@@ -460,20 +481,21 @@ void MHlodScene::Proc::update_lod(int8_t c_lod,const bool immediate){
         // nothing to do just update lod and go out
         return;
     }
-    const VSet<int32_t>* last_lod_table = hlod->lods.ptr() + last_lod;
-    for(int i=0; i < (*last_lod_table).size(); i++){
-        MHlod::Item* last_item = hlod->item_list.ptrw() + (*last_lod_table)[i];
-        if(last_item->item_layers==0 || (last_item->item_layers & scene_layers)!=0){ // Layers filter
-            if(!exist_transform_index.has(last_item->transform_index)){
-                remove_item(last_item,(*last_lod_table)[i],immediate);
-            }
+    Vector<int32_t> removed_trasform_indices;
+    for(HashMap<int32_t,CreationInfo>::Iterator it=items_creation_info.begin();it!=items_creation_info.end();++it){
+        if(!exist_transform_index.has(it->key)){
+            remove_item(hlod->item_list.ptrw()+it->value.item_id, it->value.item_id, immediate,false);
+            removed_trasform_indices.push_back(it->key);
         }
+    }
+    for(int32_t rm_t : removed_trasform_indices){
+        items_creation_info.erase(rm_t);
     }
 }
 
 void MHlodScene::Proc::set_visibility(bool visibility){
     is_visible = visibility;
-    for(HashMap<int32_t,CreationInfo>::Iterator it=items_creation_info.begin();it!=items_creation_info.end();++it){
+    for(HashMap<int32_t,CreationInfo>::ConstIterator it=items_creation_info.begin();it!=items_creation_info.end();++it){
         switch (it->value.type)
         {
         case MHlod::Type::MESH:
@@ -574,11 +596,12 @@ uint16_t MHlodScene::get_oct_id(){
 // in case the oct_point_id you are sending is aviable that will set this oct_point_id for you!
 // otherwise it will set a new oct_point_id for you
 // ther return oct_point_id is valid and final oct_point_id
+int32_t MHlodScene::get_free_oct_point_id(){
+    last_oct_point_id++;
+    return last_oct_point_id;
+}
+
 int32_t MHlodScene::add_proc(Proc* _proc,int oct_point_id){
-    if(oct_point_id < 0 || octpoints_to_proc.has(oct_point_id)){
-        last_oct_point_id++;
-        oct_point_id = last_oct_point_id;
-    }
     if(octree!=nullptr && is_octree_inserted){
         bool res = octree->insert_point(_proc->transform.origin,oct_point_id,oct_id);
         ERR_FAIL_COND_V_MSG(!res,INVALID_OCT_POINT_ID,"Single Proc point can't be inserted!");
@@ -592,7 +615,6 @@ void MHlodScene::remove_proc(int32_t octpoint_id){
         return;
     }
     Proc* _proc = octpoints_to_proc[octpoint_id];
-    _proc->oct_point_id = INVALID_OCT_POINT_ID;
     _proc->lod = -1;
     octpoints_to_proc.erase(octpoint_id);
     if(octree!=nullptr && is_octree_inserted){
@@ -616,6 +638,7 @@ void MHlodScene::insert_points(){
     }
     octree->insert_points(points_pos,points_ids,oct_id);
 }
+
 void MHlodScene::first_octree_update(Vector<MOctree::PointUpdate>* update_info){
     // more close to root proc has smaller ID!
     // if not sorted some proc can create items and diable later in same update which is a waste
@@ -645,7 +668,6 @@ void MHlodScene::octree_thread_update(void* input){
     for(int i=0; i < all_hlod_scenes.size() ;++i){
         all_hlod_scenes[i]->procs_update_state.fill_false(); // set it to false and if then updated we set it back to true
     }
-    apply_remove_item_users();
     Vector<MOctree::PointUpdate>* update_info = (Vector<MOctree::PointUpdate>*)input;
     // more close to root proc has smaller ID!
     // if not sorted some proc can create items and diable later in same update which is a waste
@@ -658,12 +680,10 @@ void MHlodScene::octree_thread_update(void* input){
         Proc* _proc = octpoints_to_proc.get(p.id);
         _proc->update_lod(p.lod);
     }
-    // Updating triangle collission mesh for editor
-    #ifdef DEBUG_ENABLED
-    //for(HashSet<MHlodScene*>::Iterator it=all_hlod_scenes.begin();it!=all_hlod_scenes.end();++it){
-    //    (*it)->_update_editor_tri_mesh();
-    //}
-    #endif
+    // We call apply_remove_item_users after update_lod to give it the change maybe some other proc increase its count
+    // apply_remove_item_users remove the user count from the last update!
+    // by calling this after _proc->update_lod(p.lod); we give items a change if they want to stay a bit more!
+    apply_remove_item_users();
 }
 
 void MHlodScene::update_tick(){
@@ -701,11 +721,6 @@ void MHlodScene::apply_update(){
         }
     }
     apply_info.clear();
-}
-
-void MHlodScene::flush(){
-    apply_update();
-    apply_remove_item_users();
 }
 
 void MHlodScene::sleep(){

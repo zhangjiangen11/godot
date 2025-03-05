@@ -23,7 +23,7 @@ void MTerrain::_bind_methods() {
 
     ClassDB::bind_method(D_METHOD("_finish_terrain"), &MTerrain::_finish_terrain);
     ClassDB::bind_method(D_METHOD("create_grid"), &MTerrain::create_grid);
-    ClassDB::bind_method(D_METHOD("remove_grid"), &MTerrain::remove_grid);
+    ClassDB::bind_method(D_METHOD("remove_grid"), &MTerrain::remove_grid_gd);
     ClassDB::bind_method(D_METHOD("restart_grid"), &MTerrain::restart_grid);
     ClassDB::bind_method(D_METHOD("update"), &MTerrain::update);
     ClassDB::bind_method(D_METHOD("finish_update"), &MTerrain::finish_update);
@@ -258,7 +258,7 @@ MTerrain::MTerrain() {
 }
 
 MTerrain::~MTerrain() {
-    remove_grid();
+    remove_grid(true);
     memdelete(grid);
     for(int i=0; i < all_terrain_nodes.size(); i++){
         if(this==all_terrain_nodes[i]){
@@ -376,9 +376,16 @@ void MTerrain::create_grid(){
     }
 }
 
-void MTerrain::remove_grid(){
-    update_chunks_timer->stop();
-    update_physics_timer->stop();
+void MTerrain::remove_grid(bool is_destruction){
+    if(!is_destruction){
+        if(update_chunks_timer!=nullptr && ObjectDB::get_instance(update_chunks_timer->get_instance_id())){
+            update_chunks_timer->stop();
+        }
+        if(update_physics_timer!=nullptr && ObjectDB::get_instance(update_physics_timer->get_instance_id())){
+            update_physics_timer->stop();
+        }
+        grid->clear();
+    }
     if(update_thread_chunks.valid()){
         update_thread_chunks.wait();
         finish_updating = true;
@@ -391,7 +398,6 @@ void MTerrain::remove_grid(){
         update_thread_physics.wait();
         finish_updating_physics = true;
     }
-    grid->clear();
     for(int i=0;i<confirm_grass_list.size();i++){
         confirm_grass_list[i]->clear_grass();
     }
@@ -404,6 +410,10 @@ void MTerrain::remove_grid(){
         }
     }
     confirm_nav.clear();
+}
+
+void MTerrain::remove_grid_gd(){
+    remove_grid(); // call with default value
 }
 
 void MTerrain::restart_grid(){

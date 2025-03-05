@@ -60,6 +60,7 @@ var accumulated_scale_offset = 1
 
 var asset_library := MAssetTable.get_singleton()
 var current_selection := [] #array of collection name
+var current_sort_mode = "name_desc"
 var current_search := ""
 var current_filter_mode_all := false
 var current_filter_tags := []
@@ -106,6 +107,7 @@ func _ready():
 		current_filter_tags = tags
 		current_filter_mode_all = mode
 		regroup()		
+		update_filter_notifications()
 	)
 	ungrouped.group_list.multi_selected.connect(func(id, selected):
 		process_selection(ungrouped.group_list, id, selected)
@@ -141,7 +143,9 @@ func _ready():
 	find_child("asset_type_tree").asset_type_filter_changed.connect(func(selected_types):
 		current_filter_types = selected_types
 		regroup()
+		update_filter_notifications()
 	)
+	init_import_info_settings()
 	
 func create_baker_scene():	
 	var dir = MAssetTable.get_editor_baker_scenes_dir()
@@ -341,26 +345,26 @@ func debounce_regroup():
 	last_regroup = Time.get_ticks_msec()
 	return true
 	
-func regroup(group = current_group, sort_mode="asc"):	
+func regroup(group = current_group, sort_mode= current_sort_mode):		
+	current_sort_mode = sort_mode
 	if current_group != group:		
 		for child in groups.get_children():
 			groups.remove_child(child)
 			child.queue_free()
 		current_group = group
-	if not debounce_regroup(): 
-		return
+	#TODO - delete debounce regroup... not necessary anymore? originally it was to ensure thumbnail generator didn't call too often
+	#if not debounce_regroup(): 
+		#return
 	var filtered_collections = get_filtered_collections(current_search, [0])	
 	if group == "None":		
 		ungrouped.group_list.clear()	
 		var sorted_items = []				
 		for collection_id in filtered_collections:
 			var collection_name = asset_library.collection_get_name(collection_id)
-			sorted_items.push_back({"name":collection_name, "id":collection_id})			
+			var modified_time = asset_library.collection_get_modify_time(collection_id)
+			sorted_items.push_back({"name":collection_name, "id":collection_id, "modified_time":modified_time})			
 			collection_id += 1
-		if sort_mode == "asc":
-			sorted_items.sort_custom(func(a,b): return a.name < b.name)
-		elif sort_mode == "desc":
-			sorted_items.sort_custom(func(a,b): return a.name > b.name)
+		sort_items(sorted_items, sort_mode)		
 		for item in sorted_items:
 			ungrouped.add_item(item.name, item.id)												
 		ungrouped.group_button.visible = false			
@@ -394,16 +398,11 @@ func regroup(group = current_group, sort_mode="asc"):
 			for collection_id in asset_library.tags_get_collections_any(filtered_collections, [tag_id],[]):
 				sorted_items.push_back({"name": asset_library.collection_get_name(collection_id), "id":collection_id})
 				processed_collections.push_back(collection_id)
-			if sort_mode == "asc":
-				sorted_items.sort_custom(func(a,b): return a.name < b.name)
-			elif sort_mode == "desc":
-				sorted_items.sort_custom(func(a,b): return a.name > b.name)
+			sort_items(sorted_items, sort_mode)	
 			for item in sorted_items:
 				group_control.add_item(item.name, item.id)		
 		# Now add leftovers to "Ungrouped" tag
-		ungrouped.group_list.clear()		
-		print(len(processed_collections))
-		print(len(filtered_collections))
+		ungrouped.group_list.clear()				
 		var sorted_items = []
 		for collection_id in filtered_collections:
 			if collection_id in processed_collections: continue
@@ -416,20 +415,27 @@ func regroup(group = current_group, sort_mode="asc"):
 			ungrouped.add_item(item.name, item.id)		
 	current_group = group
 
+func sort_items(sorted_items, sort_mode):	
+	if sort_mode == "name_desc":
+		sorted_items.sort_custom(func(a,b): return a.name.nocasecmp_to(b.name) < 0 )
+	elif sort_mode == "name_asc":
+		sorted_items.sort_custom(func(a,b): return a.name.nocasecmp_to(b.name) > 0 )
+	elif sort_mode == "modified_desc":		
+		sorted_items.sort_custom(func(a,b): return a.modified_time < b.modified_time)		
+	elif sort_mode == "modified_asc":
+		sorted_items.sort_custom(func(a,b): return a.modified_time > b.modified_time)		
+
 func collection_item_activated(id, group_list:ItemList,create_ur:=true):					
 	var collection_id = group_list.get_item_metadata(id)
 	if collection_id == -1: return
 	var node = add_asset_to_scene(collection_id, group_list.get_item_tooltip(id),create_ur)		
 	return node 
-
+	
 func add_asset_to_scene(collection_id, asset_name,create_ur:=true):	
 	var node
 	if collection_id in asset_library.collections_get_by_type(MAssetTable.ItemType.MESH):
 		node = MAssetMesh.new()
 		node.collection_id = collection_id		
-		var blend_file = AssetIO.get_asset_blend_file(node.collection_id) 
-		if blend_file:
-			node.set_meta("blend_file", blend_file)
 	elif collection_id in asset_library.collections_get_by_type(MAssetTable.ItemType.HLOD):
 		node = MHlodScene.new()		
 		node.hlod = load(MHlod.get_hlod_path( asset_library.collection_get_item_id(collection_id) ))
@@ -451,7 +457,7 @@ func add_asset_to_scene(collection_id, asset_name,create_ur:=true):
 	else:
 		parent = selected_nodes[0]
 		main_selected_node = selected_nodes[0]
-		while parent is MAssetMesh and parent != scene_root:
+		while (parent is MAssetMesh or parent is MHlodScene or parent is MDecalInstance) and parent != scene_root:
 			parent = parent.get_parent()			
 	parent.add_child(node)
 	node.owner = EditorInterface.get_edited_scene_root()
@@ -494,9 +500,11 @@ func single_select_node(node:Node):
 func get_added_node_transform(neighbor:Node,dir:Vector3) -> Transform3D:
 	if neighbor == null or not neighbor is Node3D:
 		return Transform3D()
-	if not neighbor is MAssetMesh:
+	if not neighbor is MAssetMesh and not neighbor is MHlodScene and not neighbor is MDecalInstance:
 		return Transform3D(Basis(),neighbor.global_transform.origin)
-	var aabb:AABB= neighbor.get_joined_aabb()
+	var aabb:AABB
+	if neighbor is MAssetMesh: aabb=neighbor.get_joined_aabb()
+	else: aabb=neighbor.get_aabb()
 	var origin = neighbor.global_transform * (dir * aabb.size)
 	return Transform3D(neighbor.global_basis,origin)
 
@@ -633,3 +641,18 @@ func open_settings_window(tab, data):
 		settings_button.button_pressed = true
 		settings_button.settings.select_tab("manage_tags")
 		settings_button.settings.manage_tags_control.select_collection(data)		
+
+#TODO: move this function to a more logical place? 
+static func init_import_info_settings():	
+	var import_info = MAssetTable.get_singleton().import_info
+	if not import_info.has("__settings"):
+		import_info["__settings"] = {}
+	if not import_info["__settings"].has("Materials blend file"): 
+		import_info["__settings"]["Materials blend file"] = {"value": "", "type":TYPE_STRING, "hint":"path_global"}
+	MAssetTable.save()
+
+func update_filter_notifications():
+	var asset_type_notification = asset_type_filter_button.get_node("notification_texture")
+	var filter_notification = filter_button.get_node("notification_texture")		
+	asset_type_notification.visible = current_filter_types < MAssetTable.ItemType.DECAL + MAssetTable.ItemType.HLOD + MAssetTable.ItemType.MESH + MAssetTable.ItemType.PACKEDSCENE 
+	filter_notification.visible = len(current_filter_tags) != 0

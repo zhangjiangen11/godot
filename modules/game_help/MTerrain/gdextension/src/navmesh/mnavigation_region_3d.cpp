@@ -15,6 +15,7 @@
 #include "scene/main/scene_tree.h"
 #include "core/variant/variant_utility.h"
 #include "scene/main/viewport.h"
+#include "../mtool.h"
 
 
 
@@ -180,7 +181,7 @@ void MNavigationRegion3D::_update_loop(){
     }
 }
 
-void MNavigationRegion3D::update_navmesh(Vector3 p_cam_pos){
+void MNavigationRegion3D::update_navmesh(Vector3 cam_pos){
     ERR_FAIL_COND(is_updating);
     if(!grid->is_created()){
         return;
@@ -192,25 +193,19 @@ void MNavigationRegion3D::update_navmesh(Vector3 p_cam_pos){
     for(int i=0; i<obstacles.size(); i++){
         obstacles_infos.push_back({obstacles[i]->width,obstacles[i]->depth,obstacles[i]->get_global_transform()});
     }
-    update_thread = std::async(std::launch::async, &MNavigationRegion3D::_update_navmesh, this, p_cam_pos);
+    update_thread = std::async(std::launch::async, &MNavigationRegion3D::_update_navmesh, this, cam_pos);
 }
 
-void MNavigationRegion3D::_update_navmesh(Vector3 _cam_pos){
+void MNavigationRegion3D::_update_navmesh(Vector3 cam_pos){
     tmp_nav = get_navigation_mesh()->duplicate();
     uint32_t l = round(tmp_nav->get_detail_sample_distance()/h_scale);
     
-    Vector2i top_left = grid->get_closest_pixel(_cam_pos - Vector3(navigation_radius,0,navigation_radius));
-    Vector2i bottom_right = grid->get_closest_pixel(_cam_pos + Vector3(navigation_radius,0,navigation_radius));
-    if(bottom_right.x < 0 || bottom_right.y <0 || top_left.x > (int)grid->grid_pixel_region.right || top_left.y > (int)grid->grid_pixel_region.bottom){
-        last_update_pos = _cam_pos;
-        tmp_nav->clear_polygons();
-        call_deferred("_finish_update",tmp_nav);
-        return;
-    }
+    Vector2i top_left = grid->get_closest_pixel(cam_pos - Vector3(navigation_radius,0,navigation_radius));
+    Vector2i bottom_right = grid->get_closest_pixel(cam_pos + Vector3(navigation_radius,0,navigation_radius));
     uint32_t left = top_left.x < 0 ? 0 : top_left.x;
     uint32_t top = top_left.y < 0 ? 0 : top_left.y;
-    uint32_t right = bottom_right.x > grid->grid_pixel_region.right ? grid->grid_pixel_region.right : bottom_right.x;
-    uint32_t bottom = bottom_right.y > grid->grid_pixel_region.bottom ? grid->grid_pixel_region.bottom : bottom_right.y;
+    uint32_t right = bottom_right.x >= grid->grid_pixel_region.right ? grid->grid_pixel_region.right - 1 : bottom_right.x;
+    uint32_t bottom = bottom_right.y >= grid->grid_pixel_region.bottom ? grid->grid_pixel_region.bottom - 1 : bottom_right.y;
     Ref<NavigationMeshSourceGeometryData3D> geo_data;
     geo_data.instantiate();
     PackedVector3Array faces;
@@ -245,7 +240,7 @@ void MNavigationRegion3D::_update_navmesh(Vector3 _cam_pos){
         }
     }
     if(faces.size()==0){
-        last_update_pos = _cam_pos;
+        last_update_pos = cam_pos;
         tmp_nav->clear_polygons();
         call_deferred("_finish_update",tmp_nav);
         return;
@@ -265,7 +260,7 @@ void MNavigationRegion3D::_update_navmesh(Vector3 _cam_pos){
         Vector3 obr(r,h0,r);
         Vector3 obl(-r,h0,r);
         Vector3 ou(0,h,0);
-        PackedVector3Array positions = g->get_physic_positions(_cam_pos,navigation_radius);
+        PackedVector3Array positions = g->get_physic_positions(cam_pos,navigation_radius);
         for(int k=0;k<positions.size();k++){
             Vector3 fpos = positions[k];
             Vector3 tl=fpos+otl;
@@ -347,7 +342,7 @@ void MNavigationRegion3D::_update_navmesh(Vector3 _cam_pos){
         geo_data->add_faces(obs_faces,_tt);
     }
     NavigationServer3D::get_singleton()->bake_from_source_geometry_data(tmp_nav,geo_data);
-    last_update_pos = _cam_pos;
+    last_update_pos = cam_pos;
     obs_info.clear();
     obst_info.clear();
     call_deferred("_finish_update",tmp_nav);
@@ -368,22 +363,9 @@ void MNavigationRegion3D::_set_is_updating(bool input){
 
 void MNavigationRegion3D::get_cam_pos(){
     g_pos = get_global_position();
-    if(!follow_camera){
-        cam_pos = g_pos;
-        return;
-    }
-    if(custom_camera != nullptr){
-        cam_pos = custom_camera->get_global_position();
-        return;
-    }
-    if(terrain->editor_camera !=nullptr){
-        cam_pos = terrain->editor_camera->get_global_position();
-        return;
-    }
-    Viewport* v = get_viewport();
-    Camera3D* camera = v->get_camera_3d();
-    ERR_FAIL_COND_EDMSG(camera==nullptr, "No camera is detected, For MNavigationRegion3D");
-    cam_pos = camera->get_global_position();
+    Node3D* n = MTool::find_editor_camera(false);
+    ERR_FAIL_COND_MSG(n==nullptr,"Can't find editor camera");
+    cam_pos = n->get_global_position();
 }
 
 void MNavigationRegion3D::force_update(){
@@ -471,9 +453,9 @@ void MNavigationRegion3D::update_dirty_npoints(){
     ERR_FAIL_COND(!nav_data.is_valid());
     std::lock_guard<std::mutex> lock(npoint_mutex);
     for(int i=0;i<dirty_points_id->size();i++){
-        //VariantUtilityFunctions::_print("dirty_points ",(*dirty_points_id)[i]);
+        //UtilityFunctions::print("dirty_points ",(*dirty_points_id)[i]);
         int64_t terrain_instance_id = grid->get_point_instance_id_by_point_id((*dirty_points_id)[i]);
-        //VariantUtilityFunctions::_print("terrain_instance_id ",terrain_instance_id);
+        //UtilityFunctions::print("terrain_instance_id ",terrain_instance_id);
         if(!grid_to_npoint.has(terrain_instance_id)){
             continue;
         }
@@ -481,7 +463,7 @@ void MNavigationRegion3D::update_dirty_npoints(){
             continue;
         }
         MGrassChunk* g = grid_to_npoint[terrain_instance_id];
-        //VariantUtilityFunctions::_print("MGrassChunk count ",g->count, " right ",g->pixel_region.right);
+        //UtilityFunctions::print("MGrassChunk count ",g->count, " right ",g->pixel_region.right);
         create_npoints(-1,g);
     }
     memdelete(dirty_points_id);
@@ -500,14 +482,14 @@ void MNavigationRegion3D::apply_update_npoints(){
 }
 
 void MNavigationRegion3D::create_npoints(int grid_index,MGrassChunk* grass_chunk){
-    //VariantUtilityFunctions::_print("Adding npoint start");
+    //UtilityFunctions::print("Adding npoint start");
     MGrassChunk* g;
     MPixelRegion px;
     if(grass_chunk==nullptr){
         px.left = (uint32_t)round(((double)region_pixel_width)*CHUNK_INFO.region_offset_ratio.x);
         px.top = (uint32_t)round(((double)region_pixel_width)*CHUNK_INFO.region_offset_ratio.y);
         int size_scale = pow(2,CHUNK_INFO.chunk_size);
-        //VariantUtilityFunctions::_print("Size scale ",size_scale);
+        //UtilityFunctions::print("Size scale ",size_scale);
         px.right = px.left + base_grid_size_in_pixel*size_scale - 1;
         px.bottom = px.top + base_grid_size_in_pixel*size_scale - 1;
         // We keep the chunk information for grass only in root grass chunk
@@ -517,8 +499,8 @@ void MNavigationRegion3D::create_npoints(int grid_index,MGrassChunk* grass_chunk
         g = grass_chunk;
         px = grass_chunk->pixel_region;
     }
-    //VariantUtilityFunctions::_print("Region pixel size ",region_pixel_width);
-    //VariantUtilityFunctions::_print("Left ",px.left, " Right ",px.right," bottom ",px.bottom, " top ",px.top);
+    //UtilityFunctions::print("Region pixel size ",region_pixel_width);
+    //UtilityFunctions::print("Left ",px.left, " Right ",px.right," bottom ",px.bottom, " top ",px.top);
 
     const uint8_t* ptr = nav_data->data.ptr() + g->region_id*region_pixel_size/8;
     int lod_scale = pow(2,g->lod);
@@ -572,7 +554,7 @@ void MNavigationRegion3D::create_npoints(int grid_index,MGrassChunk* grass_chunk
         }
         j++;
     }
-    //VariantUtilityFunctions::_print("Stage 4.1 k ",k);
+    //UtilityFunctions::print("Stage 4.1 k ",k);
     // Discard grass chunk in case there is no mesh RID or count is less than min_grass_cutoff
     if(count == 0){
         g->set_buffer(0,RID(),RID(),RID(),PackedFloat32Array());
@@ -618,12 +600,13 @@ void MNavigationRegion3D::set_npoint_by_pixel(uint32_t px, uint32_t py, bool p_v
 }
 
 bool MNavigationRegion3D::get_npoint_by_pixel(uint32_t px, uint32_t py){
+    if(px >= width || py >= height){
+        return false;
+    }
     if(!nav_data.is_valid()){
         return true;
     }
     ERR_FAIL_COND_V(!is_nav_init,false);
-    ERR_FAIL_INDEX_V(px, width,false);
-    ERR_FAIL_INDEX_V(py, height,false);
     uint32_t rx = px/region_pixel_width;
     uint32_t ry = py/region_pixel_width;
     uint32_t rid = ry*region_grid_width + rx;
@@ -660,9 +643,9 @@ void MNavigationRegion3D::draw_npoints(Vector3 brush_pos,real_t radius,bool add)
     px.top = (brush_px_pos_y>brush_px_radius) ? brush_px_pos_y - brush_px_radius : 0;
     px.bottom = brush_px_pos_y + brush_px_radius;
     px.bottom = (px.bottom>(height-2)) ? (height-2) : px.bottom;
-    //VariantUtilityFunctions::_print("brush pos ", brush_pos);
-    //VariantUtilityFunctions::_print("draw R ",brush_px_radius);
-    //VariantUtilityFunctions::_print("L ",itos(px.left)," R ",itos(px.right)," T ",itos(px.top), " B ",itos(px.bottom));
+    //UtilityFunctions::print("brush pos ", brush_pos);
+    //UtilityFunctions::print("draw R ",brush_px_radius);
+    //UtilityFunctions::print("L ",itos(px.left)," R ",itos(px.right)," T ",itos(px.top), " B ",itos(px.bottom));
     // LOD Scale
     //int lod_scale = pow(2,lod);
     // LOOP

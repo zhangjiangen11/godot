@@ -1,5 +1,4 @@
 #include "mchannel_painter.h"
-#include "core/variant/variant_utility.h"
 
 
 
@@ -57,7 +56,7 @@ void MChannelPainter::set_color(uint32_t local_x,uint32_t local_y,uint32_t x,uin
     uint32_t dy = ABS(y - grid->brush_px_pos_y);
     float px_dis = (float)sqrt(dx*dx + dy*dy);
     px_dis /= (float)grid->brush_px_radius;
-    float w = VariantUtilityFunctions::smoothstep(1,hardness,px_dis);
+    float w = Math::smoothstep(1,hardness,px_dis);
     float mask = grid->get_brush_mask_value(x,y);
     mask = pow(mask,4.0);
     w = w * mask;

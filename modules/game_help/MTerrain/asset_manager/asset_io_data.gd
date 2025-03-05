@@ -7,6 +7,7 @@ enum IMPORT_STATE {
 
 var glb_path:String
 var blend_file: String
+var original_blend_file: String # saved from previous import
 
 var mesh_data: Dictionary # key is mesh_name, value is array of material sets, each set is an array of material names references the materials dictionary
 var materials:Dictionary #Key is import material name
@@ -308,9 +309,11 @@ func save_meshes()->int:
 				printerr("meshcutoff is not a valid integer")
 				continue
 			var stop_lod:int = meshcutoff.to_int()
-			if stop_lod < 1:
+			if stop_lod==0:
 				printerr("stop_lod can't be smaller than 1")
 				continue
+			if stop_lod==-1:
+				continue #default
 			var stop_path = MHlod.get_mesh_path(mesh_id + stop_lod).get_basename() + ".stop"
 			var f = FileAccess.open(stop_path,FileAccess.WRITE)
 			f.close()
@@ -392,6 +395,8 @@ func get_glb_import_info():
 	result["__materials"] = materials
 	result["__import_time"] = (Time.get_unix_time_from_system())
 	result["__tags"] = tags['current_tags']		
+	result["__global_options"] = global_options
+	result["__original_blend_file"] = blend_file
 	return result
 		
 #Add original mesh and collection data to asset_data
@@ -429,6 +434,12 @@ func add_glb_import_info(info:Dictionary)->void:
 				materials[key] = info["__materials"][key]
 	if "__tags" in info:
 		tags['original_tags'] = info["__tags"] # array of tag_id
+	if "__global_options" in info:
+		for key in global_options.keys():
+			if not key in info["__global_options"]: continue
+			global_options["original_" + key] = info["__global_options"][key]			 
+	if "__original_blend_file" in info:
+		original_blend_file = info["__original_blend_file"]
 		
 func add_metadata_to_data(old:Dictionary, new:Dictionary):
 	var result = old.duplicate()
@@ -449,15 +460,8 @@ func get_changed_hlods():
 	if len(hlod_to_rebake) == 0: return
 	MHlodScene.sleep()
 	for hlod in hlod_to_rebake:
-		rebake_hlod(hlod)
+		AssetIOBaker.rebake_hlod(hlod)
 	MHlodScene.awake()
-		
-
-static func rebake_hlod(hlod:MHlod):
-	var baker: HLod_Baker= load(hlod.baker_path).instantiate()
-	EditorInterface.get_base_control().add_child(baker)
-	baker.bake_to_hlod_resource()
-	baker.queue_free()
 	
 	
 static func rebake_hlods_for_meshes(mesh_ids):
