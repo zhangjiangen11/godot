@@ -127,6 +127,8 @@ public:
 
 	virtual RID get_rid() const override;
 
+	Ref<RDMultimeshUpdate> get_update();
+
 	MultiMesh();
 	~MultiMesh();
 };

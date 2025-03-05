@@ -311,6 +311,7 @@ public:
         Transform3D transform;
         Color color;
         Color custom_data;
+        int last_index = -1;
     };
     struct MeshInstance : public RefCounted{
 
@@ -361,6 +362,9 @@ public:
         RID instance;
         Ref<MultiMesh> multimesh;
         Ref<ResourceLoader::LoadToken> load_token;
+        Vector<float> tmp_transform_data;
+        Vector<float> tmp_color_data;
+        Vector<float> tmp_custom_data;
         bool dirty = false;
         
     };

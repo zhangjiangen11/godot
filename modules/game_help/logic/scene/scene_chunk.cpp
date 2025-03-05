@@ -113,36 +113,112 @@ void SceneChunk::MeshInstance::update_mesh_instance() {
         block_count +=  it->get_instance_count();
     }
     multimesh->set_instance_count(mesh_transforms.size() + block_count);
+    tmp_transform_data.resize(multimesh->get_instance_count() * 12);
+    tmp_color_data.resize(multimesh->get_instance_count() * 4);
+    tmp_custom_data.resize(multimesh->get_instance_count() * 4);
 
+    float* transform_data = tmp_transform_data.ptrw();
+    float* color_data = tmp_color_data.ptrw();
+    float* custom_data = tmp_custom_data.ptrw();
+    bool is_update = false;
     int i = 0;
-    mesh_id_maps.clear();
     for(auto& it : mesh_transforms) {
-        multimesh->set_instance_transform(i,it.value.transform);
-        multimesh->set_instance_color(i,it.value.color);
-        multimesh->set_instance_custom_data(i,it.value.custom_data);
-        mesh_id_maps[it.key] = i;
+        if(it.value.last_index != it.key) {
+
+			const Transform3D& p_transform = it.value.transform;
+            transform_data[0] = p_transform.basis.rows[0][0];
+            transform_data[1] = p_transform.basis.rows[0][1];
+            transform_data[2] = p_transform.basis.rows[0][2];
+            transform_data[3] = p_transform.origin.x;
+            transform_data[4] = p_transform.basis.rows[1][0];
+            transform_data[5] = p_transform.basis.rows[1][1];
+            transform_data[6] = p_transform.basis.rows[1][2];
+            transform_data[7] = p_transform.origin.y;
+            transform_data[8] = p_transform.basis.rows[2][0];
+            transform_data[9] = p_transform.basis.rows[2][1];
+            transform_data[10] = p_transform.basis.rows[2][2];
+            transform_data[11] = p_transform.origin.z;
+
+            color_data[0] = it.value.color.r;
+            color_data[1] = it.value.color.g;
+            color_data[2] = it.value.color.b;
+            color_data[3] = it.value.color.a;
+
+            custom_data[0] = it.value.custom_data.r;
+            custom_data[1] = it.value.custom_data.g;
+            custom_data[2] = it.value.custom_data.b;
+            custom_data[3] = it.value.custom_data.a;
+            it.value.last_index = it.key;
+            is_update = true;
+        }
+        transform_data += 12;
+        color_data += 4;
+        custom_data += 4;
         ++i;
     }
     for(auto& it : blocks) {
         if(it == nullptr) {
             continue;
-        }        
-        const LocalVector<Transform3D>& trans =  it->get_transform();
-        const LocalVector<Color>& color = it->get_color() ;
-        const LocalVector<Color>& curstom_colo = it->get_curstom_color() ;
+        }      
+        if(it->last_index != i)  {
+            const LocalVector<Transform3D>& trans =  it->get_transform();
+            const LocalVector<Color>& color = it->get_color() ;
+            const LocalVector<Color>& curstom_colo = it->get_curstom_color() ;
+    
+            for(int j = 0; j < trans.size(); j++) {
+                const Transform3D & t = trans[j];
+                const Color& cv = color[j];
+                const Color& c = curstom_colo[j];
+                transform_data[0] = t.basis.rows[0][0];
+                transform_data[1] = t.basis.rows[0][1];
+                transform_data[2] = t.basis.rows[0][2];
+                transform_data[3] = t.origin.x;
+                transform_data[4] = t.basis.rows[1][0];
+                transform_data[5] = t.basis.rows[1][1];
+                transform_data[6] = t.basis.rows[1][2];
+                transform_data[7] = t.origin.y;
+                transform_data[8] = t.basis.rows[2][0];
+                transform_data[9] = t.basis.rows[2][1];
+                transform_data[10] = t.basis.rows[2][2];
+                transform_data[11] = t.origin.z;
+    
+                color_data[0] = cv.r;
+                color_data[1] = cv.g;
+                color_data[2] = cv.b;
+                color_data[3] = cv.a;
+    
+                custom_data[0] = c.r;
+                custom_data[1] = c.g;
+                custom_data[2] = c.b;
+                custom_data[3] = c.a;
 
-        for(int j = 0; j < trans.size(); j++) {
-            multimesh->set_instance_transform(i,trans[j]);
-            multimesh->set_instance_color(i,color[j]);
-            multimesh->set_instance_custom_data(i,curstom_colo[j]);
-            ++i;
+                
+                transform_data += 12;
+                color_data += 4;
+                custom_data += 4;
+                ++i;
+                is_update = true;
+            }
+
         }
+        else {
+            i += it->get_transform().size();
+            transform_data += it->get_transform().size() * 12;
+            color_data += it->get_transform().size() * 4;
+            custom_data += it->get_transform().size() * 4;
+        }
+    }
+
+    if(is_update) {
+        Ref<RDMultimeshUpdate> up = multimesh->get_update();
+        up->update_static_instance(0,multimesh->get_instance_count(), tmp_transform_data, tmp_color_data, tmp_custom_data);
     }
 }
 void SceneChunk::MeshInstance::set_mesh_transform(int mesh_id,const Transform3D& t) {
     auto it = mesh_transforms.find(mesh_id);
     if (it != mesh_transforms.end()) {
         it->value.transform = t;
+        it->value.last_index = -1;
         dirty = true;
     }
     else {
@@ -155,6 +231,7 @@ void SceneChunk::MeshInstance::set_mesh_color(int mesh_id,const Color& color) {
     auto it = mesh_transforms.find(mesh_id);
     if (it != mesh_transforms.end()) {
         it->value.color = color;
+        it->value.last_index = -1;
         dirty = true;
     }
 }
@@ -162,6 +239,7 @@ void SceneChunk::MeshInstance::set_mesh_custom_data(int mesh_id,const Color& col
     auto it = mesh_transforms.find(mesh_id);
     if (it != mesh_transforms.end()) {
         it->value.custom_data = color;
+        it->value.last_index = -1;
         dirty = true;
     }
 }

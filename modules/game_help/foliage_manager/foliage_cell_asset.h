@@ -722,21 +722,22 @@ namespace Foliage
 			color.push_back(p_color);
 			curstom_color.push_back(p_curstom_color);
 			render_level.push_back(p_render_level);
+			last_index = -1;
 		}
 
 		void set_instance_render_level(int p_index, int8_t p_visible) { render_level[p_index] = p_visible; }
 		int8_t get_instance_render_level(int p_index) const { return render_level[p_index]; }
 
-		void set_instance_color(int p_index, const Color& p_color) { color[p_index] = p_color; }
+		void set_instance_color(int p_index, const Color& p_color) { color[p_index] = p_color; last_index = -1;}
 		const Color& get_instance_color(int p_index) const { return color[p_index]; }
 
 		void set_instance_curstom_color(int p_index, const Color& p_curstom_color) { curstom_color[p_index] = p_curstom_color; }
 		const Color& get_instance_curstom_color(int p_index) const { return curstom_color[p_index]; }
 
-		void set_instance_transform(int p_index, const Transform3D& p_transform) { transform[p_index] = p_transform; }
+		void set_instance_transform(int p_index, const Transform3D& p_transform) { transform[p_index] = p_transform;last_index = -1; }
 		const Transform3D& get_instance_transform(int p_index) const { return transform[p_index]; }
 
-		void set_instance_scale(int p_index, const Vector3& p_scale) { transform[p_index].basis.scale(p_scale); }
+		void set_instance_scale(int p_index, const Vector3& p_scale) { transform[p_index].basis.scale(p_scale); last_index = -1;}
 
 		void set_guid(const String& p_guid) { guid = p_guid; }
 		const String& get_guid() const { return guid; }
@@ -752,11 +753,13 @@ namespace Foliage
 			Basis& basis = transform[p_index].basis;
 			basis.rotate(Vector3(0, 1, 0), p_angle);
 			basis.rotate_to_align( Vector3(0, 1, 0),p_normal);
+			last_index = -1;
 		}
 		void compute_rotation_align_normal(int p_index,const Vector3& p_normal) {
 			
 			Basis& basis = transform[p_index].basis;
 			basis.rotate_to_align( Vector3(0, 1, 0),p_normal);
+			last_index = -1;
 		}
 		// 隐藏不显示的实例
 		void hide_instance_by_cell_mask(const Vector3& p_position_move,const Ref<FoliageCellMask>& p_cell_mask,uint8_t p_visble_value_min,uint8_t p_visble_value_max) ;
@@ -778,7 +781,7 @@ namespace Foliage
 				}
 			}
 		}
-
+		int last_index = -1;
 		LocalVector<Transform3D> transform;
 		LocalVector<Color> color;
 		LocalVector<Color> curstom_color;

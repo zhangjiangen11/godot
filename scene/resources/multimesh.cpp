@@ -329,6 +329,9 @@ AABB MultiMesh::get_aabb() const {
 RID MultiMesh::get_rid() const {
 	return multimesh;
 }
+Ref<RDMultimeshUpdate> MultiMesh::get_update() {
+	return RenderingServer::get_singleton()->multimesh_instance_get_update(multimesh);
+}
 
 void MultiMesh::set_use_colors(bool p_enable) {
 	ERR_FAIL_COND_MSG(instance_count > 0, "Instance count must be 0 to toggle whether colors are used.");
@@ -385,6 +388,8 @@ void MultiMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_custom_aabb", "aabb"), &MultiMesh::set_custom_aabb);
 	ClassDB::bind_method(D_METHOD("get_custom_aabb"), &MultiMesh::get_custom_aabb);
 	ClassDB::bind_method(D_METHOD("get_aabb"), &MultiMesh::get_aabb);
+	ClassDB::bind_method(D_METHOD("get_rid"), &MultiMesh::get_rid);
+	ClassDB::bind_method(D_METHOD("get_update"), &MultiMesh::get_update);
 
 	ClassDB::bind_method(D_METHOD("get_buffer"), &MultiMesh::get_buffer);
 	ClassDB::bind_method(D_METHOD("set_buffer", "buffer"), &MultiMesh::set_buffer);
