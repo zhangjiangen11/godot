@@ -209,9 +209,17 @@ public:
 
     void set_transform(const Transform3D& p_transform) { global_transform = p_transform; }
     void set_next_lod(int p_lod) { next_lod = p_lod; }
+    
+    void init(Node* p_node);
+	void init_chunk(ObjectID p_chunk_id) {
+		chunk_id = p_chunk_id;
+	}
+	void clear_show_instance_ids();
+protected:
+    SceneChunk* get_chunk();
     void update_lod() {
         if(curr_lod != next_lod) {
-            if(next_lod != curr_lod) {
+            if(next_lod >= 0) {
                 set_lod(next_lod);
             }
             else {
@@ -221,13 +229,6 @@ public:
         }
     }
     void set_lod(int p_lod) ;
-    void clear_show_instance_ids();
-    SceneChunk* get_chunk();
-    
-    void init(Node* p_node);
-	void init_chunk(ObjectID p_chunk_id) {
-		chunk_id = p_chunk_id;
-	}
 protected:
 
 	ObjectID chunk_id;
@@ -235,6 +236,8 @@ protected:
     int next_lod = 0;
     Transform3D global_transform;
     AABB local_bound;
+    AABB world_bound;
+    bool is_visible_in_camera = false;
     Ref<SceneResource> resource;
     HashMap<int32_t,String> curr_show_meshinstance_ids;
     HashMap<int32_t,String> curr_show_mesh_collision_ids;
