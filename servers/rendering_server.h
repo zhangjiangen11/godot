@@ -60,7 +60,7 @@ class RDMultimeshUpdate : public RefCounted {
 	GDCLASS(RDMultimeshUpdate, RefCounted);
 	static void _bind_methods() {
 		ClassDB::bind_method(D_METHOD("update_static_instance", "index_start", "index_count", "transform_data", "color_data", "custom_data"), &RDMultimeshUpdate::update_static_instance);
-		ClassDB::bind_method(D_METHOD("update_static_instance", "index_start", "index_count", "transform_data", "color_data", "custom_data", "pre_transform_data", "pre_color_data", "pre_custom_data"), &RDMultimeshUpdate::update_dynamic_instance);
+		ClassDB::bind_method(D_METHOD("update_dynamic_instance", "index_start", "index_count", "transform_data", "color_data", "custom_data", "pre_transform_data", "pre_color_data", "pre_custom_data"), &RDMultimeshUpdate::update_dynamic_instance);
 	}
 public:
 	virtual ~RDMultimeshUpdate() {}

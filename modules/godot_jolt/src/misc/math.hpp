@@ -68,9 +68,10 @@ _FORCE_INLINE_ Basis decomposed(Basis p_basis, Vector3& p_scale) {
 	return p_basis;
 }
 
-_FORCE_INLINE_ Transform3D decomposed(Transform3D p_transform, Vector3& p_scale) {
-	decompose(p_transform, p_scale);
-	return p_transform;
+_FORCE_INLINE_ void decomposed(const Transform3D& p_transform, Vector3& p_scale,Transform3D& p_new_transform) {
+	p_new_transform = p_transform;
+	decompose(p_new_transform, p_scale);
+	//return p_transform;
 }
 
 _FORCE_INLINE_ float square(float p_value) {

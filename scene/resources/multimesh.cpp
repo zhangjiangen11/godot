@@ -388,7 +388,6 @@ void MultiMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_custom_aabb", "aabb"), &MultiMesh::set_custom_aabb);
 	ClassDB::bind_method(D_METHOD("get_custom_aabb"), &MultiMesh::get_custom_aabb);
 	ClassDB::bind_method(D_METHOD("get_aabb"), &MultiMesh::get_aabb);
-	ClassDB::bind_method(D_METHOD("get_rid"), &MultiMesh::get_rid);
 	ClassDB::bind_method(D_METHOD("get_update"), &MultiMesh::get_update);
 
 	ClassDB::bind_method(D_METHOD("get_buffer"), &MultiMesh::get_buffer);

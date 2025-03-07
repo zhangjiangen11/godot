@@ -547,6 +547,17 @@ Vector3 JoltPhysicsDirectSpaceState3D::get_closest_point_to_object_volume(
 
 	bool found_point = false;
 
+	JPH::RMat44 shape_3x3;
+	JPH::Vec3 shape_com_local;
+	JPH::Vec3 shape_com;
+	JPH::RVec3 shape_pos;
+	JPH::RMat44 shape_4x4;
+	JPH::RMat44 shape_4x4_inv;
+
+	JPH::Vec3 separating_axis ;
+	JPH::Vec3 point_on_a ;
+	JPH::Vec3 point_on_b;
+
 	for (int32_t i = 0; i < collector.get_hit_count(); ++i) {
 		const JPH::TransformedShape& shape_transformed = collector.get_hit(i);
 		const JPH::Shape& shape = *shape_transformed.mShape;
@@ -570,19 +581,19 @@ Vector3 JoltPhysicsDirectSpaceState3D::get_closest_point_to_object_volume(
 
 		const JPH::Quat& shape_rotation = shape_transformed.mShapeRotation;
 		const JPH::RVec3& shape_pos_com = shape_transformed.mShapePositionCOM;
-		const JPH::RMat44 shape_3x3 = JPH::RMat44::sRotation(shape_rotation);
-		const JPH::Vec3 shape_com_local = shape.GetCenterOfMass();
-		const JPH::Vec3 shape_com = shape_3x3.Multiply3x3(shape_com_local);
-		const JPH::RVec3 shape_pos = shape_pos_com - JPH::RVec3(shape_com);
-		const JPH::RMat44 shape_4x4 = shape_3x3.PostTranslated(shape_pos);
-		const JPH::RMat44 shape_4x4_inv = shape_4x4.InversedRotationTranslation();
+		shape_3x3 = JPH::RMat44::sRotation(shape_rotation);
+		shape_com_local = shape.GetCenterOfMass();
+		shape_com = shape_3x3.Multiply3x3(shape_com_local);
+		shape_pos = shape_pos_com - JPH::RVec3(shape_com);
+		shape_4x4 = shape_3x3.PostTranslated(shape_pos);
+		shape_4x4_inv = shape_4x4.InversedRotationTranslation();
 
 		JPH::PointConvexSupport point_support = {};
 		point_support.mPoint = JPH::Vec3(shape_4x4_inv * point);
 
-		JPH::Vec3 separating_axis = JPH::Vec3::sAxisX();
-		JPH::Vec3 point_on_a = JPH::Vec3::sZero();
-		JPH::Vec3 point_on_b = JPH::Vec3::sZero();
+		separating_axis = JPH::Vec3::sAxisX();
+		point_on_a = JPH::Vec3::sZero();
+		point_on_b = JPH::Vec3::sZero();
 
 		const float distance_sq = gjk.GetClosestPoints(
 			*shape_support,
@@ -860,7 +871,12 @@ bool JoltPhysicsDirectSpaceState3D::body_motion_recover(
 
 	JoltQueryCollectorAnyMultiNoEdges<32> collector;
 
-	bool recovered = false;
+	bool recovered = false;	
+	Vector3 penetration_axis;
+	Vector3 margin_offset;
+
+	Vector3 point_on_1;
+	Vector3 point_on_2;
 
 	for (int32_t i = 0; i < recovery_iterations; ++i) {
 		collector.reset();
@@ -908,11 +924,11 @@ bool JoltPhysicsDirectSpaceState3D::body_motion_recover(
 		for (int32_t j = 0; j < hit_count; ++j) {
 			const JPH::CollideShapeResult& hit = collector.get_hit(j);
 
-			const Vector3 penetration_axis = to_godot(hit.mPenetrationAxis.Normalized());
-			const Vector3 margin_offset = penetration_axis * p_margin;
+			penetration_axis = to_godot(hit.mPenetrationAxis.Normalized());
+			margin_offset = penetration_axis * p_margin;
 
-			const Vector3 point_on_1 = base_offset + to_godot(hit.mContactPointOn1) + margin_offset;
-			const Vector3 point_on_2 = base_offset + to_godot(hit.mContactPointOn2);
+			point_on_1 = base_offset + to_godot(hit.mContactPointOn1) + margin_offset;
+			point_on_2 = base_offset + to_godot(hit.mContactPointOn2);
 
 			const real_t distance_to_1 = penetration_axis.dot(point_on_1 + recovery);
 			const real_t distance_to_2 = penetration_axis.dot(point_on_2);
@@ -968,6 +984,12 @@ bool JoltPhysicsDirectSpaceState3D::body_motion_cast(
 
 	bool collided = false;
 
+	Transform3D transform_com_unscaled;
+	Transform3D transform_com;
+	Transform3D transform_com_local;
+	Transform3D transform_local;
+	Vector3 scale;
+	Vector3 com_scaled;
 	for (int32_t i = 0; i < p_body.get_shape_count(); ++i) {
 		if (p_body.is_shape_disabled(i)) {
 			continue;
@@ -982,13 +1004,12 @@ bool JoltPhysicsDirectSpaceState3D::body_motion_cast(
 		const JPH::ShapeRefC jolt_shape = shape->try_build();
 		QUIET_FAIL_NULL_D(jolt_shape);
 
-		Vector3 scale;
 
-		const Vector3 com_scaled = to_godot(jolt_shape->GetCenterOfMass());
-		const Transform3D transform_local = p_body.get_shape_transform_scaled(i);
-		const Transform3D transform_com_local = transform_local.translated_local(com_scaled);
-		const Transform3D transform_com = body_transform * transform_com_local;
-		const Transform3D transform_com_unscaled = decomposed(transform_com, scale);
+		com_scaled = to_godot(jolt_shape->GetCenterOfMass());
+		transform_local = p_body.get_shape_transform_scaled(i);
+		transform_com_local = transform_local.translated_local(com_scaled);
+		transform_com = body_transform * transform_com_local;
+		decomposed(transform_com, scale,transform_com_unscaled);
 
 #ifdef TOOLS_ENABLED
 		if (!jolt_shape->IsValidScale(to_jolt(scale))) {
@@ -1068,7 +1089,7 @@ bool JoltPhysicsDirectSpaceState3D::body_motion_collide(
 	}
 
 	int32_t count = 0;
-
+	Vector3 direction;
 	for (int32_t i = 0; i < collector.get_hit_count(); ++i) {
 		const JPH::CollideShapeResult& hit = collector.get_hit(i);
 
@@ -1081,16 +1102,17 @@ bool JoltPhysicsDirectSpaceState3D::body_motion_collide(
 		const Vector3 normal = to_godot(-hit.mPenetrationAxis.Normalized());
 
 		if (p_motion.length_squared() > 0) {
-			const Vector3 direction = p_motion.normalized();
+			direction = p_motion.normalized();
 
 			if (direction.dot(normal) >= -CMP_EPSILON) {
 				continue;
 			}
 		}
 
+
 		JPH::ContactPoints contact_points1;
 		JPH::ContactPoints contact_points2;
-
+		
 		if (p_max_collisions > 1) {
 			generate_manifold(
 				hit,
