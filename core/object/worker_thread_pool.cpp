@@ -776,7 +776,7 @@ void WorkerThreadPool::init(int p_thread_count, float p_low_priority_task_ratio)
 		threads[i].index = i;
 		threads[i].pool = this;
 		threads[i].thread.start(&WorkerThreadPool::_thread_function, &threads[i]);
-		threads[i].thread.set_thread_name(String("WorkerThreadPool Thread:") + String::num_int64(i));
+		threads[i].thread.set_thread_name(String("[") + thread_name + "] Pool:" + String::num_int64(i));
 		thread_ids.insert(threads[i].thread.get_id(), i);
 	}
 }
@@ -847,14 +847,15 @@ WorkerThreadPool *WorkerThreadPool::get_named_pool(const StringName &p_name) {
 	if (pool_ptr) {
 		return *pool_ptr;
 	} else {
-		WorkerThreadPool *pool = memnew(WorkerThreadPool(false));
+		WorkerThreadPool *pool = memnew(WorkerThreadPool(p_name,false));
 		pool->init();
 		named_pools[p_name] = pool;
 		return pool;
 	}
 }
 
-WorkerThreadPool::WorkerThreadPool(bool p_singleton) {
+WorkerThreadPool::WorkerThreadPool(const String & name,bool p_singleton) {
+	thread_name = name;
 	if (p_singleton) {
 		singleton = this;
 	}
@@ -1219,7 +1220,7 @@ void WorkerTaskPool::init()
 	{
 		threads[i].index = i;
 		threads[i].thread.start(&WorkerTaskPool::_thread_task_function, &threads[i]);
-		threads[i].thread.set_thread_name(String("Worker Task Pool Thread:") + String::num_int64(i));
+		threads[i].thread.set_thread_name(String("Worker Job Pool Thread:") + String::num_int64(i));
 	}
 
 }

@@ -302,7 +302,7 @@ void register_core_types() {
 	GDREGISTER_NATIVE_STRUCT(AudioFrame, "float left;float right");
 	GDREGISTER_NATIVE_STRUCT(ScriptLanguageExtensionProfilingInfo, "StringName signature;uint64_t call_count;uint64_t total_time;uint64_t self_time");
 
-	worker_thread_pool = memnew(WorkerThreadPool);
+	worker_thread_pool = memnew(WorkerThreadPool("DefaultTreadPool"));
 	worker_task_pool = memnew(WorkerTaskPool);
 	worker_task_pool->init();
 

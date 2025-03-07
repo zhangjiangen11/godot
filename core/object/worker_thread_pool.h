@@ -98,7 +98,7 @@ private:
 
 	static const uint32_t TASKS_PAGE_SIZE = 1024;
 	static const uint32_t GROUPS_PAGE_SIZE = 256;
-
+	String thread_name;
 	PagedAllocator<Task, false, TASKS_PAGE_SIZE> task_allocator;
 	PagedAllocator<Group, false, GROUPS_PAGE_SIZE> group_allocator;
 
@@ -291,7 +291,7 @@ public:
 	void init(int p_thread_count = -1, float p_low_priority_task_ratio = 0.3);
 	void exit_languages_threads();
 	void finish();
-	WorkerThreadPool(bool p_singleton = true);
+	WorkerThreadPool(const String & name,bool p_singleton = true);
 	~WorkerThreadPool();
 };
 // 任务Job句柄
