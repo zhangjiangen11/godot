@@ -94,12 +94,15 @@ void SceneChunk::MeshInstance::update_mesh_instance() {
         multimesh->set_mesh(mesh);
         multimesh->set_use_colors(true);
         multimesh->set_use_custom_data(true);
+        multimesh->set_transform_format(MultiMesh::TRANSFORM_3D);
         
     }
     dirty = false;
     if(instance.is_null()) {
         instance = RenderingServer::get_singleton()->instance_create();
         RenderingServer::get_singleton()->instance_set_base(instance, multimesh->get_rid());
+        // 设置裁剪距离
+        RS::get_singleton()->instance_geometry_set_visibility_range(instance,0,8192,20,100,RS::VISIBILITY_RANGE_FADE_SELF);
         set_gi_mode(gi_mode);
         set_shadow_setting(shadow_setting);
         RenderingServer::get_singleton()->instance_geometry_set_flag(instance, RenderingServer::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, false);

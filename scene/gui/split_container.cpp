@@ -61,6 +61,8 @@ void SplitContainerDragger::gui_input(const Ref<InputEvent> &p_event) {
 				queue_redraw();
 				sc->emit_signal(SNAME("drag_ended"));
 			}
+			
+			accept_event();
 		}
 	}
 
@@ -80,6 +82,7 @@ void SplitContainerDragger::gui_input(const Ref<InputEvent> &p_event) {
 		sc->_compute_split_offset(true);
 		sc->queue_sort();
 		sc->emit_signal(SNAME("dragged"), sc->get_split_offset());
+		accept_event();
 	}
 }
 
