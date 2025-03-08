@@ -352,4 +352,3 @@ public:
 	virtual ~RendererSceneRender() {}
 };
 
-#endif // RENDERER_SCENE_RENDER_H
