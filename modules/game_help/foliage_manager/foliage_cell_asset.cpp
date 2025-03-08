@@ -176,7 +176,7 @@ namespace Foliage
         
         for(int i = 0; i < block->get_instance_count(); i++) {
             
-            InstanceData& instance = instances.write[prototype.instanceRange.x + i];
+            InstanceData& instance = instances.write[prototype.instanceRange.x + (uint64_t)i];
             const Transform3D& transform = block->get_instance_transform(i);
             instance.p = CompressedPosition(_cellPos,transform.origin);
             instance.s = CompressedScaling(transform.basis.get_scale());
@@ -246,8 +246,8 @@ namespace Foliage
             else {
                 real_width = width / 32 + 1;
             }
-            data.resize(real_width * height);
-            memset(data.ptrw(), 0, real_width * height);
+            data.resize((uint64_t)real_width * height);
+            memset(data.ptrw(), 0, (uint64_t)real_width * height);
         }
         else {
             data.resize(width * height);
@@ -265,14 +265,14 @@ namespace Foliage
         else {
             int index = p_x / 32;
             int offset = p_x % 32;
-            uint8_t v = data[index + p_y * real_width];
+            uint8_t v = data[index + p_y * (uint64_t)real_width];
             if(p_value == 0) {
                 v &= ~(1 << offset);
             }
             else {
                 v |= 1 << offset;
             }
-            data.write[index + p_y * real_width] = v;
+            data.write[index + p_y * (uint64_t)real_width] = v;
         }
     }
 
@@ -281,12 +281,12 @@ namespace Foliage
             return 0;
         }
         if(!is_bit) {
-            return data[p_x + p_y * width];
+            return data[p_x + p_y * (uint64_t)width];
         }
         else {
             int index = p_x / 32;
             int offset = p_x % 32;
-            uint8_t v = data[index + p_y * real_width];
+            uint8_t v = data[index + p_y * (uint64_t)real_width];
             return (v >> offset) & 1;
         }
     }
@@ -351,7 +351,7 @@ namespace Foliage
                 if(p_block->get_instance_render_level(y * width + x) == -1) {
                     continue;
                 }
-                uint8_t value = data[y * width + x];
+                uint8_t value = data[y * (uint64_t)width + x];
                 if(is_invert) {
                     value = 255 - value;
                 }
@@ -391,17 +391,17 @@ namespace Foliage
     void FoliageHeightMap::init(int p_width, int p_height) {
         width = p_width;
         height = p_height;
-        data.resize(height * width);
+        data.resize(height * (uint64_t)width);
     }
     void FoliageHeightMap::init_form_image(int p_width, int p_height,const Ref<Image>& p_image,const Rect2i& p_rect) {
         width = p_width;
         height = p_height;
         int start_x = p_rect.position.x;
         int start_y = p_rect.position.y;
-        data.resize(height * width);
+        data.resize(height * (uint64_t)width);
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                data.write[y * width + x] = p_image->get_pixel(start_x + x, start_y + y).r;
+                data.write[y * (uint64_t)width + x] = p_image->get_pixel(start_x + x, start_y + y).r;
             }
         }
     }
@@ -431,7 +431,7 @@ namespace Foliage
                 if(p_block->get_instance_render_level(y * width + x) == -1) {
                     continue;
                 }
-                float _height = data[y * width + x];
+                float _height = data[y * (uint64_t)width + x];
                 if(_height < p_visble_height_min || _height > p_visble_height_max) {
                     p_block->set_instance_render_level(y * width + x, -1);
                 }
@@ -448,7 +448,7 @@ namespace Foliage
                 if(p_block->get_instance_render_level(y * width + x) == -1) {
                     continue;
                 }
-                float min_height = data[y * width + x];
+                float min_height = data[y * (uint64_t)width + x];
                 float max_height = min_height;
                 bool is_flat = true;
                 for(int x2 = x - p_instance_range; x2 <= x + p_instance_range; x2++) {
@@ -456,9 +456,9 @@ namespace Foliage
                         if(x2 < 0 || x2 >= width || y2 < 0 || y2 >= height) {
                             continue;
                         }
-                        float height = data[y2 * width + x2];
-                        min_height = MIN(min_height, height);
-                        max_height = MAX(max_height, height);
+                        float h = data[y2 * (uint64_t)width + x2];
+                        min_height = MIN(min_height, h);
+                        max_height = MAX(max_height, h);
                     }
                 }
                 if(abs(max_height - min_height) > p_height_difference) {
@@ -488,8 +488,8 @@ namespace Foliage
 
                 float u = start_u + x2 * renge_u;
                 float v = start_v + y2 * renge_v;
-                float height = sample_height(u, v);
-                transform.origin.y = p_base_height + height * p_height_range;
+                float h = sample_height(u, v);
+                transform.origin.y = p_base_height + h * p_height_range;
                 p_block->set_instance_transform(y * width + x, transform);
             }
         }
@@ -757,16 +757,18 @@ namespace Foliage
         image_data.resize((uint64_t)width * height * 2);
         uint8_t * ptr2 = image_data.ptrw();
         uint64_t ofs = 0;
+		float t0, t1;
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 ofs = (y * (uint64_t)width + x) * 2;
-                ptr2[ofs] = ptr[y * width + x].x * 0.5 + 0.5;
-                ptr2[ofs + 1] = ptr[y * width + x].z * 0.5 + 0.5;
+				t0 = (ptr[y * width + x].x * 0.5 + 0.5) * 255.0;
+				t1 = (ptr[y * width + x].z * 0.5 + 0.5) * 255.0;
+                ptr2[ofs] = (uint8_t)t0;
+                ptr2[ofs + 1] = (uint8_t)t1;
             }
         }
         Ref<Image> image = Image::create_from_data(width, height, false, Image::FORMAT_RG8, image_data);
-        Ref<ImageTexture> normal_map = memnew(ImageTexture);
-        normal_map->create_from_image(image);
+		Ref<ImageTexture> normal_map = ImageTexture::create_from_image(image);
         return normal_map;
     }
 
