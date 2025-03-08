@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef VARIANT_UTILITY_H
-#define VARIANT_UTILITY_H
+#pragma once
 
 #include "variant.h"
 
@@ -170,5 +169,3 @@ struct VariantUtilityFunctions {
 	static bool is_signaling_null(const Variant &p_variant);
 	static Variant create_signaling_null();
 };
-
-#endif // VARIANT_UTILITY_H

@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef EDITOR_RUN_BAR_H
-#define EDITOR_RUN_BAR_H
+#pragma once
 
 #include "editor/editor_run.h"
 #include "editor/export/editor_export.h"
@@ -137,5 +136,3 @@ public:
 
 	EditorRunBar();
 };
-
-#endif // EDITOR_RUN_BAR_H

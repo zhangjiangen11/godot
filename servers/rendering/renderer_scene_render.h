@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef RENDERER_SCENE_RENDER_H
-#define RENDERER_SCENE_RENDER_H
+#pragma once
 
 #include "core/math/projection.h"
 #include "core/templates/paged_array.h"

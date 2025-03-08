@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef HASH_SET_H
-#define HASH_SET_H
+#pragma once
 
 #include "core/math/math_funcs.h"
 #include "core/os/memory.h"
@@ -497,5 +496,3 @@ public:
 		}
 	}
 };
-
-#endif // HASH_SET_H

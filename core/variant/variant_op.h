@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef VARIANT_OP_H
-#define VARIANT_OP_H
+#pragma once
 
 #include "variant.h"
 
@@ -1596,5 +1595,3 @@ public:
 	}
 	static Variant::Type get_return_type() { return Variant::BOOL; }
 };
-
-#endif // VARIANT_OP_H
