@@ -900,6 +900,7 @@ namespace Foliage
 
 		void init(int p_width, int p_height);
 		void init_form_image(int p_width, int p_height, const Ref<Image>& p_image, const Rect2i& p_rect);
+		void init_form_height_image(int p_width, int p_height, const Ref<Image>& p_image, const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ);
 		void init_form_height_map(int p_width, int p_height, const Ref<FoliageHeightMap>& p_image, const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ);
 		void init_form_half_data(int p_width, int p_height, const Vector<uint8_t>& p_data, const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ);
 		void set_pixel(int p_x, int p_y, Vector3 p_value);

@@ -4447,5 +4447,5 @@ Vector3 Image::get_height_map_normal(int x, int z,float p_scale_height, float st
 	else {
 		sumNormal = Vector3(0, 1, 0);
 	}
-	return normals;
+	return sumNormal;
 }
