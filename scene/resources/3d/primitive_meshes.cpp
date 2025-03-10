@@ -731,9 +731,6 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 
 	Vector3 start_pos = size * -0.5;
 
-	if (!start_by_center) {
-		start_pos = size;
-	}
 
 	// set our bounding box
 
@@ -938,6 +935,12 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 		z += size.z / (subdivide_d + 1.0);
 		prevrow = thisrow;
 		thisrow = point;
+	}
+	if (!start_by_center) {
+		Vector3* ptr = points.ptrw();
+		for(int i = 0; i < points.size(); ++i) {
+			ptr[i] -= start_pos;
+		}
 	}
 
 	p_arr[RS::ARRAY_VERTEX] = points;
@@ -1399,9 +1402,6 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 
 	Size2 start_pos = size * -0.5;
 
-	if (!start_by_center) {
-		start_pos = size;
-	}
 	Vector3 normal = Vector3(0.0, 1.0, 0.0);
 	if (orientation == FACE_X) {
 		normal = Vector3(1.0, 0.0, 0.0);
@@ -1469,6 +1469,23 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 		z += size.y / (subdivide_d + 1.0);
 		prevrow = thisrow;
 		thisrow = point;
+	}
+	if (!start_by_center) {
+		Vector3 off;
+		if (orientation == FACE_X) {
+			off.y = start_pos.x;
+			off.z = start_pos.y;
+		} else if (orientation == FACE_Y) {
+			off.x = start_pos.x;
+			off.z = start_pos.y;
+		} else if (orientation == FACE_Z) {
+			off.x = start_pos.x;
+			off.y = start_pos.y;
+		}
+		Vector3* ptr = points.ptrw();
+		for(int i = 0; i < points.size(); ++i) {
+			ptr[i] -= off;
+		}
 	}
 
 	p_arr[RS::ARRAY_VERTEX] = points;
