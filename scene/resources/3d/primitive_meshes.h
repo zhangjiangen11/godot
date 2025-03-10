@@ -167,6 +167,7 @@ private:
 	int subdivide_w = 0;
 	int subdivide_h = 0;
 	int subdivide_d = 0;
+	bool start_by_center = true;
 
 protected:
 	static void _bind_methods();
@@ -175,7 +176,7 @@ protected:
 	virtual void _update_lightmap_size() override;
 
 public:
-	static void create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w = 0, int subdivide_h = 0, int subdivide_d = 0, bool p_add_uv2 = false, const float p_uv2_padding = 1.0);
+	static void create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w = 0, int subdivide_h = 0, int subdivide_d = 0, bool p_add_uv2 = false, const float p_uv2_padding = 1.0, bool start_by_center = false);
 
 	void set_size(const Vector3 &p_size);
 	Vector3 get_size() const;
@@ -188,6 +189,9 @@ public:
 
 	void set_subdivide_depth(const int p_divisions);
 	int get_subdivide_depth() const;
+
+	void set_start_by_center(bool v) { start_by_center = v; }
+	bool is_start_by_center() { return start_by_center; }
 
 	BoxMesh();
 };
@@ -261,6 +265,8 @@ private:
 	Vector3 center_offset;
 	Orientation orientation = FACE_Y;
 
+	bool start_by_center = true;
+
 protected:
 	static void _bind_methods();
 	virtual void _create_mesh_array(Array &p_arr) const override;
@@ -282,6 +288,9 @@ public:
 
 	void set_orientation(const Orientation p_orientation);
 	Orientation get_orientation() const;
+
+	void set_start_by_center(bool v) { start_by_center = v;}
+	bool is_start_by_center(){return start_by_center;}
 
 	PlaneMesh();
 };

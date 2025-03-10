@@ -708,10 +708,10 @@ void BoxMesh::_create_mesh_array(Array &p_arr) const {
 	bool _add_uv2 = get_add_uv2();
 	float _uv2_padding = get_uv2_padding() * texel_size;
 
-	BoxMesh::create_mesh_array(p_arr, size, subdivide_w, subdivide_h, subdivide_d, _add_uv2, _uv2_padding);
+	BoxMesh::create_mesh_array(p_arr, size, subdivide_w, subdivide_h, subdivide_d, _add_uv2, _uv2_padding, start_by_center);
 }
 
-void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int subdivide_h, int subdivide_d, bool p_add_uv2, const float p_uv2_padding) {
+void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int subdivide_h, int subdivide_d, bool p_add_uv2, const float p_uv2_padding,bool start_by_center) {
 	int i, j, prevrow, thisrow, point;
 	float x, y, z;
 	float onethird = 1.0 / 3.0;
@@ -730,6 +730,10 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 	float depth_v = size.z / total_v;
 
 	Vector3 start_pos = size * -0.5;
+
+	if (start_by_center) {
+		start_pos = Vector3(0, 0, 0);
+	}
 
 	// set our bounding box
 
@@ -957,10 +961,14 @@ void BoxMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_subdivide_depth", "divisions"), &BoxMesh::set_subdivide_depth);
 	ClassDB::bind_method(D_METHOD("get_subdivide_depth"), &BoxMesh::get_subdivide_depth);
 
+	ClassDB::bind_method(D_METHOD("set_start_by_center", "enable"), &BoxMesh::set_start_by_center);
+	ClassDB::bind_method(D_METHOD("is_start_by_center"), &BoxMesh::is_start_by_center);
+
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "size", PROPERTY_HINT_NONE, "suffix:m"), "set_size", "get_size");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_width", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_width", "get_subdivide_width");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_height", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_height", "get_subdivide_height");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_depth", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_depth", "get_subdivide_depth");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "start_by_center"), "set_start_by_center", "is_start_by_center");
 }
 
 void BoxMesh::set_size(const Vector3 &p_size) {
@@ -1391,6 +1399,9 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 
 	Size2 start_pos = size * -0.5;
 
+	if (!start_by_center) {
+		start_pos = size;
+	}
 	Vector3 normal = Vector3(0.0, 1.0, 0.0);
 	if (orientation == FACE_X) {
 		normal = Vector3(1.0, 0.0, 0.0);
@@ -1478,11 +1489,15 @@ void PlaneMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_orientation", "orientation"), &PlaneMesh::set_orientation);
 	ClassDB::bind_method(D_METHOD("get_orientation"), &PlaneMesh::get_orientation);
 
+	ClassDB::bind_method(D_METHOD("set_start_by_center","enable"), &PlaneMesh::set_start_by_center);
+	ClassDB::bind_method(D_METHOD("is_start_by_center"), &PlaneMesh::is_start_by_center);
+
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "size", PROPERTY_HINT_NONE, "suffix:m"), "set_size", "get_size");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_width", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_width", "get_subdivide_width");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_depth", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_depth", "get_subdivide_depth");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "center_offset", PROPERTY_HINT_NONE, "suffix:m"), "set_center_offset", "get_center_offset");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "orientation", PROPERTY_HINT_ENUM, "Face X,Face Y,Face Z"), "set_orientation", "get_orientation");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "start_by_center"), "set_start_by_center", "is_start_by_center");
 
 	BIND_ENUM_CONSTANT(FACE_X)
 	BIND_ENUM_CONSTANT(FACE_Y)
