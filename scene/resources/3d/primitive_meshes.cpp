@@ -731,8 +731,8 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 
 	Vector3 start_pos = size * -0.5;
 
-	if (start_by_center) {
-		start_pos = Vector3(0, 0, 0);
+	if (!start_by_center) {
+		start_pos = size;
 	}
 
 	// set our bounding box
@@ -1441,13 +1441,17 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 			} else if (orientation == FACE_Z) {
 				points.push_back(Vector3(-x, z, 0.0) + center_offset);
 			}
-			normals.push_back(normal);
-			if (orientation == FACE_X) {
-				ADD_TANGENT(0.0, 0.0, -1.0, 1.0);
-			} else {
-				ADD_TANGENT(1.0, 0.0, 0.0, 1.0);
+			if(using_normal) {
+				normals.push_back(normal);
+				if (orientation == FACE_X) {
+					ADD_TANGENT(0.0, 0.0, -1.0, 1.0);
+				} else {
+					ADD_TANGENT(1.0, 0.0, 0.0, 1.0);
+				}				
 			}
-			uvs.push_back(Vector2(1.0 - u, 1.0 - v)); /* 1.0 - uv to match orientation with Quad */
+			if(using_uv) {
+				uvs.push_back(Vector2(1.0 - u, 1.0 - v)); /* 1.0 - uv to match orientation with Quad */
+			}
 			point++;
 
 			if (i > 0 && j > 0) {
@@ -1468,9 +1472,13 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 	}
 
 	p_arr[RS::ARRAY_VERTEX] = points;
-	p_arr[RS::ARRAY_NORMAL] = normals;
-	p_arr[RS::ARRAY_TANGENT] = tangents;
-	p_arr[RS::ARRAY_TEX_UV] = uvs;
+	if(using_normal) {
+		p_arr[RS::ARRAY_NORMAL] = normals;
+		p_arr[RS::ARRAY_TANGENT] = tangents;
+	}
+	if(using_uv) {
+		p_arr[RS::ARRAY_TEX_UV] = uvs;
+	}
 	p_arr[RS::ARRAY_INDEX] = indices;
 }
 
@@ -1492,12 +1500,20 @@ void PlaneMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_start_by_center","enable"), &PlaneMesh::set_start_by_center);
 	ClassDB::bind_method(D_METHOD("is_start_by_center"), &PlaneMesh::is_start_by_center);
 
+	ClassDB::bind_method(D_METHOD("set_using_normal","enable"), &PlaneMesh::set_using_normal);
+	ClassDB::bind_method(D_METHOD("is_using_normal"), &PlaneMesh::is_using_normal);
+
+	ClassDB::bind_method(D_METHOD("set_using_uv","enable"), &PlaneMesh::set_using_uv);
+	ClassDB::bind_method(D_METHOD("is_using_uv"), &PlaneMesh::is_using_uv);
+
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "size", PROPERTY_HINT_NONE, "suffix:m"), "set_size", "get_size");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_width", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_width", "get_subdivide_width");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "subdivide_depth", PROPERTY_HINT_RANGE, "0,100,1,or_greater"), "set_subdivide_depth", "get_subdivide_depth");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "center_offset", PROPERTY_HINT_NONE, "suffix:m"), "set_center_offset", "get_center_offset");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "orientation", PROPERTY_HINT_ENUM, "Face X,Face Y,Face Z"), "set_orientation", "get_orientation");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "start_by_center"), "set_start_by_center", "is_start_by_center");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "using_normal"), "set_using_normal", "is_using_normal");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "using_uv"), "set_using_uv", "is_using_uv");
 
 	BIND_ENUM_CONSTANT(FACE_X)
 	BIND_ENUM_CONSTANT(FACE_Y)

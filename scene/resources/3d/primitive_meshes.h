@@ -265,6 +265,8 @@ private:
 	Vector3 center_offset;
 	Orientation orientation = FACE_Y;
 
+	bool using_normal = true;
+	bool using_uv = true;
 	bool start_by_center = true;
 
 protected:
@@ -291,6 +293,12 @@ public:
 
 	void set_start_by_center(bool v) { start_by_center = v;}
 	bool is_start_by_center(){return start_by_center;}
+
+	void set_using_normal(bool v) { using_normal = v;}
+	bool is_using_normal() {return using_normal;}
+
+	void set_using_uv(bool v) { using_uv = v;}
+	bool is_using_uv() {return using_uv;}
 
 	PlaneMesh();
 };
