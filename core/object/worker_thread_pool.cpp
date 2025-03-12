@@ -368,7 +368,8 @@ Error WorkerThreadPool::wait_for_task_completion(TaskID p_task_id) {
 	Task **taskp = tasks.getptr(p_task_id);
 	if (!taskp) {
 		task_mutex.unlock();
-		ERR_FAIL_V_MSG(ERR_INVALID_PARAMETER, "Invalid Task ID"); // Invalid task
+		//ERR_FAIL_V_MSG(ERR_INVALID_PARAMETER, "Invalid Task ID"); // Invalid task
+		return ERR_INVALID_PARAMETER;
 	}
 	Task *task = *taskp;
 

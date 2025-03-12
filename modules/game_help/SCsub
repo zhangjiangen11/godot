@@ -13,6 +13,7 @@ env_game_help.add_source_files(env.modules_sources, "logic/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/animator/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "human_anim/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "human_anim/Simd/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "common/*.cpp")
 
 
 env_game_help.add_source_files(env.modules_sources, "logic/beehave/*.cpp")

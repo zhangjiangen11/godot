@@ -318,7 +318,7 @@ public:
     };
     struct MeshInstance : public RefCounted{
 
-		void update_mesh_instance();
+		void update_mesh_instance(RID p_world_3d_scenario);
 		void set_mesh_transform(int mesh_id, const Transform3D& t);
 		void set_mesh_color(int mesh_id, const Color& color);
 		void set_mesh_custom_data(int mesh_id, const Color& color);

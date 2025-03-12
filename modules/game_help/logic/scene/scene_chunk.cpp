@@ -75,7 +75,7 @@ void SceneResource::show(int lod,int p_show_level,const Transform3D& p_parent, S
 /*********************************************************************************************************/
 
 
-void SceneChunk::MeshInstance::update_mesh_instance() {
+void SceneChunk::MeshInstance::update_mesh_instance(RID p_world_3d_scenario) {
     if(!dirty) {
         return;
     }
@@ -101,6 +101,7 @@ void SceneChunk::MeshInstance::update_mesh_instance() {
     if(instance.is_null()) {
         instance = RenderingServer::get_singleton()->instance_create();
         RenderingServer::get_singleton()->instance_set_base(instance, multimesh->get_rid());
+        RenderingServer::get_singleton()->instance_set_scenario(instance, p_world_3d_scenario);
         // 设置裁剪距离
         RS::get_singleton()->instance_geometry_set_visibility_range(instance,0,8192,20,100,RS::VISIBILITY_RANGE_FADE_SELF);
         set_gi_mode(gi_mode);
@@ -524,6 +525,11 @@ void SceneChunk::remove_mesh_collision_instance( int id,const String& p_path) {
 void SceneChunk::process(double p_delta) {
     // 處理裁剪
     Camera3D * camera = get_viewport()->get_camera_3d();
+    RID world_3d_scenario = get_world_3d()->get_scenario();
+
+    for(auto it : mult_mesh_instances) {
+        it.value->update_mesh_instance(world_3d_scenario);
+    }
 }
 
 void SceneChunk::_bind_methods() {
