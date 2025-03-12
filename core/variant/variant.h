@@ -1087,3 +1087,7 @@ Array::ConstIterator &Array::ConstIterator::operator--() {
 	element_ptr--;
 	return *this;
 }
+
+// Zero-constructing Variant results in NULL.
+template <>
+struct is_zero_constructible<Variant> : std::true_type {};
