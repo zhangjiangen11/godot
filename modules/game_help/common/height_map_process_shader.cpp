@@ -9,37 +9,44 @@ void HeightMapTemplateShader::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_process_shader_code"), &HeightMapTemplateShader::get_process_shader_code);
     ClassDB::bind_method(D_METHOD("get_priview_shader_code"), &HeightMapTemplateShader::get_priview_shader_code);
     ClassDB::bind_method(D_METHOD("is_error"), &HeightMapTemplateShader::get_is_error);
+    
+    ADD_SIGNAL(MethodInfo("changed"));
 }
 void HeightMapTemplateShader::init(const String& p_process_file_path,const String& p_priview_file_path) {
-    is_error = false;
     process_file_path = p_process_file_path;
     priview_file_path = p_priview_file_path;
+    load();
+
+}
+void HeightMapTemplateShader::load() {
+	is_error = false;
+    process_file_path_time = FileAccess::get_modified_time(process_file_path);
+    priview_file_path_time = FileAccess::get_modified_time(priview_file_path);
     Error err;
-    Ref<FileAccess> file = FileAccess::open(p_process_file_path, FileAccess::READ, &err);
+    Ref<FileAccess> file = FileAccess::open(process_file_path, FileAccess::READ, &err);
     if(err != OK) {
         is_error = true;
-		ERR_FAIL_COND_MSG(err != OK, p_process_file_path + ": file not exist");
+		ERR_FAIL_COND_MSG(err != OK, process_file_path + ": file not exist");
     }
     if(file.is_null()) {
         is_error = true;
-		ERR_FAIL_COND_MSG(file.is_null(), p_process_file_path + ": file not exist");
+		ERR_FAIL_COND_MSG(file.is_null(), process_file_path + ": file not exist");
     }
 
     process_shader_code = file->get_as_utf8_string();
 
-
-    file = FileAccess::open(p_priview_file_path, FileAccess::READ, &err);
+    file = FileAccess::open(priview_file_path, FileAccess::READ, &err);
 
     if(err != OK) {
         is_error = true;
-		ERR_FAIL_COND_MSG(err != OK, p_priview_file_path + ": file not exist");
+		ERR_FAIL_COND_MSG(err != OK, priview_file_path + ": file not exist");
     }
     if(file.is_null()) {
         is_error = true;
-		ERR_FAIL_COND_MSG(file.is_null(), p_priview_file_path + ": file not exist");
+		ERR_FAIL_COND_MSG(file.is_null(), priview_file_path + ": file not exist");
     }
-
     priview_shader_code = file->get_as_utf8_string();
+	emit_signal(CoreStringName(changed));
 }
 
 
@@ -69,35 +76,54 @@ void HeightMapProcessShader::_bind_methods() {
     ClassDB::bind_method(D_METHOD("get_is_error"), &HeightMapProcessShader::get_is_error);
     ClassDB::bind_method(D_METHOD("get_process_shader"), &HeightMapProcessShader::get_process_shader);
     ClassDB::bind_method(D_METHOD("get_priview_shader"), &HeightMapProcessShader::get_priview_shader);
+
+    ADD_SIGNAL(MethodInfo("changed"));
 }
 void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template_shader,const String& p_code_file_path) {
-    is_error = false;
-    if(p_template_shader.is_null()) {
+    code_file_path = p_code_file_path;
+    if(template_shader.is_valid()) {
+        template_shader->disconnect(CoreStringName(changed),callable_mp(this, &HeightMapProcessShader::on_template_changed));
+    }
+	template_shader = p_template_shader;
+    if(template_shader.is_null()) {
         is_error = true;
         ERR_FAIL_COND_MSG(p_template_shader.is_null(), "template shader not exist");
     }
-    template_shader = p_template_shader;
-    if(p_template_shader->get_is_error()) {
-        is_error = true;
-        ERR_FAIL_COND_MSG(p_template_shader->get_is_error(), "template shader error");
+    if(template_shader.is_valid()) {
+        template_shader->connect(CoreStringName(changed),callable_mp(this, &HeightMapProcessShader::on_template_changed));
     }
+	load();
+}
 
+
+void HeightMapProcessShader::load() {
+
+	is_error = false;
+	if (template_shader.is_null()) {
+		is_error = true;
+		return;
+	}
+	if (template_shader->get_is_error()) {
+		is_error = true;
+		ERR_FAIL_COND_MSG(template_shader->get_is_error(), "template shader error");
+	}
+    code_file_path_time = FileAccess::get_modified_time(code_file_path);
     Error err;
-    Ref<FileAccess> file = FileAccess::open(p_code_file_path, FileAccess::READ, &err);
-	ERR_FAIL_COND_MSG(err != OK, p_code_file_path + ": file not exist");
-	ERR_FAIL_COND_MSG(file.is_null(), p_code_file_path + ": file not exist");
+    Ref<FileAccess> file = FileAccess::open(code_file_path, FileAccess::READ, &err);
+	ERR_FAIL_COND_MSG(err != OK, code_file_path + ": file not exist");
+	ERR_FAIL_COND_MSG(file.is_null(), code_file_path + ": file not exist");
 
     String code = file->get_as_utf8_string();
     if(code.is_empty()) {
         is_error = true;
-		ERR_FAIL_COND_MSG(code.is_empty(), p_code_file_path + ": file not exist");
+		ERR_FAIL_COND_MSG(code.is_empty(), code_file_path + ": file not exist");
     }
     code = code.remove_char(' ').remove_char('\r').remove_char('\t');
     Vector<String> lines = code.split("$$",false);
 
     if(lines.size() != 4) {
         is_error = true;
-		ERR_FAIL_COND_MSG(lines.size() != 4, p_code_file_path + L": 格式錯誤，請檢查，必須存在$$分隔符號，格式為[is_inv_blend_value:(true|false)]\n$$[params_a:(name,value,min,max);params_b;...]\n$$[function_code]\n$$[process_code]");
+		ERR_FAIL_COND_MSG(lines.size() != 4, code_file_path + L": 格式錯誤，請檢查，必須存在$$分隔符號，格式為[is_inv_blend_value:(true|false)]\n$$[params_a:(name,value,min,max);params_b;...]\n$$[function_code]\n$$[process_code]");
     }
 
     String _is_inv_blend_value = lines[0].remove_char('\n');
@@ -115,14 +141,14 @@ void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template
 
     if(params_list.size()  > 32) {
         is_error = true;
-		ERR_FAIL_COND_MSG(params_list.size()  > 32, p_code_file_path + L": params數量過多,最多32個");
+		ERR_FAIL_COND_MSG(params_list.size()  > 32, code_file_path + L": params數量過多,最多32個");
     }
 
     for(int i=0;i<params_list.size();i++) {
         Vector<String> param = params_list[i].split(":",false);
         if(param.size() != 4) {
             is_error = true;                
-			ERR_FAIL_COND_MSG(param.size() != 2, p_code_file_path + L": params格式錯誤[name,value,min,max]請檢查 " + String::num_int64(i) + ":" + params_list[i]);
+			ERR_FAIL_COND_MSG(param.size() != 2, code_file_path + L": params格式錯誤[name,value,min,max]請檢查 " + String::num_int64(i) + ":" + params_list[i]);
         }
 
         Dictionary param_dict;
@@ -133,10 +159,11 @@ void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template
         params.push_back(param_dict);
     }
 
+    if(process_shader_file.is_null()) {
+        process_shader_file.instantiate();
+    }
 
-    process_shader_file.instantiate();
-
-        //"uniform float time : hint_range(0.0, 10.0);"
+    //"uniform float time : hint_range(0.0, 10.0);"
     String params_str;
     for(int i=0;i<params.size();i++) {
 		Dictionary param_dict = params[i];
@@ -145,11 +172,11 @@ void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template
 
 
 
-    String file_txt = p_template_shader->get_process_shader_code();
+    String file_txt = template_shader->get_process_shader_code();
     file_txt = file_txt.replace("//@BLEND_PARAMETER_RENAME",params_str);
     file_txt = file_txt.replace("//@BLEND_FUNCTION",function_code);
     file_txt = file_txt.replace("//@BLEND_CODE",process_code);
-    String base_path = p_template_shader->get_process_file_path().get_base_dir();
+    String base_path = template_shader->get_process_file_path().get_base_dir();
 
     err = process_shader_file->parse_versions_from_text(file_txt
         , is_inv_blend_value ? "#define BLEND_INV_VALUE_DEFINE 1\n" : "#define BLEND_INV_VALUE_DEFINE 0\n" 
@@ -157,10 +184,10 @@ void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template
 
     if (err != OK) {
         is_error = true;
-        process_shader_file->print_errors(p_code_file_path);
+        process_shader_file->print_errors(code_file_path);
     }
 
-    file_txt = p_template_shader->get_priview_shader_code();
+    file_txt = template_shader->get_priview_shader_code();
     params_str = "";
     for(int i=0;i<params.size();i++) {
 		Dictionary param_dict = params[i];
@@ -174,15 +201,16 @@ void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template
         , _include_function, &base_path);
     if (err != OK) {
         is_error = true;
-        process_shader_file->print_errors(p_code_file_path);
+        process_shader_file->print_errors(code_file_path);
     }
     if(priview_shader.is_null()) {
         priview_shader.instantiate();
     }
     // priview_shader->set_path(p_template_shader->get_priview_file_path());
-	priview_shader->set_include_path(p_template_shader->get_priview_file_path().get_base_dir());
+	priview_shader->set_include_path(template_shader->get_priview_file_path().get_base_dir());
 	priview_shader->set_code(file_txt);
 
+	emit_signal(CoreStringName(changed));
 
 }
 #endif

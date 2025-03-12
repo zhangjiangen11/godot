@@ -31,12 +31,17 @@ public:
 	bool get_is_error() {
 		return is_error;
 	}
-
+protected:
+    void load();
+protected:
 	String process_file_path;
 	String priview_file_path;
 
 	String process_shader_code;
 	String priview_shader_code;
+
+    int64_t process_file_path_time = -1;
+    int64_t priview_file_path_time = -1;
 
 	bool is_error = true;
 };
@@ -64,8 +69,14 @@ public:
         return is_error;
     }
 
-private:
+    void on_template_changed() {
+        load();
+    }
 
+protected:
+    void load();
+private:
+    String code_file_path;
     Ref<HeightMapTemplateShader> template_shader;
     Array params;
     bool is_inv_blend_value = false;
@@ -74,6 +85,7 @@ private:
     Ref<RDShaderFile> process_shader_file;
 
     Ref<Shader> priview_shader;
+    int64_t code_file_path_time = -1;
 
     bool is_error = false;
 };
