@@ -312,7 +312,7 @@ void MAssetMesh::generate_instance_data(int collection_id,const Transform3D& tra
 
 void MAssetMesh::update_instance_date(){
     if(collection_identifier.is_null()){ // NULL STATE
-        collection_id == -1;
+        collection_id = -1;
         return;
     }
     Ref<MAssetTable> at = MAssetTable::get_singleton();
@@ -431,8 +431,8 @@ bool MAssetMesh::get_disable_collision() const{
     return disable_collision;
 }
 
-void MAssetMesh::set_instance_gi_mode(const RID instance,const MHlod::GIMode gi_mode){
-    switch (gi_mode)
+void MAssetMesh::set_instance_gi_mode(const RID instance,const MHlod::GIMode _gi_mode){
+    switch (_gi_mode)
     {
     case MHlod::GI_MODE_DISABLED:
         RSS->instance_geometry_set_flag(instance,RenderingServer::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
@@ -456,18 +456,18 @@ void MAssetMesh::set_instance_gi_mode(const RID instance,const MHlod::GIMode gi_
 }
 
 void MAssetMesh::remove_instances(bool hard_remove){
-    for(InstanceData& data : instance_data){
-        if(data.instance_rid.is_valid()){
-            if(data.current_mmesh.is_valid()){
-                if(data.material_set_user_added){
-                    data.update_material(data.material_set_id,-1);
+    for(InstanceData& _data : instance_data){
+        if(_data.instance_rid.is_valid()){
+            if(_data.current_mmesh.is_valid()){
+                if(_data.material_set_user_added){
+					_data.update_material(_data.material_set_id,-1);
                 }
             } else {
                 WARN_PRINT("ata.current_mmesh is not valid for removing user");
             }
-            RSS->free(data.instance_rid);
-            data.instance_rid = RID();
-            data.mesh_rid = RID();
+            RSS->free(_data.instance_rid);
+			_data.instance_rid = RID();
+			_data.mesh_rid = RID();
             instance_count--;
         }
     }
@@ -496,9 +496,9 @@ int64_t MAssetMesh::get_visual_layers() const{
 
 void MAssetMesh::set_shadow_setting(RenderingServer::ShadowCastingSetting input){
     shadow_setting = input;
-    for(InstanceData& data : instance_data){
-        if(data.instance_rid.is_valid()){
-			RSS->instance_geometry_set_cast_shadows_setting(data.instance_rid,shadow_setting);
+    for(InstanceData& _data : instance_data){
+        if(_data.instance_rid.is_valid()){
+			RSS->instance_geometry_set_cast_shadows_setting(_data.instance_rid,shadow_setting);
         }
     }
 }
@@ -627,8 +627,8 @@ void MAssetMesh::update_material_sets_from_data(){
     notify_property_list_changed();
 }
 
-void MAssetMesh::set_collections_material_set(Dictionary data){
-    collections_material_set = data;
+void MAssetMesh::set_collections_material_set(Dictionary p_data){
+    collections_material_set = p_data;
     update_material_sets_from_data();
 }
 
@@ -638,18 +638,18 @@ Dictionary MAssetMesh::get_collections_material_set() const {
 
 void MAssetMesh::_update_position(){
     Transform3D gtransform = get_global_transform();
-    for(InstanceData& data : instance_data){
-        if(data.instance_rid.is_valid()){
-            RSS->instance_set_transform(data.instance_rid,gtransform * data.local_transform);
+    for(InstanceData& _data : instance_data){
+        if(_data.instance_rid.is_valid()){
+            RSS->instance_set_transform(_data.instance_rid,gtransform * _data.local_transform);
         }
     }
 }
 
 void MAssetMesh::_update_visibility(){
     bool is_visible = is_visible_in_tree() && is_inside_tree();
-    for(InstanceData& data : instance_data){
-        if(data.instance_rid.is_valid()){
-            RSS->instance_set_visible(data.instance_rid,is_visible);
+    for(InstanceData& _data : instance_data){
+        if(_data.instance_rid.is_valid()){
+            RSS->instance_set_visible(_data.instance_rid,is_visible);
         }
     }
 }
@@ -729,17 +729,17 @@ TypedArray<MAssetMeshData> MAssetMesh::get_mesh_data(){
         update_instance_date();
     }
     TypedArray<MAssetMeshData> out;
-    for(const InstanceData& data : instance_data){
-        if(data.meshes.size()>0){
+    for(const InstanceData& _data : instance_data){
+        if(_data.meshes.size()>0){
             Ref<MAssetMeshData> _m;
             _m.instantiate();
-            _m->material_set_id = data.material_set_id;
-            _m->transform = data.local_transform;
-            _m->global_transform = get_global_transform() * data.local_transform;
-            _m->mesh_lod = data.meshes;
-            _m->item_ids = data.item_ids;
+            _m->material_set_id = _data.material_set_id;
+            _m->transform = _data.local_transform;
+            _m->global_transform = get_global_transform() * _data.local_transform;
+            _m->mesh_lod = _data.meshes;
+            _m->item_ids = _data.item_ids;
             if(!disable_collision){
-                _m->collision_data = data.collission_data;
+                _m->collision_data = _data.collission_data;
             }
             out.push_back(_m);
         }
@@ -770,12 +770,12 @@ void MAssetMesh::generate_joined_triangle_mesh(){
     PackedVector3Array verticies;
     PackedInt32Array indicies;
     int index_offset = 0;
-    for(const InstanceData& data : instance_data){
-        Ref<MMesh> current_mesh = data.get_last_valid_mesh();
+    for(const InstanceData& _data : instance_data){
+        Ref<MMesh> current_mesh = _data.get_last_valid_mesh();
         if(current_mesh.is_null()){
             continue;
         }
-        Transform3D local_transform = data.local_transform;
+        Transform3D local_transform = _data.local_transform;
         int surf_count = current_mesh->get_surface_count();
         for(int j=0; j < surf_count; j++){
             Array surface_data = current_mesh->surface_get_arrays(j);
@@ -822,17 +822,17 @@ Ref<ArrayMesh> MAssetMesh::get_merged_mesh(bool lowest_lod){
     Array _mmeshes;
     Array _transforms;
     PackedInt32Array _material_set_ids;
-    for(const InstanceData& data : instance_data){
+    for(const InstanceData& _data : instance_data){
         Ref<MMesh> c_mmesh;
         if(lowest_lod){
-            c_mmesh = data.get_first_valid_mesh();
+            c_mmesh = _data.get_first_valid_mesh();
         } else {
-            c_mmesh = data.get_last_valid_mesh();
+            c_mmesh = _data.get_last_valid_mesh();
         }
         if(c_mmesh.is_valid()){
             _mmeshes.push_back(c_mmesh);
-            _transforms.push_back(data.local_transform);
-            _material_set_ids.push_back(data.material_set_id);
+            _transforms.push_back(_data.local_transform);
+            _material_set_ids.push_back(_data.material_set_id);
         }
     }
     if(_mmeshes.is_empty()){
