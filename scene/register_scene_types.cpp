@@ -331,6 +331,9 @@ static Ref<ResourceFormatLoaderShader> resource_loader_shader;
 static Ref<ResourceFormatSaverShaderInclude> resource_saver_shader_include;
 static Ref<ResourceFormatLoaderShaderInclude> resource_loader_shader_include;
 
+static Ref<ResourceFormatSaverShaderTemplate> resource_saver_shader_template;
+static Ref<ResourceFormatLoaderShaderTemplate> resource_loader_shader_template;
+
 void register_scene_types() {
 	OS::get_singleton()->benchmark_begin_measure("Scene", "Register Types");
 
@@ -366,6 +369,12 @@ void register_scene_types() {
 
 	resource_loader_shader_include.instantiate();
 	ResourceLoader::add_resource_format_loader(resource_loader_shader_include, true);
+
+	resource_saver_shader_template.instantiate();
+	ResourceSaver::add_resource_format_saver(resource_saver_shader_template, true);
+
+	resource_loader_shader_template.instantiate();
+	ResourceLoader::add_resource_format_loader(resource_loader_shader_template, true);
 
 	OS::get_singleton()->yield(); // may take time to init
 
@@ -678,6 +687,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(Shader);
 	GDREGISTER_CLASS(VisualShader);
 	GDREGISTER_CLASS(ShaderInclude);
+	GDREGISTER_CLASS(ShaderTemplate);
 	GDREGISTER_ABSTRACT_CLASS(VisualShaderNode);
 	GDREGISTER_CLASS(VisualShaderNodeCustom);
 	GDREGISTER_CLASS(VisualShaderNodeInput);
@@ -1319,6 +1329,12 @@ void unregister_scene_types() {
 
 	ResourceLoader::remove_resource_format_loader(resource_loader_shader_include);
 	resource_loader_shader_include.unref();
+
+	ResourceSaver::remove_resource_format_saver(resource_saver_shader_template);
+	resource_saver_shader_template.unref();
+
+	ResourceLoader::remove_resource_format_loader(resource_loader_shader_template);
+	resource_loader_shader_template.unref();
 
 	// StandardMaterial3D is not initialized when 3D is disabled, so it shouldn't be cleaned up either
 #ifndef _3D_DISABLED

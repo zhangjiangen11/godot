@@ -102,6 +102,11 @@ private:
 		int line_spacing = 0;
 	} theme_cache;
 
+	struct UserData {
+		Ref<Texture2D> background;
+		Ref<Texture2D> focus;		
+	} user_data;
+
 	void _shape(Ref<TextParagraph> p_paragraph = Ref<TextParagraph>(), String p_text = "") const;
 	void _texture_changed();
 
@@ -156,6 +161,20 @@ public:
 	void set_vertical_icon_alignment(VerticalAlignment p_alignment);
 	HorizontalAlignment get_icon_alignment() const;
 	VerticalAlignment get_vertical_icon_alignment() const;
+
+	void set_background_texture(const Ref<Texture2D> &p_texture) {
+		user_data.background = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_background_texture() const {
+		return user_data.background;			
+	}
+
+	void set_focus_texture(const Ref<Texture2D> &p_texture) {
+		user_data.focus = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_focus_texture() const { return user_data.focus; }
 
 	Button(const String &p_text = String());
 	~Button();

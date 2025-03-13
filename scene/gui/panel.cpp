@@ -35,13 +35,22 @@ void Panel::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
-			theme_cache.panel_style->draw(ci, Rect2(Point2(), get_size()));
+			if(texture.is_valid()) {
+				texture->draw_rect(ci,Rect2(Point2(), get_size()));
+			}
+			else {
+				theme_cache.panel_style->draw(ci, Rect2(Point2(), get_size()));
+			}
 		} break;
 	}
 }
 
 void Panel::_bind_methods() {
 	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, Panel, panel_style, "panel");
+	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &Panel::set_texture);
+	ClassDB::bind_method(D_METHOD("get_texture"), &Panel::get_texture);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_texture", "get_texture");
 }
 
 Panel::Panel() {

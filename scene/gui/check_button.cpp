@@ -40,17 +40,41 @@ Size2 CheckButton::get_icon_size() const {
 		if (is_disabled()) {
 			on_tex = theme_cache.checked_disabled_mirrored;
 			off_tex = theme_cache.unchecked_disabled_mirrored;
+			if(user_data.checked_disabled_mirrored.is_valid()){
+				on_tex = user_data.checked_disabled_mirrored;
+			}
+			if(user_data.unchecked_disabled_mirrored.is_valid()){
+				off_tex = user_data.unchecked_disabled_mirrored;
+			}
 		} else {
 			on_tex = theme_cache.checked_mirrored;
 			off_tex = theme_cache.unchecked_mirrored;
+			if(user_data.checked_mirrored.is_valid()){
+				on_tex = user_data.checked_mirrored;
+			}
+			if(user_data.unchecked_mirrored.is_valid()){
+				off_tex = user_data.unchecked_mirrored;
+			}
 		}
 	} else {
 		if (is_disabled()) {
 			on_tex = theme_cache.checked_disabled;
 			off_tex = theme_cache.unchecked_disabled;
+			if(user_data.checked_disabled.is_valid()){
+				on_tex = user_data.checked_disabled;
+			}
+			if(user_data.unchecked_disabled.is_valid()){
+				off_tex = user_data.unchecked_disabled;
+			}
 		} else {
 			on_tex = theme_cache.checked;
 			off_tex = theme_cache.unchecked;
+			if(user_data.checked.is_valid()){
+				on_tex = user_data.checked;
+			}
+			if(user_data.unchecked.is_valid()){
+				off_tex = user_data.unchecked;
+			}
 		}
 	}
 
@@ -108,17 +132,41 @@ void CheckButton::_notification(int p_what) {
 				if (is_disabled()) {
 					on_tex = theme_cache.checked_disabled_mirrored;
 					off_tex = theme_cache.unchecked_disabled_mirrored;
+					if(user_data.checked_disabled_mirrored.is_valid()){
+						on_tex = user_data.checked_disabled_mirrored;
+					}
+					if(user_data.unchecked_disabled_mirrored.is_valid()){
+						off_tex = user_data.unchecked_disabled_mirrored;
+					}
 				} else {
 					on_tex = theme_cache.checked_mirrored;
 					off_tex = theme_cache.unchecked_mirrored;
+					if(user_data.checked_mirrored.is_valid()){
+						on_tex = user_data.checked_mirrored;
+					}
+					if(user_data.unchecked_mirrored.is_valid()){
+						off_tex = user_data.unchecked_mirrored;
+					}
 				}
 			} else {
 				if (is_disabled()) {
 					on_tex = theme_cache.checked_disabled;
 					off_tex = theme_cache.unchecked_disabled;
+					if(user_data.checked_disabled.is_valid()){
+						on_tex = user_data.checked_disabled;
+					}
+					if(user_data.unchecked_disabled.is_valid()){
+						off_tex = user_data.unchecked_disabled;
+					}
 				} else {
 					on_tex = theme_cache.checked;
 					off_tex = theme_cache.unchecked;
+					if(user_data.checked.is_valid()){
+						on_tex = user_data.checked;
+					}
+					if(user_data.unchecked.is_valid()){
+						off_tex = user_data.unchecked;
+					}
 				}
 			}
 
@@ -142,6 +190,45 @@ void CheckButton::_notification(int p_what) {
 }
 
 void CheckButton::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_checked_texture", "texture"), &CheckButton::set_checked_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_texture"), &CheckButton::get_checked_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_texture", "texture"), &CheckButton::set_unchecked_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_texture"), &CheckButton::get_unchecked_texture);
+
+	ClassDB::bind_method(D_METHOD("set_checked_disabled_texture", "texture"), &CheckButton::set_checked_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_disabled_texture"), &CheckButton::get_checked_disabled_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_disabled_texture", "texture"), &CheckButton::set_unchecked_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_disabled_texture"), &CheckButton::get_unchecked_disabled_texture);
+
+	ClassDB::bind_method(D_METHOD("set_checked_mirrored_texture", "texture"), &CheckButton::set_checked_mirrored_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_mirrored_texture"), &CheckButton::get_checked_mirrored_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_mirrored_texture", "texture"), &CheckButton::set_unchecked_mirrored_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_mirrored_texture"), &CheckButton::get_unchecked_mirrored_texture);
+
+	ClassDB::bind_method(D_METHOD("set_checked_disabled_mirrored_texture", "texture"), &CheckButton::set_checked_disabled_mirrored_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_disabled_mirrored_texture"), &CheckButton::get_checked_disabled_mirrored_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_disabled_mirrored_texture", "texture"), &CheckButton::set_unchecked_disabled_mirrored_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_disabled_mirrored_texture"), &CheckButton::get_unchecked_disabled_mirrored_texture);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_texture", "get_checked_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_texture", "get_unchecked_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_disabled_texture", "get_checked_disabled_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_disabled_texture", "get_unchecked_disabled_texture");
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_mirrored_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_mirrored_texture", "get_checked_mirrored_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_mirrored_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_mirrored_texture", "get_unchecked_mirrored_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_disabled_mirrored_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_disabled_mirrored_texture", "get_checked_disabled_mirrored_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_disabled_mirrored_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_disabled_mirrored_texture", "get_unchecked_disabled_mirrored_texture");
+
+
+
+
+
+
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, CheckButton, h_separation);
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, CheckButton, check_v_offset);
 	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, CheckButton, normal_style, "normal");

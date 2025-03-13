@@ -780,10 +780,41 @@ void PopupMenu::_draw_items() {
 	Ref<Texture2D> check[] = { theme_cache.checked, theme_cache.radio_checked, theme_cache.checked_disabled, theme_cache.radio_checked_disabled };
 	Ref<Texture2D> uncheck[] = { theme_cache.unchecked, theme_cache.radio_unchecked, theme_cache.unchecked_disabled, theme_cache.radio_unchecked_disabled };
 	Ref<Texture2D> submenu;
+	if(user_data.checked.is_valid()){
+		check[0] = user_data.checked;
+	}
+	if(user_data.unchecked.is_valid()){
+		uncheck[0] = user_data.unchecked;
+	}
+	if(user_data.radio_checked.is_valid()){
+		check[1] = user_data.radio_checked;
+	}
+	if(user_data.radio_unchecked.is_valid()){
+		uncheck[1] = user_data.radio_unchecked;
+	}
+	if(user_data.checked_disabled.is_valid()){
+		check[2] = user_data.checked_disabled;
+	}
+	if(user_data.unchecked_disabled.is_valid()){
+		uncheck[2] = user_data.unchecked_disabled;
+	}
+	if(user_data.radio_checked_disabled.is_valid()){
+		check[3] = user_data.radio_checked_disabled;
+	}
+	if(user_data.radio_unchecked_disabled.is_valid()){
+		uncheck[3] = user_data.radio_unchecked_disabled;
+	}
+
 	if (rtl) {
 		submenu = theme_cache.submenu_mirrored;
+		if(user_data.submenu_mirrored.is_valid()){
+			submenu = user_data.submenu_mirrored;
+		}
 	} else {
 		submenu = theme_cache.submenu;
+		if(user_data.submenu.is_valid()){
+			submenu = user_data.submenu;
+		}
 	}
 
 	float display_width = control->get_size().width;
@@ -2897,6 +2928,38 @@ void PopupMenu::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_system_menu", "system_menu_id"), &PopupMenu::set_system_menu);
 	ClassDB::bind_method(D_METHOD("get_system_menu"), &PopupMenu::get_system_menu);
 
+	
+	ClassDB::bind_method(D_METHOD("set_checked_texture", "texture"), &PopupMenu::set_checked_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_texture"), &PopupMenu::get_checked_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_texture", "texture"), &PopupMenu::set_unchecked_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_texture"), &PopupMenu::get_unchecked_texture);
+
+	ClassDB::bind_method(D_METHOD("set_checked_disabled_texture", "texture"), &PopupMenu::set_checked_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_disabled_texture"), &PopupMenu::get_checked_disabled_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_disabled_texture", "texture"), &PopupMenu::set_unchecked_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_disabled_texture"), &PopupMenu::get_unchecked_disabled_texture);
+
+	// radio
+	ClassDB::bind_method(D_METHOD("set_checked_radio_texture", "texture"), &PopupMenu::set_checked_radio_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_radio_texture"), &PopupMenu::get_checked_radio_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_radio_texture", "texture"), &PopupMenu::set_unchecked_radio_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_radio_texture"), &PopupMenu::get_unchecked_radio_texture);
+
+	ClassDB::bind_method(D_METHOD("set_checked_radio_disabled_texture", "texture"), &PopupMenu::set_checked_radio_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_radio_disabled_texture"), &PopupMenu::get_checked_radio_disabled_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_radio_disabled_texture", "texture"), &PopupMenu::set_unchecked_radio_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_radio_disabled_texture"), &PopupMenu::get_unchecked_radio_disabled_texture);
+
+	ClassDB::bind_method(D_METHOD("set_submenu_texture", "texture"), &PopupMenu::set_submenu_texture);
+	ClassDB::bind_method(D_METHOD("get_submenu_texture"), &PopupMenu::get_submenu_texture);
+
+	ClassDB::bind_method(D_METHOD("set_submenu_mirrored_texture", "texture"), &PopupMenu::set_submenu_mirrored_texture);
+	ClassDB::bind_method(D_METHOD("get_submenu_mirrored_texture"), &PopupMenu::get_submenu_mirrored_texture);
+
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hide_on_item_selection"), "set_hide_on_item_selection", "is_hide_on_item_selection");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hide_on_checkable_item_selection"), "set_hide_on_checkable_item_selection", "is_hide_on_checkable_item_selection");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "hide_on_state_item_selection"), "set_hide_on_state_item_selection", "is_hide_on_state_item_selection");
@@ -2904,6 +2967,20 @@ void PopupMenu::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "allow_search"), "set_allow_search", "get_allow_search");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "system_menu_id", PROPERTY_HINT_ENUM, "None:0,Application Menu:2,Window Menu:3,Help Menu:4,Dock:5"), "set_system_menu", "get_system_menu");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "prefer_native_menu"), "set_prefer_native_menu", "is_prefer_native_menu");
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_texture", "get_checked_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_texture", "get_unchecked_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_disabled_texture", "get_checked_disabled_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_disabled_texture", "get_unchecked_disabled_texture");
+	// radio
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_radio_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_radio_texture", "get_checked_radio_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_radio_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_radio_texture", "get_unchecked_radio_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_radio_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_radio_disabled_texture", "get_checked_radio_disabled_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_radio_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_radio_disabled_texture", "get_unchecked_radio_disabled_texture");
+
+	// submenu
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "submenu_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_submenu_texture", "get_submenu_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "submenu_mirrored_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_submenu_mirrored_texture", "get_submenu_mirrored_texture");
 
 	ADD_ARRAY_COUNT("Items", "item_count", "set_item_count", "get_item_count", "item_");
 

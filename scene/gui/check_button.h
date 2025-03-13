@@ -53,6 +53,21 @@ class CheckButton : public Button {
 		Color button_unchecked_color;
 	} theme_cache;
 
+	struct UserData {
+		Ref<Texture2D> checked;
+		Ref<Texture2D> unchecked;
+
+		Ref<Texture2D> checked_disabled;
+		Ref<Texture2D> unchecked_disabled;
+
+		// 镜像,从右到左
+		Ref<Texture2D> checked_mirrored;
+		Ref<Texture2D> unchecked_mirrored;
+
+		Ref<Texture2D> checked_disabled_mirrored;
+		Ref<Texture2D> unchecked_disabled_mirrored;
+	} user_data;
+
 protected:
 	Size2 get_icon_size() const;
 	virtual Size2 get_minimum_size() const override;
@@ -61,6 +76,54 @@ protected:
 	static void _bind_methods();
 
 public:
+	void set_checked_texture(const Ref<Texture2D> &p_texture) {
+		user_data.checked = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_checked_texture() const {return user_data.checked;}
+
+	void set_unchecked_texture(const Ref<Texture2D> &p_texture) {
+		user_data.unchecked = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_unchecked_texture() const {return user_data.unchecked;}
+
+	void set_checked_disabled_texture(const Ref<Texture2D> &p_texture) {
+		user_data.checked_disabled = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_checked_disabled_texture() const {return user_data.checked_disabled;}
+
+	void set_unchecked_disabled_texture(const Ref<Texture2D> &p_texture) {
+		user_data.unchecked_disabled = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_unchecked_disabled_texture() const {return user_data.unchecked_disabled;}
+
+	void set_checked_mirrored_texture(const Ref<Texture2D> &p_texture) {
+		user_data.checked_mirrored = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_checked_mirrored_texture() const {return user_data.checked_mirrored;}
+
+	void set_unchecked_mirrored_texture(const Ref<Texture2D> &p_texture) {
+		user_data.unchecked_mirrored = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_unchecked_mirrored_texture() const {return user_data.unchecked_mirrored;}
+
+	void set_checked_disabled_mirrored_texture(const Ref<Texture2D> &p_texture) {
+		user_data.checked_disabled_mirrored = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_checked_disabled_mirrored_texture() const {return user_data.checked_disabled_mirrored;}
+
+	void set_unchecked_disabled_mirrored_texture(const Ref<Texture2D> &p_texture) {
+		user_data.unchecked_disabled_mirrored = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_unchecked_disabled_mirrored_texture() const {return user_data.unchecked_disabled_mirrored;}
+
 	CheckButton(const String &p_text = String());
 	~CheckButton();
 };

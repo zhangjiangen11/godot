@@ -3055,6 +3055,15 @@ void Window::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("popup_exclusive_centered_ratio", "from_node", "ratio"), &Window::popup_exclusive_centered_ratio, DEFVAL(0.8));
 	ClassDB::bind_method(D_METHOD("popup_exclusive_centered_clamped", "from_node", "minsize", "fallback_ratio"), &Window::popup_exclusive_centered_clamped, DEFVAL(Size2i()), DEFVAL(0.75));
 
+	ClassDB::bind_method(D_METHOD("set_background_texture", "texture"), &Window::set_background_texture);
+	ClassDB::bind_method(D_METHOD("get_background_texture"), &Window::get_background_texture);
+
+	ClassDB::bind_method(D_METHOD("set_close_texture", "texture"), &Window::set_close_texture);
+	ClassDB::bind_method(D_METHOD("get_close_texture"), &Window::get_close_texture);
+
+	ClassDB::bind_method(D_METHOD("set_close_pressed_texture", "texture"), &Window::set_close_pressed_texture);
+	ClassDB::bind_method(D_METHOD("get_close_pressed_texture"), &Window::get_close_pressed_texture);
+
 	// Keep the enum values in sync with the `Mode` enum.
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "mode", PROPERTY_HINT_ENUM, "Windowed,Minimized,Maximized,Fullscreen,Exclusive Fullscreen"), "set_mode", "get_mode");
 
@@ -3067,6 +3076,10 @@ void Window::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "current_screen", PROPERTY_HINT_RANGE, "0,64,1,or_greater"), "set_current_screen", "get_current_screen");
 
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR2_ARRAY, "mouse_passthrough_polygon"), "set_mouse_passthrough_polygon", "get_mouse_passthrough_polygon");
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT,"background_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_background_texture", "get_background_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT,"close_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_close_texture", "get_close_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT,"close_pressed_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_close_pressed_texture", "get_close_pressed_texture");
 
 	ADD_GROUP("Flags", "");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "visible"), "set_visible", "is_visible");

@@ -221,6 +221,12 @@ private:
 		int resize_margin = 0;
 	} theme_cache;
 
+	struct UserData {
+		Ref<Texture2D> background;
+		Ref<Texture2D> close;
+		Ref<Texture2D> close_pressed;
+	} user_data;
+
 	void _settings_changed();
 
 	Viewport *embedder = nullptr;
@@ -488,6 +494,24 @@ public:
 	virtual DisplayServer::WindowID get_window_id() const override;
 
 	virtual Size2 _get_contents_minimum_size() const;
+
+	void set_background_texture(const Ref<Texture2D> &p_texture) {
+		user_data.background = p_texture;
+		_notify_theme_override_changed();
+	}
+	Ref<Texture2D> get_background_texture() const { return user_data.background; }
+
+	void set_close_texture(const Ref<Texture2D> &p_texture) {
+		user_data.close = p_texture;
+		_notify_theme_override_changed();
+	}
+	Ref<Texture2D> get_close_texture() const { return user_data.close; }
+
+	void set_close_pressed_texture(const Ref<Texture2D> &p_texture) {
+		user_data.close_pressed = p_texture;
+		_notify_theme_override_changed();
+	}
+	Ref<Texture2D> get_close_pressed_texture() const { return user_data.close_pressed; }
 
 	Window();
 	~Window();

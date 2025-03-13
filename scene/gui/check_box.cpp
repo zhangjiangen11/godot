@@ -35,28 +35,68 @@
 Size2 CheckBox::get_icon_size() const {
 	Size2 tex_size = Size2(0, 0);
 	if (theme_cache.checked.is_valid()) {
-		tex_size = theme_cache.checked->get_size();
+		if(user_data.checked.is_valid()){
+			tex_size = user_data.checked->get_size();
+		}
+		else {
+			tex_size = theme_cache.checked->get_size();
+		}
 	}
 	if (theme_cache.unchecked.is_valid()) {
-		tex_size = tex_size.max(theme_cache.unchecked->get_size());
+		if(user_data.unchecked.is_valid()){
+			tex_size = user_data.unchecked->get_size();
+		}
+		else {
+			tex_size = theme_cache.unchecked->get_size();
+		}
 	}
 	if (theme_cache.radio_checked.is_valid()) {
-		tex_size = tex_size.max(theme_cache.radio_checked->get_size());
+		if(user_data.radio_checked.is_valid()){
+			tex_size = user_data.radio_checked->get_size();
+		}
+		else {
+			tex_size = theme_cache.radio_checked->get_size();
+		}
 	}
 	if (theme_cache.radio_unchecked.is_valid()) {
-		tex_size = tex_size.max(theme_cache.radio_unchecked->get_size());
+		if(user_data.radio_unchecked.is_valid()){
+			tex_size = user_data.radio_unchecked->get_size();
+		}
+		else {
+			tex_size = theme_cache.radio_unchecked->get_size();
+		}
 	}
 	if (theme_cache.checked_disabled.is_valid()) {
-		tex_size = tex_size.max(theme_cache.checked_disabled->get_size());
+		if(user_data.checked_disabled.is_valid()){
+			tex_size = user_data.checked_disabled->get_size();
+		}
+		else {
+			tex_size = theme_cache.checked_disabled->get_size();
+		}
 	}
 	if (theme_cache.unchecked_disabled.is_valid()) {
-		tex_size = tex_size.max(theme_cache.unchecked_disabled->get_size());
+		if(user_data.unchecked_disabled.is_valid()){
+			tex_size = user_data.unchecked_disabled->get_size();
+		}
+		else {
+			tex_size = theme_cache.unchecked_disabled->get_size();
+		}
 	}
 	if (theme_cache.radio_checked_disabled.is_valid()) {
-		tex_size = tex_size.max(theme_cache.radio_checked_disabled->get_size());
+		if(user_data.radio_checked_disabled.is_valid()){
+			tex_size = user_data.radio_checked_disabled->get_size();
+		}
+		else {
+			tex_size = theme_cache.radio_checked_disabled->get_size();
+		}
 	}
 	if (theme_cache.radio_unchecked_disabled.is_valid()) {
-		tex_size = tex_size.max(theme_cache.radio_unchecked_disabled->get_size());
+		if(user_data.radio_unchecked_disabled.is_valid()){
+			tex_size = user_data.radio_unchecked_disabled->get_size();
+		}
+		else {
+			tex_size = theme_cache.radio_unchecked_disabled->get_size();
+		}
 	}
 	return _fit_icon_size(tex_size);
 }
@@ -103,17 +143,41 @@ void CheckBox::_notification(int p_what) {
 				if (is_disabled()) {
 					on_tex = theme_cache.radio_checked_disabled;
 					off_tex = theme_cache.radio_unchecked_disabled;
+					if(user_data.radio_checked_disabled.is_valid()){
+						on_tex = user_data.radio_checked_disabled;
+					}
+					if(user_data.radio_unchecked_disabled.is_valid()){
+						off_tex = user_data.radio_unchecked_disabled;
+					}
 				} else {
 					on_tex = theme_cache.radio_checked;
 					off_tex = theme_cache.radio_unchecked;
+					if(user_data.radio_checked.is_valid()){
+						on_tex = user_data.radio_checked;
+					}
+					if(user_data.radio_unchecked.is_valid()){
+						off_tex = user_data.radio_unchecked;
+					}
 				}
 			} else {
 				if (is_disabled()) {
 					on_tex = theme_cache.checked_disabled;
 					off_tex = theme_cache.unchecked_disabled;
+					if(user_data.checked_disabled.is_valid()){
+						on_tex = user_data.checked_disabled;
+					}
+					if(user_data.unchecked_disabled.is_valid()){
+						off_tex = user_data.unchecked_disabled;
+					}
 				} else {
 					on_tex = theme_cache.checked;
 					off_tex = theme_cache.unchecked;
+					if(user_data.checked.is_valid()){
+						on_tex = user_data.checked;
+					}
+					if(user_data.unchecked.is_valid()){
+						off_tex = user_data.unchecked;
+					}
 				}
 			}
 
@@ -139,6 +203,42 @@ bool CheckBox::is_radio() {
 }
 
 void CheckBox::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_checked_texture", "texture"), &CheckBox::set_checked_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_texture"), &CheckBox::get_checked_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_texture", "texture"), &CheckBox::set_unchecked_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_texture"), &CheckBox::get_unchecked_texture);
+
+	ClassDB::bind_method(D_METHOD("set_checked_disabled_texture", "texture"), &CheckBox::set_checked_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_disabled_texture"), &CheckBox::get_checked_disabled_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_disabled_texture", "texture"), &CheckBox::set_unchecked_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_disabled_texture"), &CheckBox::get_unchecked_disabled_texture);
+
+	// radio
+	ClassDB::bind_method(D_METHOD("set_checked_radio_texture", "texture"), &CheckBox::set_checked_radio_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_radio_texture"), &CheckBox::get_checked_radio_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_radio_texture", "texture"), &CheckBox::set_unchecked_radio_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_radio_texture"), &CheckBox::get_unchecked_radio_texture);
+
+	ClassDB::bind_method(D_METHOD("set_checked_radio_disabled_texture", "texture"), &CheckBox::set_checked_radio_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_checked_radio_disabled_texture"), &CheckBox::get_checked_radio_disabled_texture);
+
+	ClassDB::bind_method(D_METHOD("set_unchecked_radio_disabled_texture", "texture"), &CheckBox::set_unchecked_radio_disabled_texture);
+	ClassDB::bind_method(D_METHOD("get_unchecked_radio_disabled_texture"), &CheckBox::get_unchecked_radio_disabled_texture);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_texture", "get_checked_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_texture", "get_unchecked_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_disabled_texture", "get_checked_disabled_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_disabled_texture", "get_unchecked_disabled_texture");
+	// radio
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_radio_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_radio_texture", "get_checked_radio_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_radio_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_radio_texture", "get_unchecked_radio_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "checked_radio_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_checked_radio_disabled_texture", "get_checked_radio_disabled_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "unchecked_radio_disabled_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_unchecked_radio_disabled_texture", "get_unchecked_radio_disabled_texture");
+
+
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, CheckBox, h_separation);
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, CheckBox, check_v_offset);
 	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, CheckBox, normal_style, "normal");

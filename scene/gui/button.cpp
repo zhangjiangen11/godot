@@ -223,11 +223,21 @@ void Button::_notification(int p_what) {
 			Ref<StyleBox> style = _get_current_stylebox();
 			// Draws the stylebox in the current state.
 			if (!flat) {
-				style->draw(ci, Rect2(Point2(), size));
+				if(user_data.background.is_valid()){
+					user_data.background->draw_rect(ci, Rect2(Point2(), size));
+				}
+				else {
+					style->draw(ci, Rect2(Point2(), size));
+				}
 			}
 
 			if (has_focus()) {
-				theme_cache.focus->draw(ci, Rect2(Point2(), size));
+				if(user_data.focus.is_valid()){
+					user_data.focus->draw_rect(ci, Rect2(Point2(), size));
+				}
+				else {
+					theme_cache.focus->draw(ci, Rect2(Point2(), size));
+				}
 			}
 
 			Ref<Texture2D> _icon = icon;
@@ -785,6 +795,12 @@ void Button::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_expand_icon", "enabled"), &Button::set_expand_icon);
 	ClassDB::bind_method(D_METHOD("is_expand_icon"), &Button::is_expand_icon);
 
+	ClassDB::bind_method(D_METHOD("set_background_texture", "texture"), &Button::set_background_texture);
+	ClassDB::bind_method(D_METHOD("get_background_texture"), &Button::get_background_texture);
+
+	ClassDB::bind_method(D_METHOD("set_focus_texture", "texture"), &Button::set_focus_texture);
+	ClassDB::bind_method(D_METHOD("get_focus_texture"), &Button::get_focus_texture);
+
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_button_icon", "get_button_icon");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flat"), "set_flat", "is_flat");
@@ -796,6 +812,8 @@ void Button::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "clip_text"), "set_clip_text", "get_clip_text");
 
 	ADD_GROUP("Icon Behavior", "");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "background_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_background_texture", "get_background_texture");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "focus_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_focus_texture", "get_focus_texture");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "icon_alignment", PROPERTY_HINT_ENUM, "Left,Center,Right"), "set_icon_alignment", "get_icon_alignment");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "vertical_icon_alignment", PROPERTY_HINT_ENUM, "Top,Center,Bottom"), "set_vertical_icon_alignment", "get_vertical_icon_alignment");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "expand_icon"), "set_expand_icon", "is_expand_icon");

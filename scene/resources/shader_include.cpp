@@ -81,6 +81,24 @@ void ShaderInclude::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "code", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_code", "get_code");
 }
 
+// ShaderTemplate
+
+void ShaderTemplate::set_code(const String &p_code) {
+	code = p_code;
+}
+
+String ShaderTemplate::get_code() const {
+	return code;
+}
+
+
+void ShaderTemplate::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_code", "code"), &ShaderTemplate::set_code);
+	ClassDB::bind_method(D_METHOD("get_code"), &ShaderTemplate::get_code);
+
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "code", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_code", "get_code");
+}
+
 // ResourceFormatLoaderShaderInclude
 
 Ref<Resource> ResourceFormatLoaderShaderInclude::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
@@ -158,3 +176,83 @@ void ResourceFormatSaverShaderInclude::get_recognized_extensions(const Ref<Resou
 bool ResourceFormatSaverShaderInclude::recognize(const Ref<Resource> &p_resource) const {
 	return p_resource->get_class_name() == "ShaderInclude"; //only shader, not inherited
 }
+
+
+
+// ResourceFormatLoaderShaderTemplate
+
+Ref<Resource> ResourceFormatLoaderShaderTemplate::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
+	if (r_error) {
+		*r_error = ERR_FILE_CANT_OPEN;
+	}
+
+	Error error = OK;
+	Vector<uint8_t> buffer = FileAccess::get_file_as_bytes(p_path, &error);
+	ERR_FAIL_COND_V_MSG(error, nullptr, "Cannot load shader template: " + p_path);
+
+	String str;
+	if (buffer.size() > 0) {
+		error = str.parse_utf8((const char *)buffer.ptr(), buffer.size());
+		ERR_FAIL_COND_V_MSG(error, nullptr, "Cannot parse shader template: " + p_path);
+	}
+
+	Ref<ShaderTemplate> shader_inc;
+	shader_inc.instantiate();
+
+	shader_inc->set_code(str);
+
+	if (r_error) {
+		*r_error = OK;
+	}
+
+	return shader_inc;
+}
+
+void ResourceFormatLoaderShaderTemplate::get_recognized_extensions(List<String> *p_extensions) const {
+	p_extensions->push_back("gdshadertmp");
+}
+
+bool ResourceFormatLoaderShaderTemplate::handles_type(const String &p_type) const {
+	return (p_type == "ShaderTemplate");
+}
+
+String ResourceFormatLoaderShaderTemplate::get_resource_type(const String &p_path) const {
+	String extension = p_path.get_extension().to_lower();
+	if (extension == "gdshadertmp") {
+		return "ShaderTemplate";
+	}
+	return "";
+}
+
+// ResourceFormatSaverShaderInclude
+
+Error ResourceFormatSaverShaderTemplate::save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags) {
+	Ref<ShaderInclude> shader_inc = p_resource;
+	ERR_FAIL_COND_V(shader_inc.is_null(), ERR_INVALID_PARAMETER);
+
+	String source = shader_inc->get_code();
+
+	Error error;
+	Ref<FileAccess> file = FileAccess::open(p_path, FileAccess::WRITE, &error);
+
+	ERR_FAIL_COND_V_MSG(error, error, "Cannot save shader template '" + p_path + "'.");
+
+	file->store_string(source);
+	if (file->get_error() != OK && file->get_error() != ERR_FILE_EOF) {
+		return ERR_CANT_CREATE;
+	}
+
+	return OK;
+}
+
+void ResourceFormatSaverShaderTemplate::get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions) const {
+	const ShaderTemplate *shader_inc = Object::cast_to<ShaderTemplate>(*p_resource);
+	if (shader_inc != nullptr) {
+		p_extensions->push_back("gdshadertmp");
+	}
+}
+
+bool ResourceFormatSaverShaderTemplate::recognize(const Ref<Resource> &p_resource) const {
+	return p_resource->get_class_name() == "ShaderTemplate"; //only shader, not inherited
+}
+

@@ -209,6 +209,12 @@ private:
 		float base_scale = 1.0;
 	} theme_cache;
 
+	struct UserData {
+		Ref<Texture2D> background;
+		Ref<Texture2D> background_read_only;
+		Ref<Texture2D> focus;
+	} user_data;
+
 	void _close_ime_window();
 	void _update_ime_window_position();
 
@@ -398,6 +404,24 @@ public:
 
 	void set_right_icon(const Ref<Texture2D> &p_icon);
 	Ref<Texture2D> get_right_icon();
+
+	void set_background_texture(const Ref<Texture2D> &p_texture) {
+		user_data.background = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_background_texture() const { return user_data.background; }
+
+	void set_background_read_only_texture(const Ref<Texture2D> &p_texture) {
+		user_data.background_read_only = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_background_read_only_texture() const { return user_data.background_read_only; }
+
+	void set_focus_texture(const Ref<Texture2D> &p_texture) {
+		user_data.focus = p_texture;
+		queue_redraw();
+	}
+	Ref<Texture2D> get_focus_texture() const { return user_data.focus; }
 
 	void set_flat(bool p_enabled);
 	bool is_flat() const;

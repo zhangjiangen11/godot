@@ -205,6 +205,26 @@ class PopupMenu : public Popup {
 		Color font_separator_outline_color;
 	} theme_cache;
 
+	
+	struct UserData
+	{
+		Ref<Texture2D> checked;
+		Ref<Texture2D> unchecked;
+
+		Ref<Texture2D> radio_checked;
+		Ref<Texture2D> radio_unchecked;
+
+		Ref<Texture2D> checked_disabled;
+		Ref<Texture2D> unchecked_disabled;
+
+		Ref<Texture2D> radio_checked_disabled;
+		Ref<Texture2D> radio_unchecked_disabled;
+
+		
+		Ref<Texture2D> submenu;
+		Ref<Texture2D> submenu_mirrored;
+	} user_data;
+
 	void _draw_items();
 
 	void _minimum_lifetime_timeout();
@@ -380,6 +400,88 @@ public:
 
 	virtual void popup(const Rect2i &p_bounds = Rect2i()) override;
 	virtual void set_visible(bool p_visible) override;
+public:
+	void set_checked_texture(const Ref<Texture2D> &p_texture) {
+		user_data.checked = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_checked_texture() const {return user_data.checked;}
+	
+	void set_unchecked_texture(const Ref<Texture2D> &p_texture) {
+		user_data.unchecked = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_unchecked_texture() const {return user_data.unchecked;}
+	
+	void set_checked_disabled_texture(const Ref<Texture2D> &p_texture) {
+		user_data.checked_disabled = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_checked_disabled_texture() const {return user_data.checked_disabled;}
+	
+	void set_unchecked_disabled_texture(const Ref<Texture2D> &p_texture) {
+		user_data.unchecked_disabled = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_unchecked_disabled_texture() const {return user_data.unchecked_disabled;}
+	
+	// radio
+	void set_checked_radio_texture(const Ref<Texture2D> &p_texture) {
+		user_data.radio_checked = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_checked_radio_texture() const {return user_data.radio_checked;}
+	
+	void set_unchecked_radio_texture(const Ref<Texture2D> &p_texture) {
+		user_data.radio_unchecked = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_unchecked_radio_texture() const {return user_data.radio_unchecked;}
+	
+	void set_checked_radio_disabled_texture(const Ref<Texture2D> &p_texture) {
+		user_data.radio_checked_disabled = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_checked_radio_disabled_texture() const {return user_data.radio_checked_disabled;}
+	
+	void set_unchecked_radio_disabled_texture(const Ref<Texture2D> &p_texture) {
+		user_data.radio_unchecked_disabled = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_unchecked_radio_disabled_texture() const {return user_data.radio_unchecked_disabled;}
+
+	void set_submenu_texture(const Ref<Texture2D> &p_texture) {
+		user_data.submenu = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_submenu_texture() const {return user_data.submenu;}
+
+		
+	void set_submenu_mirrored_texture(const Ref<Texture2D> &p_texture) {
+		user_data.submenu_mirrored = p_texture;
+		control->queue_redraw();
+		child_controls_changed();
+		_menu_changed();
+	}
+	Ref<Texture2D> get_submenu_mirrored_texture() const {return user_data.submenu_mirrored;}
 
 	PopupMenu();
 	~PopupMenu();
