@@ -75,16 +75,16 @@ public:
 
 protected:
     void load();
+    ~HeightMapProcessShader();
 private:
-    String code_file_path;
     Ref<HeightMapTemplateShader> template_shader;
-    Array params;
-    bool is_inv_blend_value = false;
-    String function_code;
-    String process_code;
     Ref<RDShaderFile> process_shader_file;
 
     Ref<Shader> priview_shader;
+    Array params;
+    String code_file_path;
+    String function_code;
+    String process_code;
     int64_t code_file_path_time = -1;
 
     bool is_error = false;

@@ -118,46 +118,49 @@ void HeightMapProcessShader::load() {
         is_error = true;
 		ERR_FAIL_COND_MSG(code.is_empty(), code_file_path + ": file not exist");
     }
-    code = code.remove_char(' ').remove_char('\r').remove_char('\t');
+    code = code.remove_annotate().remove_char(' ').remove_char('\r').remove_char('\t');
     Vector<String> lines = code.split("$$",false);
 
-    if(lines.size() != 4) {
+    if(lines.size() != 3) {
         is_error = true;
-		ERR_FAIL_COND_MSG(lines.size() != 4, code_file_path + L": 格式錯誤，請檢查，必須存在$$分隔符號，格式為[is_inv_blend_value:(true|false)]\n$$[params_a:(name,value,min,max);params_b;...]\n$$[function_code]\n$$[process_code]");
+		ERR_FAIL_COND_MSG(lines.size() != 3, code_file_path + L": 格式錯誤，請檢查，必須存在$$分隔符號，格式為[params_a:(name,value,min,max);params_b;...]\n$$[function_code]\n$$[process_code]");
     }
 
-    String _is_inv_blend_value = lines[0].remove_char('\n');
-    String _params = lines[1];
-    function_code = lines[2];
-    process_code = lines[3];
+    String _params = lines[0];
+    function_code = lines[1];
+    process_code = lines[2];
+  
 
-    if(_is_inv_blend_value == "true" || _is_inv_blend_value == "1") {
-        this->is_inv_blend_value = true;
-    } else {
-        this->is_inv_blend_value = false;
-    }      
+    Vector<String> params_list = _params.split("\n", false);
 
-    Vector<String> params_list = _params.split(";",false);
-
-    if(params_list.size()  > 32) {
-        is_error = true;
-		ERR_FAIL_COND_MSG(params_list.size()  > 32, code_file_path + L": params數量過多,最多32個");
-    }
 
     for(int i=0;i<params_list.size();i++) {
-        Vector<String> param = params_list[i].split(":",false);
+        Vector<String> param = params_list[i].remove_char(';').split(",", false);
+		if (param.size() == 0) {
+			continue;
+		}
         if(param.size() != 4) {
             is_error = true;                
 			ERR_FAIL_COND_MSG(param.size() != 2, code_file_path + L": params格式錯誤[name,value,min,max]請檢查 " + String::num_int64(i) + ":" + params_list[i]);
         }
 
         Dictionary param_dict;
-        param_dict["name"] = param[0];
+        param_dict["arg_name"] = param[0];
         param_dict["value"] = param[1].to_float();
         param_dict["min"] = param[2].to_float();
         param_dict["max"] = param[3].to_float();
+
+        param_dict["name"] = String("shader_param/") + param[0];
+        param_dict["type"] = Variant::FLOAT;
+        param_dict["hint"] = PROPERTY_HINT_RANGE;
+        param_dict["usage"] = PROPERTY_USAGE_DEFAULT;
+        param_dict["hint_string"] = param[2] + "," + param[3] + ",0.01";
         params.push_back(param_dict);
     }
+	if (params.size() > 32) {
+		is_error = true;
+		ERR_FAIL_COND_MSG(params.size() > 32, code_file_path + L": params數量過多,最多32個");
+	}
 
     if(process_shader_file.is_null()) {
         process_shader_file.instantiate();
@@ -167,7 +170,7 @@ void HeightMapProcessShader::load() {
     String params_str;
     for(int i=0;i<params.size();i++) {
 		Dictionary param_dict = params[i];
-        params_str += "#define " + (String)param_dict["name"] + " " + "(blendparameters.arg[" + String::num_int64(i) + "])" + "\n";
+        params_str += "#define " + (String)param_dict["arg_name"] + " " + "(blendparameters.arg[" + String::num_int64(i) + "])" + "\n";
     }
 
 
@@ -179,7 +182,7 @@ void HeightMapProcessShader::load() {
     String base_path = template_shader->get_process_file_path().get_base_dir();
 
     err = process_shader_file->parse_versions_from_text(file_txt
-        , is_inv_blend_value ? "#define BLEND_INV_VALUE_DEFINE 1\n" : "#define BLEND_INV_VALUE_DEFINE 0\n" 
+        , "#define PROCESS_SHADER"
         , _include_function, &base_path);
 
     if (err != OK) {
@@ -191,13 +194,13 @@ void HeightMapProcessShader::load() {
     params_str = "";
     for(int i=0;i<params.size();i++) {
 		Dictionary param_dict = params[i];
-        params_str += "uniform float " + (String)param_dict["name"] + " : hint_range(" + String::num_int64(param_dict["min"]) + ", " + String::num_int64(param_dict["max"]) + ") = " + String::num_int64(param_dict["value"])  + "\n";
+        params_str += "uniform float " + (String)param_dict["arg_name"] + " : hint_range(" + String::num_int64(param_dict["min"]) + ", " + String::num_int64(param_dict["max"]) + ") = " + String::num_int64(param_dict["value"])  + "\n";
     }
     file_txt = file_txt.replace("//@BLEND_PARAMETER_RENAME",params_str);
     file_txt = file_txt.replace("//@BLEND_FUNCTION",function_code);
     file_txt = file_txt.replace("//@BLEND_CODE",process_code);
     err = process_shader_file->parse_versions_from_text(file_txt
-        , is_inv_blend_value ? "#define BLEND_INV_VALUE_DEFINE 1\n" : "#define BLEND_INV_VALUE_DEFINE 0\n" 
+        , "#define PRIVATE_SHADER"
         , _include_function, &base_path);
     if (err != OK) {
         is_error = true;
@@ -212,5 +215,11 @@ void HeightMapProcessShader::load() {
 
 	emit_signal(CoreStringName(changed));
 
+}
+HeightMapProcessShader::~HeightMapProcessShader() {
+    if(template_shader.is_valid()) {
+        template_shader->disconnect(CoreStringName(changed),callable_mp(this, &HeightMapProcessShader::on_template_changed));
+    }
+    template_shader = nullptr;
 }
 #endif

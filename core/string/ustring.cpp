@@ -1924,8 +1924,8 @@ static void remove_mult_ampersand(const char32_t* p_string, char32_t* p_out_stri
 		
 	while(index + 1 < size) {
 		if(p_string[index ] == '*' && p_string[index + 1] == '/') {
-			p_out_string[index] = p_string[index];
-			p_out_string[index + 1] = p_string[index + 1];
+			p_out_string[index] = ' ';
+			p_out_string[index + 1] = ' ';
 			index += 2;
 			break;
 		}
@@ -1952,15 +1952,15 @@ String String::remove_annotate() const {
 		if(p_source_code[index] == '/') {
 			if(index + 1 < code_size) {
 				if(p_source_code[index + 1] == '/') {
-					code[index] = p_source_code[index];
-					code[index + 1] = p_source_code[index + 1];
+					code[index] = ' ';
+					code[index + 1] = ' ';
 					index += 2;
 					remove_single_ampersand(p_source_code,code, index,code_size);
 					continue;
 				}
 				else if(p_source_code[index + 1] == '*') {
-					code[index] = p_source_code[index];
-					code[index + 1] = p_source_code[index + 1];
+					code[index] = ' ';
+					code[index + 1] = ' ';
 					index += 2;
 					remove_mult_ampersand(p_source_code,code, index,code_size);
 					continue;
