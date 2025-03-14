@@ -77,15 +77,12 @@ bool AnimationMixer::_set(const StringName &p_name, const Variant &p_value) {
 		while (animation_libraries.size()) {
 			remove_animation_library(animation_libraries[0].name);
 		}
-		List<Variant> keys;
-		d.get_key_list(&keys);
-		for (const Variant &K : keys) {
-			StringName lib_name = K;
-			Ref<AnimationLibrary> lib = d[lib_name];
+		for (const KeyValue<Variant, Variant> &kv : d) {
+			Ref<AnimationLibrary> lib = kv.value;
 			if (lib.is_null()) {
 				continue;
 			}
-			add_animation_library(lib_name, lib);
+			add_animation_library(kv.key, lib);
 		}
 		emit_signal(SNAME("animation_libraries_updated"));
 
