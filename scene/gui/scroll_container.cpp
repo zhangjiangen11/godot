@@ -376,11 +376,21 @@ void ScrollContainer::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_DRAW: {
-			draw_style_box(theme_cache.panel_style, Rect2(Vector2(), get_size()));
+			if(user_data.background.is_valid()){
+				user_data.background->draw_rect(get_canvas_item(), Rect2(Point2(), get_size()));
+			}
+			else {
+				draw_style_box(theme_cache.panel_style, Rect2(Point2(), get_size()));
+			}
 			if (draw_focus_border && (has_focus() || child_has_focus())) {
 				RID ci = get_canvas_item();
 				RenderingServer::get_singleton()->canvas_item_add_clip_ignore(ci, true);
-				draw_style_box(theme_cache.focus_style, Rect2(Point2(), get_size()));
+				if(user_data.background_focus.is_valid()){
+					user_data.background_focus->draw_rect(get_canvas_item(), Rect2(Point2(), get_size()));
+				}
+				else {
+					draw_style_box(theme_cache.focus_style, Rect2(Point2(), get_size()));
+				}
 				RenderingServer::get_singleton()->canvas_item_add_clip_ignore(ci, false);
 				focus_border_is_drawn = true;
 			} else {
@@ -625,11 +635,115 @@ void ScrollContainer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_draw_focus_border", "draw"), &ScrollContainer::set_draw_focus_border);
 	ClassDB::bind_method(D_METHOD("get_draw_focus_border"), &ScrollContainer::get_draw_focus_border);
 
+	ClassDB::bind_method(D_METHOD("set_background", "texture"), &ScrollContainer::set_background);
+	ClassDB::bind_method(D_METHOD("get_background"), &ScrollContainer::get_background);
+
+	ClassDB::bind_method(D_METHOD("set_background_focus", "texture"), &ScrollContainer::set_background_focus);
+	ClassDB::bind_method(D_METHOD("get_background_focus"), &ScrollContainer::get_background_focus);
+
+	// hscroll bar
+	ClassDB::bind_method(D_METHOD("set_h_sb_background", "texture"), &ScrollContainer::set_h_sb_background);
+	ClassDB::bind_method(D_METHOD("get_h_sb_background"), &ScrollContainer::get_h_sb_background);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_background_focus", "texture"), &ScrollContainer::set_h_sb_background_focus);
+	ClassDB::bind_method(D_METHOD("get_h_sb_background_focus"), &ScrollContainer::get_h_sb_background_focus);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_increment", "texture"), &ScrollContainer::set_h_sb_increment);
+	ClassDB::bind_method(D_METHOD("get_h_sb_increment"), &ScrollContainer::get_h_sb_increment);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_increment_hl", "texture"), &ScrollContainer::set_h_sb_increment_hl);
+	ClassDB::bind_method(D_METHOD("get_h_sb_increment_hl"), &ScrollContainer::get_h_sb_increment_hl);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_increment_pressed", "texture"), &ScrollContainer::set_h_sb_increment_pressed);
+	ClassDB::bind_method(D_METHOD("get_h_sb_increment_pressed"), &ScrollContainer::get_h_sb_increment_pressed);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_decrement", "texture"), &ScrollContainer::set_h_sb_decrement);
+	ClassDB::bind_method(D_METHOD("get_h_sb_decrement"), &ScrollContainer::get_h_sb_decrement);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_decrement_hl", "texture"), &ScrollContainer::set_h_sb_decrement_hl);
+	ClassDB::bind_method(D_METHOD("get_h_sb_decrement_hl"), &ScrollContainer::get_h_sb_decrement_hl);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_decrement_pressed", "texture"), &ScrollContainer::set_h_sb_decrement_pressed);
+	ClassDB::bind_method(D_METHOD("get_h_sb_decrement_pressed"), &ScrollContainer::get_h_sb_decrement_pressed);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_grabber", "texture"), &ScrollContainer::set_h_sb_grabber);
+	ClassDB::bind_method(D_METHOD("get_h_sb_grabber"), &ScrollContainer::get_h_sb_grabber);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_grabber_hl", "texture"), &ScrollContainer::set_h_sb_grabber_hl);
+	ClassDB::bind_method(D_METHOD("get_h_sb_grabber_hl"), &ScrollContainer::get_h_sb_grabber_hl);
+
+	ClassDB::bind_method(D_METHOD("set_h_sb_grabber_pressed", "texture"), &ScrollContainer::set_h_sb_grabber_pressed);
+	ClassDB::bind_method(D_METHOD("get_h_sb_grabber_pressed"), &ScrollContainer::get_h_sb_grabber_pressed);
+
+	// vscroll bar
+	ClassDB::bind_method(D_METHOD("set_v_sb_background", "texture"), &ScrollContainer::set_v_sb_background);
+	ClassDB::bind_method(D_METHOD("get_v_sb_background"), &ScrollContainer::get_v_sb_background);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_background_focus", "texture"), &ScrollContainer::set_v_sb_background_focus);
+	ClassDB::bind_method(D_METHOD("get_v_sb_background_focus"), &ScrollContainer::get_v_sb_background_focus);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_increment", "texture"), &ScrollContainer::set_v_sb_increment);
+	ClassDB::bind_method(D_METHOD("get_v_sb_increment"), &ScrollContainer::get_v_sb_increment);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_increment_hl", "texture"), &ScrollContainer::set_v_sb_increment_hl);
+	ClassDB::bind_method(D_METHOD("get_v_sb_increment_hl"), &ScrollContainer::get_v_sb_increment_hl);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_increment_pressed", "texture"), &ScrollContainer::set_v_sb_increment_pressed);
+	ClassDB::bind_method(D_METHOD("get_v_sb_increment_pressed"), &ScrollContainer::get_v_sb_increment_pressed);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_decrement", "texture"), &ScrollContainer::set_v_sb_decrement);
+	ClassDB::bind_method(D_METHOD("get_v_sb_decrement"), &ScrollContainer::get_v_sb_decrement);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_decrement_hl", "texture"), &ScrollContainer::set_v_sb_decrement_hl);
+	ClassDB::bind_method(D_METHOD("get_v_sb_decrement_hl"), &ScrollContainer::get_v_sb_decrement_hl);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_decrement_pressed", "texture"), &ScrollContainer::set_v_sb_decrement_pressed);
+	ClassDB::bind_method(D_METHOD("get_v_sb_decrement_pressed"), &ScrollContainer::get_v_sb_decrement_pressed);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_grabber", "texture"), &ScrollContainer::set_v_sb_grabber);
+	ClassDB::bind_method(D_METHOD("get_v_sb_grabber"), &ScrollContainer::get_v_sb_grabber);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_grabber_hl", "texture"), &ScrollContainer::set_v_sb_grabber_hl);
+	ClassDB::bind_method(D_METHOD("get_v_sb_grabber_hl"), &ScrollContainer::get_v_sb_grabber_hl);
+
+	ClassDB::bind_method(D_METHOD("set_v_sb_grabber_pressed", "texture"), &ScrollContainer::set_v_sb_grabber_pressed);
+	ClassDB::bind_method(D_METHOD("get_v_sb_grabber_pressed"), &ScrollContainer::get_v_sb_grabber_pressed);
+
 	ADD_SIGNAL(MethodInfo("scroll_started"));
 	ADD_SIGNAL(MethodInfo("scroll_ended"));
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "follow_focus"), "set_follow_focus", "is_following_focus");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "draw_focus_border"), "set_draw_focus_border", "get_draw_focus_border");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "background", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_background", "get_background");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "background_focus", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_background_focus", "get_background_focus");
+
+	ADD_GROUP("H Scroll Icon", "h_sb_");
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_background", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_background", "get_h_sb_background");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_background_focus", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_background_focus", "get_h_sb_background_focus");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_increment", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_increment", "get_h_sb_increment");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_increment_hl", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_increment_hl", "get_h_sb_increment_hl");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_increment_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_increment_pressed", "get_h_sb_increment_pressed");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_decrement", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_decrement", "get_h_sb_decrement");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_decrement_hl", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_decrement_hl", "get_h_sb_decrement_hl");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_decrement_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_decrement_pressed", "get_h_sb_decrement_pressed");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_grabber", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_grabber", "get_h_sb_grabber");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_grabber_hl", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_grabber_hl", "get_h_sb_grabber_hl");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "h_sb_grabber_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_h_sb_grabber_pressed", "get_h_sb_grabber_pressed");
+	
+	ADD_GROUP("V Scroll Icon", "v_sb_");
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_background", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_background", "get_v_sb_background");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_background_focus", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_background_focus", "get_v_sb_background_focus");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_increment", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_increment", "get_v_sb_increment");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_increment_hl", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_increment_hl", "get_v_sb_increment_hl");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_increment_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_increment_pressed", "get_v_sb_increment_pressed");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_decrement", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_decrement", "get_v_sb_decrement");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_decrement_hl", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_decrement_hl", "get_v_sb_decrement_hl");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_decrement_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_decrement_pressed", "get_v_sb_decrement_pressed");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_grabber", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_grabber", "get_v_sb_grabber");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_grabber_hl", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_grabber_hl", "get_v_sb_grabber_hl");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "v_sb_grabber_pressed", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D", PROPERTY_USAGE_EDITOR), "set_v_sb_grabber_pressed", "get_v_sb_grabber_pressed");
 
 	ADD_GROUP("Scroll", "scroll_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "scroll_horizontal", PROPERTY_HINT_NONE, "suffix:px"), "set_h_scroll", "get_h_scroll");

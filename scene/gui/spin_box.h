@@ -132,6 +132,20 @@ class SpinBox : public Range {
 #endif
 	} theme_cache;
 
+	struct UserData {
+		// Updown icon.
+		Ref<Texture2D> updown_icon;
+		Ref<Texture2D> up_icon;
+		Ref<Texture2D> up_hover_icon;
+		Ref<Texture2D> up_pressed_icon;
+		Ref<Texture2D> up_disabled_icon;
+		// Down icon.
+		Ref<Texture2D> down_icon;
+		Ref<Texture2D> down_hover_icon;
+		Ref<Texture2D> down_pressed_icon;
+		Ref<Texture2D> down_disabled_icon;
+	} user_data;
+
 	void _mouse_exited();
 	void _update_buttons_state_for_current_value();
 	void _set_step_no_signal(double p_step);

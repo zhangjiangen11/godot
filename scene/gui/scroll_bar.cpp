@@ -231,28 +231,57 @@ void ScrollBar::_notification(int p_what) {
 
 			if (decr_active) {
 				decr = theme_cache.decrement_pressed_icon;
+				if(user_data.decrement_pressed.is_valid()){
+					decr = user_data.decrement_pressed;
+				}
 			} else if (highlight == HIGHLIGHT_DECR) {
 				decr = theme_cache.decrement_hl_icon;
+				if(user_data.decrement_hl.is_valid()){
+					decr = user_data.decrement_hl;
+				}
 			} else {
 				decr = theme_cache.decrement_icon;
+				if(user_data.decrement.is_valid()){
+					decr = user_data.decrement;
+				}
 			}
 
 			if (incr_active) {
 				incr = theme_cache.increment_pressed_icon;
+				if(user_data.increment_pressed.is_valid()){
+					incr = user_data.increment_pressed;
+				}
 			} else if (highlight == HIGHLIGHT_INCR) {
 				incr = theme_cache.increment_hl_icon;
+				if(user_data.increment_hl.is_valid()){
+					incr = user_data.increment_hl;
+				}
 			} else {
 				incr = theme_cache.increment_icon;
+				if(user_data.increment.is_valid()){
+					incr = user_data.increment;
+				}
 			}
 
 			Ref<StyleBox> grabber;
+			Ref<Texture2D> grabber_texture;
 			if (drag.active) {
 				grabber = theme_cache.grabber_pressed_style;
+				if(user_data.grabber_pressed.is_valid()){
+					grabber_texture = user_data.grabber_pressed;
+				}
 			} else if (highlight == HIGHLIGHT_RANGE) {
 				grabber = theme_cache.grabber_hl_style;
+				if(user_data.grabber_hl.is_valid()){
+					grabber_texture = user_data.grabber_hl;
+				}
 			} else {
 				grabber = theme_cache.grabber_style;
+				if(user_data.grabber.is_valid()){
+					grabber_texture = user_data.grabber;
+				}
 			}
+
 
 			Point2 ofs;
 
@@ -273,9 +302,19 @@ void ScrollBar::_notification(int p_what) {
 			}
 
 			if (has_focus()) {
-				theme_cache.scroll_focus_style->draw(ci, Rect2(ofs, area));
+				if(user_data.background_focus.is_valid()){
+					user_data.background_focus->draw_rect(ci, Rect2(ofs, area));
+				}
+				else {
+					theme_cache.scroll_focus_style->draw(ci, Rect2(ofs, area));
+				}
 			} else {
-				theme_cache.scroll_style->draw(ci, Rect2(ofs, area));
+				if(user_data.background.is_valid()){
+					user_data.background->draw_rect(ci, Rect2(ofs, area));
+				}
+				else {
+					theme_cache.scroll_style->draw(ci, Rect2(ofs, area));
+				}
 			}
 
 			if (orientation == HORIZONTAL) {
@@ -298,8 +337,12 @@ void ScrollBar::_notification(int p_what) {
 				grabber_rect.position.y = get_grabber_offset() + decr->get_height() + theme_cache.scroll_style->get_margin(SIDE_TOP);
 				grabber_rect.position.x = 0;
 			}
-
-			grabber->draw(ci, grabber_rect);
+			if(grabber_texture.is_valid()){
+				grabber_texture->draw_rect(ci, grabber_rect);
+			}
+			else {
+				grabber->draw(ci, grabber_rect);
+			}
 		} break;
 
 		case NOTIFICATION_ENTER_TREE: {

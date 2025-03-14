@@ -61,6 +61,12 @@ protected:
 	GDVIRTUAL6C(_draw_rect_region, RID, Rect2, Rect2, Color, bool, bool)
 
 public:
+	// The texture fill mode used by [method fill_texture].
+	enum FillMode{
+		STRETCH,  // Stretch or compress each patch to cover the available space.
+		TILE,     // Repeatedly tile each patch at its original pixel size to cover the available space.
+		TILE_FIT  // Tile each patche, stretching slightly as necessary to ensure a whole number of tiles fit in the available space.
+	};
 	virtual int get_width() const;
 	virtual int get_height() const;
 	virtual Size2 get_size() const;
@@ -73,6 +79,10 @@ public:
 	virtual void draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile = false, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false) const;
 	virtual void draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate = Color(1, 1, 1), bool p_transpose = false, bool p_clip_uv = true) const;
 	virtual bool get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect, Rect2 &r_rect, Rect2 &r_src_rect) const;
+
+
+	void fill_texture( RID p_canvas_item,Rect2 dest_rect, Rect2 src_rect, FillMode horizontal_fill_mode = STRETCH,
+		FillMode vertical_fill_mode = STRETCH, Color _modulate=Color(1,1,1,1) , bool p_transpose = false) const;
 
 	virtual Ref<Image> get_image() const { return Ref<Image>(); }
 
@@ -112,6 +122,7 @@ public:
 	TextureLayered() {}
 };
 
+VARIANT_ENUM_CAST(Texture2D::FillMode)
 VARIANT_ENUM_CAST(TextureLayered::LayeredType)
 
 class Texture3D : public Texture {

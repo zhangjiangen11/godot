@@ -153,6 +153,10 @@ bool ImageTexture::has_alpha() const {
 }
 
 void ImageTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
+	if (nine_draw) {
+		draw_nine(p_canvas_item, Rect2(p_pos, Size2(w, h)), p_modulate, p_transpose);
+		return;
+	}
 	if ((w | h) == 0) {
 		return;
 	}
@@ -160,7 +164,14 @@ void ImageTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_m
 }
 
 void ImageTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
+	if (nine_draw) {
+		draw_nine(p_canvas_item, p_rect, p_modulate, p_transpose);
+		return;
+	}
 	if ((w | h) == 0) {
+		return;
+	}
+	if(p_rect.size.x == 0 || p_rect.size.y == 0) {
 		return;
 	}
 	RenderingServer::get_singleton()->canvas_item_add_texture_rect(p_canvas_item, p_rect, texture, p_tile, p_modulate, p_transpose);
@@ -173,6 +184,92 @@ void ImageTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, cons
 	RenderingServer::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, p_rect, texture, p_src_rect, p_modulate, p_transpose, p_clip_uv);
 }
 
+void ImageTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color& modulate , bool p_transpose ) const {
+	if ((w | h) == 0) {
+		return;
+	}
+	if(p_rect.size.x == 0 || p_rect.size.y == 0) {
+		return;
+	}
+	float _left = nine_left;
+	float _right = nine_right;
+	float _top = nine_top;
+	float _bottom = nine_bottom;
+
+	if (nine_left + nine_right > p_rect.size.x || nine_top + nine_bottom > p_rect.size.y)
+	{
+		float scale_x = p_rect.size.x / (_left + _right);
+		float scale_y = p_rect.size.y / (_top + _bottom);
+		float scale = MIN(scale_x, scale_y);
+
+		_left = Math::floor(_left * scale);
+		_right = Math::ceil(_right * scale);
+		_top = Math::floor(_top * scale);
+		_bottom = Math::ceil(_bottom * scale);
+
+	}
+	Rect2 _piece_rects[9];
+	_update_piece_rects(_piece_rects, Rect2(0, 0, w, h));
+	float mid_w = MAX(p_rect.size.x - (_left + _right), 0);
+	float mid_h = MAX(p_rect.size.y - (_top + _bottom), 0);
+
+	Point2 pos = p_rect.position;
+	if (_top > 0)
+	{
+		if (_left > 0)   draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _top)), _piece_rects[0], modulate, p_transpose);
+		pos += Vector2(_left, 0);
+		fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, _top)), _piece_rects[1], nine_horizontal_fill, nine_vertical_fill, modulate);
+		pos += Vector2(mid_w, 0);
+		if (_right > 0)  draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _top)), _piece_rects[2], modulate);
+
+	}
+
+	pos = Vector2(p_rect.position.x, pos.y + _top);
+	if (mid_h > 0)
+	{
+		fill_texture(p_canvas_item, Rect2(pos, Vector2(_left, mid_h)), _piece_rects[3], nine_horizontal_fill, nine_vertical_fill, modulate);
+		pos += Vector2(_left, 0);
+		if (nine_draw_center && mid_w > 0)  fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, mid_h)), _piece_rects[4], nine_horizontal_fill, nine_vertical_fill, modulate);
+		pos += Vector2(mid_w, 0);
+		fill_texture(p_canvas_item, Rect2(pos, Vector2(_right, mid_h)), _piece_rects[5], nine_horizontal_fill, nine_vertical_fill, modulate);
+	}
+
+	pos = Vector2(p_rect.position.x, pos.y + mid_h);
+	if (_bottom > 0)
+	{
+		if (_left > 0)   draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _bottom)), _piece_rects[6], modulate);
+		pos += Vector2(_left, 0);
+		fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, _bottom)), _piece_rects[7], nine_horizontal_fill, nine_vertical_fill, modulate);
+		pos += Vector2(mid_w, 0);
+		if (_right > 0)  draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _bottom)), _piece_rects[8], modulate);
+
+	}
+}
+void ImageTexture::_update_piece_rects(Rect2* _piece_rects, const Rect2& _texture_region) const
+{
+	float mid_w = MAX(w - (nine_left + nine_right), 0);
+	float mid_h = MAX(h - (nine_top + nine_bottom), 0);
+
+	float _x = _texture_region.position.x;
+	float _y = _texture_region.position.y;
+
+	float _w = _texture_region.size.x;
+	float _h = _texture_region.size.y;
+
+
+	_piece_rects[0] = (Rect2(_x, _y, nine_left, nine_top));  // TL
+	_piece_rects[1] = (Rect2(_x + nine_left, _y, mid_w, nine_top));  // T
+	_piece_rects[2] = (Rect2(_x + (_w - nine_right), _y, nine_right, nine_top));  // TR
+
+	_piece_rects[3] = (Rect2(_x, _y + nine_top, nine_left, mid_h));  // L
+	_piece_rects[4] = (Rect2(_x + nine_left, _y + nine_top, mid_w, mid_h));  // M
+	_piece_rects[5] = (Rect2(_x + (_w - nine_right), _y + nine_top, nine_right, mid_h));  // R
+
+	_piece_rects[6] = (Rect2(_x, _y + (h - nine_bottom), nine_left, nine_bottom));  // BL
+	_piece_rects[7] = (Rect2(_x + nine_left, _y + (h - nine_bottom), mid_w, nine_bottom));  // B
+	_piece_rects[8] = (Rect2(_x + (_w - nine_right), _y + (h - nine_bottom), nine_right, nine_bottom));  // BR
+
+}
 bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
 	if (alpha_cache.is_null()) {
 		Ref<Image> img = get_image();
@@ -232,6 +329,43 @@ void ImageTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_image", "image"), &ImageTexture::set_image);
 	ClassDB::bind_method(D_METHOD("update", "image"), &ImageTexture::update);
 	ClassDB::bind_method(D_METHOD("set_size_override", "size"), &ImageTexture::set_size_override);
+
+
+	ClassDB::bind_method(D_METHOD("set_nine_draw", "nine_draw"), &ImageTexture::set_nine_draw);
+	ClassDB::bind_method(D_METHOD("get_nine_draw"), &ImageTexture::get_nine_draw);
+
+	ClassDB::bind_method(D_METHOD("set_nine_draw_center", "center"), &ImageTexture::set_nine_draw_center);
+	ClassDB::bind_method(D_METHOD("get_nine_draw_center"), &ImageTexture::get_nine_draw_center);
+
+	ClassDB::bind_method(D_METHOD("set_nine_left", "nine_left"), &ImageTexture::set_nine_left);
+	ClassDB::bind_method(D_METHOD("get_nine_left"), &ImageTexture::get_nine_left);
+
+	ClassDB::bind_method(D_METHOD("set_nine_top", "nine_top"), &ImageTexture::set_nine_top);
+	ClassDB::bind_method(D_METHOD("get_nine_top"), &ImageTexture::get_nine_top);
+
+	ClassDB::bind_method(D_METHOD("set_nine_right", "nine_right"), &ImageTexture::set_nine_right);
+	ClassDB::bind_method(D_METHOD("get_nine_right"), &ImageTexture::get_nine_right);
+
+	ClassDB::bind_method(D_METHOD("set_nine_bottom", "nine_bottom"), &ImageTexture::set_nine_bottom);
+	ClassDB::bind_method(D_METHOD("get_nine_bottom"), &ImageTexture::get_nine_bottom);
+
+	ClassDB::bind_method(D_METHOD("set_nine_horizontal_fill", "nine_horizontal_fill"), &ImageTexture::set_nine_horizontal_fill);
+	ClassDB::bind_method(D_METHOD("get_nine_horizontal_fill"), &ImageTexture::get_nine_horizontal_fill);
+
+	ClassDB::bind_method(D_METHOD("set_nine_vertical_fill", "nine_vertical_fill"), &ImageTexture::set_nine_vertical_fill);
+	ClassDB::bind_method(D_METHOD("get_nine_vertical_fill"), &ImageTexture::get_nine_vertical_fill);
+
+	ADD_GROUP("Nine Patch", "nine_");
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "nine_draw"), "set_nine_draw", "get_nine_draw");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "nine_draw_center"), "set_nine_draw_center", "get_nine_draw_center");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_horizontal_fill", PROPERTY_HINT_ENUM, "stretch,tile,tile_fit"), "set_nine_horizontal_fill", "get_nine_horizontal_fill");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_vertical_fill", PROPERTY_HINT_ENUM, "stretch,tile,tile_fit"), "set_nine_vertical_fill", "get_nine_vertical_fill");
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_left"), "set_nine_left", "get_nine_left");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_top"), "set_nine_top", "get_nine_top");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_right"), "set_nine_right", "get_nine_right");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_bottom"), "set_nine_bottom", "get_nine_bottom");
 }
 
 ImageTexture::ImageTexture() {}

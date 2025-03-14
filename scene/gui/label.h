@@ -102,6 +102,7 @@ private:
 		int font_shadow_outline_size;
 	} theme_cache;
 
+	bool flat = false;
 	Rect2 _get_line_rect(int p_para, int p_line) const;
 	void _ensure_shaped() const;
 	void _update_visible() const;
@@ -172,6 +173,13 @@ public:
 	void set_clip_text(bool p_clip);
 	bool is_clipping_text() const;
 
+	void set_flat(bool p_flat){
+		flat = p_flat;
+		queue_redraw();
+	}
+	bool is_flat() const {
+		return flat;
+	}
 	void set_tab_stops(const PackedFloat32Array &p_tab_stops);
 	PackedFloat32Array get_tab_stops() const;
 

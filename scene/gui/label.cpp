@@ -729,7 +729,9 @@ void Label::_notification(int p_what) {
 			int shadow_outline_size = has_settings ? settings->get_shadow_size() : theme_cache.font_shadow_outline_size;
 			bool rtl_layout = is_layout_rtl();
 
-			style->draw(ci, Rect2(Point2(0, 0), get_size()));
+			if(!flat) {
+				style->draw(ci, Rect2(Point2(0, 0), get_size()));
+			}
 
 			bool trim_chars = (visible_chars >= 0) && (visible_chars_behavior == TextServer::VC_CHARS_AFTER_SHAPING);
 			bool trim_glyphs_ltr = (visible_chars >= 0) && ((visible_chars_behavior == TextServer::VC_GLYPHS_LTR) || ((visible_chars_behavior == TextServer::VC_GLYPHS_AUTO) && !rtl_layout));

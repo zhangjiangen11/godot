@@ -86,6 +86,150 @@ bool Texture2D::get_rect_region(const Rect2 &p_rect, const Rect2 &p_src_rect, Re
 	r_src_rect = p_src_rect;
 	return true;
 }
+void Texture2D::fill_texture( RID p_canvas_item,Rect2 dest_rect, Rect2 src_rect, FillMode horizontal_fill_mode,	FillMode vertical_fill_mode , Color _modulate, bool p_transpose )const {
+	if (dest_rect.size.x <= 0 || dest_rect.size.y <= 0)
+		return;
+
+	if (horizontal_fill_mode == TILE  && src_rect.size.x > dest_rect.size.x)
+		horizontal_fill_mode = TILE_FIT;
+
+	if (vertical_fill_mode == TILE && src_rect.size.y > dest_rect.size.y)
+		vertical_fill_mode = TILE_FIT;
+
+	switch (horizontal_fill_mode)
+	{
+	case TILE:
+	{
+			auto tile_size = src_rect.size;
+			auto dest_pos  = dest_rect.position;
+			auto dest_w = dest_rect.size.x;
+			auto dest_h = dest_rect.size.y;
+			while (dest_w > 0){
+				if (tile_size.x <= dest_w)
+					{
+						auto _dest_rect = Rect2( dest_pos, Vector2(tile_size.x,dest_h) );
+					fill_texture(p_canvas_item,  _dest_rect, src_rect, STRETCH, vertical_fill_mode, _modulate , p_transpose);
+					}
+				else{
+					auto _dest_rect = Rect2( dest_pos, Vector2(dest_w,dest_h) );
+					auto _src_rect = Rect2( src_rect.position, Vector2(dest_w,src_rect.size.y) );
+					fill_texture( p_canvas_item, _dest_rect, _src_rect, STRETCH, vertical_fill_mode, _modulate, p_transpose );
+					return;
+
+				}
+
+				dest_pos += Vector2( tile_size.x, 0 );
+				dest_w   -= tile_size.x;
+			}
+			return;
+
+	}
+		break;
+
+	case TILE_FIT:
+		{
+			auto n = int( (dest_rect.size.x / src_rect.size.x) + 0.5 );
+			if (n == 0)
+				fill_texture( p_canvas_item, dest_rect, src_rect, STRETCH, vertical_fill_mode, _modulate, p_transpose);
+			else
+			{
+				auto tile_size = Vector2( dest_rect.size.x / n, src_rect.size.y );
+				auto dest_pos  = dest_rect.position;
+				auto dest_w = dest_rect.size.x;
+				auto dest_h = dest_rect.size.y;
+				while( dest_w > 0){
+					if (tile_size.x <= dest_w)
+					{
+						auto _dest_rect = Rect2( dest_pos, Vector2(tile_size.x,dest_h) );
+						fill_texture( p_canvas_item, _dest_rect, src_rect, STRETCH, vertical_fill_mode, _modulate , p_transpose);
+					}
+					else
+					{
+						auto _dest_rect = Rect2( dest_pos, Vector2(dest_w,dest_h) );
+						fill_texture( p_canvas_item, _dest_rect, src_rect, STRETCH, vertical_fill_mode, _modulate , p_transpose);
+						return;
+					}
+					dest_pos += Vector2( tile_size.x, 0 );
+					dest_w   -= tile_size.x;
+				}
+			}
+			return;
+		}
+		break;
+	default:
+			break;
+	} 
+	switch( vertical_fill_mode)
+	{
+		case TILE:
+		{
+			auto tile_size = src_rect.size;
+			auto dest_pos  = dest_rect.position;
+			auto dest_w = dest_rect.size.x;
+			auto dest_h = dest_rect.size.y;
+			while (dest_h > 0)
+			{
+				if (tile_size.y <= dest_h)
+				{
+						auto _dest_rect = Rect2( dest_pos, Vector2(dest_w, tile_size.y) );
+					fill_texture( p_canvas_item, _dest_rect, src_rect, horizontal_fill_mode, STRETCH, _modulate , p_transpose);
+				}
+				else
+				{
+
+				auto _dest_rect = Rect2( dest_pos, Vector2(dest_w,dest_h) );
+					auto _src_rect = Rect2( src_rect.position, Vector2(src_rect.size.x,dest_h) );
+					fill_texture(p_canvas_item,  _dest_rect, _src_rect, horizontal_fill_mode, STRETCH, _modulate, p_transpose );
+					return;
+				}
+				dest_pos += Vector2( 0, tile_size.y );
+				dest_h   -= tile_size.y;
+			}
+			return;
+		}
+		break;
+
+	case TILE_FIT:
+		{
+			auto n = int( (dest_rect.size.y / src_rect.size.y) + 0.5 );
+			if (n == 0)
+				fill_texture( p_canvas_item, dest_rect, src_rect, horizontal_fill_mode, STRETCH, _modulate , p_transpose);
+			else
+			{
+				auto tile_size = Vector2( src_rect.size.x, dest_rect.size.y / n );
+				auto dest_pos  = dest_rect.position;
+				auto dest_w = dest_rect.size.x;
+				auto dest_h = dest_rect.size.y;
+				while (dest_h > 0)
+				{
+					if (tile_size.y <= dest_h)
+					{
+						auto _dest_rect = Rect2( dest_pos, Vector2(dest_w, tile_size.y) );
+						fill_texture(p_canvas_item,  _dest_rect, src_rect, horizontal_fill_mode, STRETCH, _modulate , p_transpose);
+					}   
+					else
+					{   
+						auto _dest_rect = Rect2( dest_pos, Vector2(dest_w,dest_h) );
+						fill_texture(p_canvas_item,  _dest_rect, src_rect, horizontal_fill_mode, STRETCH, _modulate , p_transpose);
+						return;
+
+					} 
+
+					dest_pos += Vector2( 0, tile_size.y );
+					dest_h   -= tile_size.y;
+				}
+			}
+			return;
+		}
+		break;
+	}
+
+
+	// Horizontal and vertical fill are both STRETCH
+	draw_rect_region( p_canvas_item, dest_rect, src_rect, _modulate, p_transpose );
+
+}
+
 
 Ref<Resource> Texture2D::create_placeholder() const {
 	Ref<PlaceholderTexture2D> placeholder;
@@ -106,6 +250,10 @@ void Texture2D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_placeholder"), &Texture2D::create_placeholder);
 
 	ADD_GROUP("", "");
+
+	BIND_ENUM_CONSTANT(STRETCH);
+	BIND_ENUM_CONSTANT(TILE);
+	BIND_ENUM_CONSTANT(TILE_FIT);
 
 	GDVIRTUAL_BIND(_get_width);
 	GDVIRTUAL_BIND(_get_height);
