@@ -76,9 +76,8 @@ public:
             return;
         }
 		Dictionary bm = p_bone_map->get_bone_map();
-		Array keys = bm.keys();
-        for(auto E : keys) {
-			String value = bm[E];
+        for (const KeyValue<Variant, Variant> &kv : bm) {
+			String value = kv.value;
 			int bone_index = skeleton->find_bone(value);
             if(bone_index  == -1) {
                 continue;

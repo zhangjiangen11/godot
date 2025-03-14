@@ -17,29 +17,27 @@ public:
 	virtual void update_state() override {
         prefab = Object::cast_to<CharacterBodyPrefab>(object);
         part = prefab->get_parts();
-        arr = part.keys();
-        for(int i=0; i<arr.size(); i++) {
+        for (const KeyValue<Variant, Variant> &kv : part) {
             HBoxContainer* hbox = memnew(HBoxContainer);
             tasks_container->add_child(hbox);
             
             Label* label = memnew(Label);
-            label->set_text(arr[i]);
+            label->set_text(kv.key);
             label->set_h_size_flags(SIZE_EXPAND_FILL);
             hbox->add_child(label);
 
             CheckButton* button = memnew(CheckButton);
-            button->set_pressed(part[arr[i]]);
-            button->connect("toggled", callable_mp(this, &CharacterPrefabSection::on_part_toggled).bind(i));
+            button->set_pressed(kv.value);
+            button->connect("toggled", callable_mp(this, &CharacterPrefabSection::on_part_toggled).bind(kv.key));
             hbox->add_child(button);
         }
     }
-    void on_part_toggled(bool p_pressed, int index) {
-        part[arr[index]] = p_pressed;
+    void on_part_toggled(bool p_pressed, StringName index) {
+        part[index] = p_pressed;
         prefab->set_parts(part);        
     }
     virtual String get_section_unfolded() const override{ return "parts Condition Section"; }
 
     Ref<CharacterBodyPrefab> prefab;
     Dictionary part;
-    Array arr;
 };

@@ -97,11 +97,10 @@ Dictionary BlackboardRuntime::get_vars_as_dict() const {
 	return dict;
 }
 
-void BlackboardRuntime::populate_from_dict(const Dictionary &p_dictionary) {
-	Array keys = p_dictionary.keys();
-	for (int i = 0; i < keys.size(); i++) {
-		if (keys[i].get_type() == Variant::STRING_NAME || keys[i].get_type() == Variant::STRING) {
-			set_var(keys[i], p_dictionary[keys[i]]);
+void BlackboardRuntime::populate_from_dict(const Dictionary &p_dictionary) {	
+	for (const KeyValue<Variant, Variant> &kv : p_dictionary) {
+		if (kv.key.get_type() == Variant::STRING_NAME || kv.key.get_type() == Variant::STRING) {
+			set_var(kv.key, kv.value);
 		} else {
 			ERR_PRINT("Blackboard: Invalid key type in dictionary to populate blackboard. Must be StringName or String.");
 		}
