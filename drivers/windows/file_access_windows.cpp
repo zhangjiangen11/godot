@@ -412,6 +412,9 @@ bool FileAccessWindows::file_exists(const String &p_name) {
 	if (filename.is_empty()) {
 		return false;
 	}
+	if (p_name.begins_with("res://.godot/") && p_name.ends_with(".zip")) {
+		int a = 0;
+	}
 	DWORD file_attr = GetFileAttributesW((LPCWSTR)(filename.utf16().get_data()));
 	return (file_attr != INVALID_FILE_ATTRIBUTES) && !(file_attr & FILE_ATTRIBUTE_DIRECTORY);
 }

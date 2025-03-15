@@ -3956,18 +3956,45 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			// math types
 
 		case Variant::VECTOR2: {
-			EditorPropertyVector2 *editor = memnew(EditorPropertyVector2(p_wide));
-
-			EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
-			editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix);
-			return editor;
+			if(p_hint == PROPERTY_HINT_RANGE) {
+				PackedStringArray range_hint = p_hint_text.split(",");
+				float min = range_hint[0].to_float();
+				float max = range_hint[1].to_float();
+				float step = range_hint[2].to_float();
+				bool allow_less = range_hint.find("or_less", 3) > -1;
+				bool allow_greater = range_hint.find("or_greater", 3) > -1;
+				bool degrees = range_hint.find("degrees", 3) > -1;
+				Vector2MinMaxPropertyEditor *editor = memnew(Vector2MinMaxPropertyEditor);
+				editor->setup(min, max, step, allow_less, allow_greater, degrees);
+				return editor;
+			}
+			else {
+				EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
+				EditorPropertyVector2 *editor = memnew(EditorPropertyVector2(p_wide));
+				editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix);
+				return editor;
+			}
 
 		} break;
 		case Variant::VECTOR2I: {
-			EditorPropertyVector2i *editor = memnew(EditorPropertyVector2i(p_wide));
-			EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, 1, true);
-			editor->setup(hint.min, hint.max, 1, false, p_hint == PROPERTY_HINT_LINK, hint.suffix, false, true);
-			return editor;
+			if(p_hint == PROPERTY_HINT_RANGE) {
+				PackedStringArray range_hint = p_hint_text.split(",");
+				float min = range_hint[0].to_float();
+				float max = range_hint[1].to_float();
+				float step = range_hint[2].to_float();
+				bool allow_less = range_hint.find("or_less", 3) > -1;
+				bool allow_greater = range_hint.find("or_greater", 3) > -1;
+				bool degrees = range_hint.find("degrees", 3) > -1;
+				Vector2MinMaxPropertyEditor *editor = memnew(Vector2MinMaxPropertyEditor);
+				editor->setup(min, max, step < 1.0 ? 1.0 : step, allow_less, allow_greater, degrees,true);
+				return editor;
+			}
+			else {
+				EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
+				EditorPropertyVector2i *editor = memnew(EditorPropertyVector2i(p_wide));
+				editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix);
+				return editor;				
+			}
 
 		} break;
 		case Variant::RECT2: {

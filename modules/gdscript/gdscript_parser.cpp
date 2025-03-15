@@ -4528,6 +4528,14 @@ bool GDScriptParser::export_annotations(AnnotationNode *p_annotation, Node *p_ta
 		if (export_type.builtin_type == Variant::INT) {
 			variable->export_info.type = Variant::INT;
 		}
+		else if (export_type.builtin_type == Variant::VECTOR2) {
+			variable->export_info.type = Variant::VECTOR2;		
+			use_default_variable_type_check = false;	
+		}
+		else if (export_type.builtin_type == Variant::VECTOR2I) {
+			variable->export_info.type = Variant::VECTOR2I;
+			use_default_variable_type_check = false;
+		}
 	} else if (p_annotation->name == SNAME("@export_multiline")) {
 		use_default_variable_type_check = false;
 

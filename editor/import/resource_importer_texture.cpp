@@ -54,6 +54,7 @@ void ResourceImporterTexture::_texture_reimport_roughness(const Ref<CompressedTe
 	singleton->make_flags[path].flags |= MAKE_ROUGHNESS_FLAG;
 	singleton->make_flags[path].channel_for_roughness = p_channel;
 	singleton->make_flags[path].normal_path_for_roughness = p_normal_path;
+	//ERR_PRINT("Requested normal");
 }
 
 void ResourceImporterTexture::_texture_reimport_3d(const Ref<CompressedTexture2D> &p_tex) {
@@ -67,6 +68,7 @@ void ResourceImporterTexture::_texture_reimport_3d(const Ref<CompressedTexture2D
 	}
 
 	singleton->make_flags[path].flags |= MAKE_3D_FLAG;
+	//ERR_PRINT("Requested normal");
 }
 
 void ResourceImporterTexture::_texture_reimport_normal(const Ref<CompressedTexture2D> &p_tex) {
@@ -80,6 +82,7 @@ void ResourceImporterTexture::_texture_reimport_normal(const Ref<CompressedTextu
 	}
 
 	singleton->make_flags[path].flags |= MAKE_NORMAL_FLAG;
+	//ERR_PRINT("Requested normal");
 }
 
 inline void ResourceImporterTexture::_print_callback_message(const String &p_message) {
