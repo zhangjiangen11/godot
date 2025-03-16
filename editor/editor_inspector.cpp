@@ -58,6 +58,23 @@
 #include "scene/resources/style_box_flat.h"
 #include "scene/scene_string_names.h"
 
+static Mutex property_display_name_mutex;
+static StringName get_property_display_name(const StringName& _property) {
+	StringName ret;
+	property_display_name_mutex.lock();
+	static HashMap<StringName,StringName>* property_displayname_mutex_name = new (HashMap<StringName,StringName>);
+	auto it = property_displayname_mutex_name->find(_property);
+	if(it == property_displayname_mutex_name->end()) {
+		StringName name = StringName(_property.str() + "__display_name__");
+		property_displayname_mutex_name->insert(_property,name);
+	}
+	else {
+		ret = it->value;
+	}
+	property_display_name_mutex.unlock();
+	return ret;
+}
+
 bool EditorInspector::_property_path_matches(const String &p_property_path, const String &p_filter, EditorPropertyNameProcessor::Style p_style) {
 	if (p_property_path.containsn(p_filter)) {
 		return true;
@@ -418,6 +435,12 @@ void EditorProperty::_notification(int p_what) {
 				// FIXME: Move this to the project settings editor, as this is only used
 				// for project settings feature tag overrides.
 				color.a = 0.5;
+			}
+
+			// 获取显示名称
+			StringName pro_dis_name = get_property_display_name(label);
+			if(get_edited_object()->has_method(pro_dis_name)) {
+				_draw_label = get_edited_object()->call(pro_dis_name);
 			}
 			
 

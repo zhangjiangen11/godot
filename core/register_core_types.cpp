@@ -78,6 +78,7 @@
 #include "core/string/optimized_translation.h"
 #include "core/string/translation.h"
 #include "core/string/translation_server.h"
+#include "core/object/worker_thread_pool.h"
 
 #include "core/message_manager.h"
 
@@ -165,6 +166,7 @@ void register_core_types() {
 	GDREGISTER_VIRTUAL_CLASS(ScriptLanguageExtension);
 
 	GDREGISTER_CLASS(RefCounted);
+	GDREGISTER_CLASS(TaskJobHandle);
 	GDREGISTER_CLASS(WeakRef);
 	GDREGISTER_CLASS(Resource);
 	GDREGISTER_VIRTUAL_CLASS(MissingResource);

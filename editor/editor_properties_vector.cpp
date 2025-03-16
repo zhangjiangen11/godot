@@ -39,6 +39,23 @@
 #include "scene/gui/texture_button.h"
 
 const String EditorPropertyVectorN::COMPONENT_LABELS[4] = { "x", "y", "z", "w" };
+static Mutex property_to_range_method_name_mutex;
+
+static StringName get_range_method(const StringName& _property) {
+	StringName ret;
+	property_to_range_method_name_mutex.lock();
+	static HashMap<StringName,StringName>* property_to_range_method_name = new (HashMap<StringName,StringName>);
+	auto it = property_to_range_method_name->find(_property);
+	if(it == property_to_range_method_name->end()) {
+		StringName name = StringName(_property.str() + "__get_range_min_max__");
+		property_to_range_method_name->insert(_property,name);
+	}
+	else {
+		ret = it->value;
+	}
+	property_to_range_method_name_mutex.unlock();
+	return ret;
+}
 
 void EditorPropertyVectorN::_set_read_only(bool p_read_only) {
 	for (EditorSpinSlider *spin : spin_sliders) {
@@ -85,8 +102,27 @@ void EditorPropertyVectorN::_value_changed(double val, const String &p_name) {
 
 void EditorPropertyVectorN::update_property() {
 	Variant val = get_edited_property_value();
+	StringName name = get_range_method(get_edited_property());
+
+	bool is_dynamic_range = false;
+	Vector2 range;
+	if(get_edited_object()->has_method(name)) {
+		Variant ret = get_edited_object()->call(name);
+		if(ret.get_type() == Variant::VECTOR2 ) {
+			range = ret;
+		}
+		else {
+			Vector2i rangei = ret;
+			range.x = rangei.x;
+			range.y = rangei.y;
+		}
+	}
 	for (int i = 0; i < component_count; i++) {
 		if (radians_as_degrees) {
+			if(is_dynamic_range) {
+				spin_sliders[i]->set_min(range.x);
+				spin_sliders[i]->set_max(range.y);
+			}
 			spin_sliders[i]->set_value_no_signal(Math::rad_to_deg((real_t)val.get(i)));
 		} else {
 			spin_sliders[i]->set_value_no_signal(val.get(i));
@@ -621,6 +657,27 @@ void Vector2MinMaxPropertyEditor::setup(float p_min, float p_max, float p_step, 
 }
 
 void Vector2MinMaxPropertyEditor::update_property() {
+	StringName name = get_range_method(get_edited_property());
+
+	bool is_dynamic_range = false;
+	Vector2 range;
+	if(get_edited_object()->has_method(name)) {
+		Variant ret = get_edited_object()->call(name);
+		if(ret.get_type() == Variant::VECTOR2 ) {
+			range = ret;
+		}
+		else {
+			Vector2i rangei = ret;
+			range.x = rangei.x;
+			range.y = rangei.y;
+		}
+	}
+	if(is_dynamic_range) {
+		for (Range *r : Vector<Range *>{ min_range, min_edit, max_range, max_edit }) {
+			r->set_min(range.x);
+			r->set_max(range.y);
+		}
+	}
 	if(is_int){
 		const Vector2i value = get_edited_property_value();
 		min_range->set_value(value.x);

@@ -111,6 +111,7 @@ class Vector2MinMaxPropertyEditor : public EditorProperty {
 	Vector2 usable_area;
 
 	Vector2 property_range;
+	
 
 	bool mouse_inside = false;
 	Hover hover = Hover::NONE;

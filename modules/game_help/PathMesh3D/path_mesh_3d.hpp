@@ -85,7 +85,19 @@ private:
     Ref<ArrayMesh> generated_mesh;
     Path3D *path3d = nullptr;
 
+    struct SubPath
+    {
+        // 是否为兄弟
+        float sub_left_offset_distance = 1.0;
+        float sub_left_offset_percent = 1.0;
+
+        // 高度偏移量
+        float sub_height_offset_percent = 1.0;
+        float sub_height_offset_distance = 5;
+    };
+
     struct SurfaceData {
+
         Vector3 tile_rotation = Vector3();
         EulerOrder tile_rotation_order = EulerOrder::YXZ;
         Distribution distribution = Distribution::DISTRIBUTE_BY_MODEL_LENGTH;

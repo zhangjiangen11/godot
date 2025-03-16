@@ -957,6 +957,9 @@ void TaskJobHandle::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("is_completed"), &TaskJobHandle::is_completed);
 	ClassDB::bind_method(D_METHOD("wait_completion"), &TaskJobHandle::wait_completion);
+	ClassDB::bind_method(D_METHOD("new_next_group","action","elements_count","batch_count"), &TaskJobHandle::new_next_group);
+	ClassDB::bind_method(D_METHOD("new_next"), &TaskJobHandle::new_next);
+	ClassDB::bind_method(D_METHOD("push_depend", "depend_task"), &TaskJobHandle::push_depend);
 
 }
 

@@ -293,42 +293,7 @@ public:
 	WorkerThreadPool(const String & name,bool p_singleton = true);
 	~WorkerThreadPool();
 };
-// 任务Job句柄
-class TaskJobHandle : public RefCounted
-{
-	GDCLASS(TaskJobHandle, RefCounted);
-	static void _bind_methods();
-	friend class WorkerTaskPool;
-	friend class ThreadTaskGroup;
- public:
-	bool is_completed() ;
-	// 等待信号完成
-	void wait_completion();
- protected:
- 	void init(){
- 		is_init = true;
- 	}
-	void set_task_completed(int count);
-	void set_completed();
-	// 等待所有依赖信号完成
-	void wait_depend_completion();
- protected:
-	Mutex depend_mutex;
-	// 依赖的句柄
-	LocalVector<Ref<TaskJobHandle>> dependJob;
-	// 完成标志
-	mutable THREADING_NAMESPACE::mutex done_mutex;
-	std::condition_variable cv;
-	SafeFlag completed;
-	// 完成数量
-	SafeNumeric<uint32_t> completed_index;
-	// 最大任务数量
-	uint32_t taskMax = 0;
-	bool is_init = false;
-	bool is_error = false;
-	bool is_job = false;
-	String error_string;
-};
+class TaskJobHandle;
 // 多任务管理器
 class WorkerTaskPool : public Object {
 	GDCLASS(WorkerTaskPool, Object)
@@ -360,8 +325,16 @@ public:
 	friend class ThreadTaskGroup;
 public:
 	static WorkerTaskPool *get_singleton() { return singleton; }
-	Ref<TaskJobHandle> add_native_group_task(void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements,int _batch_count,TaskJobHandle* depend_task);
+	Ref<TaskJobHandle> add_native_group_task(void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements_count,int _batch_count,TaskJobHandle* depend_task);
 	Ref<TaskJobHandle> add_group_task(const Callable &p_action, int p_elements, int _batch_count,TaskJobHandle* depend_task);
+	template <typename... VarArgs>
+	_FORCE_INLINE_ Ref<TaskJobHandle> add_group_task_bind(const Callable &p_action, int p_elements_count, int _batch_count,TaskJobHandle* depend_task,VarArgs... p_args) {
+		return add_group_task(p_action.bind(p_args...), p_elements_count, _batch_count, depend_task);
+	}
+	template <typename... VarArgs>
+	_FORCE_INLINE_ Ref<TaskJobHandle> add_task_bind(const Callable &p_action, TaskJobHandle* depend_task,VarArgs... p_args) {
+		return add_group_task(p_action.bind(p_args...), 1, 1, depend_task);
+	}
 	Ref<TaskJobHandle> combined_job_handle(TypedArray<TaskJobHandle> _handles );
 	
 	
@@ -369,4 +342,70 @@ public:
 	~WorkerTaskPool();
 private:
 
+};
+// 任务Job句柄
+class TaskJobHandle : public RefCounted
+{
+	GDCLASS(TaskJobHandle, RefCounted);
+	static void _bind_methods();
+	friend class WorkerTaskPool;
+	friend class ThreadTaskGroup;
+ public:
+ 	// 新建下一个组任务
+	template <typename... VarArgs>
+	_FORCE_INLINE_ Ref<TaskJobHandle> new_next_group_t(const Callable &p_action, int p_elements_count, int _batch_count,VarArgs... p_args) {
+		return add_group_task(p_action.bind(p_args...), p_elements_count, _batch_count, this);
+	}
+
+	// 新建下一个任务
+	template <typename... VarArgs>
+	_FORCE_INLINE_ Ref<TaskJobHandle> new_next_t(const Callable &p_action, VarArgs... p_args) {
+		return add_group_task(p_action.bind(p_args...), 1, 1, this);
+	}
+
+public:
+	// 新建下一个组任务
+   Ref<TaskJobHandle> new_next_group(const Callable &p_action, int p_elements_count, int _batch_count) {
+		return WorkerTaskPool::get_singleton()->add_group_task(p_action, p_elements_count, _batch_count, this);
+   }
+
+   // 新建下一个任务
+   Ref<TaskJobHandle> new_next(const Callable &p_action) {
+	   return WorkerTaskPool::get_singleton()->add_group_task(p_action, 1, 1, this);
+   }
+
+	// 添加依赖，这个句柄,必须是自己心分配的,不能复用
+	void push_depend(TaskJobHandle* depend_task) {
+		ERR_FAIL_COND(is_init);
+		dependJob.push_back(depend_task);
+	}
+	bool is_completed() ;
+	// 等待信号完成
+	void wait_completion();
+ protected:
+ 	void init(){
+ 		is_init = true;
+ 	}
+	void set_task_completed(int count);
+	void set_completed();
+	// 等待所有依赖信号完成
+	void wait_depend_completion();
+
+	
+ protected:
+	Mutex depend_mutex;
+	// 依赖的句柄
+	LocalVector<Ref<TaskJobHandle>> dependJob;
+	// 完成标志
+	mutable THREADING_NAMESPACE::mutex done_mutex;
+	std::condition_variable cv;
+	SafeFlag completed;
+	// 完成数量
+	SafeNumeric<uint32_t> completed_index;
+	// 最大任务数量
+	uint32_t taskMax = 0;
+	bool is_init = false;
+	bool is_error = false;
+	bool is_job = false;
+	String error_string;
 };

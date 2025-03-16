@@ -227,7 +227,7 @@ String ResourceFormatLoaderShaderTemplate::get_resource_type(const String &p_pat
 // ResourceFormatSaverShaderInclude
 
 Error ResourceFormatSaverShaderTemplate::save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags) {
-	Ref<ShaderInclude> shader_inc = p_resource;
+	Ref<ShaderTemplate> shader_inc = p_resource;
 	ERR_FAIL_COND_V(shader_inc.is_null(), ERR_INVALID_PARAMETER);
 
 	String source = shader_inc->get_code();
