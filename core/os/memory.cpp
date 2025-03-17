@@ -74,7 +74,7 @@ SafeNumeric<uint64_t> Memory::max_usage;
 #endif
 
 SafeNumeric<uint64_t> Memory::alloc_count;
-#define SAMLL_MEMORY_MANAGER 1
+#define SAMLL_MEMORY_MANAGER 0
 
 
 template <int SIZE_COUNT>
@@ -323,7 +323,9 @@ static _FORCE_INLINE_ SmallMemoryManager& get_small_memory_manager()
 
 
 void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
+	#if SAMLL_MEMORY_MANAGER
 	return get_small_memory_manager().alloc_mem(p_bytes);
+	#endif
 	DEV_ASSERT(is_power_of_2(p_alignment));
 
 	void *p1, *p2;
@@ -337,7 +339,9 @@ void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
 }
 
 void *Memory::realloc_aligned_static(void *p_memory, size_t p_bytes, size_t p_prev_bytes, size_t p_alignment) {
+	#if SAMLL_MEMORY_MANAGER
 	return get_small_memory_manager().realloc_mem(p_memory,p_bytes);
+	#endif
 	
 	if (p_memory == nullptr) {
 		return alloc_aligned_static(p_bytes, p_alignment);
@@ -360,7 +364,9 @@ void Memory::free_aligned_static(void *p_memory) {
 }
 
 void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
+	#if SAMLL_MEMORY_MANAGER
 	return get_small_memory_manager().alloc_mem(p_bytes);
+	#endif
 #ifdef DEBUG_ENABLED
 	bool prepad = true;
 #else
@@ -390,7 +396,9 @@ void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
 }
 
 void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
+	#if SAMLL_MEMORY_MANAGER
 	return get_small_memory_manager().realloc_mem(p_memory,p_bytes);
+	#endif
 	if (p_memory == nullptr) {
 		return alloc_static(p_bytes, p_pad_align);
 	}
@@ -441,8 +449,10 @@ void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
 }
 
 void Memory::free_static(void *p_ptr, bool p_pad_align) {
+	#if SAMLL_MEMORY_MANAGER
 	get_small_memory_manager().free_mem(p_ptr);
 	return;
+	#endif
 	ERR_FAIL_NULL(p_ptr);
 
 	uint8_t *mem = (uint8_t *)p_ptr;
