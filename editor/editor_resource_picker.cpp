@@ -1220,9 +1220,6 @@ void EditorScriptPicker::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "script_owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_script_owner", "get_script_owner");
 }
 
-EditorScriptPicker::EditorScriptPicker() {
-}
-
 // EditorShaderPicker
 
 void EditorShaderPicker::set_create_options(Object *p_menu_node) {
@@ -1261,9 +1258,6 @@ ShaderMaterial *EditorShaderPicker::get_edited_material() const {
 
 void EditorShaderPicker::set_preferred_mode(int p_mode) {
 	preferred_mode = p_mode;
-}
-
-EditorShaderPicker::EditorShaderPicker() {
 }
 
 //////////////

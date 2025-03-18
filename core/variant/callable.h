@@ -140,6 +140,10 @@ public:
 	~Callable();
 };
 
+// Zero-constructing Callable initializes method and object to 0 (and thus empty).
+template <>
+struct is_zero_constructible<Callable> : std::true_type {};
+
 class CallableCustom {
 	friend class Callable;
 	SafeRefCount ref_count;
@@ -204,6 +208,10 @@ public:
 	Signal(ObjectID p_object, const StringName &p_name);
 	_FORCE_INLINE_ Signal() {}
 };
+
+// Zero-constructing Signal initializes name and object to 0 (and thus empty).
+template <>
+struct is_zero_constructible<Signal> : std::true_type {};
 
 struct CallableComparator {
 	const Callable &func;

@@ -173,6 +173,7 @@ public:
 	virtual Color _multimesh_instance_get_color(RID p_multimesh, int p_index) const override { return Color(); }
 	virtual Color _multimesh_instance_get_custom_data(RID p_multimesh, int p_index) const override { return Color(); }
 	virtual void _multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer) override;
+	// 获取draw_argbuffer ,方便传递给ComputeShader进行填充数据,这样可以把ComputeShader计算的最终渲染数量写入到缓冲区,
 	virtual RID _multimesh_get_command_buffer_rd_rid(RID p_multimesh) const override { return RID(); }
 	virtual RID _multimesh_get_buffer_rd_rid(RID p_multimesh) const override { return RID(); }
 	virtual Vector<float> _multimesh_get_buffer(RID p_multimesh) const override;
