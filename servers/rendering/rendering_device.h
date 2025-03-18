@@ -758,7 +758,13 @@ public:
 		BUFFER_CREATION_DEVICE_ADDRESS_BIT = (1 << 0),
 		BUFFER_CREATION_AS_STORAGE_BIT = (1 << 1),
 	};
-
+	//typedef  struct {
+	//	uint  count; // 三角形数量
+	//	uint  instanceCount; // 渲染的Instance数量
+	//	uint  firstIndex; // 索引缓冲起始位置,默认填充0就可以
+	//	int  baseVertex; // 顶点缓冲起始位置,默认填充0就可以
+	//	uint  baseInstance; // 渲染实例起始位置,默认填充0就可以
+	//} DrawElementsIndirectCommand;
 	enum StorageBufferUsage {
 		STORAGE_BUFFER_USAGE_DISPATCH_INDIRECT = (1 << 0),
 	};

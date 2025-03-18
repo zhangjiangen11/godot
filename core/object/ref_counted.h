@@ -150,25 +150,6 @@ public:
 		ref_pointer<false>(Object::cast_to<T>(object));
 	}
 
-	
-	void operator=(T* p_variant) {
-		Object *object = p_variant.get_validated_object();
-
-		if (object == reference) {
-			return;
-		}
-
-		unref();
-
-		if (!object) {
-			return;
-		}
-
-		T *r = Object::cast_to<T>(object);
-		if (r && r->reference()) {
-			reference = r;
-		}
-	}
 
 	template <typename T_Other>
 	void reference_ptr(T_Other *p_ptr) {
