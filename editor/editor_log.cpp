@@ -248,7 +248,12 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 	// also matches that of other IDE's.
 	Vector<String> lines = p_msg.split("\n", true);
 	int line_count = lines.size();
-
+	if(line_count > 0) {
+		OS::DateTime dt = OS::get_singleton()->get_datetime();
+		const String format_string =  L"%04d年%02d月%02d日 %02d小时%02d分%02d秒:";
+		String time = vformat(format_string, dt.year, (uint8_t)dt.month, dt.day, dt.hour, dt.minute, dt.second);
+		_process_message(time, p_type, false);
+	}
 	for (int i = 0; i < line_count; i++) {
 		_process_message(lines[i], p_type, i == line_count - 1);
 	}

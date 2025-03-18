@@ -50,14 +50,17 @@ struct DictionaryPrivate {
 };
 
 Dictionary::ConstIterator Dictionary::begin() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, ConstIterator(), "Dictionary is error.");
 	return _p->variant_map.begin();
 }
 
 Dictionary::ConstIterator Dictionary::end() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, ConstIterator(), "Dictionary is error.");
 	return _p->variant_map.end();
 }
 
 void Dictionary::get_key_list(List<Variant> *p_keys) const {
+	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
 	if (_p->variant_map.is_empty()) {
 		return;
 	}
@@ -68,6 +71,7 @@ void Dictionary::get_key_list(List<Variant> *p_keys) const {
 }
 
 Variant Dictionary::get_key_at_index(int p_index) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	int index = 0;
 	for (const KeyValue<Variant, Variant> &E : _p->variant_map) {
 		if (index == p_index) {
@@ -80,6 +84,7 @@ Variant Dictionary::get_key_at_index(int p_index) const {
 }
 
 Variant Dictionary::get_value_at_index(int p_index) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	int index = 0;
 	for (const KeyValue<Variant, Variant> &E : _p->variant_map) {
 		if (index == p_index) {
@@ -90,10 +95,11 @@ Variant Dictionary::get_value_at_index(int p_index) const {
 
 	return Variant();
 }
-
+static Variant none_value;
 // WARNING: This operator does not validate the value type. For scripting/extensions this is
 // done in `variant_setget.cpp`. Consider using `set()` if the data might be invalid.
 Variant &Dictionary::operator[](const Variant &p_key) {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, none_value, "Dictionary is error.");
 	Variant key = p_key;
 	if (unlikely(!_p->typed_key.validate(key, "use `operator[]`"))) {
 		if (unlikely(!_p->typed_fallback)) {
@@ -117,6 +123,7 @@ Variant &Dictionary::operator[](const Variant &p_key) {
 }
 
 const Variant &Dictionary::operator[](const Variant &p_key) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, none_value, "Dictionary is error.");
 	Variant key = p_key;
 	if (unlikely(!_p->typed_key.validate(key, "use `operator[]`"))) {
 		if (unlikely(!_p->typed_fallback)) {
@@ -131,6 +138,7 @@ const Variant &Dictionary::operator[](const Variant &p_key) const {
 }
 
 const Variant *Dictionary::getptr(const Variant &p_key) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, nullptr, "Dictionary is error.");
 	Variant key = p_key;
 	if (unlikely(!_p->typed_key.validate(key, "getptr"))) {
 		return nullptr;
@@ -144,6 +152,7 @@ const Variant *Dictionary::getptr(const Variant &p_key) const {
 
 // WARNING: This method does not validate the value type.
 Variant *Dictionary::getptr(const Variant &p_key) {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, nullptr, "Dictionary is error.");
 	Variant key = p_key;
 	if (unlikely(!_p->typed_key.validate(key, "getptr"))) {
 		return nullptr;
@@ -161,8 +170,9 @@ Variant *Dictionary::getptr(const Variant &p_key) {
 }
 
 Variant Dictionary::get_valid(const Variant &p_key) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	Variant key = p_key;
-	ERR_FAIL_COND_V(!_p->typed_key.validate(key, "get_valid"), Variant());
+	ERR_FAIL_COND_V(_p == nullptr || !_p->typed_key.validate(key, "get_valid"), Variant());
 	HashMap<Variant, Variant, VariantHasher, StringLikeVariantComparator>::ConstIterator E(_p->variant_map.find(key));
 
 	if (!E) {
@@ -172,8 +182,9 @@ Variant Dictionary::get_valid(const Variant &p_key) const {
 }
 
 Variant Dictionary::get(const Variant &p_key, const Variant &p_default) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	Variant key = p_key;
-	ERR_FAIL_COND_V(!_p->typed_key.validate(key, "get"), p_default);
+	ERR_FAIL_COND_V(_p == nullptr || !_p->typed_key.validate(key, "get"), p_default);
 	const Variant *result = getptr(key);
 	if (!result || result->get_type() == Variant::NIL) {
 		return p_default;
@@ -183,8 +194,9 @@ Variant Dictionary::get(const Variant &p_key, const Variant &p_default) const {
 }
 
 Variant Dictionary::get_or_add(const Variant &p_key, const Variant &p_default) {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	Variant key = p_key;
-	ERR_FAIL_COND_V(!_p->typed_key.validate(key, "get"), p_default);
+	ERR_FAIL_COND_V(_p == nullptr || !_p->typed_key.validate(key, "get"), p_default);
 	const Variant *result = getptr(key);
 	if (!result || result->get_type() == Variant::NIL) {
 		Variant value = p_default;
@@ -196,7 +208,7 @@ Variant Dictionary::get_or_add(const Variant &p_key, const Variant &p_default) {
 }
 
 bool Dictionary::set(const Variant &p_key, const Variant &p_value) {
-	ERR_FAIL_COND_V_MSG(_p->read_only, false, "Dictionary is in read-only state.");
+	ERR_FAIL_COND_V_MSG(_p == nullptr || _p->read_only, false, "Dictionary is in read-only state.");
 	Variant key = p_key;
 	ERR_FAIL_COND_V(!_p->typed_key.validate(key, "set"), false);
 	Variant value = p_value;
@@ -206,6 +218,8 @@ bool Dictionary::set(const Variant &p_key, const Variant &p_value) {
 }
 
 int Dictionary::size() const {
+
+	ERR_FAIL_COND_V_MSG(_p == nullptr , 0, "Dictionary is error.");
 	return _p->variant_map.size();
 }
 
@@ -220,6 +234,7 @@ bool Dictionary::has(const Variant &p_key) const {
 }
 
 bool Dictionary::has_all(const Array &p_keys) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, false, "Dictionary is error.");
 	for (int i = 0; i < p_keys.size(); i++) {
 		Variant key = p_keys[i];
 		ERR_FAIL_COND_V(!_p->typed_key.validate(key, "use 'has_all'"), false);
@@ -231,6 +246,7 @@ bool Dictionary::has_all(const Array &p_keys) const {
 }
 
 Variant Dictionary::find_key(const Variant &p_value) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	Variant value = p_value;
 	ERR_FAIL_COND_V(!_p->typed_value.validate(value, "find_key"), Variant());
 	for (const KeyValue<Variant, Variant> &E : _p->variant_map) {
@@ -242,6 +258,7 @@ Variant Dictionary::find_key(const Variant &p_value) const {
 }
 
 bool Dictionary::erase(const Variant &p_key) {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, false, "Dictionary is error.");
 	Variant key = p_key;
 	ERR_FAIL_COND_V(!_p->typed_key.validate(key, "erase"), false);
 	ERR_FAIL_COND_V_MSG(_p->read_only, false, "Dictionary is in read-only state.");
@@ -298,16 +315,19 @@ void Dictionary::_ref(const Dictionary &p_from) const {
 }
 
 void Dictionary::clear() {
+	ERR_FAIL_COND_MSG(_p == nullptr, "Dictionary is error.");
 	ERR_FAIL_COND_MSG(_p->read_only, "Dictionary is in read-only state.");
 	_p->variant_map.clear();
 }
 
 void Dictionary::sort() {
+	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
 	ERR_FAIL_COND_MSG(_p->read_only, "Dictionary is in read-only state.");
 	_p->variant_map.sort();
 }
 
 void Dictionary::merge(const Dictionary &p_dictionary, bool p_overwrite) {
+	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
 	ERR_FAIL_COND_MSG(_p->read_only, "Dictionary is in read-only state.");
 	for (const KeyValue<Variant, Variant> &E : p_dictionary._p->variant_map) {
 		Variant key = E.key;
@@ -327,6 +347,7 @@ Dictionary Dictionary::merged(const Dictionary &p_dictionary, bool p_overwrite) 
 }
 
 void Dictionary::_unref() const {
+	ERR_FAIL_COND_MSG(_p == nullptr, "Dictionary is error.");
 	if (_p == nullptr) {
 		return;
 	}
@@ -347,6 +368,7 @@ uint32_t Dictionary::hash() const {
 }
 
 uint32_t Dictionary::recursive_hash(int recursion_count) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, 0, "Dictionary is error.");
 	if (recursion_count > MAX_RECURSION) {
 		ERR_PRINT("Max recursion reached");
 		return 0;
@@ -364,6 +386,7 @@ uint32_t Dictionary::recursive_hash(int recursion_count) const {
 }
 
 Array Dictionary::keys() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Array(), "Dictionary is error.");
 	Array varr;
 	if (is_typed_key()) {
 		varr.set_typed(get_typed_key_builtin(), get_typed_key_class_name(), get_typed_key_script());
@@ -384,6 +407,7 @@ Array Dictionary::keys() const {
 }
 
 Array Dictionary::values() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Array(), "Dictionary is error.");
 	Array varr;
 	if (is_typed_value()) {
 		varr.set_typed(get_typed_value_builtin(), get_typed_value_class_name(), get_typed_value_script());
@@ -404,6 +428,7 @@ Array Dictionary::values() const {
 }
 
 void Dictionary::assign(const Dictionary &p_dictionary) {
+	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
 	const ContainerTypeValidate &typed_key = _p->typed_key;
 	const ContainerTypeValidate &typed_key_source = p_dictionary._p->typed_key;
 
@@ -544,6 +569,7 @@ void Dictionary::assign(const Dictionary &p_dictionary) {
 }
 
 const Variant *Dictionary::next(const Variant *p_key) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, nullptr, "Dictionary is error.");
 	if (p_key == nullptr) {
 		// caller wants to get the first element
 		if (_p->variant_map.begin()) {
@@ -573,15 +599,18 @@ Dictionary Dictionary::duplicate(bool p_deep) const {
 }
 
 void Dictionary::make_read_only() {
+	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
 	if (_p->read_only == nullptr) {
 		_p->read_only = memnew(Variant);
 	}
 }
 bool Dictionary::is_read_only() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, true, "Dictionary is error.");
 	return _p->read_only != nullptr;
 }
 
 Dictionary Dictionary::recursive_duplicate(bool p_deep, int recursion_count) const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Dictionary(), "Dictionary is error.");
 	Dictionary n;
 	n._p->typed_key = _p->typed_key;
 	n._p->typed_value = _p->typed_value;
@@ -672,26 +701,32 @@ ContainerType Dictionary::get_value_type() const {
 }
 
 uint32_t Dictionary::get_typed_key_builtin() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant::NIL, "Dictionary is error.");
 	return _p->typed_key.type;
 }
 
 uint32_t Dictionary::get_typed_value_builtin() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant::NIL, "Dictionary is error.");
 	return _p->typed_value.type;
 }
 
 StringName Dictionary::get_typed_key_class_name() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, StringName(), "Dictionary is error.");
 	return _p->typed_key.class_name;
 }
 
 StringName Dictionary::get_typed_value_class_name() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, StringName(), "Dictionary is error.");
 	return _p->typed_value.class_name;
 }
 
 Variant Dictionary::get_typed_key_script() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	return _p->typed_key.script;
 }
 
 Variant Dictionary::get_typed_value_script() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, Variant(), "Dictionary is error.");
 	return _p->typed_value.script;
 }
 
@@ -703,6 +738,7 @@ void Dictionary::operator=(const Dictionary &p_dictionary) {
 }
 
 const void *Dictionary::id() const {
+	ERR_FAIL_COND_V_MSG(_p == nullptr, 0, "Dictionary is error.");
 	return _p;
 }
 

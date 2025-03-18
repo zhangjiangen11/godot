@@ -2936,7 +2936,9 @@ void ColorPickerButton::pressed() {
 void ColorPickerButton::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
-			const Rect2 r = Rect2(theme_cache.normal_style->get_offset(), get_size() - theme_cache.normal_style->get_minimum_size());
+			Rect2 r = Rect2(theme_cache.normal_style->get_offset(), get_size() - theme_cache.normal_style->get_minimum_size());
+
+
 			draw_texture_rect(theme_cache.background_icon, r, true);
 			draw_rect(r, color);
 

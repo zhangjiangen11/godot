@@ -2879,9 +2879,21 @@ void EditorPropertyColor::set_live_changes_enabled(bool p_enabled) {
 }
 
 EditorPropertyColor::EditorPropertyColor() {
+	VBoxContainer * vb = memnew(VBoxContainer);
+	add_child(vb);
+	
+	Control * c = memnew(Control);
+	c->set_custom_minimum_size(Vector2(0,4));
+	vb->add_child(c);
+
 	picker = memnew(ColorPickerButton);
-	add_child(picker);
+	vb->add_child(picker);
 	picker->set_flat(true);
+
+	c = memnew(Control);
+	c->set_custom_minimum_size(Vector2(0,4));
+	vb->add_child(c);
+	
 	picker->connect("color_changed", callable_mp(this, &EditorPropertyColor::_color_changed));
 	picker->connect("picker_created", callable_mp(this, &EditorPropertyColor::_picker_created), CONNECT_ONE_SHOT);
 }

@@ -359,6 +359,44 @@ void Vector2MinMaxPropertyEditor::_range_edit_draw() {
 			Vector2(2, usable_area.y - 4));
 
 	range_edit_widget->draw_rect(midpoint_rect, midpoint_color);
+	Vector2 size = usable_area;
+	if(size.x < 30 || size.y < 16) {
+		return;
+	}
+	Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("LineEdit"));
+	float mid_y =  (size.y - 16.0) * 0.5;
+	if(mid_y < 0) {
+		mid_y = 0;
+	}
+	if(is_int) {
+		const Vector2i value = Vector2i(min_range->get_value(), max_range->get_value());
+		range_edit_widget->draw_string(font,Point2(0, edit_size.y / 2.0),String::num_int64(value.x),HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
+
+		String max_str = String::num_int64(value.y);
+
+		
+		int text_w = font->get_string_size(max_str).x;
+		float off = size.x - text_w;
+		if(off < size.x * 0.5) {
+			off = size.x * 0.5;
+		}
+		range_edit_widget->draw_string(font,Point2(off, edit_size.y / 2.0),max_str,HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
+	}
+	else {
+		const Vector2 value = Vector2(min_range->get_value(), max_range->get_value());
+		range_edit_widget->draw_string(font,Point2(0, edit_size.y / 2.0),vformat(TTR("%0.4f"), value.x),HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
+
+		String max_str = vformat(TTR("%0.4f"), value.y);
+
+		
+		int text_w = font->get_string_size(max_str).x;
+		float off = size.x - text_w;
+		if(off < size.x * 0.5) {
+			off = size.x * 0.5;
+		}
+		range_edit_widget->draw_string(font,Point2(off, edit_size.y / 2.0),max_str,HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
+
+	}
 }
 
 void Vector2MinMaxPropertyEditor::_range_edit_gui_input(const Ref<InputEvent> &p_event) {
@@ -631,7 +669,7 @@ void Vector2MinMaxPropertyEditor::_notification(int p_what) {
 			drag_color = hovered_color.lerp(accent_color, 0.8);
 			midpoint_color = dark_theme ? Color(1, 1, 1) : Color(0, 0, 0);
 
-			range_edit_widget->set_custom_minimum_size(Vector2(0, range_slider_left_icon->get_height() + 8));
+			range_edit_widget->set_custom_minimum_size(Vector2(0, range_slider_left_icon->get_height()  * 2));
 		} break;
 	}
 }
@@ -714,6 +752,7 @@ Vector2MinMaxPropertyEditor::Vector2MinMaxPropertyEditor() {
 	range_edit_widget->set_h_size_flags(SIZE_EXPAND_FILL);
 	range_edit_widget->set_tooltip_text(TTR("Hold Shift to scale around midpoint instead of moving."));
 	hb->add_child(range_edit_widget);
+	range_edit_widget->set_custom_minimum_size(Vector2(0,40));
 	range_edit_widget->connect(SceneStringName(draw), callable_mp(this, &Vector2MinMaxPropertyEditor::_range_edit_draw));
 	range_edit_widget->connect(SceneStringName(gui_input), callable_mp(this, &Vector2MinMaxPropertyEditor::_range_edit_gui_input));
 	range_edit_widget->connect(SceneStringName(mouse_entered), callable_mp(this, &Vector2MinMaxPropertyEditor::_set_mouse_inside).bind(true));
@@ -721,6 +760,7 @@ Vector2MinMaxPropertyEditor::Vector2MinMaxPropertyEditor() {
 
 	// Range controls for actual editing. Their min/max may depend on editing mode.
 	hb = memnew(HBoxContainer);
+	hb->set_visible(false);
 	content_vb->add_child(hb);
 
 	min_edit = memnew(EditorSpinSlider);
@@ -739,7 +779,7 @@ Vector2MinMaxPropertyEditor::Vector2MinMaxPropertyEditor() {
 	hb->add_child(toggle_mode_button);
 	toggle_mode_button->connect(SceneStringName(toggled), callable_mp(this, &Vector2MinMaxPropertyEditor::_toggle_mode));
 
-	set_bottom_editor(content_vb);
+	//set_bottom_editor(content_vb);
 }
 
 

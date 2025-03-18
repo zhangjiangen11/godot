@@ -438,7 +438,7 @@ void EditorProperty::_notification(int p_what) {
 			}
 
 			// 获取显示名称
-			StringName pro_dis_name = get_property_display_name(label);
+			StringName pro_dis_name = get_property_display_name(get_edited_property());
 			if(get_edited_object()->has_method(pro_dis_name)) {
 				_draw_label = get_edited_object()->call(pro_dis_name);
 			}
