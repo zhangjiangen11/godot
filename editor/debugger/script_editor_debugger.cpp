@@ -517,7 +517,6 @@ void ScriptEditorDebugger::_parse_message(const String &p_msg, uint64_t p_thread
 		Vector<int> output_types = p_data[1];
 
 		ERR_FAIL_COND(output_strings.size() != output_types.size());
-
 		for (int i = 0; i < output_strings.size(); i++) {
 			RemoteDebugger::MessageType type = (RemoteDebugger::MessageType)(int)(output_types[i]);
 			EditorLog::MessageType msg_type;

@@ -116,6 +116,7 @@ void EditorPropertyVectorN::update_property() {
 			range.x = rangei.x;
 			range.y = rangei.y;
 		}
+		is_dynamic_range = true;
 	}
 	for (int i = 0; i < component_count; i++) {
 		if (radians_as_degrees) {
@@ -709,6 +710,7 @@ void Vector2MinMaxPropertyEditor::update_property() {
 			range.x = rangei.x;
 			range.y = rangei.y;
 		}
+		is_dynamic_range = true;
 	}
 	if(is_dynamic_range) {
 		for (Range *r : Vector<Range *>{ min_range, min_edit, max_range, max_edit }) {
