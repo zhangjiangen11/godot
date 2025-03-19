@@ -110,6 +110,7 @@ class Vector2MinMaxPropertyEditor : public EditorProperty {
 	Vector2 margin;
 	Vector2 usable_area;
 
+	Vector2 curr_value;
 	Vector2 property_range;
 	
 
@@ -142,13 +143,12 @@ class Vector2MinMaxPropertyEditor : public EditorProperty {
 	void _sync_property();
 
 	void _update_mode();
-	void _toggle_mode(bool p_edit_mode);
 	void _update_slider_values();
-	void _sync_sliders(float, const EditorSpinSlider *p_changed_slider);
 	float _get_max_spread() const;
 
 protected:
 	void _notification(int p_what);
+	void update_dyn_range();
 
 public:
 	void setup(float p_min, float p_max, float p_step, bool p_allow_less, bool p_allow_greater, bool p_degrees,bool p_is_int = false);

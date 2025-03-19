@@ -306,6 +306,7 @@ EditorPropertyVector4i::EditorPropertyVector4i(bool p_force_wide) :
 
 
 void Vector2MinMaxPropertyEditor::_update_sizing() {
+	update_dyn_range();
 	edit_size = range_edit_widget->get_size();
 	margin = Vector2(range_slider_left_icon->get_width(), (edit_size.y - range_slider_left_icon->get_height()) * 0.5);
 	usable_area = edit_size - margin * 2;
@@ -403,7 +404,6 @@ void Vector2MinMaxPropertyEditor::_range_edit_draw() {
 void Vector2MinMaxPropertyEditor::_range_edit_gui_input(const Ref<InputEvent> &p_event) {
 	Ref<InputEventMouseButton> mb = p_event;
 	Ref<InputEventMouseMotion> mm = p_event;
-
 	// Prevent unnecessary computations.
 	if ((mb.is_null() || mb->get_button_index() != MouseButton::LEFT) && (mm.is_null())) {
 		return;
@@ -578,12 +578,6 @@ void Vector2MinMaxPropertyEditor::_update_mode() {
 	_update_slider_values();
 }
 
-void Vector2MinMaxPropertyEditor::_toggle_mode(bool p_edit_mode) {
-	slider_mode = p_edit_mode ? Mode::MIDPOINT : Mode::RANGE;
-	EditorSettings::get_singleton()->set_project_metadata("editor_metadata", "particle_spin_mode", int(slider_mode));
-	_update_mode();
-}
-
 void Vector2MinMaxPropertyEditor::_update_slider_values() {
 	switch (slider_mode) {
 		case Mode::RANGE: {
@@ -601,37 +595,6 @@ void Vector2MinMaxPropertyEditor::_update_slider_values() {
 			max_edit->set_block_signals(false);
 		} break;
 	}
-}
-
-void Vector2MinMaxPropertyEditor::_sync_sliders(float, const EditorSpinSlider *p_changed_slider) {
-	switch (slider_mode) {
-		case Mode::RANGE: {
-			if (p_changed_slider == max_edit) {
-				min_edit->set_value_no_signal(MIN(min_edit->get_value(), max_edit->get_value()));
-			}
-			min_range->set_value(min_edit->get_value());
-			if (p_changed_slider == min_edit) {
-				max_edit->set_value_no_signal(MAX(min_edit->get_value(), max_edit->get_value()));
-			}
-			max_range->set_value(max_edit->get_value());
-			_sync_property();
-		} break;
-
-		case Mode::MIDPOINT: {
-			if (p_changed_slider == min_edit) {
-				max_edit->set_block_signals(true); // If max changes, value may change.
-				max_edit->set_max(_get_max_spread());
-				max_edit->set_read_only(max_edit->get_max() == 0);
-				max_edit->set_block_signals(false);
-			}
-			min_range->set_value(min_edit->get_value() - max_edit->get_value());
-			max_range->set_value(min_edit->get_value() + max_edit->get_value());
-			_sync_property();
-		} break;
-	}
-
-	property_range.x = MIN(min_range->get_value(), min_range->get_min());
-	property_range.y = MAX(max_range->get_value(), max_range->get_max());
 }
 
 float Vector2MinMaxPropertyEditor::_get_max_spread() const {
@@ -678,6 +641,7 @@ void Vector2MinMaxPropertyEditor::_notification(int p_what) {
 void Vector2MinMaxPropertyEditor::setup(float p_min, float p_max, float p_step, bool p_allow_less, bool p_allow_greater, bool p_degrees,bool p_is_int) {
 	property_range = Vector2(p_min, p_max);
 	is_int = p_is_int;
+	update_dyn_range();
 
 	// Initially all Ranges share properties.
 	for (Range *range : Vector<Range *>{ min_range, min_edit, max_range, max_edit }) {
@@ -695,29 +659,35 @@ void Vector2MinMaxPropertyEditor::setup(float p_min, float p_max, float p_step, 
 	_update_mode();
 }
 
-void Vector2MinMaxPropertyEditor::update_property() {
+void Vector2MinMaxPropertyEditor::update_dyn_range() {
+	if(get_edited_object() == nullptr) {
+		return;
+	}
 	StringName name = get_range_method(get_edited_property());
 
 	bool is_dynamic_range = false;
-	Vector2 range;
 	if(get_edited_object()->has_method(name)) {
 		Variant ret = get_edited_object()->call(name);
 		if(ret.get_type() == Variant::VECTOR2 ) {
-			range = ret;
+			property_range = ret;
 		}
 		else {
 			Vector2i rangei = ret;
-			range.x = rangei.x;
-			range.y = rangei.y;
+			property_range.x = rangei.x;
+			property_range.y = rangei.y;
 		}
 		is_dynamic_range = true;
 	}
 	if(is_dynamic_range) {
 		for (Range *r : Vector<Range *>{ min_range, min_edit, max_range, max_edit }) {
-			r->set_min(range.x);
-			r->set_max(range.y);
+			r->set_min(property_range.x);
+			r->set_max(property_range.y);
 		}
 	}
+
+}
+void Vector2MinMaxPropertyEditor::update_property() {
+	update_dyn_range();
 	if(is_int){
 		const Vector2i value = get_edited_property_value();
 		min_range->set_value(value.x);
@@ -768,18 +738,16 @@ Vector2MinMaxPropertyEditor::Vector2MinMaxPropertyEditor() {
 	min_edit = memnew(EditorSpinSlider);
 	min_edit->set_h_size_flags(SIZE_EXPAND_FILL);
 	hb->add_child(min_edit);
-	min_edit->connect(SceneStringName(value_changed), callable_mp(this, &Vector2MinMaxPropertyEditor::_sync_sliders).bind(min_edit));
 
 	max_edit = memnew(EditorSpinSlider);
 	max_edit->set_h_size_flags(SIZE_EXPAND_FILL);
 	hb->add_child(max_edit);
-	max_edit->connect(SceneStringName(value_changed), callable_mp(this, &Vector2MinMaxPropertyEditor::_sync_sliders).bind(max_edit));
 
 	toggle_mode_button = memnew(Button);
 	toggle_mode_button->set_toggle_mode(true);
 	toggle_mode_button->set_tooltip_text(TTR("Toggle between minimum/maximum and base value/spread modes."));
 	hb->add_child(toggle_mode_button);
-	toggle_mode_button->connect(SceneStringName(toggled), callable_mp(this, &Vector2MinMaxPropertyEditor::_toggle_mode));
+	//toggle_mode_button->connect(SceneStringName(toggled), callable_mp(this, &Vector2MinMaxPropertyEditor::_toggle_mode));
 
 	//set_bottom_editor(content_vb);
 }

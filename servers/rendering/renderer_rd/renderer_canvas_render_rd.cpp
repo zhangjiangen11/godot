@@ -1530,7 +1530,6 @@ void RendererCanvasRenderRD::CanvasShaderData::_create_pipeline(PipelineKey p_pi
 
 void RendererCanvasRenderRD::CanvasShaderData::set_code(const String &p_code) {
 	//compile
-
 	code = p_code;
 	ubo_size = 0;
 	uniforms.clear();

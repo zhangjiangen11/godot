@@ -2438,6 +2438,25 @@ void MaterialStorage::material_set_param(RID p_material, const StringName &p_par
 
 	if (material->shader && material->shader->data) { //shader is valid
 		bool is_texture = material->shader->data->is_parameter_texture(p_param);
+		if (is_texture) {
+			Ref<Texture2D> tex = p_value;
+			if (tex.is_valid()) {
+				// 刷新2D貼圖大小信息
+				auto it = material->shader->data->uniforms.find(p_param.str() + "_texel_size");
+				if (it != material->shader->data->uniforms.end()) {
+					if (it->value.type == ShaderLanguage::DataType::TYPE_VEC4) {
+						Vector4 texel_size;
+						texel_size.x = tex->get_width();
+						texel_size.y = tex->get_height();
+						texel_size.z = 1.0 / texel_size.x;
+						texel_size.w = 1.0 / texel_size.y;
+						material->params[p_param] = texel_size;
+						material->uniform_dirty = true;
+					}
+				}
+
+			}
+		}
 		_material_queue_update(material, !is_texture, is_texture);
 	} else {
 		_material_queue_update(material, true, true);

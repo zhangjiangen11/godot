@@ -988,6 +988,7 @@ void TextShaderEditor::apply_shaders() {
 	String editor_code = code_editor->get_text_editor()->get_text();
 	if (shader.is_valid()) {
 		String shader_code = shader->get_code();
+		
 		if (shader_code != editor_code || dependencies_version != code_editor->get_dependencies_version()) {
 			code_editor->set_block_shader_changed(true);
 			shader->set_code(editor_code);
