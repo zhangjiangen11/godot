@@ -1243,7 +1243,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			scene_tree->set_auto_expand_selected(!EDITOR_GET("docks/scene_tree/auto_expand_to_selected"), true);
 		} break;
 		case TOOL_CENTER_PARENT: {
-			EditorSettings::get_singleton()->set("docks/scene_tree/center_node_on_reparent", !EDITOR_GET("docks/scene_tree/center_node_on_reparent"));
+			EditorSettings::get_singleton()->set(SNAME("docks/scene_tree/center_node_on_reparent"), !EDITOR_GET("docks/scene_tree/center_node_on_reparent"));
 		} break;
 		case TOOL_HIDE_FILTERED_OUT_PARENTS: {
 			scene_tree->set_hide_filtered_out_parents(!EDITOR_GET("docks/scene_tree/hide_filtered_out_parents"), true);
@@ -4865,7 +4865,7 @@ SceneTreeDock::SceneTreeDock(Node *p_scene_root, EditorSelection *p_editor_selec
 	set_process_input(true);
 	set_process(true);
 
-	EDITOR_DEF("_use_favorites_root_selection", false);
+	EDITOR_DEF(SNAME("_use_favorites_root_selection", false));
 
 	Resource::_update_configuration_warning = _update_configuration_warning;
 }

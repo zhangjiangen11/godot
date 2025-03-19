@@ -577,11 +577,11 @@ bool EditorFileSystemImportFormatSupportQueryBlend::query() {
 
 	if (confirmed) {
 		// Can only confirm a valid path.
-		EditorSettings::get_singleton()->set("filesystem/import/blender/blender_path", blender_path->get_text());
+		EditorSettings::get_singleton()->set(SNAME("filesystem/import/blender/blender_path"), blender_path->get_text());
 		EditorSettings::get_singleton()->save();
 	} else {
 		// Disable Blender import
-		ProjectSettings::get_singleton()->set("filesystem/import/blender/enabled", false);
+		ProjectSettings::get_singleton()->set(SNAME("filesystem/import/blender/enabled"), false);
 		ProjectSettings::get_singleton()->save();
 
 		if (EditorNode::immediate_confirmation_dialog(TTR("Disabling '.blend' file import requires restarting the editor."), TTR("Save & Restart"), TTR("Restart"))) {

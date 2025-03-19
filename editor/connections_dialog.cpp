@@ -303,7 +303,7 @@ List<MethodInfo> ConnectDialog::_filter_method_list(const List<MethodInfo> &p_me
 			continue;
 		}
 
-		if (!p_search_string.is_empty() && !mi.name.containsn(p_search_string)) {
+		if (!p_search_string.is_empty() && !mi.name.str().containsn(p_search_string)) {
 			continue;
 		}
 

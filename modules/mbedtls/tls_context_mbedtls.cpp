@@ -154,7 +154,7 @@ Error TLSContextMbedTLS::init_server(int p_transport, Ref<TLSOptions> p_options,
 #if MBEDTLS_VERSION_MAJOR >= 3
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
-		if (!EditorSettings::get_singleton()->get_setting("network/tls/enable_tls_v1.3").operator bool()) {
+		if (!EditorSettings::get_singleton()->get_setting(SNAME("network/tls/enable_tls_v1.3")).operator bool()) {
 			mbedtls_ssl_conf_max_tls_version(&conf, MBEDTLS_SSL_VERSION_TLS1_2);
 		}
 	} else
@@ -212,7 +212,7 @@ Error TLSContextMbedTLS::init_client(int p_transport, const String &p_hostname, 
 #if MBEDTLS_VERSION_MAJOR >= 3
 #ifdef TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
-		if (!EditorSettings::get_singleton()->get_setting("network/tls/enable_tls_v1.3").operator bool()) {
+		if (!EditorSettings::get_singleton()->get_setting(SNAME("network/tls/enable_tls_v1.3")).operator bool()) {
 			mbedtls_ssl_conf_max_tls_version(&conf, MBEDTLS_SSL_VERSION_TLS1_2);
 		}
 	} else

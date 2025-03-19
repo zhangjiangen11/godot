@@ -2258,7 +2258,7 @@ void EditorFileDialog::set_show_hidden_files(bool p_show) {
 		return;
 	}
 
-	EditorSettings::get_singleton()->set("filesystem/file_dialog/show_hidden_files", p_show);
+	EditorSettings::get_singleton()->set(SNAME("filesystem/file_dialog/show_hidden_files"), p_show);
 	show_hidden_files = p_show;
 	show_hidden->set_pressed(p_show);
 	invalidate();

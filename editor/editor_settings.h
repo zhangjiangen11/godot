@@ -92,7 +92,7 @@ private:
 
 	mutable Ref<ConfigFile> project_metadata;
 	HashMap<String, PropertyInfo> hints;
-	HashMap<String, VariantContainer> props;
+	HashMap<StringName, VariantContainer> props;
 	int last_order;
 
 	Ref<Resource> clipboard;
@@ -148,12 +148,12 @@ public:
 	static void destroy();
 	void set_optimize_save(bool p_optimize);
 
-	bool has_default_value(const String &p_setting) const;
-	void set_setting(const String &p_setting, const Variant &p_value);
-	Variant get_setting(const String &p_setting) const;
-	bool has_setting(const String &p_setting) const;
-	void erase(const String &p_setting);
-	void raise_order(const String &p_setting);
+	bool has_default_value(const StringName&p_setting) const;
+	void set_setting(const StringName&p_setting, const Variant &p_value);
+	Variant get_setting(const StringName&p_setting) const;
+	bool has_setting(const StringName&p_setting) const;
+	void erase(const StringName&p_setting);
+	void raise_order(const StringName&p_setting);
 	void set_initial_value(const StringName &p_setting, const Variant &p_value, bool p_update_current = false);
 	void set_restart_if_changed(const StringName &p_setting, bool p_restart);
 	void set_basic(const StringName &p_setting, bool p_basic);
@@ -215,10 +215,10 @@ public:
 #define EDITOR_DEF(m_var, m_val) _EDITOR_DEF(m_var, Variant(m_val))
 #define EDITOR_DEF_RST(m_var, m_val) _EDITOR_DEF(m_var, Variant(m_val), true)
 #define EDITOR_DEF_BASIC(m_var, m_val) _EDITOR_DEF(m_var, Variant(m_val), false, true)
-Variant _EDITOR_DEF(const String &p_setting, const Variant &p_default, bool p_restart_if_changed = false, bool p_basic = false);
+Variant _EDITOR_DEF(const StringName &p_setting, const Variant &p_default, bool p_restart_if_changed = false, bool p_basic = false);
 
 #define EDITOR_GET(m_var) _EDITOR_GET(m_var)
-Variant _EDITOR_GET(const String &p_setting);
+Variant _EDITOR_GET(const StringName&p_setting);
 
 #define ED_IS_SHORTCUT(p_name, p_ev) (EditorSettings::get_singleton()->is_shortcut(p_name, p_ev))
 Ref<Shortcut> ED_SHORTCUT(const String &p_path, const String &p_name, Key p_keycode = Key::NONE, bool p_physical = false);

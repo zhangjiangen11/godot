@@ -4821,7 +4821,7 @@ void EditorInspector::_notification(int p_what) {
 				update_scroll_request = -1;
 			}
 			if (update_tree_pending) {
-				refresh_countdown = float(EDITOR_GET("docks/property_editor/auto_refresh_interval"));
+				refresh_countdown = float(EDITOR_GET(SNAME("docks/property_editor/auto_refresh_interval")));
 			} else if (refresh_countdown > 0) {
 				refresh_countdown -= get_process_delta_time();
 				if (refresh_countdown <= 0) {
@@ -4834,7 +4834,7 @@ void EditorInspector::_notification(int p_what) {
 							}
 						}
 					}
-					refresh_countdown = float(EDITOR_GET("docks/property_editor/auto_refresh_interval"));
+					refresh_countdown = float(EDITOR_GET(SNAME("docks/property_editor/auto_refresh_interval")));
 				}
 			}
 

@@ -221,12 +221,12 @@ void PropertySelector::_update_search() {
 					memdelete(category); //old category was unused
 				}
 				category = search_options->create_item(root);
-				category->set_text(0, mi.name.replace_first("*", ""));
+				category->set_text(0, mi.name.str().replace_first("*", ""));
 				category->set_selectable(0, false);
 
 				Ref<Texture2D> icon;
 				script_methods = false;
-				String rep = mi.name.remove_char('*');
+				String rep = mi.name.str().remove_char('*');
 				if (mi.name == "*Script Methods") {
 					icon = search_options->get_editor_theme_icon(SNAME("Script"));
 					script_methods = true;
@@ -238,7 +238,7 @@ void PropertySelector::_update_search() {
 				continue;
 			}
 
-			String name = mi.name.get_slicec(':', 0);
+			String name = mi.name.str().get_slicec(':', 0);
 			if (!script_methods && name.begins_with("_") && !(mi.flags & METHOD_FLAG_VIRTUAL)) {
 				continue;
 			}
@@ -258,9 +258,9 @@ void PropertySelector::_update_search() {
 			TreeItem *item = search_options->create_item(category ? category : root);
 
 			String desc;
-			if (mi.name.contains_char(':')) {
-				desc = mi.name.get_slicec(':', 1) + " ";
-				mi.name = mi.name.get_slicec(':', 0);
+			if (mi.name.str().contains_char(':')) {
+				desc = mi.name.str().get_slicec(':', 1) + " ";
+				mi.name = mi.name.str().get_slicec(':', 0);
 			} else if (mi.return_val.type != Variant::NIL) {
 				desc = Variant::get_type_name(mi.return_val.type);
 			} else {

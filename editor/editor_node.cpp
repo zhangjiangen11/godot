@@ -3170,16 +3170,16 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			_discard_changes();
 		} break;
 		case SPINNER_UPDATE_CONTINUOUSLY: {
-			EditorSettings::get_singleton()->set("interface/editor/update_continuously", true);
+			EditorSettings::get_singleton()->set(SNAME("interface/editor/update_continuously"), true);
 			_update_update_spinner();
 			show_accept(TTR("This option is deprecated. Situations where refresh must be forced are now considered a bug. Please report."), TTR("OK"));
 		} break;
 		case SPINNER_UPDATE_WHEN_CHANGED: {
-			EditorSettings::get_singleton()->set("interface/editor/update_continuously", false);
+			EditorSettings::get_singleton()->set(SNAME("interface/editor/update_continuously"), false);
 			_update_update_spinner();
 		} break;
 		case SPINNER_UPDATE_SPINNER_HIDE: {
-			EditorSettings::get_singleton()->set("interface/editor/show_update_spinner", 2); // Disabled
+			EditorSettings::get_singleton()->set(SNAME("interface/editor/show_update_spinner"), 2); // Disabled
 			_update_update_spinner();
 		} break;
 		case EDITOR_OPEN_SETTINGS: {

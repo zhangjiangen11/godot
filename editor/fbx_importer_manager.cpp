@@ -109,7 +109,7 @@ void FBXImporterManager::_select_file(const String &p_path) {
 
 void FBXImporterManager::_path_confirmed() {
 	String path = fbx_path->get_text();
-	EditorSettings::get_singleton()->set("filesystem/import/fbx/fbx2gltf_path", path);
+	EditorSettings::get_singleton()->set(SNAME("filesystem/import/fbx/fbx2gltf_path"), path);
 	EditorSettings::get_singleton()->save();
 }
 
@@ -118,7 +118,7 @@ void FBXImporterManager::_cancel_setup() {
 		return; // No worry.
 	}
 	// No escape.
-	ProjectSettings::get_singleton()->set("filesystem/import/fbx2gltf/enabled", false);
+	ProjectSettings::get_singleton()->set(SNAME("filesystem/import/fbx2gltf/enabled"), false);
 	ProjectSettings::get_singleton()->save();
 	EditorNode::get_singleton()->save_all_scenes();
 	EditorNode::get_singleton()->restart_editor();

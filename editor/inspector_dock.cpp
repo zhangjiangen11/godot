@@ -596,7 +596,7 @@ void InspectorDock::update(Object *p_object) {
 					p->add_separator();
 					found = true;
 				}
-				p->add_item(I->get().name.capitalize(), OBJECT_METHOD_BASE + i);
+				p->add_item(I->get().name.str().capitalize(), OBJECT_METHOD_BASE + i);
 			}
 			i++;
 			I = I->next();

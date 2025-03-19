@@ -526,7 +526,7 @@ void ProjectDialog::ok_pressed() {
 		String renderer_type = renderer_button_group->get_pressed_button()->get_meta(SNAME("rendering_method"));
 		initial_settings["rendering/renderer/rendering_method"] = renderer_type;
 
-		EditorSettings::get_singleton()->set("project_manager/default_renderer", renderer_type);
+		EditorSettings::get_singleton()->set(SNAME("project_manager/default_renderer"), renderer_type);
 		EditorSettings::get_singleton()->save();
 
 		if (renderer_type == "forward_plus") {
@@ -969,8 +969,8 @@ ProjectDialog::ProjectDialog() {
 	rshc->add_child(rvb);
 
 	String default_renderer_type = "forward_plus";
-	if (EditorSettings::get_singleton()->has_setting("project_manager/default_renderer")) {
-		default_renderer_type = EditorSettings::get_singleton()->get_setting("project_manager/default_renderer");
+	if (EditorSettings::get_singleton()->has_setting(SNAME("project_manager/default_renderer"))) {
+		default_renderer_type = EditorSettings::get_singleton()->get_setting(SNAME("project_manager/default_renderer"));
 	}
 
 	rendering_device_supported = DisplayServer::is_rendering_device_supported();

@@ -2256,7 +2256,7 @@ void Object::get_argument_options(const StringName &p_function, int p_idx, List<
 			List<MethodInfo> signals;
 			get_signal_list(&signals);
 			for (const MethodInfo &E : signals) {
-				r_options->push_back(E.name.quote());
+				r_options->push_back(E.name.str().quote());
 			}
 		} else if (pf == "call" || pf == "call_deferred" || pf == "callv" || pf == "has_method") {
 			List<MethodInfo> methods;
@@ -2265,7 +2265,7 @@ void Object::get_argument_options(const StringName &p_function, int p_idx, List<
 				if (E.name.begins_with("_") && !(E.flags & METHOD_FLAG_VIRTUAL)) {
 					continue;
 				}
-				r_options->push_back(E.name.quote());
+				r_options->push_back(E.name.str().quote());
 			}
 		} else if (pf == "set" || pf == "set_deferred" || pf == "get") {
 			List<PropertyInfo> properties;

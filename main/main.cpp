@@ -4235,12 +4235,12 @@ int Main::start() {
 #ifdef TOOLS_ENABLED
 		if (editor) {
 			bool editor_embed_subwindows = EditorSettings::get_singleton()->get_setting(
-					"interface/editor/single_window_mode");
+					SNAME("interface/editor/single_window_mode"));
 
 			if (editor_embed_subwindows) {
 				sml->get_root()->set_embedding_subwindows(true);
 			}
-			restore_editor_window_layout = EditorSettings::get_singleton()->get_setting("interface/editor/editor_screen").operator int() == EditorSettings::InitialScreen::INITIAL_SCREEN_AUTO;
+			restore_editor_window_layout = EditorSettings::get_singleton()->get_setting(SNAME("interface/editor/editor_screen")).operator int() == EditorSettings::InitialScreen::INITIAL_SCREEN_AUTO;
 		}
 #endif
 
@@ -4361,7 +4361,7 @@ int Main::start() {
 		if (project_manager || editor) {
 			// Load SSL Certificates from Editor Settings (or builtin)
 			Crypto::load_default_certificates(
-					EditorSettings::get_singleton()->get_setting("network/tls/editor_tls_certificates").operator String());
+					EditorSettings::get_singleton()->get_setting(SNAME("network/tls/editor_tls_certificates")).operator String());
 		}
 
 		if (recovery_mode) {

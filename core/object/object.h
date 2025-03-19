@@ -181,7 +181,7 @@ struct PropertyInfo {
 
 	PropertyInfo() {}
 
-	PropertyInfo(const Variant::Type p_type, const String &p_name, const PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", const uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName()) :
+	PropertyInfo(const Variant::Type p_type, const String& p_name, const PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", const uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName()) :
 			type(p_type),
 			name(p_name),
 			hint(p_hint),
@@ -236,7 +236,7 @@ enum MethodFlags {
 };
 
 struct MethodInfo {
-	String name;
+	StringName name;
 	PropertyInfo return_val;
 	uint32_t flags = METHOD_FLAGS_DEFAULT;
 	int id = 0;
@@ -278,10 +278,10 @@ struct MethodInfo {
 		}
 	}
 
-	MethodInfo(const String &p_name) { name = p_name; }
+	MethodInfo(const StringName&p_name) { name = p_name; }
 
 	template <typename... VarArgs>
-	MethodInfo(const String &p_name, VarArgs... p_params) {
+	MethodInfo(const StringName&p_name, VarArgs... p_params) {
 		name = p_name;
 		arguments = Vector<PropertyInfo>{ p_params... };
 	}
@@ -293,19 +293,19 @@ struct MethodInfo {
 	}
 
 	template <typename... VarArgs>
-	MethodInfo(Variant::Type ret, const String &p_name, VarArgs... p_params) {
+	MethodInfo(Variant::Type ret, const StringName&p_name, VarArgs... p_params) {
 		name = p_name;
 		return_val.type = ret;
 		arguments = Vector<PropertyInfo>{ p_params... };
 	}
 
-	MethodInfo(const PropertyInfo &p_ret, const String &p_name) {
+	MethodInfo(const PropertyInfo &p_ret, const StringName&p_name) {
 		return_val = p_ret;
 		name = p_name;
 	}
 
 	template <typename... VarArgs>
-	MethodInfo(const PropertyInfo &p_ret, const String &p_name, VarArgs... p_params) {
+	MethodInfo(const PropertyInfo &p_ret, const StringName&p_name, VarArgs... p_params) {
 		return_val = p_ret;
 		name = p_name;
 		arguments = Vector<PropertyInfo>{ p_params... };

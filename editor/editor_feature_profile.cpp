@@ -898,7 +898,7 @@ void EditorFeatureProfileManager::set_current_profile(const String &p_profile_na
 	}
 
 	// Store in editor settings.
-	EditorSettings::get_singleton()->set("_default_feature_profile", p_profile_name);
+	EditorSettings::get_singleton()->set(SNAME("_default_feature_profile"), p_profile_name);
 	EditorSettings::get_singleton()->save();
 
 	current_profile = p_profile_name;

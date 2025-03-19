@@ -1503,6 +1503,9 @@ void CodeTextEditor::set_error(const String &p_error) {
 		error->set_default_cursor_shape(CURSOR_ARROW);
 	}
 }
+String CodeTextEditor::get_error() {
+	return error->get_text();
+}
 
 void CodeTextEditor::set_error_pos(int p_line, int p_column) {
 	error_line = p_line;

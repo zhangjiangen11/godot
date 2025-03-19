@@ -3722,7 +3722,7 @@ void TileMapLayerEditor::_notification(int p_what) {
 }
 
 void TileMapLayerEditor::_on_grid_toggled(bool p_pressed) {
-	EditorSettings::get_singleton()->set("editors/tiles_editor/display_grid", p_pressed);
+	EditorSettings::get_singleton()->set(SNAME("editors/tiles_editor/display_grid"), p_pressed);
 	CanvasItemEditor::get_singleton()->update_viewport();
 }
 
@@ -3899,7 +3899,7 @@ void TileMapLayerEditor::_highlight_selected_layer_button_toggled(bool p_pressed
 		return;
 	}
 
-	EditorSettings::get_singleton()->set("editors/tiles_editor/highlight_selected_layer", p_pressed);
+	EditorSettings::get_singleton()->set(SNAME("editors/tiles_editor/highlight_selected_layer"), p_pressed);
 	if (p_pressed) {
 		_update_all_layers_highlighting();
 	} else {

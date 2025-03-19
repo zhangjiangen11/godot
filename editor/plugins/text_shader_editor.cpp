@@ -41,6 +41,9 @@
 #include "scene/gui/split_container.h"
 #include "servers/rendering/shader_preprocessor.h"
 #include "servers/rendering/shader_types.h"
+#include "servers/rendering/shader_compiler.h"
+#include "servers/rendering/shader_language.h"
+#include "servers/rendering/renderer_rd/storage_rd/material_storage.h"
 
 /*** SHADER SYNTAX HIGHLIGHTER ****/
 
@@ -345,8 +348,49 @@ void ShaderTextEditor::_load_theme_settings() {
 	syntax_highlighter->set_uint_suffix_enabled(true);
 }
 
+static ShaderLanguage::DataType _get_global_shader_uniform_type(const StringName& p_name) {
+	RS::GlobalShaderParameterType gvt = RSG::material_storage->global_shader_parameter_get_type(p_name);
+	return (ShaderLanguage::DataType)RS::global_shader_uniform_type_get_shader_datatype(gvt);
+}
+
+static bool compile(Shader::Mode p_mode, const String& p_code) {
+	ShaderCompiler::IdentifierActions actions;
+	String p_path;
+	ShaderCompiler::GeneratedCode r_gen_code;
+	bool uses_sdf = false;
+	bool uses_time = false;
+
+	int blend_mode = RendererRD::MaterialStorage::ShaderData::BLEND_MODE_MIX;
+
+	actions.entry_point_stages["vertex"] = ShaderCompiler::STAGE_VERTEX;
+	actions.entry_point_stages["fragment"] = ShaderCompiler::STAGE_FRAGMENT;
+	actions.entry_point_stages["light"] = ShaderCompiler::STAGE_FRAGMENT;
+
+	actions.render_mode_values["blend_add"] = Pair<int*, int>(&blend_mode, RendererRD::MaterialStorage::ShaderData::BLEND_MODE_ADD);
+	actions.render_mode_values["blend_mix"] = Pair<int*, int>(&blend_mode, RendererRD::MaterialStorage::ShaderData::BLEND_MODE_MIX);
+	actions.render_mode_values["blend_sub"] = Pair<int*, int>(&blend_mode, RendererRD::MaterialStorage::ShaderData::BLEND_MODE_SUB);
+	actions.render_mode_values["blend_mul"] = Pair<int*, int>(&blend_mode, RendererRD::MaterialStorage::ShaderData::BLEND_MODE_MUL);
+	actions.render_mode_values["blend_premul_alpha"] = Pair<int*, int>(&blend_mode, RendererRD::MaterialStorage::ShaderData::BLEND_MODE_PREMULTIPLIED_ALPHA);
+	actions.render_mode_values["blend_disabled"] = Pair<int*, int>(&blend_mode, RendererRD::MaterialStorage::ShaderData::BLEND_MODE_DISABLED);
+
+	actions.usage_flag_pointers["texture_sdf"] = &uses_sdf;
+	actions.usage_flag_pointers["TIME"] = &uses_time;
+
+	ShaderLanguage::ShaderCompileInfo info;
+	info.functions = ShaderTypes::get_singleton()->get_functions((RenderingServer::ShaderMode)p_mode);
+	info.render_modes = ShaderTypes::get_singleton()->get_modes((RenderingServer::ShaderMode)p_mode);
+	info.shader_types = ShaderTypes::get_singleton()->get_types();
+	info.global_shader_uniform_type_func = _get_global_shader_uniform_type;
+	info.base_varying_index = 0;
+
+	ShaderLanguage parser;
+	Error err = parser.compile(p_code, info);
+	return err == OK;
+
+}
 void ShaderTextEditor::_check_shader_mode() {
-	String type = ShaderLanguage::get_shader_type(get_text_editor()->get_text());
+	String code = ShaderLanguage::get_shader_type(get_text_editor()->get_text());
+	String type = code;
 
 	Shader::Mode mode;
 
@@ -364,15 +408,13 @@ void ShaderTextEditor::_check_shader_mode() {
 
 	if (shader->get_mode() != mode) {
 		set_block_shader_changed(true);
-		shader->set_code(get_text_editor()->get_text());
+		if (compile(mode, code))
+		{
+			shader->set_code(code);
+		}
 		set_block_shader_changed(false);
 		_load_theme_settings();
 	}
-}
-
-static ShaderLanguage::DataType _get_global_shader_uniform_type(const StringName &p_variable) {
-	RS::GlobalShaderParameterType gvt = RS::get_singleton()->global_shader_parameter_get_type(p_variable);
-	return (ShaderLanguage::DataType)RS::global_shader_uniform_type_get_shader_datatype(gvt);
 }
 
 static String complete_from_path;
@@ -872,6 +914,8 @@ void TextShaderEditor::_reload_shader_from_disk() {
 	Ref<Shader> rel_shader = ResourceLoader::load(shader->get_path(), shader->get_class(), ResourceFormatLoader::CACHE_MODE_IGNORE);
 	ERR_FAIL_COND(rel_shader.is_null());
 
+
+
 	code_editor->set_block_shader_changed(true);
 	shader->set_code(rel_shader->get_code());
 	code_editor->set_block_shader_changed(false);
@@ -984,14 +1028,42 @@ void TextShaderEditor::tag_saved_version() {
 	code_editor->get_text_editor()->tag_saved_version();
 }
 
+
 void TextShaderEditor::apply_shaders() {
+	if (!code_editor->get_error().is_empty()) {
+		return;
+	}
 	String editor_code = code_editor->get_text_editor()->get_text();
 	if (shader.is_valid()) {
+
+
+		String type = ShaderLanguage::get_shader_type(editor_code);
+
+		Shader::Mode mode;
+
+		if (type == "canvas_item") {
+			mode = Shader::MODE_CANVAS_ITEM;
+		}
+		else if (type == "particles") {
+			mode = Shader::MODE_PARTICLES;
+		}
+		else if (type == "sky") {
+			mode = Shader::MODE_SKY;
+		}
+		else if (type == "fog") {
+			mode = Shader::MODE_FOG;
+		}
+		else {
+			mode = Shader::MODE_SPATIAL;
+		}
 		String shader_code = shader->get_code();
-		
+
 		if (shader_code != editor_code || dependencies_version != code_editor->get_dependencies_version()) {
+
 			code_editor->set_block_shader_changed(true);
-			shader->set_code(editor_code);
+			if (compile(mode, shader_code)) {
+				shader->set_code(editor_code);
+			}
 			code_editor->set_block_shader_changed(false);
 			shader->set_edited(true);
 		}

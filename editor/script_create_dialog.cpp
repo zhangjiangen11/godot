@@ -123,7 +123,7 @@ void ScriptCreateDialog::_notification(int p_what) {
 			} else {
 				language_menu->select(default_language);
 			}
-			is_using_templates = EDITOR_DEF("_script_setup_use_script_templates", false);
+			is_using_templates = EDITOR_DEF(SNAME("_script_setup_use_script_templates", false));
 			use_templates->set_pressed(is_using_templates);
 		} break;
 
@@ -320,7 +320,7 @@ void ScriptCreateDialog::_template_changed(int p_template) {
 			// Save template info to editor dictionary (not a project template).
 			Dictionary dic_templates = EDITOR_GET("_script_setup_templates_dictionary");
 			dic_templates[parent_name->get_text()] = sinfo.get_hash();
-			EditorSettings::get_singleton()->set("_script_setup_templates_dictionary", dic_templates);
+			EditorSettings::get_singleton()->set(SNAME("_script_setup_templates_dictionary"), dic_templates);
 			// Remove template from project dictionary as we last used an editor level template.
 			Dictionary dic_templates_project = EditorSettings::get_singleton()->get_project_metadata("script_setup", "templates_dictionary", Dictionary());
 			if (dic_templates_project.has(parent_name->get_text())) {
@@ -433,7 +433,7 @@ void ScriptCreateDialog::_built_in_pressed() {
 
 void ScriptCreateDialog::_use_template_pressed() {
 	is_using_templates = use_templates->is_pressed();
-	EditorSettings::get_singleton()->set("_script_setup_use_script_templates", is_using_templates);
+	EditorSettings::get_singleton()->set(SNAME("_script_setup_use_script_templates"), is_using_templates);
 	validation_panel->update();
 }
 
@@ -839,7 +839,7 @@ void ScriptCreateDialog::_bind_methods() {
 }
 
 ScriptCreateDialog::ScriptCreateDialog() {
-	EDITOR_DEF("_script_setup_templates_dictionary", Dictionary());
+	EDITOR_DEF(SNAME("_script_setup_templates_dictionary", Dictionary()));
 
 	/* Main Controls */
 

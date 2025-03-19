@@ -263,7 +263,7 @@ void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 
 	RBSet<_EVCSort> vclist;
 
-	for (const KeyValue<String, VariantContainer> &E : props) {
+	for (const KeyValue<StringName, VariantContainer> &E : props) {
 		const VariantContainer *v = &E.value;
 
 		if (v->hide_from_editor) {
@@ -340,7 +340,7 @@ void EditorSettings::_add_property_info_bind(const Dictionary &p_info) {
 }
 
 // Default configs
-bool EditorSettings::has_default_value(const String &p_setting) const {
+bool EditorSettings::has_default_value(const StringName&p_setting) const {
 	_THREAD_SAFE_METHOD_
 
 	if (!props.has(p_setting)) {
@@ -1181,7 +1181,7 @@ bool EditorSettings::_save_text_editor_theme(const String &p_file) {
 
 	List<String> keys;
 
-	for (const KeyValue<String, VariantContainer> &E : props) {
+	for (const KeyValue<StringName, VariantContainer> &E : props) {
 		keys.push_back(E.key);
 	}
 
@@ -1426,29 +1426,29 @@ void EditorSettings::set_optimize_save(bool p_optimize) {
 
 // Properties
 
-void EditorSettings::set_setting(const String &p_setting, const Variant &p_value) {
+void EditorSettings::set_setting(const StringName&p_setting, const Variant &p_value) {
 	_THREAD_SAFE_METHOD_
 	set(p_setting, p_value);
 }
 
-Variant EditorSettings::get_setting(const String &p_setting) const {
+Variant EditorSettings::get_setting(const StringName&p_setting) const {
 	_THREAD_SAFE_METHOD_
 	return get(p_setting);
 }
 
-bool EditorSettings::has_setting(const String &p_setting) const {
+bool EditorSettings::has_setting(const StringName&p_setting) const {
 	_THREAD_SAFE_METHOD_
 
 	return props.has(p_setting);
 }
 
-void EditorSettings::erase(const String &p_setting) {
+void EditorSettings::erase(const StringName&p_setting) {
 	_THREAD_SAFE_METHOD_
 
 	props.erase(p_setting);
 }
 
-void EditorSettings::raise_order(const String &p_setting) {
+void EditorSettings::raise_order(const StringName&p_setting) {
 	_THREAD_SAFE_METHOD_
 
 	ERR_FAIL_COND(!props.has(p_setting));
@@ -1486,7 +1486,7 @@ void EditorSettings::set_initial_value(const StringName &p_setting, const Varian
 	}
 }
 
-Variant _EDITOR_DEF(const String &p_setting, const Variant &p_default, bool p_restart_if_changed, bool p_basic) {
+Variant _EDITOR_DEF(const StringName&p_setting, const Variant &p_default, bool p_restart_if_changed, bool p_basic) {
 	ERR_FAIL_NULL_V_MSG(EditorSettings::get_singleton(), p_default, "EditorSettings not instantiated yet.");
 
 	Variant ret = p_default;
@@ -1505,7 +1505,7 @@ Variant _EDITOR_DEF(const String &p_setting, const Variant &p_default, bool p_re
 	return ret;
 }
 
-Variant _EDITOR_GET(const String &p_setting) {
+Variant _EDITOR_GET(const StringName&p_setting) {
 	ERR_FAIL_COND_V(!EditorSettings::get_singleton() || !EditorSettings::get_singleton()->has_setting(p_setting), Variant());
 	return EditorSettings::get_singleton()->get(p_setting);
 }
@@ -2131,12 +2131,12 @@ void EditorSettings::get_argument_options(const StringName &p_function, int p_id
 	if (p_idx == 0) {
 		if (pf == "has_setting" || pf == "set_setting" || pf == "get_setting" || pf == "erase" ||
 				pf == "set_initial_value" || pf == "set_as_basic" || pf == "mark_setting_changed") {
-			for (const KeyValue<String, VariantContainer> &E : props) {
+			for (const KeyValue<StringName, VariantContainer> &E : props) {
 				if (E.value.hide_from_editor) {
 					continue;
 				}
 
-				r_options->push_back(E.key.quote());
+				r_options->push_back(E.key.str().quote());
 			}
 		} else if (pf == "get_project_metadata" && project_metadata.is_valid()) {
 			List<String> sections;

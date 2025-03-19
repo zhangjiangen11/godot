@@ -932,9 +932,9 @@ void EditorExportPlatformAndroid::_create_editor_debug_keystore_if_needed() {
 	}
 
 	// Update the editor settings.
-	EditorSettings::get_singleton()->set("export/android/debug_keystore", keystore_path);
-	EditorSettings::get_singleton()->set("export/android/debug_keystore_user", DEFAULT_ANDROID_KEYSTORE_DEBUG_USER);
-	EditorSettings::get_singleton()->set("export/android/debug_keystore_pass", DEFAULT_ANDROID_KEYSTORE_DEBUG_PASSWORD);
+	EditorSettings::get_singleton()->set(SNAME("export/android/debug_keystore"), keystore_path);
+	EditorSettings::get_singleton()->set(SNAME("export/android/debug_keystore_user"), DEFAULT_ANDROID_KEYSTORE_DEBUG_USER);
+	EditorSettings::get_singleton()->set(SNAME("export/android/debug_keystore_pass"), DEFAULT_ANDROID_KEYSTORE_DEBUG_PASSWORD);
 	print_verbose("Updated editor debug keystore to " + keystore_path);
 }
 

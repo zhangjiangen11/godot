@@ -57,8 +57,8 @@ static void _editor_init() {
 	// Blend to glTF importer.
 
 	String blender_path = EDITOR_GET("filesystem/import/blender/blender_path");
-	if (blender_path.is_empty() && EditorSettings::get_singleton()->has_setting("filesystem/import/blender/blender3_path")) {
-		blender_path = EditorSettings::get_singleton()->get("filesystem/import/blender/blender3_path");
+	if (blender_path.is_empty() && EditorSettings::get_singleton()->has_setting(SNAME("filesystem/import/blender/blender3_path"))) {
+		blender_path = EditorSettings::get_singleton()->get(SNAME("filesystem/import/blender/blender3_path"));
 
 		if (!blender_path.is_empty()) {
 #if defined(MACOS_ENABLED)
@@ -73,7 +73,7 @@ static void _editor_init() {
 			blender_path += "/blender";
 #endif
 
-			EditorSettings::get_singleton()->set("filesystem/import/blender/blender_path", blender_path);
+			EditorSettings::get_singleton()->set(SNAME("filesystem/import/blender/blender_path"), blender_path);
 		}
 
 		EditorSettings::get_singleton()->erase("filesystem/import/blender/blender3_path");

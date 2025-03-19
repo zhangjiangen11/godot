@@ -2080,7 +2080,7 @@ void ScriptEditor::_update_members_overview_visibility() {
 }
 
 void ScriptEditor::_toggle_members_overview_alpha_sort(bool p_alphabetic_sort) {
-	EditorSettings::get_singleton()->set("text_editor/script_list/sort_members_outline_alphabetically", p_alphabetic_sort);
+	EditorSettings::get_singleton()->set(SNAME("text_editor/script_list/sort_members_outline_alphabetically"), p_alphabetic_sort);
 	_update_members_overview();
 }
 

@@ -52,9 +52,9 @@ class StringName {
 
 	struct _Data {
 		SafeRefCount refcount;
-		SafeNumeric<uint32_t> static_count;
-		const char *cname = nullptr;
+		const char* cname = nullptr;
 		String name;
+		SafeNumeric<uint32_t> static_count;
 #ifdef DEBUG_ENABLED
 		uint32_t debug_references = 0;
 #endif
@@ -102,41 +102,44 @@ public:
 	bool operator==(const char *p_name) const;
 	bool operator!=(const String &p_name) const;
 	bool operator!=(const char *p_name) const;
-	int find(const String &p_str, int p_from = 0) const
+	_FORCE_INLINE_ int find(const String &p_str, int p_from = 0) const
 	{
 		return operator String().find(p_str, 0);
 	}
-	bool match(const String &p_wildcard) const
+	_FORCE_INLINE_ bool match(const String &p_wildcard) const
 	{
 		return operator String().match(p_wildcard);
 	}
-	bool begins_with(const String &p_string) const
+	_FORCE_INLINE_ bool begins_with(const String &p_string) const
 	{
 		return operator String().begins_with(p_string);
 	}
-	String substr(int p_from, int p_chars = -1) const
+	_FORCE_INLINE_ String substr(int p_from, int p_chars = -1) const
 	{
 		return operator String().substr(p_from, p_chars);
 	}
-	String replace(const String &p_key, const String &p_with) const
+	_FORCE_INLINE_ String replace(const String &p_key, const String &p_with) const
 	{
 		return operator String().replace(p_key, p_with);
 	}
-	String to_upper() const
+	_FORCE_INLINE_ String to_upper() const
 	{
 		return operator String().to_upper();
 	}
-	String to_lower() const
+	_FORCE_INLINE_ String to_lower() const
 	{
 		return operator String().to_lower();
 	}
-	String get_slice(const String &p_splitter, int p_slice) const
+	_FORCE_INLINE_ String get_slice(const String &p_splitter, int p_slice) const
 	{
 		return operator String().get_slice(p_splitter, p_slice);
 	}
-	String  str()const
+	_FORCE_INLINE_ String  str()const
 	{
-		return operator String();
+		if (_data) {
+			return _data->name;
+		}
+		return String();
 	}
 
 	char32_t operator[](int p_index) const;
@@ -186,11 +189,7 @@ public:
 
 	_FORCE_INLINE_ operator String() const {
 		if (_data) {
-			if (_data->cname) {
-				return String(_data->cname);
-			} else {
-				return _data->name;
-			}
+			return _data->name;
 		}
 
 		return String();
@@ -281,7 +280,7 @@ public:
 			unref();
 		}
 	}
-
+	static StringName None;
 #ifdef DEBUG_ENABLED
 	static void set_debug_stringnames(bool p_enable) { debug_stringname = p_enable; }
 #endif

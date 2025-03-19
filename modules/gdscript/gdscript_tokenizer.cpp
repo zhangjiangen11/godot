@@ -1693,7 +1693,7 @@ GDScriptTokenizer::Token GDScriptTokenizerText::scan() {
 GDScriptTokenizerText::GDScriptTokenizerText() {
 #ifdef TOOLS_ENABLED
 	if (EditorSettings::get_singleton()) {
-		tab_size = EditorSettings::get_singleton()->get_setting("text_editor/behavior/indent/size");
+		tab_size = EditorSettings::get_singleton()->get_setting(SNAME("text_editor/behavior/indent/size"));
 	}
 #endif // TOOLS_ENABLED
 #ifdef DEBUG_ENABLED

@@ -84,7 +84,7 @@ void GDScriptWorkspace::apply_new_signal(Object *obj, String function, PackedStr
 		}
 	}
 	function_body += ")";
-	if (EditorSettings::get_singleton()->get_setting("text_editor/completion/add_type_hints")) {
+	if (EditorSettings::get_singleton()->get_setting(SNAME("text_editor/completion/add_type_hints"))) {
 		function_body += " -> void";
 	}
 	function_body += ":\n\tpass # Replace with function body.\n";

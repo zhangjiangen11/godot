@@ -1176,7 +1176,7 @@ void ProjectList::add_search_tag(const String &p_tag) {
 
 void ProjectList::set_order_option(int p_option) {
 	FilterOption selected = (FilterOption)p_option;
-	EditorSettings::get_singleton()->set("project_manager/sorting_order", p_option);
+	EditorSettings::get_singleton()->set(SNAME("project_manager/sorting_order"), p_option);
 	EditorSettings::get_singleton()->save();
 	_order_option = selected;
 

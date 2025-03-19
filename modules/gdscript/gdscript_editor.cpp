@@ -519,7 +519,7 @@ void GDScriptLanguage::get_public_annotations(List<MethodInfo> *p_annotations) c
 
 String GDScriptLanguage::make_function(const String &p_class, const String &p_name, const PackedStringArray &p_args) const {
 #ifdef TOOLS_ENABLED
-	bool th = EditorSettings::get_singleton()->get_setting("text_editor/completion/add_type_hints");
+	bool th = EditorSettings::get_singleton()->get_setting(SNAME("text_editor/completion/add_type_hints"));
 #else
 	bool th = false;
 #endif
@@ -741,7 +741,7 @@ static String _make_arguments_hint(const MethodInfo &p_info, int p_arg_idx, bool
 	if (!p_is_annotation) {
 		arghint += _get_visual_datatype(p_info.return_val, false) + " ";
 	}
-	arghint += p_info.name + "(";
+	arghint += p_info.name.str() + "(";
 
 	int def_args = p_info.arguments.size() - p_info.default_arguments.size();
 	int i = 0;
@@ -3475,7 +3475,7 @@ static void _find_call_arguments(GDScriptParser::CompletionContext &p_context, c
 				break;
 			}
 
-			bool use_type_hint = EditorSettings::get_singleton()->get_setting("text_editor/completion/add_type_hints").operator bool();
+			bool use_type_hint = EditorSettings::get_singleton()->get_setting(SNAME("text_editor/completion/add_type_hints")).operator bool();
 
 			List<MethodInfo> virtual_methods;
 			ClassDB::get_virtual_methods(class_name, &virtual_methods);

@@ -859,7 +859,7 @@ void EditorSettingsDialog::_focus_current_search_box() {
 }
 
 void EditorSettingsDialog::_advanced_toggled(bool p_button_pressed) {
-	EditorSettings::get_singleton()->set("_editor_settings_advanced_mode", p_button_pressed);
+	EditorSettings::get_singleton()->set(SNAME("_editor_settings_advanced_mode"), p_button_pressed);
 }
 
 void EditorSettingsDialog::_editor_restart() {
@@ -907,7 +907,7 @@ EditorSettingsDialog::EditorSettingsDialog() {
 	advanced_switch = memnew(CheckButton(TTR("Advanced Settings")));
 	hbc->add_child(advanced_switch);
 
-	bool use_advanced = EDITOR_DEF("_editor_settings_advanced_mode", false);
+	bool use_advanced = EDITOR_DEF(SNAME("_editor_settings_advanced_mode", false));
 	advanced_switch->set_pressed(use_advanced);
 	advanced_switch->connect(SceneStringName(toggled), callable_mp(this, &EditorSettingsDialog::_advanced_toggled));
 

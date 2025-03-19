@@ -213,7 +213,7 @@ void SceneTreeEditor::_cell_button_pressed(Object *p_item, int p_column, int p_i
 
 void SceneTreeEditor::_update_ask_before_revoking_unique_name() {
 	if (ask_before_revoke_checkbox->is_pressed()) {
-		EditorSettings::get_singleton()->set("docks/scene_tree/ask_before_revoking_unique_name", false);
+		EditorSettings::get_singleton()->set(SNAME("docks/scene_tree/ask_before_revoking_unique_name"), false);
 		ask_before_revoke_checkbox->set_pressed(false);
 	}
 
@@ -2013,7 +2013,7 @@ void SceneTreeEditor::_warning_changed(Node *p_for_node) {
 
 void SceneTreeEditor::set_auto_expand_selected(bool p_auto, bool p_update_settings) {
 	if (p_update_settings) {
-		EditorSettings::get_singleton()->set("docks/scene_tree/auto_expand_to_selected", p_auto);
+		EditorSettings::get_singleton()->set(SNAME("docks/scene_tree/auto_expand_to_selected"), p_auto);
 	}
 	auto_expand_selected = p_auto;
 }
@@ -2024,7 +2024,7 @@ void SceneTreeEditor::set_hide_filtered_out_parents(bool p_hide, bool p_update_s
 	}
 
 	if (p_update_settings) {
-		EditorSettings::get_singleton()->set("docks/scene_tree/hide_filtered_out_parents", p_hide);
+		EditorSettings::get_singleton()->set(SNAME("docks/scene_tree/hide_filtered_out_parents"), p_hide);
 	}
 	hide_filtered_out_parents = p_hide;
 

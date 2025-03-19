@@ -655,7 +655,7 @@ void QuickOpenResultContainer::_item_input(const Ref<InputEvent> &p_ev, int p_in
 }
 
 void QuickOpenResultContainer::_toggle_fuzzy_search(bool p_pressed) {
-	EditorSettings::get_singleton()->set("filesystem/quick_open_dialog/enable_fuzzy_matching", p_pressed);
+	EditorSettings::get_singleton()->set(SNAME("filesystem/quick_open_dialog/enable_fuzzy_matching"), p_pressed);
 	update_results();
 }
 
@@ -664,7 +664,7 @@ String QuickOpenResultContainer::_get_cache_file_path() const {
 }
 
 void QuickOpenResultContainer::_toggle_include_addons(bool p_pressed) {
-	EditorSettings::get_singleton()->set("filesystem/quick_open_dialog/include_addons", p_pressed);
+	EditorSettings::get_singleton()->set(SNAME("filesystem/quick_open_dialog/include_addons"), p_pressed);
 	cleanup();
 	_create_initial_results();
 }

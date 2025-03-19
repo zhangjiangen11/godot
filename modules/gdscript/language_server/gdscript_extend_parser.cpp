@@ -38,7 +38,7 @@
 
 int get_indent_size() {
 	if (EditorSettings::get_singleton()) {
-		return EditorSettings::get_singleton()->get_setting("text_editor/behavior/indent/size");
+		return EditorSettings::get_singleton()->get_setting(SNAME("text_editor/behavior/indent/size"));
 	} else {
 		return 4;
 	}

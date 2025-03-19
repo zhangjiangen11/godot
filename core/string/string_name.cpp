@@ -33,6 +33,7 @@
 #include "core/os/os.h"
 #include "core/string/print_string.h"
 
+StringName StringName::None;
 StaticCString StaticCString::create(const char *p_ptr) {
 	StaticCString scs;
 	scs.ptr = p_ptr;
@@ -298,7 +299,13 @@ StringName::StringName(const char *p_name, bool p_static) {
 
 	_data = memnew(_Data);
 	_data->name = p_name;
-	_data->refcount.init();
+	if (_data->name.length() <= 24) {
+		_data->refcount.init(2);
+	}
+	else {
+		_data->refcount.init();
+
+	}
 	_data->static_count.set(p_static ? 1 : 0);
 	_data->hash = hash;
 	_data->idx = idx;
@@ -413,7 +420,13 @@ StringName::StringName(const String &p_name, bool p_static) {
 
 	_data = memnew(_Data);
 	_data->name = p_name;
-	_data->refcount.init();
+	if (_data->name.length() <= 24) {
+		_data->refcount.init(2);
+	}
+	else {
+		_data->refcount.init();
+
+	}
 	_data->static_count.set(p_static ? 1 : 0);
 	_data->hash = hash;
 	_data->idx = idx;

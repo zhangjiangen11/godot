@@ -158,14 +158,15 @@ Error GDScriptTokenizerBuffer::set_code_buffer(const Vector<uint8_t> &p_buffer) 
 
 	int total_len = contents.size();
 	buf = contents.ptr();
-	uint32_t identifier_count = decode_uint32(&buf[0]);
-	uint32_t constant_count = decode_uint32(&buf[4]);
-	uint32_t token_line_count = decode_uint32(&buf[8]);
+	uint32_t identifier_count = decode_uint32(&buf[0]) / 2;
+	uint32_t constant_count = decode_uint32(&buf[4]) / 3;
+	uint32_t token_line_count = decode_uint32(&buf[8]) - 127;
 	uint32_t token_count = decode_uint32(&buf[16]);
 
 	const uint8_t *b = &buf[20];
 	total_len -= 20;
 
+	uint8_t tmp[4];
 	identifiers.resize(identifier_count);
 	for (uint32_t i = 0; i < identifier_count; i++) {
 		uint32_t len = decode_uint32(b);
@@ -175,9 +176,8 @@ Error GDScriptTokenizerBuffer::set_code_buffer(const Vector<uint8_t> &p_buffer) 
 		Vector<uint32_t> cs;
 		cs.resize(len);
 		for (uint32_t j = 0; j < len; j++) {
-			uint8_t tmp[4];
 			for (uint32_t k = 0; k < 4; k++) {
-				tmp[k] = b[j * 4 + k] ^ 0xb6;
+				tmp[k] = b[j * 4 + k] ^ 0xa3;
 			}
 			cs.write[j] = decode_uint32(tmp);
 		}
@@ -293,14 +293,15 @@ Vector<uint8_t> GDScriptTokenizerBuffer::parse_code_string(const String &p_code,
 
 	Vector<uint8_t> contents;
 	contents.resize(20);
-	encode_uint32(identifier_map.size(), &contents.write[0]);
-	encode_uint32(constant_map.size(), &contents.write[4]);
-	encode_uint32(token_lines.size(), &contents.write[8]);
+	encode_uint32(identifier_map.size() * 2, &contents.write[0]);
+	encode_uint32(constant_map.size() * 3, &contents.write[4]);
+	encode_uint32(token_lines.size() + 127, &contents.write[8]);
 	encode_uint32(0, &contents.write[12]); // Unused, kept for compatibility. Please remove at next `TOKENIZER_VERSION` increment.
 	encode_uint32(token_counter, &contents.write[16]);
 
 	int buf_pos = 20;
 
+	uint8_t tmp[4];
 	// Save identifiers.
 	for (const StringName &id : rev_identifier_map) {
 		String s = id.operator String();
@@ -312,11 +313,10 @@ Vector<uint8_t> GDScriptTokenizerBuffer::parse_code_string(const String &p_code,
 		buf_pos += 4;
 
 		for (int i = 0; i < len; i++) {
-			uint8_t tmp[4];
 			encode_uint32(s[i], tmp);
 
 			for (int b = 0; b < 4; b++) {
-				contents.write[buf_pos + b] = tmp[b] ^ 0xb6;
+				contents.write[buf_pos + b] = tmp[b] ^ 0xa3;
 			}
 
 			buf_pos += 4;

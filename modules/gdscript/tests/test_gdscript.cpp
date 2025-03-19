@@ -54,7 +54,7 @@ static void test_tokenizer(const String &p_code, const Vector<String> &p_lines) 
 	int tab_size = 4;
 #ifdef TOOLS_ENABLED
 	if (EditorSettings::get_singleton()) {
-		tab_size = EditorSettings::get_singleton()->get_setting("text_editor/behavior/indent/size");
+		tab_size = EditorSettings::get_singleton()->get_setting(SNAME("text_editor/behavior/indent/size"));
 	}
 #endif // TOOLS_ENABLED
 	String tab = String(" ").repeat(tab_size);
@@ -119,7 +119,7 @@ static void test_tokenizer_buffer(const Vector<uint8_t> &p_buffer, const Vector<
 	int tab_size = 4;
 #ifdef TOOLS_ENABLED
 	if (EditorSettings::get_singleton()) {
-		tab_size = EditorSettings::get_singleton()->get_setting("text_editor/behavior/indent/size");
+		tab_size = EditorSettings::get_singleton()->get_setting(SNAME("text_editor/behavior/indent/size"));
 	}
 #endif // TOOLS_ENABLED
 	String tab = String(" ").repeat(tab_size);
