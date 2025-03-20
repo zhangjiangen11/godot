@@ -19,8 +19,8 @@ void MPaint256::before_draw(){
 }
 void MPaint256::set_color(uint32_t local_x,uint32_t local_y,uint32_t x,uint32_t y,MImage* img){
     //Calculating w
-    float dx = (float)ABS(x - grid->brush_px_pos_x);
-    float dy = (float)ABS(y - grid->brush_px_pos_y);
+    float dx = (float)Math::abs((int32_t)x - (int32_t)grid->brush_px_pos_x);
+    float dy = (float)Math::abs((int32_t)y - (int32_t)grid->brush_px_pos_y);
     float px_dis = sqrt(dx*dx + dy*dy);
     // setting color
     const uint8_t* ptr = grid->get_pixel_by_pointer(x,y,grid->current_paint_index);

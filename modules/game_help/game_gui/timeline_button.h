@@ -310,7 +310,7 @@ public:
 
         int l_frame = a_playhead - clip_data->start_frame;
         l_new_clip->start_frame = a_playhead;
-        l_new_clip->duration = ABS(clip_data->duration - l_frame);
+        l_new_clip->duration = Math::abs(clip_data->duration - l_frame);
         l_new_clip->begin = clip_data->begin + l_frame;
 
         clip_data->duration -= l_new_clip->duration;

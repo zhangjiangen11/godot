@@ -61,7 +61,7 @@ float CharacterAnimationItem::_get_animation_length()
     if(is_clip)
     {
         if(animation.is_valid())
-            return ABS(animation->get_length() * speed);
+            return Math::abs(animation->get_length() * speed);
     }
     else
     {
@@ -155,8 +155,8 @@ void CharacterAnimatorNodeBase::_blend_anmation(CharacterAnimatorLayer *p_layer,
             Ref<CharacterAnimationItem> item = animation_arrays[i];
             if(item->is_clip){
                 p_playback_info_ptr[i].weight = w;
-                p_playback_info_ptr[i].delta = p_playback_info->delta / ABS(item->get_speed());
-                p_playback_info_ptr[i].time = p_playback_info->animation_time_pos / ABS(item->get_speed());
+                p_playback_info_ptr[i].delta = p_playback_info->delta / Math::abs(item->get_speed());
+                p_playback_info_ptr[i].time = p_playback_info->animation_time_pos / Math::abs(item->get_speed());
                 p_playback_info_ptr[i].disable_path = p_playback_info->disable_path;
 
 				if (get_loop() == LOOP_Once)
@@ -781,10 +781,10 @@ void CharacterAnimatorLoopLast::process_animation(class CharacterAnimatorLayer *
 			AnimationMixer::PlaybackInfo* p_playback_info_ptr = p_playback_info->m_ChildAnimationPlaybackArray.ptr();
             AnimationMixer::PlaybackInfo&  playback_info = p_playback_info_ptr[0];
 
-			playback_info.delta = ABS(playback_info.delta);
-			playback_info.time = ABS(playback_info.time);
+			playback_info.delta = Math::abs(playback_info.delta);
+			playback_info.time = Math::abs(playback_info.time);
 			playback_info.weight = w;
-			playback_info.delta = p_playback_info->delta * ABS(item->get_speed());
+			playback_info.delta = p_playback_info->delta * Math::abs(item->get_speed());
 			playback_info.time += playback_info.delta ;
 			playback_info.disable_path = p_playback_info->disable_path;
 			// 循环播放

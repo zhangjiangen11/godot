@@ -70,9 +70,9 @@ public:
 	void set_code(const String &p_text);
 	String get_code() const;
 
-	void set_preview_name(const String& name)
+	void set_preview_name(const String& _name)
 	{
-		preview_name = name;
+		preview_name = _name;
 	}
 	const String& get_preview_name() {return preview_name;}
 

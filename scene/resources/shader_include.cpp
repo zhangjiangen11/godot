@@ -85,10 +85,10 @@ void ShaderInclude::_bind_methods() {
 
 void ShaderTemplate::set_code(const String &p_code) {
 	
-	if(code.begins_with("//NAME:")) {
-		Vector<String> ret = code.split('\n',false,2);
-		if(ret.size() > 1) {
-			preview_name = ret[0].substr(7).strip_edges(true,true);
+	if(p_code.begins_with("//NAME:")) {
+		int ret = p_code.find_char('\n');
+		if(ret > 1) {
+			preview_name = p_code.substr(0,ret).substr(7).strip_edges(true, true);
 		}
 	}
 	code = p_code;

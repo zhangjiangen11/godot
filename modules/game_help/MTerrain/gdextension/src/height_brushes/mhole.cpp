@@ -43,8 +43,8 @@ void MHole::before_draw(){
 
 }
 float MHole::get_height(uint32_t x,uint32_t y){
-    uint32_t dx = ABS(x - grid->brush_px_pos_x);
-    uint32_t dy = ABS(y - grid->brush_px_pos_y);
+    uint32_t dx = Math::abs((int32_t)x - (int32_t)grid->brush_px_pos_x);
+    uint32_t dy = Math::abs((int32_t)y - (int32_t)grid->brush_px_pos_y);
     float px_dis = (float)sqrt(dx*dx + dy*dy);
     px_dis /= (float)grid->brush_px_radius;
     float h = grid->get_height_by_pixel(x,y);

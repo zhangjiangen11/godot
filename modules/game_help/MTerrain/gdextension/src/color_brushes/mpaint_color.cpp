@@ -27,8 +27,8 @@ void MPaintColor::before_draw(){
 
 }
 void MPaintColor::set_color(uint32_t local_x,uint32_t local_y,uint32_t x,uint32_t y,MImage* img){
-    uint32_t dx = ABS(x - grid->brush_px_pos_x);
-    uint32_t dy = ABS(y - grid->brush_px_pos_y);
+    uint32_t dx = Math::abs((int32_t)x - (int32_t)grid->brush_px_pos_x);
+    uint32_t dy = Math::abs((int32_t)y - (int32_t)grid->brush_px_pos_y);
     float px_dis = (float)sqrt(dx*dx + dy*dy);
     px_dis /= (float)grid->brush_px_radius;
     float w = VariantUtilityFunctions::smoothstep(1,hardness,px_dis);

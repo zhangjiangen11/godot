@@ -67,7 +67,7 @@ JoltSpace3D::JoltSpace3D(JPH::JobSystem* p_job_system)
 		   [[maybe_unused]] const JPH::SubShapeID& p_sub_shape_id1,
 		   const JPH::Body& p_body2,
 		   [[maybe_unused]] const JPH::SubShapeID& p_sub_shape_id2) {
-			return ABS(MIN(p_body1.GetFriction(), p_body2.GetFriction()));
+			return Math::abs(MIN(p_body1.GetFriction(), p_body2.GetFriction()));
 		}
 	);
 

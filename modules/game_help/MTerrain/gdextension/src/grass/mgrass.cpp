@@ -759,8 +759,8 @@ void MGrass::draw_grass(Vector3 brush_pos,real_t radius,bool add){
     uint32_t j=1;
     for(uint32_t y = px.top; y<=px.bottom;y++){
         for(uint32_t x = px.left; x<=px.right;x++){
-            uint32_t dif_x = UABS_DIFF(x,brush_px_pos_x);
-            uint32_t dif_y = UABS_DIFF(y,brush_px_pos_y);
+            uint32_t dif_x = Math::abs((int32_t)x - (int32_t)brush_px_pos_x);
+            uint32_t dif_y = Math::abs((int32_t)y - (int32_t)brush_px_pos_y);
             uint32_t dis = sqrt(dif_x*dif_x + dif_y*dif_y);
             Vector2i grid_px = grass_px_to_grid_px(x,y);
             if(dis<brush_px_radius && grid->get_brush_mask_value_bool(grid_px.x,grid_px.y))
