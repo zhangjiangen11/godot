@@ -84,6 +84,13 @@ void ShaderInclude::_bind_methods() {
 // ShaderTemplate
 
 void ShaderTemplate::set_code(const String &p_code) {
+	
+	if(code.begins_with("//NAME:")) {
+		Vector<String> ret = code.split('\n',false,2);
+		if(ret.size() > 1) {
+			preview_name = ret[0].substr(7).strip_edges(true,true);
+		}
+	}
 	code = p_code;
 }
 
@@ -96,7 +103,12 @@ void ShaderTemplate::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_code", "code"), &ShaderTemplate::set_code);
 	ClassDB::bind_method(D_METHOD("get_code"), &ShaderTemplate::get_code);
 
+	ClassDB::bind_method(D_METHOD("set_preview_name", "name"), &ShaderTemplate::set_preview_name);
+	ClassDB::bind_method(D_METHOD("get_preview_name"), &ShaderTemplate::get_preview_name);
+
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "code", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_code", "get_code");
+
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "preview_name", PROPERTY_HINT_NONE, ""), "set_preview_name", "get_preview_name");
 }
 
 // ResourceFormatLoaderShaderInclude

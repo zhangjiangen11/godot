@@ -139,22 +139,23 @@ void HeightMapProcessShader::load() {
 		if (param.size() == 0) {
 			continue;
 		}
-        if(param.size() != 4) {
+        if(param.size() != 5) {
             is_error = true;                
-			ERR_FAIL_COND_MSG(param.size() != 2, code_file_path + L": params格式錯誤[name,value,min,max]請檢查 " + String::num_int64(i) + ":" + params_list[i]);
+			ERR_FAIL_COND_MSG(param.size() != 2, code_file_path + L": params格式錯誤[show_name,name,value,min,max]請檢查 " + String::num_int64(i) + ":" + params_list[i]);
         }
 
         Dictionary param_dict;
-        param_dict["arg_name"] = param[0];
-        param_dict["value"] = param[1].to_float();
-        param_dict["min"] = param[2].to_float();
-        param_dict["max"] = param[3].to_float();
+        param_dict["show_name"] = param[0];
+        param_dict["arg_name"] = param[1];
+        param_dict["value"] = param[2].to_float();
+        param_dict["min"] = param[3].to_float();
+        param_dict["max"] = param[4].to_float();
 
-        param_dict["name"] = String("shader_param/") + param[0];
+        param_dict["name"] = String("shader_param/") + param[1];
         param_dict["type"] = Variant::FLOAT;
         param_dict["hint"] = PROPERTY_HINT_RANGE;
         param_dict["usage"] = PROPERTY_USAGE_DEFAULT;
-        param_dict["hint_string"] = param[2] + "," + param[3] + ",0.01";
+        param_dict["hint_string"] = param[3] + "," + param[4] + ",0.01";
         params.push_back(param_dict);
     }
 	if (params.size() > 32) {

@@ -61,6 +61,7 @@ class ShaderTemplate : public Resource {
 
 private:
 	String code;
+	String preview_name;
 
 protected:
 	static void _bind_methods();
@@ -68,6 +69,12 @@ protected:
 public:
 	void set_code(const String &p_text);
 	String get_code() const;
+
+	void set_preview_name(const String& name)
+	{
+		preview_name = name;
+	}
+	const String& get_preview_name() {return preview_name;}
 
 	void set_include_path(const String &p_path);
 };
