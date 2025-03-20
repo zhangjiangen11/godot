@@ -267,13 +267,14 @@ public:
 		}
 	}
 
-	int64_t find(const T &p_val, const U& p_from = 0) const {
-		for (U i = p_from; i < count; i++) {
-			if (data[i] == p_val) {
-				return int64_t(i);
-			}
+	int64_t find(const T &p_val, int64_t p_from = 0) const {
+		if (p_from < 0) {
+			p_from = size() + p_from;
 		}
-		return -1;
+		if (p_from < 0 || p_from >= size()) {
+			return -1;
+		}
+		return span().find(p_val, p_from);
 	}
 
 	_FORCE_INLINE_ bool has(const T &p_val) const {

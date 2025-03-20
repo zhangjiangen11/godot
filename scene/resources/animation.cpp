@@ -4666,7 +4666,7 @@ struct AnimationCompressionDataState {
 		if (p_delta == 0) {
 			return 0;
 		} else if (p_delta < 0) {
-			p_delta = ABS(p_delta) - 1;
+			p_delta = Math::abs(p_delta) - 1;
 			if (p_delta == 0) {
 				return 1;
 			}
@@ -4848,7 +4848,7 @@ struct AnimationCompressionDataState {
 
 				uint16_t deltau;
 				if (delta < 0) {
-					deltau = (ABS(delta) - 1) | (1 << max_shifts[j]);
+					deltau = (Math::abs(delta) - 1) | (1 << max_shifts[j]);
 				} else {
 					deltau = delta;
 				}

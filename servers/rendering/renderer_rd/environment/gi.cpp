@@ -1112,7 +1112,7 @@ void GI::HDDAGI::update(RID p_env, const Vector3 &p_world_position) {
 
 			if (cascade.dirty_regions[j] == 0) {
 				continue; // not dirty
-			} else if (uint32_t(ABS(cascade.dirty_regions[j])) >= uint32_t(cascade_size[j])) {
+			} else if (uint32_t(Math::abs(cascade.dirty_regions[j])) >= uint32_t(cascade_size[j])) {
 				//moved too much, just redraw everything (make all dirty)
 				cascade.dirty_regions = HDDAGI::Cascade::DIRTY_ALL;
 				break;
@@ -1128,7 +1128,7 @@ void GI::HDDAGI::update(RID p_env, const Vector3 &p_world_position) {
 			uint32_t total_volume = cascade_size.x * cascade_size.y * cascade_size.z;
 			uint32_t safe_volume = 1;
 			for (int j = 0; j < 3; j++) {
-				safe_volume *= cascade_size[j] - ABS(cascade.dirty_regions[j]);
+				safe_volume *= cascade_size[j] - Math::abs(cascade.dirty_regions[j]);
 			}
 			uint32_t dirty_volume = total_volume - safe_volume;
 			if (dirty_volume > (safe_volume / 2)) {
