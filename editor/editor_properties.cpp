@@ -3994,7 +3994,10 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 				PackedStringArray range_hint = p_hint_text.split(",");
 				float min = range_hint[0].to_float();
 				float max = range_hint[1].to_float();
-				float step = range_hint[2].to_float();
+				float step = 0.01f;
+				if (range_hint.size() > 2) {
+					step = range_hint[2].to_float();
+				}
 				bool allow_less = range_hint.find("or_less", 3) > -1;
 				bool allow_greater = range_hint.find("or_greater", 3) > -1;
 				bool degrees = range_hint.find("degrees", 3) > -1;
@@ -4015,7 +4018,10 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 				PackedStringArray range_hint = p_hint_text.split(",");
 				float min = range_hint[0].to_float();
 				float max = range_hint[1].to_float();
-				float step = range_hint[2].to_float();
+				float step = 1.0;
+				if (range_hint.size() > 2) {
+					step = range_hint[2].to_float();
+				}
 				bool allow_less = range_hint.find("or_less", 3) > -1;
 				bool allow_greater = range_hint.find("or_greater", 3) > -1;
 				bool degrees = range_hint.find("degrees", 3) > -1;

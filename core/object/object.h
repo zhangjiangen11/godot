@@ -867,6 +867,8 @@ public:
 	bool property_can_revert(const StringName &p_name) const;
 	Variant property_get_revert(const StringName &p_name) const;
 
+	StringName get_property_display_name(const StringName& p_property_name);
+
 	bool has_method(const StringName &p_method) const;
 	int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const;
 	void get_method_list(List<MethodInfo> *p_list) const;

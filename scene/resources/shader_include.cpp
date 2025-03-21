@@ -92,6 +92,7 @@ void ShaderTemplate::set_code(const String &p_code) {
 		}
 	}
 	code = p_code;
+	emit_changed();
 }
 
 String ShaderTemplate::get_code() const {

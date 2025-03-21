@@ -63,6 +63,9 @@ private:
 	String code;
 	String preview_name;
 
+	void _dependency_changed() {
+		emit_changed();
+	}
 protected:
 	static void _bind_methods();
 

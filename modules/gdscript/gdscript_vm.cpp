@@ -40,7 +40,7 @@ static bool _profile_count_as_native(const Object *p_base_obj, const StringName 
 	if (!p_base_obj) {
 		return false;
 	}
-	StringName cname = p_base_obj->get_class_name();
+	const StringName& cname = p_base_obj->get_class_name();
 	if ((p_methodname == "new" && cname == "GDScript") || p_methodname == "call") {
 		return false;
 	}

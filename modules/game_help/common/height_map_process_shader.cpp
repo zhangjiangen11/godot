@@ -5,23 +5,24 @@
 void HeightMapTemplateShader::_bind_methods() {
     ClassDB::bind_method(D_METHOD("init", "process_file_path","priview_file_path"), &HeightMapTemplateShader::init);
     ClassDB::bind_method(D_METHOD("get_process_file_path"), &HeightMapTemplateShader::get_process_file_path);
-    ClassDB::bind_method(D_METHOD("get_priview_file_path"), &HeightMapTemplateShader::get_priview_file_path);
+    ClassDB::bind_method(D_METHOD("get_preview_file_path"), &HeightMapTemplateShader::get_preview_file_path);
     ClassDB::bind_method(D_METHOD("get_process_shader_code"), &HeightMapTemplateShader::get_process_shader_code);
-    ClassDB::bind_method(D_METHOD("get_priview_shader_code"), &HeightMapTemplateShader::get_priview_shader_code);
+    ClassDB::bind_method(D_METHOD("get_preview_shader_code"), &HeightMapTemplateShader::get_preview_shader_code);
+    ClassDB::bind_method(D_METHOD("auto_reload"), &HeightMapTemplateShader::auto_reload);
     ClassDB::bind_method(D_METHOD("is_error"), &HeightMapTemplateShader::get_is_error);
     
     ADD_SIGNAL(MethodInfo("changed"));
 }
-void HeightMapTemplateShader::init(const String& p_process_file_path,const String& p_priview_file_path) {
+void HeightMapTemplateShader::init(const String& p_process_file_path,const String& p_preview_file_path) {
     process_file_path = p_process_file_path;
-    priview_file_path = p_priview_file_path;
+    preview_file_path = p_preview_file_path;
     load();
 
 }
 void HeightMapTemplateShader::load() {
 	is_error = false;
     process_file_path_time = FileAccess::get_modified_time(process_file_path);
-    priview_file_path_time = FileAccess::get_modified_time(priview_file_path);
+    priview_file_path_time = FileAccess::get_modified_time(preview_file_path);
     Error err;
     Ref<FileAccess> file = FileAccess::open(process_file_path, FileAccess::READ, &err);
     if(err != OK) {
@@ -35,18 +36,26 @@ void HeightMapTemplateShader::load() {
 
     process_shader_code = file->get_as_utf8_string();
 
-    file = FileAccess::open(priview_file_path, FileAccess::READ, &err);
+    file = FileAccess::open(preview_file_path, FileAccess::READ, &err);
 
     if(err != OK) {
         is_error = true;
-		ERR_FAIL_COND_MSG(err != OK, priview_file_path + ": file not exist");
+		ERR_FAIL_COND_MSG(err != OK, preview_file_path + ": file not exist");
     }
     if(file.is_null()) {
         is_error = true;
-		ERR_FAIL_COND_MSG(file.is_null(), priview_file_path + ": file not exist");
+		ERR_FAIL_COND_MSG(file.is_null(), preview_file_path + ": file not exist");
     }
-    priview_shader_code = file->get_as_utf8_string();
+    preview_shader_code = file->get_as_utf8_string();
 	emit_signal(CoreStringName(changed));
+}
+void HeightMapTemplateShader::auto_reload() {
+    if(process_file_path_time < 0 || priview_file_path_time < 0) {
+        return;
+    }
+    if(process_file_path_time != FileAccess::get_modified_time(process_file_path) || priview_file_path_time != FileAccess::get_modified_time(preview_file_path)) {
+        load();
+    }
 }
 
 
@@ -73,14 +82,19 @@ static String _include_function(const String &p_path, void *userpointer) {
 void HeightMapProcessShader::_bind_methods() {
     ClassDB::bind_method(D_METHOD("init", "template_shader","code_file_path"), &HeightMapProcessShader::init);
     ClassDB::bind_method(D_METHOD("get_params"), &HeightMapProcessShader::get_params);
+    ClassDB::bind_method(D_METHOD("get_params_dict"), &HeightMapProcessShader::get_params_dict);
+    ClassDB::bind_method(D_METHOD("get_params_display_name_dict"), &HeightMapProcessShader::get_params_display_name_dict);
     ClassDB::bind_method(D_METHOD("get_is_error"), &HeightMapProcessShader::get_is_error);
     ClassDB::bind_method(D_METHOD("get_process_shader"), &HeightMapProcessShader::get_process_shader);
-    ClassDB::bind_method(D_METHOD("get_priview_shader"), &HeightMapProcessShader::get_priview_shader);
+    ClassDB::bind_method(D_METHOD("get_preview_shader"), &HeightMapProcessShader::get_preview_shader);
+    ClassDB::bind_method(D_METHOD("update_process_shader_params", "params", "code", "start_index"), &HeightMapProcessShader::update_process_shader_params);
+    ClassDB::bind_method(D_METHOD("auto_reload"), &HeightMapProcessShader::auto_reload);
 
     ADD_SIGNAL(MethodInfo("changed"));
 }
 void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template_shader,const String& p_code_file_path) {
-    code_file_path = p_code_file_path;
+
+    code_file_path = ResourceUID::get_singleton()->ensure_path(p_code_file_path);
     if(template_shader.is_valid()) {
         template_shader->disconnect(CoreStringName(changed),callable_mp(this, &HeightMapProcessShader::on_template_changed));
     }
@@ -118,6 +132,13 @@ void HeightMapProcessShader::load() {
         is_error = true;
 		ERR_FAIL_COND_MSG(code.is_empty(), code_file_path + ": file not exist");
     }
+    preview_name = file->get_path().get_file().get_basename();
+    if(code.begins_with("//NAME:")) {
+		int ret = code.find_char('\n');
+		if(ret > 1) {
+			preview_name = code.substr(0,ret).substr(7).strip_edges(true, true);
+		}
+	}
     code = code.remove_annotate().remove_char(' ').remove_char('\r').remove_char('\t');
     Vector<String> lines = code.split("$$",false);
 
@@ -191,7 +212,7 @@ void HeightMapProcessShader::load() {
         process_shader_file->print_errors(code_file_path);
     }
 
-    file_txt = template_shader->get_priview_shader_code();
+    file_txt = template_shader->get_preview_shader_code();
     params_str = "";
     for(int i=0;i<params.size();i++) {
 		Dictionary param_dict = params[i];
@@ -207,15 +228,23 @@ void HeightMapProcessShader::load() {
         is_error = true;
         process_shader_file->print_errors(code_file_path);
     }
-    if(priview_shader.is_null()) {
-        priview_shader.instantiate();
+    if(preview_shader.is_null()) {
+        preview_shader.instantiate();
     }
     // priview_shader->set_path(p_template_shader->get_priview_file_path());
-	priview_shader->set_include_path(template_shader->get_priview_file_path().get_base_dir());
-	priview_shader->set_code(file_txt);
+	preview_shader->set_include_path(template_shader->get_preview_file_path().get_base_dir());
+	preview_shader->set_code(file_txt);
 
 	emit_signal(CoreStringName(changed));
 
+}
+void HeightMapProcessShader::auto_reload() {
+    if(code_file_path_time < 0) {
+        return;
+    }
+    if(code_file_path_time != FileAccess::get_modified_time(code_file_path)) {
+        load();
+    }
 }
 HeightMapProcessShader::~HeightMapProcessShader() {
     if(template_shader.is_valid()) {

@@ -56,6 +56,7 @@ public:
 	const StringName get_rid = StaticCString::create("get_rid");
 	const StringName _to_string = StaticCString::create("_to_string");
 	const StringName _custom_features = StaticCString::create("_custom_features");
+	const StringName _property_to_display_name = StaticCString::create("_property_to_display_name");
 
 	const StringName x = StaticCString::create("x");
 	const StringName y = StaticCString::create("y");

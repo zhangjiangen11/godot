@@ -436,11 +436,13 @@ void EditorProperty::_notification(int p_what) {
 				// for project settings feature tag overrides.
 				color.a = 0.5;
 			}
-
+			StringName pro_dis_name = get_edited_object()->get_property_display_name(get_edited_property());
 			// 获取显示名称
-			StringName pro_dis_name = get_property_display_name(get_edited_property());
-			if(get_edited_object()->has_method(pro_dis_name)) {
-				_draw_label = get_edited_object()->call(pro_dis_name);
+			if(pro_dis_name == StringName()) {
+				pro_dis_name = get_property_display_name(get_edited_property());
+				if(get_edited_object()->has_method(pro_dis_name)) {
+					_draw_label = get_edited_object()->call(pro_dis_name);
+				}				
 			}
 			
 

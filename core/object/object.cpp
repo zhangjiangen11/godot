@@ -637,6 +637,20 @@ Variant Object::property_get_revert(const StringName &p_name) const {
 	}
 	return Variant();
 }
+StringName Object::get_property_display_name(const StringName& p_property_name) {
+	StringName func_name = CoreStringName(_property_to_display_name);
+	if (has_method(func_name) && get_method_argument_count(func_name) == 1) {
+
+		Variant r = call(func_name, p_property_name);
+		if (r.get_type() == Variant::STRING_NAME || r.get_type() == Variant::STRING)
+		{
+			return r;
+		}
+
+	}
+
+	return StringName::None;
+}
 
 void Object::get_method_list(List<MethodInfo> *p_list) const {
 	ClassDB::get_method_list(get_class_name(), p_list);
