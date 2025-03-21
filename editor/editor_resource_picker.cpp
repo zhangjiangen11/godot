@@ -206,6 +206,12 @@ void EditorResourcePicker::_resource_saved(Object *p_resource) {
 }
 
 void EditorResourcePicker::_update_menu() {
+	if (edit_menu && edit_menu->is_visible()) {
+		edit_button->set_pressed(false);
+		edit_menu->hide();
+		return;
+	}
+
 	_update_menu_items();
 
 	Rect2 gt = edit_button->get_screen_rect();
@@ -593,6 +599,12 @@ void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
 		// a valid resource or the Picker is editable, as
 		// there will otherwise be nothing to display.
 		if (edited_resource.is_valid() || is_editable()) {
+			if (edit_menu && edit_menu->is_visible()) {
+				edit_button->set_pressed(false);
+				edit_menu->hide();
+				return;
+			}
+
 			_update_menu_items();
 
 			Vector2 pos = get_screen_position() + mb->get_position();
