@@ -781,7 +781,7 @@ ProjectSettingsEditor::ProjectSettingsEditor(EditorData *p_data) {
 	set_ok_button_text(TTR("Close"));
 	set_hide_on_ok(true);
 
-	bool use_advanced = EDITOR_DEF(SNAME("_project_settings_advanced_mode", false));
+	bool use_advanced = EDITOR_DEF(SNAME("_project_settings_advanced_mode"), false);
 	if (use_advanced) {
 		advanced->set_pressed(true);
 	}

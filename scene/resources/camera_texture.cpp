@@ -133,6 +133,9 @@ void CameraTexture::set_camera_active(bool p_active) {
 }
 
 bool CameraTexture::get_camera_active() const {
+	if (camera_feed_id > 0) {
+		return false;
+	}
 	Ref<CameraFeed> feed = CameraServer::get_singleton()->get_feed_by_id(camera_feed_id);
 	if (feed.is_valid()) {
 		return feed->is_active();

@@ -123,7 +123,7 @@ void ScriptCreateDialog::_notification(int p_what) {
 			} else {
 				language_menu->select(default_language);
 			}
-			is_using_templates = EDITOR_DEF(SNAME("_script_setup_use_script_templates", false));
+			is_using_templates = EDITOR_DEF(SNAME("_script_setup_use_script_templates"), false);
 			use_templates->set_pressed(is_using_templates);
 		} break;
 
@@ -839,7 +839,7 @@ void ScriptCreateDialog::_bind_methods() {
 }
 
 ScriptCreateDialog::ScriptCreateDialog() {
-	EDITOR_DEF(SNAME("_script_setup_templates_dictionary", Dictionary()));
+	EDITOR_DEF(SNAME("_script_setup_templates_dictionary"), Dictionary());
 
 	/* Main Controls */
 

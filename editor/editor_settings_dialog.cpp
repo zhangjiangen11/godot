@@ -907,7 +907,7 @@ EditorSettingsDialog::EditorSettingsDialog() {
 	advanced_switch = memnew(CheckButton(TTR("Advanced Settings")));
 	hbc->add_child(advanced_switch);
 
-	bool use_advanced = EDITOR_DEF(SNAME("_editor_settings_advanced_mode", false));
+	bool use_advanced = EDITOR_DEF(SNAME("_editor_settings_advanced_mode"), false);
 	advanced_switch->set_pressed(use_advanced);
 	advanced_switch->connect(SceneStringName(toggled), callable_mp(this, &EditorSettingsDialog::_advanced_toggled));
 

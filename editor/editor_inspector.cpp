@@ -59,7 +59,7 @@
 #include "scene/scene_string_names.h"
 
 static Mutex property_display_name_mutex;
-static StringName get_property_display_name(const StringName& _property) {
+static StringName get_object_property_display_name(const StringName& _property) {
 	StringName ret;
 	property_display_name_mutex.lock();
 	static HashMap<StringName,StringName>* property_displayname_mutex_name = new (HashMap<StringName,StringName>);
@@ -438,8 +438,8 @@ void EditorProperty::_notification(int p_what) {
 			}
 			StringName pro_dis_name = get_edited_object()->get_property_display_name(get_edited_property());
 			// 获取显示名称
-			if(pro_dis_name == StringName()) {
-				pro_dis_name = get_property_display_name(get_edited_property());
+			if(pro_dis_name.is_empty()) {
+				pro_dis_name = get_object_property_display_name(get_edited_property());
 				if(get_edited_object()->has_method(pro_dis_name)) {
 					_draw_label = get_edited_object()->call(pro_dis_name);
 				}				
