@@ -243,6 +243,26 @@ real_t HeightMapShape3D::get_max_height() const {
 	return max_height;
 }
 
+void thread_build_height_map_rf(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
+
+	float* dest = (float*)dest_ptr;
+	float *src = (float*)src_ptr;
+	dest[index] = min_height + (src[index] * (max_height - min_height));
+}
+
+void thread_build_height_map_rh(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
+
+	float* dest = (float*)dest_ptr;
+	uint16_t *src = (uint16_t*)src_ptr;
+	dest[index] = min_height + (Math::half_to_float(src[index]) * (max_height - min_height));
+}
+void thread_build_height_map_r8(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
+
+	float* dest = (float*)dest_ptr;
+	uint8_t *src = (uint8_t*)src_ptr;
+	dest[index] = min_height + ((src[index]/ 255.0f) * (max_height - min_height));
+}
+
 void HeightMapShape3D::update_map_data_from_image(const Ref<Image> &p_image, real_t p_height_min, real_t p_height_max) {
 	ERR_FAIL_COND_MSG(p_image.is_null(), "Heightmap update image requires a valid Image reference.");
 	ERR_FAIL_COND_MSG(p_image->get_format() != Image::FORMAT_RF && p_image->get_format() != Image::FORMAT_RH && p_image->get_format() != Image::FORMAT_R8, "Heightmap update image requires Image in format FORMAT_RF (32 bit), FORMAT_RH (16 bit), or FORMAT_R8 (8 bit).");
@@ -261,11 +281,16 @@ void HeightMapShape3D::update_map_data_from_image(const Ref<Image> &p_image, rea
 	float remap_height_max = float(p_height_max);
 
 	real_t *map_data_ptrw = map_data.ptrw();
-
+	
 	switch (p_image->get_format()) {
 		case Image::FORMAT_RF: {
 			const float *image_data_ptr = (float *)p_image->get_data().ptr();
-
+			if(map_data.size() > 500) {
+				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+					callable_mp_static(thread_build_height_map_rf).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(),64,nullptr);
+				task->wait_completion();
+				break;
+			}
 			for (int i = 0; i < map_data.size(); i++) {
 				float pixel_value = image_data_ptr[i];
 
@@ -288,6 +313,12 @@ void HeightMapShape3D::update_map_data_from_image(const Ref<Image> &p_image, rea
 		case Image::FORMAT_RH: {
 			const uint16_t *image_data_ptr = (uint16_t *)p_image->get_data().ptr();
 
+			if(map_data.size() > 500) {
+				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+					callable_mp_static(thread_build_height_map_rh).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(),64, nullptr);
+				task->wait_completion();
+				break;
+			}
 			for (int i = 0; i < map_data.size(); i++) {
 				float pixel_value = Math::half_to_float(image_data_ptr[i]);
 
@@ -309,6 +340,12 @@ void HeightMapShape3D::update_map_data_from_image(const Ref<Image> &p_image, rea
 
 		case Image::FORMAT_R8: {
 			const uint8_t *image_data_ptr = (uint8_t *)p_image->get_data().ptr();
+			if(map_data.size() > 500) {
+				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+					callable_mp_static(thread_build_height_map_r8).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(),64, nullptr);
+				task->wait_completion();
+				break;
+			}
 
 			for (int i = 0; i < map_data.size(); i++) {
 				float pixel_value = float(image_data_ptr[i] / 255.0);

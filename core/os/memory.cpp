@@ -356,8 +356,10 @@ void *Memory::realloc_aligned_static(void *p_memory, size_t p_bytes, size_t p_pr
 }
 
 void Memory::free_aligned_static(void *p_memory) {
+#if SAMLL_MEMORY_MANAGER
 	get_small_memory_manager().free_mem(p_memory);
 	return;
+#endif
 	uint32_t offset = *((uint32_t *)p_memory - 1);
 	void *p = (void *)((uint8_t *)p_memory - offset);
 	free(p);

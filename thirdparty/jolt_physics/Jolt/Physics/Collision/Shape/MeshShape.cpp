@@ -32,6 +32,7 @@
 #include <Jolt/Geometry/Plane.h>
 #include <Jolt/Geometry/OrientedBox.h>
 #include <Jolt/TriangleSplitter/TriangleSplitterBinning.h>
+#include <Jolt/TriangleSplitter/TriangleSplitterMean.h>
 #include <Jolt/AABBTree/AABBTreeBuilder.h>
 #include <Jolt/AABBTree/AABBTreeToBuffer.h>
 #include <Jolt/AABBTree/TriangleCodec/TriangleCodecIndexed8BitPackSOA4Flags.h>
@@ -55,6 +56,7 @@ JPH_IMPLEMENT_SERIALIZABLE_VIRTUAL(MeshShapeSettings)
 	JPH_ADD_ATTRIBUTE(MeshShapeSettings, mMaxTrianglesPerLeaf)
 	JPH_ADD_ATTRIBUTE(MeshShapeSettings, mActiveEdgeCosThresholdAngle)
 	JPH_ADD_ATTRIBUTE(MeshShapeSettings, mPerTriangleUserData)
+	JPH_ADD_ENUM_ATTRIBUTE(MeshShapeSettings, mBuildQuality)
 }
 
 // Codecs this mesh shape is using
@@ -190,18 +192,43 @@ MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult
 	sFindActiveEdges(inSettings, indexed_triangles);
 
 	// Create triangle splitter
-	TriangleSplitterBinning splitter(inSettings.mTriangleVertices, indexed_triangles);
+	union Storage
+	{
+									Storage() { }
+									~Storage() { }
+
+		TriangleSplitterBinning		mBinning;
+		TriangleSplitterMean		mMean;
+	};
+	Storage storage;
+	TriangleSplitter *splitter = nullptr;
+	switch (inSettings.mBuildQuality)
+	{
+	case MeshShapeSettings::EBuildQuality::FavorRuntimePerformance:
+		splitter = new (&storage.mBinning) TriangleSplitterBinning(inSettings.mTriangleVertices, indexed_triangles);
+		break;
+
+	case MeshShapeSettings::EBuildQuality::FavorBuildSpeed:
+		splitter = new (&storage.mMean) TriangleSplitterMean(inSettings.mTriangleVertices, indexed_triangles);
+		break;
+
+	default:
+		JPH_ASSERT(false);
+		break;
+	}
 
 	// Build tree
-	AABBTreeBuilder builder(splitter, inSettings.mMaxTrianglesPerLeaf);
+	AABBTreeBuilder& builder = *AABBTreeBuilder::Get(*splitter, inSettings.mMaxTrianglesPerLeaf);
 	AABBTreeBuilderStats builder_stats;
 	const AABBTreeBuilder::Node *root = builder.Build(builder_stats);
+	splitter->~TriangleSplitter();
 
 	// Convert to buffer
 	AABBTreeToBuffer<TriangleCodec, NodeCodec> buffer;
 	const char *error = nullptr;
 	if (!buffer.Convert(builder.GetTriangles(), builder.GetNodes(), inSettings.mTriangleVertices, root, inSettings.mPerTriangleUserData, error))
 	{
+		AABBTreeBuilder::Return(&builder);
 		outResult.SetError(error);
 		return;
 	}
@@ -212,15 +239,25 @@ MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult
 	// Check if we're not exceeding the amount of sub shape id bits
 	if (GetSubShapeIDBitsRecursive() > SubShapeID::MaxBits)
 	{
+		AABBTreeBuilder::Return(&builder);
 		outResult.SetError("Mesh is too big and exceeds the amount of available sub shape ID bits");
 		return;
 	}
+	AABBTreeBuilder::Return(&builder);
 
 	outResult.Set(this);
 }
 
 void MeshShape::sFindActiveEdges(const MeshShapeSettings &inSettings, IndexedTriangleList &ioIndices)
 {
+	// Check if we're requested to make all edges active
+	if (inSettings.mActiveEdgeCosThresholdAngle < 0.0f)
+	{
+		for (IndexedTriangle &triangle : ioIndices)
+			triangle.mMaterialIndex |= 0b111 << FLAGS_ACTIVE_EGDE_SHIFT;
+		return;
+	}
+
 	// A struct to hold the two vertex indices of an edge
 	struct Edge
 	{
@@ -349,7 +386,7 @@ MassProperties MeshShape::GetMassProperties() const
 	// creating a Body:
 	//
 	// BodyCreationSettings::mOverrideMassProperties = EOverrideMassProperties::MassAndInertiaProvided;
-	// BodyCreationSettings::mMassPropertiesOverride.SetMassAndInertiaOfSolidBox(Vec3::sReplicate(1.0f), 1000.0f);
+	// BodyCreationSettings::mMassPropertiesOverride.SetMassAndInertiaOfSolidBox(Vec3::sOne(), 1000.0f);
 	//
 	// Note that for a mesh shape to simulate properly, it is best if the mesh is manifold
 	// (i.e. closed, all edges shared by only two triangles, consistent winding order).

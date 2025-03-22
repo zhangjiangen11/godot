@@ -5,9 +5,11 @@
 #include <Jolt/Jolt.h>
 
 #include <Jolt/AABBTree/AABBTreeBuilder.h>
+#include <Jolt/Core/ObjectPool.h>
 
 JPH_NAMESPACE_BEGIN
 
+static ObjectPool<AABBTreeBuilder,64> sAABBTreeBuilderPool = ObjectPool<AABBTreeBuilder,64>();
 uint AABBTreeBuilder::Node::GetMinDepth(const Array<Node> &inNodes) const
 {
 	if (HasChildren())
@@ -142,14 +144,14 @@ void AABBTreeBuilder::Node::GetTriangleCountPerNodeInternal(const Array<Node> &i
 }
 
 AABBTreeBuilder::AABBTreeBuilder(TriangleSplitter &inSplitter, uint inMaxTrianglesPerLeaf) :
-	mTriangleSplitter(inSplitter),
+	mTriangleSplitter(&inSplitter),
 	mMaxTrianglesPerLeaf(inMaxTrianglesPerLeaf)
 {
 }
 
 AABBTreeBuilder::Node *AABBTreeBuilder::Build(AABBTreeBuilderStats &outStats)
 {
-	TriangleSplitter::Range initial = mTriangleSplitter.GetInitialRange();
+	TriangleSplitter::Range initial = mTriangleSplitter->GetInitialRange();
 
 	// Worst case for number of nodes: 1 leaf node per triangle. At each level above, the number of nodes is half that of the level below.
 	// This means that at most we'll be allocating 2x the number of triangles in nodes.
@@ -164,7 +166,7 @@ AABBTreeBuilder::Node *AABBTreeBuilder::Build(AABBTreeBuilderStats &outStats)
 	uint min_triangles_per_leaf, max_triangles_per_leaf;
 	root.GetTriangleCountPerNode(mNodes, avg_triangles_per_leaf, min_triangles_per_leaf, max_triangles_per_leaf);
 
-	mTriangleSplitter.GetStats(outStats.mSplitterStats);
+	mTriangleSplitter->GetStats(outStats.mSplitterStats);
 
 	outStats.mSAHCost = root.CalculateSAHCost(mNodes, 1.0f, 1.0f);
 	outStats.mMinDepth = root.GetMinDepth(mNodes);
@@ -186,7 +188,7 @@ uint AABBTreeBuilder::BuildInternal(const TriangleSplitter::Range &inTriangles)
 	{
 		// Split triangles in two batches
 		TriangleSplitter::Range left, right;
-		if (!mTriangleSplitter.Split(inTriangles, left, right))
+		if (!mTriangleSplitter->Split(inTriangles, left, right))
 		{
 			// When the trace below triggers:
 			//
@@ -228,15 +230,27 @@ uint AABBTreeBuilder::BuildInternal(const TriangleSplitter::Range &inTriangles)
 	Node &node = mNodes.back();
 	node.mTrianglesBegin = (uint)mTriangles.size();
 	node.mNumTriangles = inTriangles.mEnd - inTriangles.mBegin;
-	const VertexList &v = mTriangleSplitter.GetVertices();
+	const VertexList &v = mTriangleSplitter->GetVertices();
 	for (uint i = inTriangles.mBegin; i < inTriangles.mEnd; ++i)
 	{
-		const IndexedTriangle &t = mTriangleSplitter.GetTriangle(i);
+		const IndexedTriangle &t = mTriangleSplitter->GetTriangle(i);
 		mTriangles.push_back(t);
 		node.mBounds.Encapsulate(v, t);
 	}
 
 	return node_index;
+}
+AABBTreeBuilder* AABBTreeBuilder::Get(TriangleSplitter &inSplitter, uint inMaxTrianglesPerLeaf){
+	AABBTreeBuilder* builder = sAABBTreeBuilderPool.acquireObject();
+	builder->mTriangleSplitter = &inSplitter;
+	builder->mMaxTrianglesPerLeaf = inMaxTrianglesPerLeaf;
+	builder->mNodes.clear();
+	builder->mTriangles.clear();
+	return builder;
+}
+
+void AABBTreeBuilder::Return(AABBTreeBuilder* builder) { 
+	sAABBTreeBuilderPool.releaseObject(builder); 
 }
 
 JPH_NAMESPACE_END
