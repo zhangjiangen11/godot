@@ -21,8 +21,6 @@
 #include "grass/mgrass.h"
 
 
-using namespace godot;
-
 class MNavigationRegion3D;
 
 

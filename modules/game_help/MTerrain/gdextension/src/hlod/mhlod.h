@@ -9,7 +9,6 @@
 
 #include "mhlod_item.h"
 
-using namespace godot;
 
 #define MHLOD_DATA_VERSION 1
 

@@ -2,7 +2,6 @@
 
 
 
-using namespace godot;
 
 void PathMultiMesh3D::set_multi_mesh(const Ref<MultiMesh> &p_multi_mesh) {
     if (p_multi_mesh != multi_mesh) {

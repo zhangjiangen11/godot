@@ -14,7 +14,6 @@
 #include "mmesh_lod.h"
 #include "../moctree.h"
 
-using namespace godot;
 
 
 class MOctMesh : public Node3D {

@@ -1,6 +1,5 @@
 #include "path_extrude_profile_circle.hpp"
 
-using namespace godot;
 
 Array PathExtrudeProfileCircle::_generate_cross_section() {
     PackedVector2Array cs;

@@ -9,7 +9,6 @@
 
 #include "../hlod/mhlod.h"
 
-using namespace godot;
 
 #define M_TAG_ELEMENT_COUNT 4 // change this to increase tags
 #define M_MAX_TAG M_TAG_ELEMENT_COUNT*64 // don't touch 64! it is always 64

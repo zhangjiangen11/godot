@@ -19,7 +19,6 @@
 #include "../octmesh/mmesh_lod.h"
 
 
-using namespace godot;
 
 class MIntersectionInfo : public RefCounted
 {

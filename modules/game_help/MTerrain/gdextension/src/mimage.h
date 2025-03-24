@@ -18,8 +18,6 @@
 #include "mresource.h"
 
 
-using namespace godot;
-
 class MRegion;
 
 struct MImageUndoData {

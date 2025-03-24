@@ -5,8 +5,6 @@
 
 
 
-using namespace godot;
-
 /*
     -1 -> means default mesh or material, whatever is that
     -2 -> means the mesh should be removed

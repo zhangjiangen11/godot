@@ -5,7 +5,6 @@
 
 #include "../hlod/mmesh.h"
 
-using namespace godot;
 
 class MMeshJoiner : public RefCounted {
     GDCLASS(MMeshJoiner,RefCounted);

@@ -8,7 +8,6 @@
 
 
 
-using namespace godot;
 
 class MPath : public Node3D{
     GDCLASS(MPath,Node3D);

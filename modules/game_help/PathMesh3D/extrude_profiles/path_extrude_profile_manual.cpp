@@ -1,7 +1,6 @@
 #include "path_extrude_profile_manual.hpp"
 
 
-using namespace godot;
 
 Array PathExtrudeProfileManual::_generate_cross_section()  { 
     if (manual_cross_section.is_empty()) {

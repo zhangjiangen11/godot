@@ -27,7 +27,6 @@
 
 #include "../moctree.h"
 
-using namespace godot;
 
 class MPath;
 /*

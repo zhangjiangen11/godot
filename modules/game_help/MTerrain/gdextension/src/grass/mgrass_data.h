@@ -7,7 +7,6 @@
 
 #include "../mconfig.h"
 
-using namespace godot;
 
 struct MGrassUndoData {
     uint8_t* data=nullptr;

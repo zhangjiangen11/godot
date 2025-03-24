@@ -18,7 +18,6 @@
 
 #include <mutex>
 
-using namespace godot;
 
 
 class MeshSlicedInfo : public RefCounted

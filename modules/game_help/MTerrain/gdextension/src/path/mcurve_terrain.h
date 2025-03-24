@@ -5,7 +5,6 @@
 #include "../mgrid.h"
 #include "mcurve.h"
 
-using namespace godot;
 
 class MCurveTerrain : public RefCounted {
     GDCLASS(MCurveTerrain,RefCounted);
