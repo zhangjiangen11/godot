@@ -221,6 +221,16 @@ _ALWAYS_INLINE_ float exp(float p_x) {
 	return ::expf(p_x);
 }
 
+static _ALWAYS_INLINE_  double sign ( const double x ) { 
+	return x<0?-1.0:1.0;
+}
+static _ALWAYS_INLINE_  float sign ( const float x ) {
+	 return x<0?-1.0f:1.0f; 
+}
+static _ALWAYS_INLINE_  int32_t sign ( const int32_t x ) {
+	return x<0?-1:1; 
+}
+
 _ALWAYS_INLINE_ bool is_nan(double p_val) {
 #ifdef _MSC_VER
 	return _isnan(p_val);

@@ -172,7 +172,7 @@ void HeightMapProcessShader::load() {
   
 
     Vector<String> params_list = _params.remove_char(' ').split("\n", false);
-
+	params.clear();
 
     for(int i=0;i<params_list.size();i++) {
         Vector<String> param = params_list[i].remove_char(';').split(",", false);
@@ -233,10 +233,10 @@ void HeightMapProcessShader::load() {
 		}
 
 	}
-
-    file_txt = template_shader->get_preview_shader_code();
+	file_txt = "#define PRIVATE_SHADER 1\n#define BLEND_HEIGHT 1\n";
+    file_txt += template_shader->get_preview_shader_code();
 	{
-		params_str = "#define PRIVATE_SHADER 1\n#define BLEND_HEIGHT 1\n";
+		params_str = "";
 		for (int i = 0; i < params.size(); i++) {
 			Dictionary param_dict = params[i];
 			params_str += "uniform float " + (String)param_dict["arg_name"] + " : hint_range(" + String::num(param_dict["min"]) + ", " + String::num(param_dict["max"]) + ") = " + String::num(param_dict["value"]) + ";\n";

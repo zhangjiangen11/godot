@@ -54,6 +54,7 @@
 #include "core/string/ustring.h"
 #include "core/templates/rid.h"
 #include "core/typedefs.h"
+#include "core/math/random_pcg.h"
 
 /**
  * Hashing functions
