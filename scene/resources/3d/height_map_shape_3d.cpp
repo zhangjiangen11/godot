@@ -243,20 +243,20 @@ real_t HeightMapShape3D::get_max_height() const {
 	return max_height;
 }
 
-void thread_build_height_map_rf(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
+static void thread_build_height_map_rf(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
 
 	float* dest = (float*)dest_ptr;
 	float *src = (float*)src_ptr;
 	dest[index] = min_height + (src[index] * (max_height - min_height));
 }
 
-void thread_build_height_map_rh(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
+static void thread_build_height_map_rh(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
 
 	float* dest = (float*)dest_ptr;
 	uint16_t *src = (uint16_t*)src_ptr;
 	dest[index] = min_height + (Math::half_to_float(src[index]) * (max_height - min_height));
 }
-void thread_build_height_map_r8(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
+static void thread_build_height_map_r8(int index,int64_t dest_ptr,int64_t src_ptr,float min_height,float max_height) {
 
 	float* dest = (float*)dest_ptr;
 	uint8_t *src = (uint8_t*)src_ptr;

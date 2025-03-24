@@ -32,8 +32,17 @@ public:
 		return is_error;
 	}
     void auto_reload();
+
+    void add_using_process_shader(ObjectID id) {
+        link_process_shaders.insert(id);
+
+    }
+    void remove_using_process_shader(ObjectID id) {
+        link_process_shaders.erase(id);
+    }
 protected:
     void load();
+    
 protected:
 	String process_file_path;
 	String preview_file_path;
@@ -43,7 +52,9 @@ protected:
 
     int64_t process_file_path_time = -1;
     int64_t priview_file_path_time = -1;
+    HashSet<ObjectID> link_process_shaders;
 
+    LocalVector<ObjectID> remove;
 	bool is_error = true;
 };
 
@@ -74,7 +85,7 @@ public:
    }
 
    void update_process_shader_params(Dictionary p_params,Vector<uint8_t> p_code,int start_index) {
-       p_code.resize((params.size() + start_index) * 4);
+       p_code.resize((params.size() + (int64_t)start_index) * 4L);
 
        float* p = (float*)p_code.ptrw();
        p += start_index;
@@ -120,6 +131,7 @@ private:
     Ref<HeightMapTemplateShader> template_shader;
     Ref<RDShaderFile> process_shader_file;
 
+
     Ref<Shader> preview_shader;
     Array params;
     String code_file_path;
@@ -128,6 +140,7 @@ private:
     int64_t code_file_path_time = -1;
 
     String preview_name;
+    
 
     bool is_error = false;
 };

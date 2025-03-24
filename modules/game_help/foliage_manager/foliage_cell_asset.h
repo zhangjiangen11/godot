@@ -839,6 +839,8 @@ namespace Foliage
 		int real_width = 0;
 
 		bool is_bit = false;
+		Ref< FoliageCellMask> parent;
+		Vector2i use_parent_offset;
 	};
 
 	class FoliageHeightMap : public RefCounted {
@@ -869,11 +871,11 @@ namespace Foliage
 		void set_data(const Vector<float>& p_data) { data = p_data; }
 		const Vector<float>& get_data() { return data; }
 		// 隐藏不在高度范围内的实例
-		void hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max);
+		Ref<TaskJobHandle> hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max,const Vector2& p_instance_start_pos, const Ref<TaskJobHandle>& depend_task);
 		// 隱藏非平地的实例
-		void hide_instance_by_flatland(const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference) ;
+		Ref<TaskJobHandle> hide_instance_by_flatland(const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference,const Vector2& p_instance_start_pos, const Ref<TaskJobHandle>& depend_task) ;
 
-		void update_height(const Ref<SceneInstanceBlock>& p_block,float p_base_height,float p_height_range,const Rect2i& p_image_rect,const Vector2& p_instance_start_pos) ;
+		Ref<TaskJobHandle> update_height(const Ref<SceneInstanceBlock>& p_block,float p_base_height,float p_height_range,const Vector2& p_instance_start_pos, const Ref<TaskJobHandle>& depend_task) ;
 
 
 		Vector3 get_height_map_normal(int p_x, int p_y,float p_scale_height, float stepX, float stepZ) const;
@@ -885,6 +887,8 @@ namespace Foliage
 		int width = 0;
 		int height = 0;
 		Vector<float> data;
+		Ref< FoliageHeightMap> parent;
+		Vector2i use_parent_offset;
 	};
 	class FoliageNormalMap : public RefCounted {
 		GDCLASS(FoliageNormalMap, RefCounted);
@@ -905,13 +909,16 @@ namespace Foliage
 		void init_form_half_data(int p_width, int p_height, const Vector<uint8_t>& p_data, const Rect2i& p_rect, float p_scale_height, float stepX, float stepZ);
 		void set_pixel(int p_x, int p_y, Vector3 p_value);
 		Vector3 get_pixel(int p_x, int p_y);
+		Vector3 sample_normal(float u, float v);
 		// 通过坡度隐藏实例
-		void hide_instance_by_slope(const Ref<SceneInstanceBlock>& p_block, float p_visble_slope_min, float p_visble_slope_max);
+		Ref<TaskJobHandle> hide_instance_by_slope(const Ref<SceneInstanceBlock>& p_block, float p_visble_slope_min, float p_visble_slope_max,const Vector2& p_instance_start_pos,const Ref<TaskJobHandle>& depend_task);
 		Ref<ImageTexture> get_xz_normal_map_texture() const;
-	private:
+	public:
 		int width = 0;
 		int height = 0;
 		Vector<Vector3> data;
+		Ref< FoliageNormalMap> parent;
+		Vector2i use_parent_offset;
 	};
     
 }

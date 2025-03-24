@@ -56,6 +56,21 @@ void HeightMapTemplateShader::auto_reload() {
     if(process_file_path_time != FileAccess::get_modified_time(process_file_path) || priview_file_path_time != FileAccess::get_modified_time(preview_file_path)) {
         load();
     }
+    remove.clear();
+    for(auto& id : link_process_shaders) {
+        HeightMapProcessShader *shader = Object::cast_to<HeightMapProcessShader>(ObjectDB::get_instance(id));
+        if(shader) {
+            shader->auto_reload();
+        }
+        else {
+            remove.push_back(id);
+        }
+    }
+
+    for(auto& id : remove) {
+        link_process_shaders.erase(id);
+    }
+    
 }
 
 
@@ -94,6 +109,9 @@ void HeightMapProcessShader::_bind_methods() {
 }
 void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template_shader,const String& p_code_file_path) {
 
+    if(template_shader.is_valid()) {
+        template_shader->remove_using_process_shader(get_instance_id());
+    }
     code_file_path = ResourceUID::get_singleton()->ensure_path(p_code_file_path);
     if(template_shader.is_valid()) {
         template_shader->disconnect(CoreStringName(changed),callable_mp(this, &HeightMapProcessShader::on_template_changed));
@@ -106,6 +124,7 @@ void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader>& p_template
     if(template_shader.is_valid()) {
         template_shader->connect(CoreStringName(changed),callable_mp(this, &HeightMapProcessShader::on_template_changed));
     }
+    template_shader->add_using_process_shader(get_instance_id());
 	load();
 }
 
@@ -139,7 +158,7 @@ void HeightMapProcessShader::load() {
 			preview_name = code.substr(0,ret).substr(7).strip_edges(true, true);
 		}
 	}
-    code = code.remove_annotate().remove_char(' ').remove_char('\r').remove_char('\t');
+    code = code.remove_annotate().remove_char('\r').remove_char('\t');
     Vector<String> lines = code.split("$$",false);
 
     if(lines.size() != 3) {
@@ -152,7 +171,7 @@ void HeightMapProcessShader::load() {
     process_code = lines[2];
   
 
-    Vector<String> params_list = _params.split("\n", false);
+    Vector<String> params_list = _params.remove_char(' ').split("\n", false);
 
 
     for(int i=0;i<params_list.size();i++) {
@@ -198,42 +217,41 @@ void HeightMapProcessShader::load() {
 
 
     String file_txt = template_shader->get_process_shader_code();
-    file_txt = file_txt.replace("//@BLEND_PARAMETER_RENAME",params_str);
-    file_txt = file_txt.replace("//@BLEND_FUNCTION",function_code);
-    file_txt = file_txt.replace("//@BLEND_CODE",process_code);
-    String base_path = template_shader->get_process_file_path().get_base_dir();
+	{
+		file_txt = file_txt.replace("//@BLEND_PARAMETER_RENAME", params_str);
+		file_txt = file_txt.replace("//@BLEND_FUNCTION", function_code);
+		file_txt = file_txt.replace("//@BLEND_CODE", process_code);
+		String base_path = template_shader->get_process_file_path().get_base_dir();
 
-    err = process_shader_file->parse_versions_from_text(file_txt
-        , "#define PROCESS_SHADER"
-        , _include_function, &base_path);
+		err = process_shader_file->parse_versions_from_text(file_txt
+			, "#define PROCESS_SHADER 1\n#define BLEND_HEIGHT 1\n"
+			, _include_function, &base_path);
 
-    if (err != OK) {
-        is_error = true;
-        process_shader_file->print_errors(code_file_path);
-    }
+		if (err != OK) {
+			is_error = true;
+			process_shader_file->print_errors(code_file_path);
+		}
+
+	}
 
     file_txt = template_shader->get_preview_shader_code();
-    params_str = "";
-    for(int i=0;i<params.size();i++) {
-		Dictionary param_dict = params[i];
-        params_str += "uniform float " + (String)param_dict["arg_name"] + " : hint_range(" + String::num_int64(param_dict["min"]) + ", " + String::num_int64(param_dict["max"]) + ") = " + String::num_int64(param_dict["value"])  + "\n";
-    }
-    file_txt = file_txt.replace("//@BLEND_PARAMETER_RENAME",params_str);
-    file_txt = file_txt.replace("//@BLEND_FUNCTION",function_code);
-    file_txt = file_txt.replace("//@BLEND_CODE",process_code);
-    err = process_shader_file->parse_versions_from_text(file_txt
-        , "#define PRIVATE_SHADER"
-        , _include_function, &base_path);
-    if (err != OK) {
-        is_error = true;
-        process_shader_file->print_errors(code_file_path);
-    }
-    if(preview_shader.is_null()) {
-        preview_shader.instantiate();
-    }
-    // priview_shader->set_path(p_template_shader->get_priview_file_path());
-	preview_shader->set_include_path(template_shader->get_preview_file_path().get_base_dir());
-	preview_shader->set_code(file_txt);
+	{
+		params_str = "#define PRIVATE_SHADER 1\n#define BLEND_HEIGHT 1\n";
+		for (int i = 0; i < params.size(); i++) {
+			Dictionary param_dict = params[i];
+			params_str += "uniform float " + (String)param_dict["arg_name"] + " : hint_range(" + String::num(param_dict["min"]) + ", " + String::num(param_dict["max"]) + ") = " + String::num(param_dict["value"]) + ";\n";
+		}
+		file_txt = file_txt.replace("//@BLEND_PARAMETER_RENAME", params_str);
+		file_txt = file_txt.replace("//@BLEND_FUNCTION", function_code);
+		file_txt = file_txt.replace("//@BLEND_CODE", process_code);
+		if (preview_shader.is_null()) {
+			preview_shader.instantiate();
+		}
+		// priview_shader->set_path(p_template_shader->get_priview_file_path());
+		preview_shader->set_include_path(template_shader->get_preview_file_path().get_base_dir());
+		preview_shader->set_code(file_txt);
+
+	}
 
 	emit_signal(CoreStringName(changed));
 
@@ -249,6 +267,7 @@ void HeightMapProcessShader::auto_reload() {
 HeightMapProcessShader::~HeightMapProcessShader() {
     if(template_shader.is_valid()) {
         template_shader->disconnect(CoreStringName(changed),callable_mp(this, &HeightMapProcessShader::on_template_changed));
+        template_shader->remove_using_process_shader(get_instance_id());
     }
     template_shader = nullptr;
 }
