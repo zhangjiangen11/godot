@@ -1540,7 +1540,7 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 		}
 
 		_err_print_error(nullptr, file.utf8().get_data(), line, parser.get_error_text().utf8().get_data(), false, ERR_HANDLER_SHADER);
-		ERR_FAIL_V_MSG(err,file + "(" + String::num_int64(line) + "):\n" + parser.get_error_text() + "\n" + p_code);
+		ERR_FAIL_V_MSG(err,file + "(" + String::num_int64(line) + "):\n" + parser.get_error_text().utf8().get_data() + "\n" + p_code);
 	}
 
 	r_gen_code.defines.clear();
