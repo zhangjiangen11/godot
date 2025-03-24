@@ -42,8 +42,7 @@
 #include "core/os/thread_safe.h"
 #include "core/variant/typed_array.h"
 
-
-namespace core_bind {
+namespace CoreBind {
 
 ////// ResourceLoader //////
 
@@ -1423,7 +1422,7 @@ void Thread::_bind_methods() {
 	BIND_ENUM_CONSTANT(PRIORITY_HIGH);
 }
 
-namespace special {
+namespace Special {
 
 ////// ClassDB //////
 
@@ -1805,7 +1804,7 @@ void ClassDB::_bind_methods() {
 	BIND_ENUM_CONSTANT(API_NONE);
 }
 
-} // namespace special
+} // namespace Special
 
 ////// Engine //////
 
@@ -2249,4 +2248,4 @@ void EngineDebugger::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("clear_breakpoints"), &EngineDebugger::clear_breakpoints);
 }
 
-} // namespace core_bind
+} // namespace CoreBind
