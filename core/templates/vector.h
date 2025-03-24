@@ -39,16 +39,13 @@
  */
 
 #include "core/error/error_macros.h"
-#include "core/os/memory.h"
 #include "core/templates/cowdata.h"
 #include "core/templates/search_array.h"
 #include "core/templates/sort_array.h"
 
 #include "core/math/math_funcs.h"
 
-#include <climits>
 #include <initializer_list>
-#include <utility>
 
 
 struct CodeHelp
@@ -262,8 +259,8 @@ public:
 
 	_FORCE_INLINE_ bool has(const T &p_val) const { return find(p_val) != -1; }
 
-	_FORCE_INLINE_ void sort() {
-		sort_custom<_DefaultComparator<T>>();
+	void sort() {
+		sort_custom<Comparator<T>>();
 	}
 
 	template <typename Comparator, bool Validate = SORT_ARRAY_VALIDATE_ENABLED, typename... Args>
@@ -278,8 +275,8 @@ public:
 		sorter.sort(data, len);
 	}
 
-	_FORCE_INLINE_ Size bsearch(const T &p_value, bool p_before) {
-		return bsearch_custom<_DefaultComparator<T>>(p_value, p_before);
+	Size bsearch(const T &p_value, bool p_before) {
+		return bsearch_custom<Comparator<T>>(p_value, p_before);
 	}
 
 	template <typename Comparator, typename Value, typename... Args>

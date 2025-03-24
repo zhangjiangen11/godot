@@ -292,8 +292,8 @@ public:
 		sorter.sort(data, len);
 	}
 
-	_FORCE_INLINE_ void sort() {
-		sort_custom<_DefaultComparator<T>>();
+	void sort() {
+		sort_custom<Comparator<T>>();
 	}
 
 	void ordered_insert(const T& p_val) {
