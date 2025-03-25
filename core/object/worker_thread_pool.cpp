@@ -985,6 +985,7 @@ class ThreadTaskGroup {
 	void *native_func_userdata = nullptr;
 	int start = 0;
 	int end = 0;
+	ThreadTaskGroup* next = nullptr;
 	friend class WorkerTaskPool;
   protected:
 	void Process()
@@ -1065,11 +1066,10 @@ class ThreadTaskGroup * WorkerTaskPool::allocal_task()
 {
 	ThreadTaskGroup* ret = nullptr;
 	free_mutex.lock();
-	List<ThreadTaskGroup*>::Element* node = free_queue.front();
-	if(node != nullptr)
+	if(free_queue != nullptr)
 	{
-		ret = node->get();
-		free_queue.pop_front();
+		ret = free_queue;
+		free_queue = free_queue->next;
 	}
 	free_mutex.unlock();
 	if(ret == nullptr)
@@ -1080,26 +1080,32 @@ class ThreadTaskGroup * WorkerTaskPool::allocal_task()
 }
 void WorkerTaskPool::free_task(class ThreadTaskGroup * task)
 {
-	ThreadTaskGroup* ret = nullptr;
+
+	task->callable = Callable();
+	task->native_func_userdata = nullptr;
+	task->native_group_func = nullptr;
+
 	free_mutex.lock();
-	free_queue.push_back(task);
+	task->next = free_queue;
+	free_queue = task;
 	free_mutex.unlock();
 }
 void WorkerTaskPool::add_task(class ThreadTaskGroup * task)
 {
 	task_mutex.lock();
-	task_queue.push_back(task);
+	task->next = task_queue;
+	task_queue = task;
 	task_mutex.unlock();
 	// 增加信号
 	task_available_semaphore.post();
 }
 void WorkerTaskPool::_process_task_queue() {
 	task_mutex.lock();
-	List<ThreadTaskGroup*>::Element* node = task_queue.front();
+	ThreadTaskGroup* node = task_queue;
 	if(node != nullptr)
 	{
-		ThreadTaskGroup *task = node->get();
-		task_queue.pop_front();
+		ThreadTaskGroup *task = node;
+		task_queue = task_queue->next;
 		task_mutex.unlock();
 		
 		task->Process();
@@ -1177,8 +1183,6 @@ Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const Callable &p_action, int 
 		ThreadTaskGroup* task = allocal_task();
 		task->handle = hand;
 		task->callable = p_action;
-		task->native_func_userdata = nullptr;
-		task->native_group_func = nullptr;
 		task->start = i;
 		task->end = i + _batch_count;
 		if(task->end > p_elements)
@@ -1248,18 +1252,18 @@ void WorkerTaskPool::finish()
 		data.thread.wait_to_finish();
 	}
 	singleton = nullptr;
-	List<class ThreadTaskGroup*>::Iterator it = task_queue.begin();
+	class ThreadTaskGroup* it = task_queue;
 	while (it) {
-		memdelete(*it);
-		++it;
+		memdelete(it);
+		it = it->next;
 	}
-	task_queue.clear();
-	it = free_queue.begin();
+	it = free_queue;
 	while (it) {
-		memdelete(*it);
-		++it;
+		memdelete(it);
+		it = it->next;
 	}
-	free_queue.clear();
+	task_queue = nullptr;
+	free_queue = nullptr;
 
 }
 WorkerTaskPool::WorkerTaskPool() {

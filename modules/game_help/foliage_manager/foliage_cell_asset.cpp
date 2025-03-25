@@ -442,7 +442,7 @@ namespace Foliage
     Ref<TaskJobHandle> FoliageHeightMap::hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max,const Vector2& p_instance_start_pos, const Ref<TaskJobHandle>& depend_task) {
 
         return WorkerTaskPool::get_singleton()->add_group_task(
-            callable_mp_static(thread_instance_by_height_range).bind(this,p_block,p_visble_height_min,p_visble_height_max,p_instance_start_pos), p_block->get_instance_count(),64, depend_task.ptr());
+            callable_mp_static(thread_instance_by_height_range).bind(this,p_block,p_visble_height_min,p_visble_height_max,p_instance_start_pos), p_block->get_instance_count(), 512, depend_task.ptr());
     }
     static void thread_hide_instance_by_flatland(int index,const Ref<FoliageHeightMap>& p_height_map,const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference,const Vector2& p_instance_start_pos) {
 
@@ -495,7 +495,7 @@ namespace Foliage
     Ref<TaskJobHandle> FoliageHeightMap::hide_instance_by_flatland(const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference,const Vector2& p_instance_start_pos, const Ref<TaskJobHandle>& depend_task) {
 
         return WorkerTaskPool::get_singleton()->add_group_task(
-            callable_mp_static(thread_hide_instance_by_flatland).bind(this,p_block,p_instance_range,p_height_difference,p_instance_start_pos), p_block->get_instance_count(),64, depend_task.ptr());
+            callable_mp_static(thread_hide_instance_by_flatland).bind(this,p_block,p_instance_range,p_height_difference,p_instance_start_pos), p_block->get_instance_count(), 512, depend_task.ptr());
         
     }
 
@@ -517,7 +517,7 @@ namespace Foliage
 
         
         return WorkerTaskPool::get_singleton()->add_group_task(
-            callable_mp_static(thread_update_height).bind(this,p_block,p_base_height,p_height_range,p_instance_start_pos), p_block->get_instance_count(),64, depend_task.ptr());
+            callable_mp_static(thread_update_height).bind(this,p_block,p_base_height,p_height_range,p_instance_start_pos), p_block->get_instance_count(), 512, depend_task.ptr());
         
 
     }
@@ -726,7 +726,7 @@ namespace Foliage
         Vector3 * ptr = data.ptrw();
         if(data.size() > 500) {
             Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-                callable_mp_static(thread_init_form_image).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect), data.size(),64, nullptr);
+                callable_mp_static(thread_init_form_image).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect), data.size(), 512, nullptr);
             task->wait_completion();            
         }
         else {
@@ -758,7 +758,7 @@ namespace Foliage
         Vector3* ptr = data.ptrw();
         if(data.size() > 500) {
             Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-                callable_mp_static(thread_init_form_height_map<Image>).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(),64, nullptr);
+                callable_mp_static(thread_init_form_height_map<Image>).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(), 512, nullptr);
             task->wait_completion();
             
         }
@@ -779,7 +779,7 @@ namespace Foliage
         Vector3 * ptr = data.ptrw();
         if(data.size() > 500) {
             Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-                callable_mp_static(thread_init_form_height_map<FoliageHeightMap>).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(),64, nullptr);
+                callable_mp_static(thread_init_form_height_map<FoliageHeightMap>).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(), 512, nullptr);
             task->wait_completion();
             
         }
@@ -809,7 +809,7 @@ namespace Foliage
         Vector3 * ptr = data.ptrw();
         if(data.size() > 500) {
             Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-                callable_mp_static(thread_init_form_half_data).bind((int64_t)ptr, (int64_t)p_data.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(),64, nullptr);
+                callable_mp_static(thread_init_form_half_data).bind((int64_t)ptr, (int64_t)p_data.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(), 512, nullptr);
             task->wait_completion();            
         }
         else {
@@ -897,7 +897,7 @@ namespace Foliage
             return depend_task;
         }
         return WorkerTaskPool::get_singleton()->add_group_task(
-            callable_mp_static(thread_hide_instance_by_slope).bind(p_block, this, p_visble_slope_min, p_visble_slope_max), p_block->get_instance_count(),64, nullptr);
+            callable_mp_static(thread_hide_instance_by_slope).bind(p_block, this, p_visble_slope_min, p_visble_slope_max), p_block->get_instance_count(), 512, nullptr);
     }
     static void thread_get_xz_normal_map_texture(int index,int64_t dest_ptr,int64_t src_ptr) {
         Vector3* src = (Vector3*)src_ptr;
@@ -909,15 +909,15 @@ namespace Foliage
     }
     Ref<ImageTexture> FoliageNormalMap::get_xz_normal_map_texture() const{
         // 法线贴图的y轴时钟向上,所以不需要存储y轴
-        const Vector3 * ptr = data.ptr();
+        const Vector3 * normal_ptr = data.ptr();
         Color c;
         Vector<uint8_t> image_data;
         image_data.resize((uint64_t)width * height * 2);
-        uint8_t * ptr2 = image_data.ptrw();
+        uint8_t * image_ptr = image_data.ptrw();
         
         if(data.size() > 500) {
             Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-                callable_mp_static(thread_get_xz_normal_map_texture).bind((int64_t)ptr, (int64_t)ptr2),data.size(),64, nullptr);
+                callable_mp_static(thread_get_xz_normal_map_texture).bind((int64_t)image_ptr, (int64_t)normal_ptr),data.size(),512, nullptr);
             task->wait_completion();
         }
         else {
@@ -926,10 +926,10 @@ namespace Foliage
             for(int x = 0; x < width; x++) {
                 for(int y = 0; y < height; y++) {
                     ofs = (y * (uint64_t)width + x) * 2;
-                    t0 = (ptr[y * width + x].x * 0.5 + 0.5) * 255.0;
-                    t1 = (ptr[y * width + x].z * 0.5 + 0.5) * 255.0;
-                    ptr2[ofs] = (uint8_t)t0;
-                    ptr2[ofs + 1] = (uint8_t)t1;
+                    t0 = (normal_ptr[y * width + x].x * 0.5 + 0.5) * 255.0;
+                    t1 = (normal_ptr[y * width + x].z * 0.5 + 0.5) * 255.0;
+					image_ptr[ofs] = (uint8_t)t0;
+					image_ptr[ofs + 1] = (uint8_t)t1;
                 }
             }
         }

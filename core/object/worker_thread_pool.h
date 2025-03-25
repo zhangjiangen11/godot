@@ -301,10 +301,9 @@ class WorkerTaskPool : public Object {
 	static WorkerTaskPool *singleton;
 public:
 	bool exit_threads = false;
+	class ThreadTaskGroup* task_queue = nullptr;
 	// 释放的列队
-	List<class ThreadTaskGroup*> task_queue;
-	// 释放的列队
-	List<class ThreadTaskGroup*> free_queue;
+	class ThreadTaskGroup* free_queue = nullptr;
 	Mutex task_mutex;
 	Mutex free_mutex;
 	Semaphore task_available_semaphore;
