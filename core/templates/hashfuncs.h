@@ -56,6 +56,10 @@
 #include "core/typedefs.h"
 #include "core/math/random_pcg.h"
 
+#ifdef _MSC_VER
+#include <intrin.h> // Needed for `__umulh` below.
+#endif
+
 /**
  * Hashing functions
  */
