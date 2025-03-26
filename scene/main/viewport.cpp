@@ -684,6 +684,12 @@ void Viewport::_notification(int p_what) {
 			// mouse_focus, because, for example, we want to continue
 			// dragging a scrollbar even if the mouse has left the viewport.
 		} break;
+		//case NOTIFICATION_CHILD_ORDER_CHANGED: {
+		//	if (is_inside_tree()) {
+		//		_propagate_enter_world_3d(this);
+		//	}
+
+		//} break;
 
 		case NOTIFICATION_WM_WINDOW_FOCUS_OUT: {
 			_gui_cancel_tooltip();

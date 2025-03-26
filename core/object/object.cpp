@@ -1580,6 +1580,28 @@ bool Object::_disconnect(const StringName &p_signal, const Callable &p_callable,
 
 	return true;
 }
+void Object::disconnect_all(const StringName &p_signal) {
+
+	SignalData *sd = signal_map.getptr(p_signal);
+	if (sd == nullptr) {
+		return ;
+	}
+
+	for(auto &slot : sd->slot_map) {
+		Object *target_object = slot.key.get_object();
+		if (target_object) {
+			target_object->connections.erase(slot.value.cE);
+		}
+	}
+
+	sd->slot_map.clear();
+
+	if (sd->slot_map.is_empty() && ClassDB::has_signal(get_class_name(), p_signal)) {
+		//not user signal, delete
+		signal_map.erase(p_signal);
+	}
+
+}
 
 void Object::_set_bind(const StringName &p_set, const Variant &p_value) {
 	set(p_set, p_value);
@@ -1780,6 +1802,7 @@ void Object::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("disconnect", "signal", "callable"), &Object::disconnect);
 	ClassDB::bind_method(D_METHOD("is_connected", "signal", "callable"), &Object::is_connected);
 	ClassDB::bind_method(D_METHOD("has_connections", "signal"), &Object::has_connections);
+	ClassDB::bind_method(D_METHOD("disconnect_all", "signal"), &Object::disconnect_all);
 
 	ClassDB::bind_method(D_METHOD("set_block_signals", "enable"), &Object::set_block_signals);
 	ClassDB::bind_method(D_METHOD("is_blocking_signals"), &Object::is_blocking_signals);

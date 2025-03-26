@@ -444,6 +444,9 @@ void EditorProperty::_notification(int p_what) {
 					_draw_label = get_edited_object()->call(pro_dis_name);
 				}				
 			}
+			else {
+				_draw_label = pro_dis_name;
+			}
 			
 
 			int ofs = get_theme_constant(SNAME("font_offset"));

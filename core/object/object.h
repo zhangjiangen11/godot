@@ -949,6 +949,7 @@ public:
 
 	MTVIRTUAL Error connect(const StringName &p_signal, const Callable &p_callable, uint32_t p_flags = 0);
 	MTVIRTUAL void disconnect(const StringName &p_signal, const Callable &p_callable);
+	MTVIRTUAL void disconnect_all(const StringName &p_signal);
 	MTVIRTUAL bool is_connected(const StringName &p_signal, const Callable &p_callable) const;
 	MTVIRTUAL bool has_connections(const StringName &p_signal) const;
 
