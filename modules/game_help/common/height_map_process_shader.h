@@ -84,6 +84,7 @@ public:
 	   return dict;
    }
 
+    // 更新处理shader的参数
    void update_process_shader_params(Dictionary p_params,Vector<uint8_t> p_code,int start_index) {
        p_code.resize((params.size() + (int64_t)start_index) * 4L);
 

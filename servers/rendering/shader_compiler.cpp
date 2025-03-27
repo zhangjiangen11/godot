@@ -1505,12 +1505,12 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 		for (const KeyValue<String, Vector<String>> &E : includes) {
 			if (E.key.is_empty()) {
 				if (p_path == "") {
-					error_msg += ("--Main Shader--");
+					error_msg += ("--Main Shader--\n");
 				} else {
-					error_msg += String("--") + p_path + String("--");
+					error_msg += String("--") + p_path + String("--\n");
 				}
 			} else {
-				error_msg += String("--") + E.key + String("--");
+				error_msg += String("--") + E.key + String("--\n");
 			}
 			int err_line = -1;
 			for (int i = 0; i < include_positions.size(); i++) {
@@ -1523,9 +1523,9 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 				if (i == err_line - 1) {
 					// Mark the error line to be visible without having to look at
 					// the trace at the end.
-					error_msg += vformat("E%4d-> %s", i + 1, V[i]);
+					error_msg += vformat("E%4d-> %s\n", i + 1, V[i]);
 				} else if(i < err_line + 5){
-					error_msg += (vformat("%5d | %s", i + 1, V[i]));
+					error_msg += (vformat("%5d | %s\n", i + 1, V[i]));
 				}
 			}
 		}
@@ -1541,7 +1541,7 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 		}
 
 		// _err_print_error(nullptr, file.utf8().get_data(), line, parser.get_error_text().utf8().get_data(), false, ERR_HANDLER_SHADER);
-		ERR_FAIL_V_MSG(err,file + "(" + String::num_int64(line) + "):\n" + parser.get_error_text().utf8().get_data() + "\n" + error_msg);
+		ERR_FAIL_V_MSG(err,file + "(" + String::num_int64(line) + "):\n" + parser.get_error_text() + "\n" + error_msg);
 	}
 
 	r_gen_code.defines.clear();

@@ -191,7 +191,7 @@ void HeightMapProcessShader::load() {
         param_dict["min"] = param[3].to_float();
         param_dict["max"] = param[4].to_float();
 
-        param_dict["name"] = String("shader_param/") + param[1];
+        param_dict["name"] = String("shader_parameter/") + param[1];
         param_dict["type"] = Variant::FLOAT;
         param_dict["hint"] = PROPERTY_HINT_RANGE;
         param_dict["usage"] = PROPERTY_USAGE_DEFAULT;

@@ -631,6 +631,7 @@ void EditorAssetInstaller::_notification(int p_what) {
 
 				extension_icon_map["gdshader"] = get_editor_theme_icon(SNAME("Shader"));
 				extension_icon_map["gdshaderinc"] = get_editor_theme_icon(SNAME("TextFile"));
+				extension_icon_map["glslh"] = get_editor_theme_icon(SNAME("TextFile"));
 				extension_icon_map["gd"] = get_editor_theme_icon(SNAME("GDScript"));
 				if (ClassDB::class_exists("CSharpScript")) {
 					extension_icon_map["cs"] = get_editor_theme_icon(SNAME("CSharpScript"));

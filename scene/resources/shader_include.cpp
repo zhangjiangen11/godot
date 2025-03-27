@@ -144,6 +144,7 @@ Ref<Resource> ResourceFormatLoaderShaderInclude::load(const String &p_path, cons
 
 void ResourceFormatLoaderShaderInclude::get_recognized_extensions(List<String> *p_extensions) const {
 	p_extensions->push_back("gdshaderinc");
+	p_extensions->push_back("glslh");
 }
 
 bool ResourceFormatLoaderShaderInclude::handles_type(const String &p_type) const {
@@ -152,7 +153,7 @@ bool ResourceFormatLoaderShaderInclude::handles_type(const String &p_type) const
 
 String ResourceFormatLoaderShaderInclude::get_resource_type(const String &p_path) const {
 	String extension = p_path.get_extension().to_lower();
-	if (extension == "gdshaderinc") {
+	if (extension == "gdshaderinc" || extension == "glslh") {
 		return "ShaderInclude";
 	}
 	return "";
@@ -183,6 +184,7 @@ void ResourceFormatSaverShaderInclude::get_recognized_extensions(const Ref<Resou
 	const ShaderInclude *shader_inc = Object::cast_to<ShaderInclude>(*p_resource);
 	if (shader_inc != nullptr) {
 		p_extensions->push_back("gdshaderinc");
+		p_extensions->push_back("glslh");
 	}
 }
 

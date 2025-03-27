@@ -385,7 +385,7 @@ namespace Foliage
         ClassDB::bind_method(D_METHOD("hide_instance_by_height_range", "block", "min_height", "max_height","instance_start_pos","depend_job"), &FoliageHeightMap::hide_instance_by_height_range);
         ClassDB::bind_method(D_METHOD("hide_instance_by_flatland", "block", "instance_range","flatland_height","instance_start_pos","depend_job"), &FoliageHeightMap::hide_instance_by_flatland);
         ClassDB::bind_method(D_METHOD("sample_height", "u", "v"), &FoliageHeightMap::sample_height);
-        ClassDB::bind_method(D_METHOD("update_height", "block", "base_height", "height_range","instance_start_pos","instance_start_pos","depend_job"), &FoliageHeightMap::update_height);
+        ClassDB::bind_method(D_METHOD("update_height", "block", "base_height", "height_range","instance_start_pos","depend_job"), &FoliageHeightMap::update_height);
 
         ADD_PROPERTY(PropertyInfo(Variant::INT, "width"), "set_width", "get_width");
         ADD_PROPERTY(PropertyInfo(Variant::INT, "height"), "set_height", "get_height");
