@@ -58,6 +58,22 @@
 #include "scene/resources/style_box_flat.h"
 #include "scene/resources/visual_shader_nodes.h"
 
+static Mutex enum_property_name_list;
+static StringName get_object_enum_property_name_list(const StringName& _property) {
+	StringName ret;
+	enum_property_name_list.lock();
+	static HashMap<StringName,StringName>* enum_property_list_name = new (HashMap<StringName,StringName>);
+	auto it = enum_property_list_name->find(_property);
+	if(it == enum_property_list_name->end()) {
+		StringName name = StringName(_property.str() + "__enum_list__");
+		enum_property_list_name->insert(_property,name);
+	}
+	else {
+		ret = it->value;
+	}
+	enum_property_name_list.unlock();
+	return ret;
+}
 ///////////////////// Nil /////////////////////////
 
 void EditorPropertyNil::update_property() {
@@ -353,18 +369,31 @@ void EditorPropertyTextEnum::setup(const Vector<String> &p_options, bool p_strin
 }
 void EditorPropertyTextEnum::cb_update_options(OptionButton* p_ob)
 {
-	if (is_dynamic_options) {
-		Object* obj = get_edited_object();
-		if (obj == nullptr) {
-			return;
+	if(get_edited_object() == nullptr) {
+		return;
+	}
+	StringName name = get_object_enum_property_name_list(get_edited_property());
+	if(get_edited_object()->has_method(name)) {
+		Array options_array = get_edited_object()->call(name);
+		p_ob->clear();
+		options.clear();
+		for (int i = 0; i < options_array.size(); i++) {
+			String opt = options_array[i];
+			options.append(options_array[i]);
+			p_ob->add_item(options_array[i], i);
 		}
-		if (!obj->has_method(dyn_options_method)) {
+		String current_value = get_edited_property_value();
+		int default_option = options.find(current_value);
+		option_button->select(default_option);
+	}	
+	else if (is_dynamic_options) {
+		if (!get_edited_object()->has_method(dyn_options_method)) {
 			return;
 		}
 
 		p_ob->clear();
 		options.clear();
-		Array options_array = obj->call(dyn_options_method);
+		Array options_array = get_edited_object()->call(dyn_options_method);
 		for (int i = 0; i < options_array.size(); i++) {
 			String opt = options_array[i];
 			options.append(options_array[i]);
