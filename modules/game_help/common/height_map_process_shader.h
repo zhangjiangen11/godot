@@ -107,7 +107,15 @@ public:
     }
 
     Ref<Shader> get_preview_shader() {
-        return preview_shader;
+        return preview_mask_shader;
+    }
+
+    Ref<Shader> get_preview_height_shader() {
+        return preview_height_shader;
+    }
+
+    Ref<Shader> get_preview_finish_shader() {
+        return preview_finish_shader;
     }
 
 
@@ -133,7 +141,9 @@ private:
     Ref<RDShaderFile> process_shader_file;
 
 
-    Ref<Shader> preview_shader;
+    Ref<Shader> preview_mask_shader;
+    Ref<Shader> preview_height_shader;
+    Ref<Shader> preview_finish_shader;
     Array params;
     String code_file_path;
     String function_code;
