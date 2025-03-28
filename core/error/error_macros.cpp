@@ -289,9 +289,121 @@ void _err_print_error(const char *p_function, const char *p_file, int p_line, co
 void _err_print_error(const char *p_function, const char *p_file, int p_line, const String &p_error, bool p_editor_notify, ErrorHandlerType p_type) {
 	_err_print_error(p_function, p_file, p_line, p_error.utf8().get_data(), "", p_editor_notify, p_type);
 }
+struct LastLogInfo {
+	Mutex mutex;
+	String function;
+	String file ;
+	int line = 0;
+	String error;
+	String message;
+	ErrorHandlerType type = ERR_HANDLER_ERROR;
+	double last_time = 0;
 
+	bool on_log(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
+		
+		MutexLock lock(mutex);
+		double tm = OS::get_singleton()->get_unix_time();
+		if(tm - last_time  > 5){
+			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+			return true;
+		}
+		if(p_type != type){
+			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+			return true;
+		}
+		if(p_function){
+			if(function != p_function){
+				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+				return true;
+			}
+		}
+		else if(!function.is_empty()){
+			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+			return true;
+		}
+
+		if(p_file){
+			if(file != p_file){
+				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+				return true;
+			}
+		}
+		else if(!file.is_empty()){
+			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+			return true;
+		}
+
+		if(line != p_line){
+			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+			return true;
+		}
+
+		if(p_error){
+			if(error != p_error){
+				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+				return true;
+			}
+		}
+		else if(!error.is_empty()){
+			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+			return true;
+		}
+
+		if(p_message){
+			if(message != p_message){
+				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+				return true;
+			}
+		}
+		else if(!message.is_empty()){
+			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
+			return true;
+		}
+
+		return false;
+	}
+	void cache(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
+		last_time = OS::get_singleton()->get_unix_time();
+		if(p_function != nullptr)
+		{
+			function = p_function;
+		}
+		else
+		{
+			function = "";
+		}
+
+		if(p_file != nullptr) {
+			file = p_file;
+		}
+		else {
+			file = "";
+		}
+
+		line = p_line;
+		if(p_error != nullptr) {
+			error = p_error;
+		}
+		else {
+			error = "";
+		}
+
+		if(p_message != nullptr) {
+			message = p_message;
+		}
+		else {
+			message = "";
+		}
+		type = p_type;
+	}
+	
+} last_log_info;
 // Main error printing function.
 void _err_print_error(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
+	if(!last_log_info.on_log(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type))
+	{
+		return;
+	}
 	String temp;
 	CharString data;
 	if(p_type == ERR_HANDLER_ERROR)
