@@ -400,6 +400,8 @@ public:
 	int get_canvas_layer() const;
 	CanvasLayer *get_canvas_layer_node() const;
 
+	virtual PackedStringArray get_configuration_warnings() const override;
+
 	CanvasItem();
 	~CanvasItem();
 };
