@@ -400,6 +400,9 @@ struct LastLogInfo {
 } last_log_info;
 // Main error printing function.
 void _err_print_error(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
+	if (OS::get_singleton() == nullptr) {
+		return;
+	}
 	if(!last_log_info.on_log(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type))
 	{
 		return;

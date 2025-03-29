@@ -76,8 +76,8 @@ void CharacterManager::update_animator()
     for(CharacterBodyMain* character : characters)
     {
         Ref<TaskJobHandle> h = handles[index];
-        h = worker_task_pool->add_native_group_task(&_process_animator,character,1,1,h.ptr());
-        h = worker_task_pool->add_native_group_task(&_process_animation,character,1,1,h.ptr());
+        h = worker_task_pool->add_native_group_task(SNAME("CharacterManager::update_animator():_process_animator"), &_process_animator, character, 1, 1, h.ptr());
+        h = worker_task_pool->add_native_group_task(SNAME("CharacterManager::update_animator():_process_animation") ,&_process_animation,character,1,1,h.ptr());
         handles[index] = h;
         index++;
     }

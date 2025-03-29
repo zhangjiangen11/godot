@@ -12,7 +12,7 @@ namespace Foliage
         configFile = _file;
         load_data.dest.reference_ptr(this);
         load_data.file = FileAccess::open(configFile, FileAccess::READ);
-        handle_load = WorkerTaskPool::get_singleton()->add_native_group_task(&job_load_func,&load_data, 1,1,nullptr);
+        handle_load = WorkerTaskPool::get_singleton()->add_native_group_task("FoliageResource::load_file:" + _file, &job_load_func, &load_data, 1, 1, nullptr);
         load(load_data.file);
     }
     void FoliageResource::wait_load_finish()

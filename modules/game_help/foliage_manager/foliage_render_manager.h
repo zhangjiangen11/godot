@@ -399,7 +399,7 @@ namespace Foliage
                 cellDataCullingData = false;
                 if(cellBoxes.size() > 0)
                 {
-                    cellCullJobHandle = WorkerTaskPool::get_singleton()->add_native_group_task(&job_cull_func,this, 1,1,nullptr);
+                    cellCullJobHandle = WorkerTaskPool::get_singleton()->add_native_group_task("process_load_cell_job", &job_cull_func, this, 1, 1, nullptr);
                 }
             }
         }

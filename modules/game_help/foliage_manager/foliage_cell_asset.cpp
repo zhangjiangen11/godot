@@ -441,7 +441,7 @@ namespace Foliage
     // 隐藏不在高度范围内的实例
     Ref<TaskJobHandle> FoliageHeightMap::hide_instance_by_height_range(const Ref<SceneInstanceBlock>& p_block, float p_visble_height_min, float p_visble_height_max,const Vector2& p_instance_start_pos, const Ref<TaskJobHandle>& depend_task) {
 
-        return WorkerTaskPool::get_singleton()->add_group_task(
+        return WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageHeightMap::hide_instance_by_height_range"),
             callable_mp_static(thread_instance_by_height_range).bind(this,p_block,p_visble_height_min,p_visble_height_max,p_instance_start_pos), p_block->get_instance_count(), 512, depend_task.ptr());
     }
     static void thread_hide_instance_by_flatland(int index,const Ref<FoliageHeightMap>& p_height_map,const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference,const Vector2& p_instance_start_pos) {
@@ -494,7 +494,7 @@ namespace Foliage
     // 隱藏非平地的实例
     Ref<TaskJobHandle> FoliageHeightMap::hide_instance_by_flatland(const Ref<SceneInstanceBlock>& p_block,float p_instance_range, float p_height_difference,const Vector2& p_instance_start_pos, const Ref<TaskJobHandle>& depend_task) {
 
-        return WorkerTaskPool::get_singleton()->add_group_task(
+        return WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageHeightMap::hide_instance_by_flatland"),
             callable_mp_static(thread_hide_instance_by_flatland).bind(this,p_block,p_instance_range,p_height_difference,p_instance_start_pos), p_block->get_instance_count(), 512, depend_task.ptr());
         
     }
@@ -516,7 +516,7 @@ namespace Foliage
         
 
         
-        return WorkerTaskPool::get_singleton()->add_group_task(
+        return WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageHeightMap::update_height"),
             callable_mp_static(thread_update_height).bind(this,p_block,p_base_height,p_height_range,p_instance_start_pos), p_block->get_instance_count(), 512, depend_task.ptr());
         
 
@@ -725,7 +725,7 @@ namespace Foliage
 
         Vector3 * ptr = data.ptrw();
         if(data.size() > 500) {
-            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageNormalMap::init_form_image"),
                 callable_mp_static(thread_init_form_image).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect), data.size(), 512, nullptr);
             task->wait_completion();            
         }
@@ -757,7 +757,7 @@ namespace Foliage
 		data.resize(height * (uint64_t)width);
         Vector3* ptr = data.ptrw();
         if(data.size() > 500) {
-            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageNormalMap::init_form_height_image"),
                 callable_mp_static(thread_init_form_height_map<Image>).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(), 512, nullptr);
             task->wait_completion();
             
@@ -778,7 +778,7 @@ namespace Foliage
 		data.resize(height * (uint64_t)width);
         Vector3 * ptr = data.ptrw();
         if(data.size() > 500) {
-            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageNormalMap::init_form_height_map"),
                 callable_mp_static(thread_init_form_height_map<FoliageHeightMap>).bind((int64_t)ptr, (int64_t)p_image.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(), 512, nullptr);
             task->wait_completion();
             
@@ -808,7 +808,7 @@ namespace Foliage
 		data.resize(height * (uint64_t)width);
         Vector3 * ptr = data.ptrw();
         if(data.size() > 500) {
-            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageNormalMap::init_form_half_data"),
                 callable_mp_static(thread_init_form_half_data).bind((int64_t)ptr, (int64_t)p_data.ptr(), Vector2i(width, height), p_rect, (float)p_scale_height, stepX, stepZ), data.size(), 512, nullptr);
             task->wait_completion();            
         }
@@ -896,7 +896,7 @@ namespace Foliage
         if(data.size() != p_block->get_instance_count()) {
             return depend_task;
         }
-        return WorkerTaskPool::get_singleton()->add_group_task(
+        return WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageNormalMap::hide_instance_by_slope"),
             callable_mp_static(thread_hide_instance_by_slope).bind(p_block, this, p_visble_slope_min, p_visble_slope_max), p_block->get_instance_count(), 512, nullptr);
     }
     static void thread_get_xz_normal_map_texture(int index,int64_t dest_ptr,int64_t src_ptr) {
@@ -916,7 +916,7 @@ namespace Foliage
         uint8_t * image_ptr = image_data.ptrw();
         
         if(data.size() > 500) {
-            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
+            Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("FoliageNormalMap::get_xz_normal_map_texture"),
                 callable_mp_static(thread_get_xz_normal_map_texture).bind((int64_t)image_ptr, (int64_t)normal_ptr),data.size(),512, nullptr);
             task->wait_completion();
         }

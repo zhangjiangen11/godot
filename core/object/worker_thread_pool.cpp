@@ -965,8 +965,8 @@ void TaskJobHandle::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("is_completed"), &TaskJobHandle::is_completed);
 	ClassDB::bind_method(D_METHOD("wait_completion"), &TaskJobHandle::wait_completion);
-	ClassDB::bind_method(D_METHOD("new_next_group","action","elements_count","batch_count"), &TaskJobHandle::new_next_group);
-	ClassDB::bind_method(D_METHOD("new_next"), &TaskJobHandle::new_next);
+	ClassDB::bind_method(D_METHOD("new_next_group","task_name","action","elements_count","batch_count"), &TaskJobHandle::new_next_group);
+	ClassDB::bind_method(D_METHOD("new_next","task_name","action"), &TaskJobHandle::new_next);
 	ClassDB::bind_method(D_METHOD("push_depend", "depend_task"), &TaskJobHandle::push_depend);
 
 }
@@ -1049,12 +1049,13 @@ WorkerTaskPool *WorkerTaskPool::singleton = nullptr;
 
 
 void WorkerTaskPool::_thread_task_function(void *p_user) {
+	ThreadData* thread_data = (ThreadData*)p_user;
 	while (true) {
 		singleton->task_available_semaphore.wait();
 		if (singleton->exit_threads) {
 			break;
 		}
-		singleton->_process_task_queue();
+		singleton->_process_task_queue(thread_data->index);
 		if (singleton->exit_threads) 
 		{
 			return;
@@ -1099,20 +1100,30 @@ void WorkerTaskPool::add_task(class ThreadTaskGroup * task)
 	// 增加信号
 	task_available_semaphore.post();
 }
-void WorkerTaskPool::_process_task_queue() {
+void WorkerTaskPool::_process_task_queue(int thread_id) {
 	task_mutex.lock();
 	ThreadTaskGroup* node = task_queue;
 	if(node != nullptr)
 	{
 		ThreadTaskGroup *task = node;
 		task_queue = task_queue->next;
+		bool _capture_stack = capture_stack;
 		task_mutex.unlock();
-		
+		uint64_t start_time;
+		if(capture_stack) {
+			start_time = OS::get_singleton()->get_ticks_usec();
+
+		}
 		task->Process();
 		task->native_func_userdata = nullptr;
 		task->native_group_func = nullptr;
 		task->callable = Callable();
 
+
+		if(capture_stack) {
+			uint64_t end_time = OS::get_singleton()->get_ticks_usec();
+			push_task_stack(thread_id,task->handle->task_name,task->start,task->end,start_time / 1000.0,end_time / 1000.0);
+		}
 		// 放到释放列队里面
 		free_task(task);
 
@@ -1122,10 +1133,11 @@ void WorkerTaskPool::_process_task_queue() {
 		task_mutex.unlock();
 	}
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements,int _batch_count,TaskJobHandle* depend_task)
+Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName& task_name,void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements,int _batch_count,TaskJobHandle* depend_task)
 {
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
+	hand->task_name = task_name;
 	// 增加依赖，保持依赖链条是正确的
 	if(depend_task != nullptr)
 	{
@@ -1159,10 +1171,11 @@ Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(void (*p_func)(void *, 
 	return hand;
 
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const Callable &p_action, int p_elements, int _batch_count,TaskJobHandle* depend_task )
+Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName& task_name,const Callable &p_action, int p_elements, int _batch_count,TaskJobHandle* depend_task )
 {
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
+	hand->task_name = task_name;
 	// 增加依赖，保持依赖链条是正确的
 	if (depend_task != nullptr)
 	{
@@ -1223,7 +1236,7 @@ Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle>
 void WorkerTaskPool::_bind_methods() {
 
 	//ClassDB::bind_method(D_METHOD("add_native_group_task", "func", "userdata", "elements","batch_count","depend_task"), &WorkerTaskPool::add_native_group_task);
-	ClassDB::bind_method(D_METHOD("add_group_task", "action", "elements","batch_count","depend_task"), &WorkerTaskPool::add_group_task);
+	ClassDB::bind_method(D_METHOD("add_group_task","task_name", "action", "elements","batch_count","depend_task"), &WorkerTaskPool::add_group_task);
 	ClassDB::bind_method(D_METHOD("combined_job_handle", "handles"), &WorkerTaskPool::combined_job_handle);
 
 }
@@ -1235,9 +1248,90 @@ void WorkerTaskPool::init()
 	for(uint32_t i = 0; i < threads.size(); ++i)
 	{
 		threads[i].index = i;
-		threads[i].thread.start(&WorkerTaskPool::_thread_task_function, &threads[i]);
+		Thread::Settings settings;
+		settings.priority = Thread::PRIORITY_NORMAL;
+		
+		threads[i].thread.start(&WorkerTaskPool::_thread_task_function, &threads[i],settings);
 		threads[i].thread.set_thread_name(String("Worker Job Pool Thread:") + String::num_int64(i));
 	}
+
+}
+
+
+void WorkerTaskPool::push_task_stack(int thread_index,const StringName& task_name,uint32_t task_start,uint32_t task_end, double task_start_time,double task_end_time) {
+	if(!capture_stack) {
+		return;
+	}
+	stack_mutex.lock();
+	if(stack_use_count < task_run_stack_pool.size())
+	{
+		if(first_stack == nullptr)
+		{
+			first_stack = &task_run_stack_pool[stack_use_count];
+			last_stack = &task_run_stack_pool[stack_use_count];
+			stack_use_count = 1;
+			last_stack->task_name = task_name;
+			last_stack->thread_index = thread_index;
+			last_stack->task_start = task_start;
+			last_stack->task_end = task_end;
+			last_stack->tast_start_time = task_start_time;
+			last_stack->task_end_time = task_end_time;
+			last_stack->next = nullptr;
+			stack_mutex.unlock();
+			return;
+		}
+		else
+		{
+			last_stack->next = &task_run_stack_pool[stack_use_count];
+			last_stack = last_stack->next;
+
+			last_stack->thread_index = thread_index;
+			last_stack->task_name = task_name;
+			last_stack->task_start = task_start;
+			last_stack->task_end = task_end;
+			last_stack->tast_start_time = task_start_time;
+			last_stack->task_end_time = task_end_time;
+			last_stack->next = nullptr;
+			stack_use_count++;
+			stack_mutex.unlock();
+			return;
+		}
+		
+	}	
+	else {
+		last_stack->next = first_stack;
+		last_stack = last_stack->next;
+		first_stack = first_stack->next;
+		last_stack->thread_index = thread_index;
+		last_stack->task_name = task_name;
+		last_stack->task_start = task_start;
+		last_stack->task_end = task_end;
+		last_stack->tast_start_time = task_start_time;
+		last_stack->task_end_time = task_end_time;
+		last_stack->next = nullptr;
+		stack_mutex.unlock();
+	}
+
+}
+void WorkerTaskPool::reset_task_stack() {
+	stack_mutex.lock();
+	first_stack = nullptr;
+	last_stack = nullptr;
+	stack_use_count = 0;
+	stack_mutex.unlock();
+
+}
+void WorkerTaskPool::get_task_stack_data(LocalVector<ThreadRunStack> & stack) {
+	
+	stack_mutex.lock();
+	stack.reserve(stack_use_count);
+	ThreadRunStack * it = first_stack;
+	while(it)
+	{
+		stack.push_back(*it);
+		it = it->next;
+	}
+	stack_mutex.unlock();
 
 }
 void WorkerTaskPool::finish()
@@ -1268,6 +1362,7 @@ void WorkerTaskPool::finish()
 }
 WorkerTaskPool::WorkerTaskPool() {
 	singleton = this;
+	task_run_stack_pool.resize(20000);
 }
 
 WorkerTaskPool::~WorkerTaskPool() {

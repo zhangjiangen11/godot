@@ -286,8 +286,8 @@ void HeightMapShape3D::update_map_data_from_image(const Ref<Image> &p_image, rea
 		case Image::FORMAT_RF: {
 			const float *image_data_ptr = (float *)p_image->get_data().ptr();
 			if(map_data.size() > 500) {
-				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-					callable_mp_static(thread_build_height_map_rf).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(),64,nullptr);
+				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("HeightMapShape3D::update_map_data_from_image:FORMAT_RF"),
+					callable_mp_static(thread_build_height_map_rf).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(), 256,nullptr);
 				task->wait_completion();
 				break;
 			}
@@ -314,8 +314,8 @@ void HeightMapShape3D::update_map_data_from_image(const Ref<Image> &p_image, rea
 			const uint16_t *image_data_ptr = (uint16_t *)p_image->get_data().ptr();
 
 			if(map_data.size() > 500) {
-				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-					callable_mp_static(thread_build_height_map_rh).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(),64, nullptr);
+				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("HeightMapShape3D::update_map_data_from_image:FORMAT_RH"),
+					callable_mp_static(thread_build_height_map_rh).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(), 256, nullptr);
 				task->wait_completion();
 				break;
 			}
@@ -341,8 +341,8 @@ void HeightMapShape3D::update_map_data_from_image(const Ref<Image> &p_image, rea
 		case Image::FORMAT_R8: {
 			const uint8_t *image_data_ptr = (uint8_t *)p_image->get_data().ptr();
 			if(map_data.size() > 500) {
-				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(
-					callable_mp_static(thread_build_height_map_r8).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(),64, nullptr);
+				Ref<TaskJobHandle> task = WorkerTaskPool::get_singleton()->add_group_task(SNAME("HeightMapShape3D::update_map_data_from_image:FORMAT_R8"),
+					callable_mp_static(thread_build_height_map_r8).bind((int64_t)map_data_ptrw, (int64_t)image_data_ptr, (float)remap_height_min, (float)remap_height_max),map_data.size(),256, nullptr);
 				task->wait_completion();
 				break;
 			}

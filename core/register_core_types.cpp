@@ -414,6 +414,8 @@ void unregister_core_types() {
 	// Destroy singletons in reverse order to ensure dependencies are not broken.
 
 	memdelete(worker_thread_pool);
+
+	worker_task_pool->finish();
 	memdelete(worker_task_pool);
 	worker_task_pool = nullptr;
 
