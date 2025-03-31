@@ -43,19 +43,19 @@ if not os.path.exists(deps_folder):
 
 # Mesa NIR
 color_print(f"{Ansi.BOLD}[1/3] Mesa NIR")
-if os.path.isfile(mesa_archive):
-    os.remove(mesa_archive)
-print(f"Downloading Mesa NIR {mesa_filename} ...")
-urllib.request.urlretrieve(
-    f"https://github.com/godotengine/godot-nir-static/releases/download/{mesa_version}/{mesa_filename}",
-    mesa_archive,
-)
+if not os.path.isfile(mesa_archive):
+    # os.remove(mesa_archive)
+    print(f"Downloading Mesa NIR {mesa_filename} {mesa_archive} ...")
+    urllib.request.urlretrieve(
+        f"https://github.com/godotengine/godot-nir-static/releases/download/{mesa_version}/{mesa_filename}",
+        mesa_archive,
+    )
 if os.path.exists(mesa_folder):
     print(f"Removing existing local Mesa NIR installation in {mesa_folder} ...")
     shutil.rmtree(mesa_folder)
 print(f"Extracting Mesa NIR {mesa_filename} to {mesa_folder} ...")
 shutil.unpack_archive(mesa_archive, mesa_folder)
-os.remove(mesa_archive)
+#os.remove(mesa_archive)
 print(f"Mesa NIR {mesa_filename} installed successfully.\n")
 
 # WinPixEventRuntime
@@ -70,16 +70,16 @@ if dlltool == "":
 has_mingw = gendef != "" and dlltool != ""
 
 color_print(f"{Ansi.BOLD}[2/3] WinPixEventRuntime")
-if os.path.isfile(pix_archive):
-    os.remove(pix_archive)
-print(f"Downloading WinPixEventRuntime {pix_version} ...")
-urllib.request.urlretrieve(f"https://www.nuget.org/api/v2/package/WinPixEventRuntime/{pix_version}", pix_archive)
+if not os.path.isfile(pix_archive):
+    #os.remove(pix_archive)
+    print(f"Downloading WinPixEventRuntime {pix_version} {pix_archive}...")
+    urllib.request.urlretrieve(f"https://www.nuget.org/api/v2/package/WinPixEventRuntime/{pix_version}", pix_archive)
 if os.path.exists(pix_folder):
     print(f"Removing existing local WinPixEventRuntime installation in {pix_folder} ...")
     shutil.rmtree(pix_folder)
 print(f"Extracting WinPixEventRuntime {pix_version} to {pix_folder} ...")
 shutil.unpack_archive(pix_archive, pix_folder, "zip")
-os.remove(pix_archive)
+#os.remove(pix_archive)
 if has_mingw:
     print("Adapting WinPixEventRuntime to also support MinGW alongside MSVC.")
     cwd = os.getcwd()
@@ -101,18 +101,18 @@ print(f"WinPixEventRuntime {pix_version} installed successfully.\n")
 
 # DirectX 12 Agility SDK
 color_print(f"{Ansi.BOLD}[3/3] DirectX 12 Agility SDK")
-if os.path.isfile(agility_sdk_archive):
-    os.remove(agility_sdk_archive)
-print(f"Downloading DirectX 12 Agility SDK {agility_sdk_version} ...")
-urllib.request.urlretrieve(
-    f"https://www.nuget.org/api/v2/package/Microsoft.Direct3D.D3D12/{agility_sdk_version}", agility_sdk_archive
-)
+if not os.path.isfile(agility_sdk_archive):
+    #os.remove(agility_sdk_archive)
+    print(f"Downloading DirectX 12 Agility SDK {agility_sdk_version} {agility_sdk_archive}...")
+    urllib.request.urlretrieve(
+        f"https://www.nuget.org/api/v2/package/Microsoft.Direct3D.D3D12/{agility_sdk_version}", agility_sdk_archive
+    )
 if os.path.exists(agility_sdk_folder):
     print(f"Removing existing local DirectX 12 Agility SDK installation in {agility_sdk_folder} ...")
     shutil.rmtree(agility_sdk_folder)
 print(f"Extracting DirectX 12 Agility SDK {agility_sdk_version} to {agility_sdk_folder} ...")
 shutil.unpack_archive(agility_sdk_archive, agility_sdk_folder, "zip")
-os.remove(agility_sdk_archive)
+#os.remove(agility_sdk_archive)
 print(f"DirectX 12 Agility SDK {agility_sdk_version} installed successfully.\n")
 
 # Complete message

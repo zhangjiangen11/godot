@@ -906,7 +906,7 @@ void MaterialData::update_textures(const HashMap<StringName, Variant> &p_paramet
 				}
 			}
 		}
-
+		RID gl_texture_default = texture_storage->texture_gl_get_default(DEFAULT_GL_TEXTURE_WHITE);
 		RID gl_texture = texture_storage->texture_gl_get_default(DEFAULT_GL_TEXTURE_WHITE);
 
 		if (textures.is_empty()) {
@@ -991,7 +991,7 @@ void MaterialData::update_textures(const HashMap<StringName, Variant> &p_paramet
 		} else {
 			for (int j = 0; j < textures.size(); j++) {
 				Texture *tex = TextureStorage::get_singleton()->get_texture(textures[j]);
-
+				gl_texture = gl_texture_default;
 				if (tex) {
 					gl_texture = textures[j];
 #ifdef TOOLS_ENABLED
@@ -1016,6 +1016,9 @@ void MaterialData::update_textures(const HashMap<StringName, Variant> &p_paramet
 					roughness_detect_texture->detect_roughness_callback(roughness_detect_texture->detect_roughness_callback_ud, normal_detect_texture->path, roughness_channel);
 				}
 #endif
+				if(RD::get_singleton()->texture_is_valid(textures[j])) {
+					gl_texture = textures[j];
+				}
 				p_textures[k++] = gl_texture;
 			}
 		}

@@ -138,10 +138,10 @@ struct [[nodiscard]] AABB {
 	/// </summary>
 	/// <param name="p">点位置，w坐标应该为1</param>
 	/// <returns>在Box上的最近点，如果p在Box内部则返回它自己</returns>
-	Vector3 get_closest_point(Vector3& p)
+	Vector3 get_closest_point(const Vector3& p) const
 	{
 		Vector3 max = get_end();
-		Vector3& min = position;
+		const Vector3& min = position;
 
 		Vector3 _result = p;
 		if (_result.x < min.x) _result.x = min.x;
@@ -152,10 +152,10 @@ struct [[nodiscard]] AABB {
 		if (_result.z > max.z) _result.z = max.z;
 		return _result;
 	}
-	void get_closest_point(Vector3& p,Vector3& _result)
+	void get_closest_point(const Vector3& p,Vector3& _result) const
 	{
 		Vector3 max = get_end();
-		Vector3& min = position;
+		const Vector3& min = position;
 		if (_result.x < min.x) _result.x = min.x;
 		if (_result.x > max.x) _result.x = max.x;
 		if (_result.y < min.y) _result.y = min.y;

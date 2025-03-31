@@ -182,7 +182,7 @@ void TriangleMesh::create(const Vector<Vector3> &p_faces, const Vector<int32_t> 
 	valid = true;
 }
 
-bool TriangleMesh::intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index) const {
+bool TriangleMesh::intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index, bool auto_swap_normal) const {
 	uint32_t *stack = (uint32_t *)alloca(sizeof(int) * max_depth);
 
 	enum {
@@ -283,7 +283,7 @@ bool TriangleMesh::intersect_segment(const Vector3 &p_begin, const Vector3 &p_en
 	return inters;
 }
 
-bool TriangleMesh::intersect_ray(const Vector3 &p_begin, const Vector3 &p_dir, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index) const {
+bool TriangleMesh::intersect_ray(const Vector3 &p_begin, const Vector3 &p_dir, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index, bool auto_swap_normal) const {
 	uint32_t *stack = (uint32_t *)alloca(sizeof(int) * max_depth);
 
 	enum {
@@ -375,13 +375,112 @@ bool TriangleMesh::intersect_ray(const Vector3 &p_begin, const Vector3 &p_dir, V
 		}
 	}
 
-	if (inters) {
+	if (inters && auto_swap_normal) {
 		if (n.dot(r_normal) > 0) {
 			r_normal = -r_normal;
 		}
 	}
 
 	return inters;
+}
+Vector4 TriangleMesh::get_closest_point_to(const Vector3 &p_point,float max_distance,Vector3 &r_normal, bool auto_swap_normal) const {
+
+	uint32_t *stack = (uint32_t *)alloca(sizeof(int) * max_depth);
+
+	enum {
+		TEST_AABB_BIT = 0,
+		VISIT_LEFT_BIT = 1,
+		VISIT_RIGHT_BIT = 2,
+		VISIT_DONE_BIT = 3,
+		VISITED_BIT_SHIFT = 29,
+		NODE_IDX_MASK = (1 << VISITED_BIT_SHIFT) - 1,
+		VISITED_BIT_MASK = ~NODE_IDX_MASK,
+
+	};
+
+	float sq_max_distance = max_distance * max_distance;
+
+	real_t d = 1e20;
+	bool inters = false;
+
+	int level = 0;
+
+	const Triangle *triangleptr = triangles.ptr();
+	const Vector3 *vertexptr = vertices.ptr();
+	const BVH *bvhptr = bvh.ptr();
+
+	int pos = bvh.size() - 1;
+
+	stack[0] = pos;
+	float last_min_distance_squared = sq_max_distance;
+	Vector3 last_min_point;
+	bool is_inside = false;
+	while (true) {
+		uint32_t node = stack[level] & NODE_IDX_MASK;
+		const BVH &b = bvhptr[node];
+		bool done = false;
+
+		switch (stack[level] >> VISITED_BIT_SHIFT) {
+			case TEST_AABB_BIT: {
+				float distance_squared = b.aabb.get_closest_point(p_point).distance_squared_to(p_point);
+				if (last_min_distance_squared > sq_max_distance) {
+					stack[level] = (VISIT_DONE_BIT << VISITED_BIT_SHIFT) | node;
+				} else {
+					if (b.face_index >= 0) {
+						const Triangle &s = triangleptr[b.face_index];
+						Face3 f3(vertexptr[s.indices[0]], vertexptr[s.indices[1]], vertexptr[s.indices[2]]);
+						Vector3 closest_point = f3.get_closest_point_to(p_point);
+						float closest_point_distance_squared = closest_point.distance_squared_to(p_point);
+						if (closest_point_distance_squared < last_min_distance_squared) {
+							last_min_distance_squared = closest_point_distance_squared;
+							last_min_point = closest_point;
+							f3.get_plane().get_normal();
+							is_inside = true;
+						}
+
+						stack[level] = (VISIT_DONE_BIT << VISITED_BIT_SHIFT) | node;
+
+					} else {
+						stack[level] = (VISIT_LEFT_BIT << VISITED_BIT_SHIFT) | node;
+					}
+				}
+				continue;
+			}
+			case VISIT_LEFT_BIT: {
+				stack[level] = (VISIT_RIGHT_BIT << VISITED_BIT_SHIFT) | node;
+				level++;
+				stack[level] = b.left | TEST_AABB_BIT;
+				continue;
+			}
+			case VISIT_RIGHT_BIT: {
+				stack[level] = (VISIT_DONE_BIT << VISITED_BIT_SHIFT) | node;
+				level++;
+				stack[level] = b.right | TEST_AABB_BIT;
+				continue;
+			}
+			case VISIT_DONE_BIT: {
+				if (level == 0) {
+					done = true;
+					break;
+				} else {
+					level--;
+				}
+				continue;
+			}
+		}
+
+		if (done) {
+			break;
+		}
+	}
+	if (inters && auto_swap_normal) {
+		if ((p_point - last_min_point).dot(r_normal) < 0) {
+			r_normal = -r_normal;
+		}
+	}
+
+
+	return Vector4(last_min_point, is_inside ? 1 : -1);
 }
 
 bool TriangleMesh::inside_convex_shape(const Plane *p_planes, int p_plane_count, const Vector3 *p_points, int p_point_count, Vector3 p_scale) const {
@@ -501,6 +600,49 @@ Vector<Face3> TriangleMesh::get_faces() const {
 	}
 
 	return faces;
+}
+Dictionary TriangleMesh::_intersect_segment(const Vector3 &p_begin, const Vector3 &p_end , bool auto_swap_normal) const{
+	Vector3 point;
+	Vector3 normal;
+	int32_t surf_index = -1;
+	bool is_inside = intersect_segment(p_begin, p_end, point, normal, &surf_index,auto_swap_normal);
+	Dictionary ret;
+	ret["point"] = point;
+	ret["normal"] = normal;
+	ret["surface_index"] = surf_index;
+	ret["is_inside"] = is_inside;
+	return ret;
+}
+Dictionary TriangleMesh::_intersect_ray(const Vector3 &p_begin, const Vector3 &p_dir, bool auto_swap_normal ) const {
+
+	Vector3 point;
+	Vector3 normal;
+	int32_t surf_index = -1;
+	bool is_inside = intersect_ray(p_begin, p_dir, point, normal, &surf_index,auto_swap_normal);
+	Dictionary ret;
+	ret["point"] = point;
+	ret["normal"] = normal;
+	ret["surface_index"] = surf_index;
+	ret["is_inside"] = is_inside;
+	return ret;
+}
+Dictionary TriangleMesh::_get_closest_point_to(const Vector3 &p_point,float max_distance, bool auto_swap_normal) const {
+	Vector3 normal;
+	Vector4 point = get_closest_point_to(p_point,max_distance,normal,auto_swap_normal);
+
+	Dictionary ret;
+	ret["point"] = Vector3(point.x, point.y, point.z);
+	ret["normal"] = normal;
+	ret["is_inside"] = point.w > 0 ? true : false;
+	return ret;
+
+}
+
+void TriangleMesh::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("create", "faces", "surface_indices"), &TriangleMesh::create);
+	ClassDB::bind_method(D_METHOD("intersect_segment", "begin", "end", "auto_swap_normal"), &TriangleMesh::_intersect_segment);
+	ClassDB::bind_method(D_METHOD("intersect_ray", "begin", "dir", "auto_swap_normal"), &TriangleMesh::_intersect_ray);
+	ClassDB::bind_method(D_METHOD("get_closest_point_to", "point" ,"auto_swap_normal"), &TriangleMesh::_get_closest_point_to);
 }
 
 TriangleMesh::TriangleMesh() {

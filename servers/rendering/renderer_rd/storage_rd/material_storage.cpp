@@ -1039,7 +1039,13 @@ void MaterialStorage::MaterialData::update_textures(const HashMap<StringName, Va
 					}
 				}
 				if (rd_texture.is_null()) {
-					rd_texture = texture_storage->texture_rd_get_default(TextureStorage::DEFAULT_RD_TEXTURE_WHITE);
+					// 直接使用设备的贴图,比如用户直接用RenderingDevice 创建的贴图
+					if(RD::get_singleton()->texture_is_valid(textures[j])) {
+						rd_texture = textures[j];
+					}
+					else {
+						rd_texture = texture_storage->texture_rd_get_default(TextureStorage::DEFAULT_RD_TEXTURE_WHITE);
+					}
 				}
 #ifdef TOOLS_ENABLED
 				if (roughness_detect_texture && normal_detect_texture && !normal_detect_texture->path.is_empty()) {

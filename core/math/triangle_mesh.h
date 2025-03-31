@@ -35,7 +35,7 @@
 
 class TriangleMesh : public RefCounted {
 	GDCLASS(TriangleMesh, RefCounted);
-
+	static void _bind_methods();
 public:
 	struct Triangle {
 		Vector3 normal;
@@ -81,9 +81,19 @@ private:
 
 public:
 	bool is_valid() const;
-	bool intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index = nullptr) const;
-	bool intersect_ray(const Vector3 &p_begin, const Vector3 &p_dir, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index = nullptr) const;
+	bool intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index = nullptr, bool auto_swap_normal = true) const;
+	bool intersect_ray(const Vector3 &p_begin, const Vector3 &p_dir, Vector3 &r_point, Vector3 &r_normal, int32_t *r_surf_index = nullptr, bool auto_swap_normal = true) const;
 	bool inside_convex_shape(const Plane *p_planes, int p_plane_count, const Vector3 *p_points, int p_point_count, Vector3 p_scale = Vector3(1, 1, 1)) const;
+	
+	// 获取最近点.返回值w 大于0 表示有交点,小于0 表示无交点
+	Vector4 get_closest_point_to(const Vector3 &p_point,float max_distance,Vector3 &r_normal, bool auto_swap_normal = true) const;
+	// 和线段相交
+	Dictionary _intersect_segment(const Vector3 &p_begin, const Vector3 &p_end, bool auto_swap_normal = true ) const;
+	// 和射线相交
+	Dictionary _intersect_ray(const Vector3 &p_begin, const Vector3 &p_dir, bool auto_swap_normal = true) const;
+
+	Dictionary _get_closest_point_to(const Vector3 &p_point,float max_distance, bool auto_swap_normal = true) const;
+	
 	Vector<Face3> get_faces() const;
 
 	const Vector<Triangle> &get_triangles() const { return triangles; }
