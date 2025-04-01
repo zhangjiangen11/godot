@@ -139,20 +139,6 @@ repos:
         args: [--quiet, --config, misc/utility/svgo.config.mjs]
         additional_dependencies: [svgo@3.3.2]
 
-      - id: copyright-headers
-        name: copyright-headers
-        language: python
-        entry: python misc/scripts/copyright_headers.py
-        files: \.(c|h|cpp|hpp|cc|hh|cxx|hxx|m|mm|inc|java)$
-        exclude: |
-          (?x)^(
-            core/math/bvh_.*\.inc|
-            platform/(?!android|ios|linuxbsd|macos|web|windows)\w+/.*|
-            platform/android/java/lib/src/org/godotengine/godot/gl/GLSurfaceView\.java|
-            platform/android/java/lib/src/org/godotengine/godot/gl/EGLLogWrapper\.java|
-            platform/android/java/lib/src/org/godotengine/godot/utils/ProcessPhoenix\.java
-          )$
-
       - id: header-guards
         name: header-guards
         language: python

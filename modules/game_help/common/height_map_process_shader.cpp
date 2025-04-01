@@ -3,17 +3,17 @@
 #include "height_map_process_shader.h"
 
 void HeightMapTemplateShader::_bind_methods() {
-    ClassDB::bind_method(D_METHOD("init", "process_file_path","priview_file_path"), &HeightMapTemplateShader::init);
+    ClassDB::bind_method(D_METHOD("init", "process_file_path", "priview_file_path"), &HeightMapTemplateShader::init);
     ClassDB::bind_method(D_METHOD("get_process_file_path"), &HeightMapTemplateShader::get_process_file_path);
     ClassDB::bind_method(D_METHOD("get_preview_file_path"), &HeightMapTemplateShader::get_preview_file_path);
     ClassDB::bind_method(D_METHOD("get_process_shader_code"), &HeightMapTemplateShader::get_process_shader_code);
     ClassDB::bind_method(D_METHOD("get_preview_shader_code"), &HeightMapTemplateShader::get_preview_shader_code);
     ClassDB::bind_method(D_METHOD("auto_reload"), &HeightMapTemplateShader::auto_reload);
     ClassDB::bind_method(D_METHOD("is_error"), &HeightMapTemplateShader::get_is_error);
-    
+
     ADD_SIGNAL(MethodInfo("changed"));
 }
-void HeightMapTemplateShader::init(const String& p_process_file_path,const String& p_preview_file_path) {
+void HeightMapTemplateShader::init(const String &p_process_file_path,const String &p_preview_file_path) {
     process_file_path = p_process_file_path;
     preview_file_path = p_preview_file_path;
     load();
