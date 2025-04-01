@@ -31,131 +31,131 @@ public:
 	bool get_is_error() {
 		return is_error;
 	}
-    void auto_reload();
+	void auto_reload();
 
-    void add_using_process_shader(ObjectID id) {
-        link_process_shaders.insert(id);
+	void add_using_process_shader(ObjectID id) {
+		link_process_shaders.insert(id);
 
-    }
-    void remove_using_process_shader(ObjectID id) {
-        link_process_shaders.erase(id);
-    }
-protected:
-    void load();
-    
-protected:
+	}
+	void remove_using_process_shader(ObjectID id) {
+		link_process_shaders.erase(id);
+	}
+	protected:
+	void load();
+
+	protected:
 	String process_file_path;
 	String preview_file_path;
 
 	String process_shader_code;
 	String preview_shader_code;
 
-    int64_t process_file_path_time = -1;
-    int64_t priview_file_path_time = -1;
-    HashSet<ObjectID> link_process_shaders;
+	int64_t process_file_path_time = -1;
+	int64_t priview_file_path_time = -1;
+	HashSet<ObjectID> link_process_shaders;
 
-    LocalVector<ObjectID> remove;
+	LocalVector<ObjectID> remove;
 	bool is_error = true;
 };
 
 class HeightMapProcessShader : public RefCounted {
-    GDCLASS(HeightMapProcessShader,RefCounted);
-    static void _bind_methods();
-public:
-    void init(const Ref<HeightMapTemplateShader>& p_template_shader,const String& p_code_file_path) ;
+	GDCLASS(HeightMapProcessShader,RefCounted);
+	static void _bind_methods();
+	public:
+	void init(const Ref<HeightMapTemplateShader>& p_template_shader,const String& p_code_file_path) ;
 
-   Array get_params() {
-        return params;
-   }
-   Dictionary get_params_dict() {
-       Dictionary dict;
-       for (int i = 0; i < params.size(); i++) {
-            Dictionary p = params[i];
-           dict[p["name"]] = p["value"];
-       }
-       return dict;
-   }
-   Dictionary get_params_display_name_dict() {
-	   Dictionary dict;
-	   for (int i = 0; i < params.size(); i++) {
-		   Dictionary p = params[i];
-		   dict[p["name"]] = p["show_name"];
-	   }
-	   return dict;
-   }
+	Array get_params() {
+		return params;
+	}
+	Dictionary get_params_dict() {
+		Dictionary dict;
+		for (int i = 0; i < params.size(); i++) {
+			Dictionary p = params[i];
+			dict[p["name"]] = p["value"];
+		}
+		return dict;
+	}
+	Dictionary get_params_display_name_dict() {
+		Dictionary dict;
+		for (int i = 0; i < params.size(); i++) {
+			Dictionary p = params[i];
+			dict[p["name"]] = p["show_name"];
+		}
+		return dict;
+	}
 
-    // 更新处理shader的参数
-   void update_process_shader_params(Dictionary p_params,Vector<uint8_t> p_code,int start_index) {
-       p_code.resize((params.size() + (int64_t)start_index) * 4L);
+	// 更新处理shader的参数
+	void update_process_shader_params(Dictionary p_params,Vector<uint8_t> p_code,int start_index) {
+		p_code.resize((params.size() + (int64_t)start_index) * 4L);
 
-       float* p = (float*)p_code.ptrw();
-       p += start_index;
-       for (int i = 0; i < params.size(); i++) {
-           float v = 0;
-		   Dictionary dict = params[i];
-           if (p_params.has(dict["name"])) {
-               v = p_params[dict["name"]];
-           }
-           p[i] = v;
-       }
+		float* p = (float*)p_code.ptrw();
+		p += start_index;
+		for (int i = 0; i < params.size(); i++) {
+			float v = 0;
+			Dictionary dict = params[i];
+			if (p_params.has(dict["name"])) {
+				v = p_params[dict["name"]];
+			}
+			p[i] = v;
+		}
 
-   }
+	}
 
-    Ref<RDShaderFile> get_process_shader() {
+	Ref<RDShaderFile> get_process_shader() {
 
-        return process_shader_file;
-    }
+		return process_shader_file;
+	}
 
-    Ref<Shader> get_preview_shader() {
-        return preview_mask_shader;
-    }
+	Ref<Shader> get_preview_shader() {
+		return preview_mask_shader;
+	}
 
-    Ref<Shader> get_preview_height_shader() {
-        return preview_height_shader;
-    }
+	Ref<Shader> get_preview_height_shader() {
+		return preview_height_shader;
+	}
 
-    Ref<Shader> get_preview_finish_shader() {
-        return preview_finish_shader;
-    }
-
-
-
-    bool get_is_error() {
-        return is_error;
-    }
-
-    void on_template_changed() {
-        load();
-    }
-    const String& get_preview_name() {
-        return preview_name;
-    }
-
-    void auto_reload();
-
-protected:
-    void load();
-    ~HeightMapProcessShader();
-private:
-    Ref<HeightMapTemplateShader> template_shader;
-    Ref<RDShaderFile> process_shader_file;
+	Ref<Shader> get_preview_finish_shader() {
+		return preview_finish_shader;
+	}
 
 
-    Ref<Shader> preview_mask_shader;
-    Ref<Shader> preview_height_shader;
-    Ref<Shader> preview_finish_shader;
-    // 台阶化地形
-    Ref<Shader> preview_stairs_shader;
-    Array params;
-    String code_file_path;
-    String function_code;
-    String process_code;
-    int64_t code_file_path_time = -1;
 
-    String preview_name;
-    
+	bool get_is_error() {
+		return is_error;
+	}
 
-    bool is_error = false;
+	void on_template_changed() {
+		load();
+	}
+	const String& get_preview_name() {
+		return preview_name;
+	}
+
+	void auto_reload();
+
+	protected:
+	void load();
+	~HeightMapProcessShader();
+	private:
+	Ref<HeightMapTemplateShader> template_shader;
+	Ref<RDShaderFile> process_shader_file;
+
+
+	Ref<Shader> preview_mask_shader;
+	Ref<Shader> preview_height_shader;
+	Ref<Shader> preview_finish_shader;
+	// 台阶化地形
+	Ref<Shader> preview_stairs_shader;
+	Array params;
+	String code_file_path;
+	String function_code;
+	String process_code;
+	int64_t code_file_path_time = -1;
+
+	String preview_name;
+
+
+	bool is_error = false;
 };
 
 #endif
