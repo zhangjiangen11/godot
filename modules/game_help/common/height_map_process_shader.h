@@ -144,6 +144,8 @@ private:
     Ref<Shader> preview_mask_shader;
     Ref<Shader> preview_height_shader;
     Ref<Shader> preview_finish_shader;
+    // 台阶化地形
+    Ref<Shader> preview_stairs_shader;
     Array params;
     String code_file_path;
     String function_code;

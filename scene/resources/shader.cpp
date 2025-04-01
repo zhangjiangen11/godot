@@ -100,10 +100,23 @@ void Shader::set_code(const String &p_code) {
 		// 2) Server does not do interaction with Resource filetypes, this is a scene level feature.
 		HashSet<Ref<ShaderInclude>> new_include_dependencies;
 		ShaderPreprocessor preprocessor;
-		Error result = preprocessor.preprocess(p_code, path, preprocessed_code, nullptr, nullptr, nullptr, &new_include_dependencies);
+		String error_str;
+		List<ShaderPreprocessor::FilePosition> err_positions;
+		Error result = preprocessor.preprocess(p_code, path, preprocessed_code, &error_str, &err_positions, nullptr, &new_include_dependencies);
 		if (result == OK) {
 			// This ensures previous include resources are not freed and then re-loaded during parse (which would make compiling slower)
 			include_dependencies = new_include_dependencies;
+		}
+		else {
+			int err_line = err_positions.front()->get().line;
+			if (err_positions.size() == 1) {
+				// Error in main file
+				error_str = "error(" + itos(err_line) + "):" + error_str;
+			}
+			else {
+				error_str = "error(" + itos(err_line) + ") in include " + err_positions.back()->get().file.get_file() + ":" + itos(err_positions.back()->get().line) + ": " + error_str;
+			}
+			ERR_FAIL_MSG(error_str);
 		}
 	}
 

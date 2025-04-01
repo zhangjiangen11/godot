@@ -249,13 +249,13 @@ void HeightMapProcessShader::load() {
 
     }
 	{
-        file_txt = "#define PRIVATE_SHADER 1\n#define BLEND_HEIGHT 1\n" + preview_code;
+        file_txt = "#define PRIVATE_SHADER 1\n#define BLEND_HEIGHT 1\n#define PRIVIEW_BLEND_WEIGHT 1\n" + preview_code;
 
 		if (preview_mask_shader.is_null()) {
 			preview_mask_shader.instantiate();
 		}
 		// priview_shader->set_path(p_template_shader->get_priview_file_path());
-		preview_mask_shader->set_include_path(template_shader->get_preview_file_path().get_base_dir());
+		preview_height_shader->set_include_path(template_shader->get_preview_file_path());
 		preview_mask_shader->set_code(file_txt);
 
 	}
@@ -266,7 +266,7 @@ void HeightMapProcessShader::load() {
 			preview_height_shader.instantiate();
 		}
 		// priview_shader->set_path(p_template_shader->get_priview_file_path());
-		preview_height_shader->set_include_path(template_shader->get_preview_file_path().get_base_dir());
+		preview_height_shader->set_include_path(template_shader->get_preview_file_path());
 		preview_height_shader->set_code(file_txt);
 
     }
@@ -277,7 +277,7 @@ void HeightMapProcessShader::load() {
 			preview_finish_shader.instantiate();
 		}
 		// priview_shader->set_path(p_template_shader->get_priview_file_path());
-		preview_finish_shader->set_include_path(template_shader->get_preview_file_path().get_base_dir());
+		preview_height_shader->set_include_path(template_shader->get_preview_file_path());
 		preview_finish_shader->set_code(file_txt);
 
     }
