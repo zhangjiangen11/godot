@@ -66,6 +66,26 @@ public:
 		}
 	}
 
+	
+	_FORCE_INLINE_ constexpr void move_left(uint64_t p_from) {
+		uint64_t move_count = MIN(p_from, _len);
+		_ptr += move_count;
+		_len -= move_count;
+	}
+	
+	_FORCE_INLINE_ constexpr void move_right(uint64_t p_from) {
+		uint64_t move_count = MIN(p_from, _len);
+		_len -= move_count;
+	}
+
+	_FORCE_INLINE_ constexpr Span sub(uint64_t p_from,uint64_t count) {
+		if(p_from >= _len) {
+			p_from = _len;
+		}
+		uint64_t move_count = MIN(p_from, _len - p_from);
+		return Span(_ptr + p_from, move_count);
+	}
+
 	_FORCE_INLINE_ constexpr uint64_t size() const { return _len; }
 	_FORCE_INLINE_ constexpr bool is_empty() const { return _len == 0; }
 

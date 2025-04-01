@@ -255,7 +255,7 @@ void HeightMapProcessShader::load() {
 			preview_mask_shader.instantiate();
 		}
 		// priview_shader->set_path(p_template_shader->get_priview_file_path());
-		preview_height_shader->set_include_path(template_shader->get_preview_file_path());
+		preview_mask_shader->set_include_path(template_shader->get_preview_file_path());
 		preview_mask_shader->set_code(file_txt);
 
 	}
@@ -277,7 +277,7 @@ void HeightMapProcessShader::load() {
 			preview_finish_shader.instantiate();
 		}
 		// priview_shader->set_path(p_template_shader->get_priview_file_path());
-		preview_height_shader->set_include_path(template_shader->get_preview_file_path());
+		preview_finish_shader->set_include_path(template_shader->get_preview_file_path());
 		preview_finish_shader->set_code(file_txt);
 
     }
