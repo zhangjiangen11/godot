@@ -775,10 +775,7 @@ Error Main::test_setup() {
 	// Default theme will be initialized later, after modules and ScriptServer are ready.
 	initialize_theme_db();
 
-
-	initialize_lua_api();
-
-	NavigationServer3DManager::initialize_server(); // 3D server first because 2D depends on it.
+	NavigationServer3DManager::initialize_server();
 	NavigationServer2DManager::initialize_server();
 
 	register_scene_types();
@@ -863,10 +860,7 @@ void Main::test_cleanup() {
 
 	finalize_theme_db();
 
-
-	finalize_lua_api();
-
-	NavigationServer2DManager::finalize_server(); // 2D goes first as it uses the 3D server behind the scene.
+	NavigationServer2DManager::finalize_server();
 	NavigationServer3DManager::finalize_server();
 
 	GDExtensionManager::get_singleton()->deinitialize_extensions(GDExtension::INITIALIZATION_LEVEL_SERVERS);
@@ -3529,7 +3523,7 @@ Error Main::setup2(bool p_show_boot_logo) {
 
 	MAIN_PRINT("Main: Load Navigation");
 
-	NavigationServer3DManager::initialize_server(); // 3D server first because 2D depends on it.
+	NavigationServer3DManager::initialize_server();
 	NavigationServer2DManager::initialize_server();
 
 	register_scene_types();
@@ -4135,12 +4129,16 @@ int Main::start() {
 		}
 		if (debug_navigation) {
 			sml->set_debug_navigation_hint(true);
+			NavigationServer2D::get_singleton()->set_debug_navigation_enabled(true);
 			NavigationServer3D::get_singleton()->set_debug_navigation_enabled(true);
 		}
 		if (debug_avoidance) {
+			NavigationServer2D::get_singleton()->set_debug_avoidance_enabled(true);
 			NavigationServer3D::get_singleton()->set_debug_avoidance_enabled(true);
 		}
 		if (debug_navigation || debug_avoidance) {
+			NavigationServer2D::get_singleton()->set_active(true);
+			NavigationServer2D::get_singleton()->set_debug_enabled(true);
 			NavigationServer3D::get_singleton()->set_active(true);
 			NavigationServer3D::get_singleton()->set_debug_enabled(true);
 		}
@@ -4635,6 +4633,7 @@ bool Main::iteration() {
 
 		uint64_t navigation_begin = OS::get_singleton()->get_ticks_usec();
 
+		NavigationServer2D::get_singleton()->process(physics_step * time_scale);
 		NavigationServer3D::get_singleton()->process(physics_step * time_scale);
 
 		navigation_process_ticks = MAX(navigation_process_ticks, OS::get_singleton()->get_ticks_usec() - navigation_begin); // keep the largest one for reference
@@ -4880,7 +4879,7 @@ void Main::cleanup(bool p_force) {
 	finalize_lua_api();
 
 	// Before deinitializing server extensions, finalize servers which may be loaded as extensions.
-	NavigationServer2DManager::finalize_server(); // 2D goes first as it uses the 3D server behind the scene.
+	NavigationServer2DManager::finalize_server();
 	NavigationServer3DManager::finalize_server();
 	finalize_physics();
 
