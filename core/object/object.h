@@ -425,6 +425,7 @@ private:                                                                        
 	void operator=(const m_class &p_rval) {}                                                                                                \
 	friend class ::ClassDB;                                                                                                                 \
                                                                                                                                             \
+public:                                                                                                                                     \
 	static constexpr bool _class_is_enabled = !bool(GD_IS_DEFINED(ClassDB_Disable_##m_class)) && m_inherits::_class_is_enabled;             \
 	virtual String get_class() const override {                                                                                             \
 		if (_get_extension()) {                                                                                                             \

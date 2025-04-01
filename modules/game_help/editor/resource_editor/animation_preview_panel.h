@@ -27,6 +27,8 @@ protected:
     void _on_update_animation_resource();
     void parse_animation_path(String path) ;
 	struct AnimationInfo : RefCounted {
+		GDSOFTCLASS(AnimationInfo, RefCounted);
+	public:
 		Ref<Animation> animation;
 		String animation_path;
 		StringName animation_group;
