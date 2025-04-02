@@ -408,7 +408,6 @@ void finalize_theme_db() {
 	theme_db = nullptr;
 }
 
-
 //#define DEBUG_INIT
 #ifdef DEBUG_INIT
 #define MAIN_PRINT(m_txt) print_line(m_txt)
@@ -3509,7 +3508,6 @@ Error Main::setup2(bool p_show_boot_logo) {
 	// Default theme will be initialized later, after modules and ScriptServer are ready.
 	initialize_theme_db();
 
-
 #if !defined(NAVIGATION_2D_DISABLED) || !defined(NAVIGATION_3D_DISABLED)
 	MAIN_PRINT("Main: Load Navigation");
 #endif // !defined(NAVIGATION_2D_DISABLED) || !defined(NAVIGATION_3D_DISABLED)
@@ -4901,7 +4899,6 @@ void Main::cleanup(bool p_force) {
 	unregister_scene_types();
 
 	finalize_theme_db();
-
 
 	// Before deinitializing server extensions, finalize servers which may be loaded as extensions.
 // Before deinitializing server extensions, finalize servers which may be loaded as extensions.
