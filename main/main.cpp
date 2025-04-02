@@ -144,8 +144,6 @@
 #include "modules/gdscript/language_server/gdscript_language_server.h"
 #endif // TOOLS_ENABLED && !GDSCRIPT_NO_LSP
 #endif // MODULE_GDSCRIPT_ENABLED
-
-#include "modules/godot_luaAPI/src/classes/luaAPI.h"
 /* Static members */
 
 // Singletons
