@@ -9,5 +9,7 @@ env.add_source_files(env.scene_sources, "*.cpp")
 if not env["disable_physics_3d"]:
     SConscript("human_anim/SCsub")
     SConscript("physics/SCsub")
+if not env["disable_navigation_3d"]:
+    SConscript("navigation/SCsub")
 if not env["disable_xr"]:
     SConscript("xr/SCsub")

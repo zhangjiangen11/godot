@@ -4226,7 +4226,7 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<Scalar> &p_value,
 					}
 					value = Variant(array);
 				} else {
-					value = Variant(p_value[0].boolean);
+					value = Variant(p_value[0].sint | (p_value[1].sint << 1));
 				}
 				break;
 			case ShaderLanguage::TYPE_BVEC3:
@@ -4239,7 +4239,7 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<Scalar> &p_value,
 					}
 					value = Variant(array);
 				} else {
-					value = Variant(p_value[0].boolean);
+					value = Variant(p_value[0].sint | (p_value[1].sint << 1) | (p_value[2].sint << 2));
 				}
 				break;
 			case ShaderLanguage::TYPE_BVEC4:
@@ -4252,7 +4252,7 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<Scalar> &p_value,
 					}
 					value = Variant(array);
 				} else {
-					value = Variant(p_value[0].boolean);
+					value = Variant(p_value[0].sint | (p_value[1].sint << 1) | (p_value[2].sint << 2) | (p_value[3].sint << 3));
 				}
 				break;
 			case ShaderLanguage::TYPE_INT:
