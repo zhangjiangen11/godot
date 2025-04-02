@@ -262,7 +262,7 @@ public:
 
 public:
 	LocalVector<Ref<TriangleMesh>> meshList;
-	/** the ivy size factor, influences the grow behaviour [0..0,1] */
+	/** the ivy size factor, influences the grow behavior [0..0,1] */
 	float ivySize;
 
 	/** leaf size factor [0..0,1] */

@@ -19,7 +19,7 @@ public:
 		int End() {
 			return offset + size;
 		}
-		static Block *Allocal() {
+		static Block *Allocate() {
 			if (s_freeBlock != nullptr) {
 				Block *r = s_freeBlock;
 				s_freeBlock = s_freeBlock->next;
@@ -52,7 +52,7 @@ public:
 		m_block_map.clear();
 	}
 	Block *AddFreeBlock(int count = 256) {
-		Block *first_block = Block::Allocal();
+		Block *first_block = Block::Allocate();
 		first_block->available = true;
 		first_block->offset = m_totalMemorySize;
 		first_block->size = count;
@@ -106,7 +106,7 @@ public:
 				best_fit_block->available = false;
 
 				// 在空闲链表中添加一个新的内存块
-				Block *remaining_block = Block::Allocal();
+				Block *remaining_block = Block::Allocate();
 				remaining_block->offset = best_fit_block->offset + requested_size;
 				// 设置大小为剩余大小
 				remaining_block->size = remaining_size;
@@ -146,7 +146,7 @@ public:
 			return block;
 		}
 
-		Block *free = Block::Allocal();
+		Block *free = Block::Allocate();
 		block->size -= reduction_count;
 		free->offset = block->End();
 		free->size = reduction_count;

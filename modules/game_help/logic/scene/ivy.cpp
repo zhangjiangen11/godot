@@ -258,7 +258,7 @@ bool Ivy::computeCollision(const Vector3 &oldPos, Vector3 &newPos, bool &climbin
 	Vector3 to = newPos;
 	float last_distance = from.distance_to(to) * 3;
 
-	for (int m = 0; m < meshList.size(); m++) {
+	for (uint32_t m = 0; m < meshList.size(); m++) {
 		Vector3 point;
 		Vector3 normal;
 		int32_t surf_index = -1;
