@@ -35,7 +35,6 @@
 #if !defined(DISABLE_DEPRECATED) && !defined(PHYSICS_3D_DISABLED)
 #include "scene/3d/physics/physical_bone_simulator_3d.h"
 #endif // _DISABLE_DEPRECATED && PHYSICS_3D_DISABLED
-#include "./human_anim/human.h"
 
 void BonePose::set_bone_forward() {
 	right = position.normalized();

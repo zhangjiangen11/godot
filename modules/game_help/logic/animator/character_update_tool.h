@@ -3,7 +3,6 @@
 #include "scene/3d/node_3d.h"
 #include "scene/3d/skeleton_3d.h"
 #include "scene/animation/animation_mixer.h"
-#include "scene/3d/human_anim/human.h"
 #include "animation_help.h"
 #include "human_animation.h"
 #include "human_animation_new.h"

@@ -30,7 +30,7 @@
 
 #include "character_navigation_agent.h"
 
-#include "scene/3d/navigation_link_3d.h"
+#include "scene/3d/navigation/navigation_link_3d.h"
 #include "servers/navigation_server_3d.h"
 #include "../body_main.h"
 #include "scene/3d/node_3d.h"
