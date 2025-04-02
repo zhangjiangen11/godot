@@ -1,5 +1,4 @@
-#ifndef NATIVE_LIST_H
-#define NATIVE_LIST_H
+#pragma once
 #include "core/object/class_db.h"
 #include "core/templates/safe_refcount.h"
 #include <atomic>
@@ -205,5 +204,3 @@ struct NativeList {
 };
 
 } //namespace Foliage
-
-#endif
