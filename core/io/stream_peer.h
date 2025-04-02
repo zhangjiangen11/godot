@@ -147,7 +147,7 @@ public:
 
 	void clear();
 
-	Ref<RefCounted> duplicate(bool p_subresources = false) const;
+	Ref<RefCounted> duplicate(bool p_subresources = false) const override;
 
 	StreamPeerBuffer() {}
 };
@@ -155,19 +155,18 @@ public:
 class StreamPeerConstBuffer : public StreamPeer {
 	GDCLASS(StreamPeerConstBuffer, StreamPeer);
 
-	uint8_t * data = nullptr;
-	int size = 0;	
+	uint8_t *data = nullptr;
+	int size = 0;
 	int pointer = 0;
 
 protected:
 	static void _bind_methods();
+
 public:
-	bool is_end()
-	{
+	bool is_end() {
 		return pointer >= size;
 	}
-	uint8_t* get_u8_ptr()
-	{
+	uint8_t *get_u8_ptr() {
 		return data + pointer;
 	}
 	void set_data_array(uint8_t *p_data, int p_size);
@@ -184,9 +183,5 @@ public:
 	int get_position() const;
 	void resize(int p_size);
 
-
-
-
 	StreamPeerConstBuffer() {}
 };
-
