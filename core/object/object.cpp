@@ -573,16 +573,15 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 }
 
 static Mutex property_usage_mutex;
-static StringName get_object_property_usage(const StringName& _property) {
+static StringName get_object_property_usage(const StringName &_property) {
 	StringName ret;
 	property_usage_mutex.lock();
-	static HashMap<StringName,StringName>* property_usage_name = new (HashMap<StringName,StringName>);
+	static HashMap<StringName, StringName> *property_usage_name = new HashMap<StringName, StringName>;
 	auto it = property_usage_name->find(_property);
-	if(it == property_usage_name->end()) {
+	if (it == property_usage_name->end()) {
 		StringName name = StringName(_property.str() + "__usage__");
-		property_usage_name->insert(_property,name);
-	}
-	else {
+		property_usage_name->insert(_property, name);
+	} else {
 		ret = it->value;
 	}
 	property_usage_mutex.unlock();
@@ -617,15 +616,13 @@ void Object::validate_property(PropertyInfo &p_property) const {
 	}
 	StringName usage_name = get_object_property_usage(prop_name);
 
-	if(has_method(usage_name)) {
-		Object* obj = (Object*)this;
+	if (has_method(usage_name)) {
+		Object *obj = (Object *)this;
 		Variant r = obj->call(usage_name);
-		if (r.get_type() == Variant::INT)
-		{
+		if (r.get_type() == Variant::INT) {
 			p_property.usage = r;
 		}
 	}
-
 }
 
 bool Object::property_can_revert(const StringName &p_name) const {
@@ -664,16 +661,13 @@ Variant Object::property_get_revert(const StringName &p_name) const {
 	}
 	return Variant();
 }
-StringName Object::get_property_display_name(const StringName& p_property_name) {
+StringName Object::get_property_display_name(const StringName &p_property_name) {
 	StringName func_name = CoreStringName(_property_to_display_name);
 	if (has_method(func_name) && get_method_argument_count(func_name) == 1) {
-
 		Variant r = call(func_name, p_property_name);
-		if (r.get_type() == Variant::STRING_NAME || r.get_type() == Variant::STRING)
-		{
+		if (r.get_type() == Variant::STRING_NAME || r.get_type() == Variant::STRING) {
 			return r;
 		}
-
 	}
 
 	return StringName::None;
@@ -1589,12 +1583,11 @@ bool Object::_disconnect(const StringName &p_signal, const Callable &p_callable,
 		return false;
 	}
 
-	auto& base_comparator = *p_callable.get_base_comparator();
-	SignalData::Slot* slot = sd->slot_map.getptr(base_comparator);
+	auto &base_comparator = *p_callable.get_base_comparator();
+	SignalData::Slot *slot = sd->slot_map.getptr(base_comparator);
 	if (slot == nullptr) {
-		return false; 
+		return false;
 	}
-
 
 	if (!p_force) {
 		slot->reference_count--; // by default is zero, if it was not referenced it will go below it
@@ -1620,13 +1613,12 @@ bool Object::_disconnect(const StringName &p_signal, const Callable &p_callable,
 	return true;
 }
 void Object::disconnect_all(const StringName &p_signal) {
-
 	SignalData *sd = signal_map.getptr(p_signal);
 	if (sd == nullptr) {
-		return ;
+		return;
 	}
 
-	for(auto &slot : sd->slot_map) {
+	for (auto &slot : sd->slot_map) {
 		Object *target_object = slot.key.get_object();
 		if (target_object) {
 			target_object->connections.erase(slot.value.cE);
@@ -1639,7 +1631,6 @@ void Object::disconnect_all(const StringName &p_signal) {
 		//not user signal, delete
 		signal_map.erase(p_signal);
 	}
-
 }
 
 void Object::_set_bind(const StringName &p_set, const Variant &p_value) {
@@ -2425,12 +2416,16 @@ ObjectID ObjectDB::add_instance(Object *p_object) {
 }
 
 void ObjectDB::remove_instance(Object *p_object) {
-	if (object_slots == nullptr)return;
+	if (object_slots == nullptr) {
+		return;
+	}
 	uint64_t t = p_object->get_instance_id();
 	uint32_t slot = t & OBJECTDB_SLOT_MAX_COUNT_MASK; //slot is always valid on valid object
 
 	spin_lock.lock();
-	if (object_slots == nullptr)return;
+	if (object_slots == nullptr) {
+		return;
+	}
 
 #ifdef DEBUG_ENABLED
 	if (object_slots[slot].object != p_object) {

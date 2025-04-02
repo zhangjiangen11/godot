@@ -44,7 +44,6 @@
 #include "scene/gui/scroll_bar.h"
 #include "scene/gui/spin_box.h"
 #include "scene/gui/view_panner.h"
-#include "scene/gui/graph_edit_arranger.h"
 #include "scene/resources/style_box_flat.h"
 #include "scene/theme/theme_db.h"
 
@@ -1992,7 +1991,7 @@ void GraphEdit::gui_input(const Ref<InputEvent> &p_ev) {
 				if (panner->is_panning()) {
 					return;
 				}
-				if(!multi_select_active) {
+				if (!multi_select_active) {
 					return;
 				}
 
@@ -2801,7 +2800,6 @@ void GraphEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_right_disconnects", "enable"), &GraphEdit::set_right_disconnects);
 	ClassDB::bind_method(D_METHOD("is_right_disconnects_enabled"), &GraphEdit::is_right_disconnects_enabled);
 
-
 	ClassDB::bind_method(D_METHOD("set_multi_select_active", "active"), &GraphEdit::set_multi_select_active);
 	ClassDB::bind_method(D_METHOD("is_multi_select_active"), &GraphEdit::is_multi_select_active);
 
@@ -2825,7 +2823,6 @@ void GraphEdit::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "panning_scheme", PROPERTY_HINT_ENUM, "Scroll Zooms,Scroll Pans"), "set_panning_scheme", "get_panning_scheme");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "right_disconnects"), "set_right_disconnects", "is_right_disconnects_enabled");
 
-	
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "multi_select_active"), "set_multi_select_active", "is_multi_select_active");
 
 	ADD_GROUP("Connection Lines", "connection_lines");

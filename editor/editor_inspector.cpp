@@ -62,11 +62,11 @@ static Mutex property_display_name_mutex;
 static StringName get_object_property_display_name(const StringName &_property) {
 	StringName ret;
 	property_display_name_mutex.lock();
-	static HashMap<StringName,StringName>* property_displayname_mutex_name = new HashMap<StringName,StringName>();
+	static HashMap<StringName, StringName> *property_displayname_mutex_name = new HashMap<StringName, StringName>();
 	auto it = property_displayname_mutex_name->find(_property);
 	if (it == property_displayname_mutex_name->end()) {
 		StringName name = StringName(_property.str() + "__display_name__");
-		property_displayname_mutex_name->insert(_property,name);
+		property_displayname_mutex_name->insert(_property, name);
 	} else {
 		ret = it->value;
 	}
@@ -437,15 +437,14 @@ void EditorProperty::_notification(int p_what) {
 			}
 			StringName pro_dis_name = get_edited_object()->get_property_display_name(get_edited_property());
 			// 获取显示名称
-			if(pro_dis_name.is_empty()) {
+			if (pro_dis_name.is_empty()) {
 				pro_dis_name = get_object_property_display_name(get_edited_property());
 				if (get_edited_object()->has_method(pro_dis_name)) {
 					_draw_label = get_edited_object()->call(pro_dis_name);
-				}				
+				}
 			} else {
 				_draw_label = pro_dis_name;
 			}
-			
 
 			int ofs = get_theme_constant(SNAME("font_offset"));
 			int text_limit = text_size - ofs;
@@ -1543,7 +1542,7 @@ void EditorInspectorCategory::_notification(int p_what) {
 
 			int hs = get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
 			int icon_size = get_theme_constant(SNAME("class_icon_size"), EditorStringName(Editor));
-			
+
 			String draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
 
 			int w = font->get_string_size(draw_label, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).width;
@@ -1791,7 +1790,6 @@ void EditorInspectorSection::_notification(int p_what) {
 				String draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
 
 				if (folded && revertable_properties.size()) {
-					
 					int label_width = font->get_string_size(draw_label, HORIZONTAL_ALIGNMENT_LEFT, available, font_size, TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_CONSTRAIN_ELLIPSIS).x;
 
 					Ref<Font> light_font = get_theme_font(SNAME("main"), EditorStringName(EditorFonts));
@@ -3717,13 +3715,13 @@ void EditorInspector::update_tree() {
 				}
 			}
 
-			DocTools* dd = EditorHelp::get_doc_data();
+			DocTools *dd = EditorHelp::get_doc_data();
 
-			if(dd != nullptr) {
+			if (dd != nullptr) {
 				if (!found) {
 					// Do not cache the doc path information of scripts.
 					bool is_native_class = ClassDB::class_exists(classname);
-	
+
 					HashMap<String, DocData::ClassDoc>::ConstIterator F = dd->class_list.find(classname);
 					while (F) {
 						Vector<String> slices = propname.operator String().split("/");
@@ -3744,14 +3742,14 @@ void EditorInspector::update_tree() {
 								}
 							}
 						}
-	
+
 						if (is_native_class) {
 							DocCacheInfo cache_info;
 							cache_info.doc_path = doc_path;
 							cache_info.theme_item_name = theme_item_name;
 							doc_cache[classname][propname] = cache_info;
 						}
-	
+
 						if (!doc_path.is_empty() || F->value.inherits.is_empty()) {
 							break;
 						}
@@ -3759,7 +3757,6 @@ void EditorInspector::update_tree() {
 						F = dd->class_list.find(F->value.inherits);
 					}
 				}
-		
 			}
 		}
 
