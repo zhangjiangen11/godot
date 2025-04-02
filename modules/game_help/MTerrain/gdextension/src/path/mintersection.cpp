@@ -122,7 +122,7 @@ void MIntersection::_generate_mesh_info(Ref<Mesh> m, Ref<MIntersectionInfo> info
 		}
 	}
 	// Determingin other vertecies weight
-	// Weight is determined by square distnace
+	// Weight is determined by square distance
 	for (int i = 0; i < info->vertex.size(); i++) {
 		if (vertex_socket.ptrw()[i].is_set_as_main) {
 			continue; // if already set nothing to do

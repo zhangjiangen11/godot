@@ -76,7 +76,7 @@ private:
 	int collision_lod_cutoff = -1;
 	MAssetTable::CollectionIdentifier collection_identifier;
 	Vector<InstanceData> instance_data;
-	Ref<TriangleMesh> joined_triangle_mesh; // chached for editor selection
+	Ref<TriangleMesh> joined_triangle_mesh; // cached for editor selection
 	AABB joined_aabb; // if above is cached the this is also is calculated
 	Dictionary collections_material_set; // key collection id , value material set, should be updated with InstanceData
 

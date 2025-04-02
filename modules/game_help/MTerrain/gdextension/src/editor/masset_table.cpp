@@ -116,7 +116,7 @@ void MAssetTable::_bind_methods() {
 	BIND_ENUM_CONSTANT(HLOD);
 
 	BIND_ENUM_CONSTANT(UNDEF);
-	BIND_ENUM_CONSTANT(SHPERE);
+	BIND_ENUM_CONSTANT(SPHERE);
 	BIND_ENUM_CONSTANT(CYLINDER);
 	BIND_ENUM_CONSTANT(CAPSULE);
 	BIND_ENUM_CONSTANT(BOX);
@@ -421,7 +421,7 @@ int MAssetTable::tag_add(const String &_name) {
 	ERR_FAIL_V_MSG(-1, "No empty Tag");
 }
 
-void MAssetTable::tag_set_name(int tag_id, const String & _name) {
+void MAssetTable::tag_set_name(int tag_id, const String &_name) {
 	ERR_FAIL_COND(tag_id > M_MAX_TAG || tag_id < 0);
 	tag_names.set(tag_id, _name);
 }
@@ -1075,7 +1075,7 @@ void MAssetTable::collection_add_collision(int collection_id, CollisionType col_
 	shape.param_1 = size.x;
 	shape.param_2 = size.y;
 	shape.param_3 = size.z;
-	if (col_type == CollisionType::SHPERE) {
+	if (col_type == CollisionType::SPHERE) {
 		shape.param_1 = MAX(shape.param_1, shape.param_2);
 		shape.param_1 = MAX(shape.param_1, shape.param_3);
 	} else if (col_type == CollisionType::CAPSULE || col_type == CollisionType::CYLINDER) {
@@ -1133,7 +1133,7 @@ String MAssetTable::collection_get_name(int collection_id) const {
 	return collections_names[collection_id];
 }
 
-int MAssetTable::collection_get_id(const String & _name) const {
+int MAssetTable::collection_get_id(const String &_name) const {
 	return collections_names.find(_name);
 }
 
@@ -1164,18 +1164,18 @@ Vector<Pair<int, Transform3D>> MAssetTable::collection_get_sub_collection_id_tra
 	return out;
 }
 
-bool MAssetTable::group_exist(const String & _name) const {
+bool MAssetTable::group_exist(const String &_name) const {
 	return group_names.find(_name) >= 0;
 }
 
-bool MAssetTable::group_create(const String & _name) {
+bool MAssetTable::group_create(const String &_name) {
 	ERR_FAIL_COND_V(_name.length() == 0, false);
 	group_names.push_back(_name);
 	groups.push_back(Tag());
 	return true;
 }
 
-bool MAssetTable::group_rename(const String & _name, const String &new_name) {
+bool MAssetTable::group_rename(const String &_name, const String &new_name) {
 	ERR_FAIL_COND_V(_name.length() == 0, false);
 	ERR_FAIL_COND_V(new_name.length() == 0, false);
 	int index = group_names.find(_name);
@@ -1186,7 +1186,7 @@ bool MAssetTable::group_rename(const String & _name, const String &new_name) {
 	return true;
 }
 
-void MAssetTable::group_remove(const String & _name) {
+void MAssetTable::group_remove(const String &_name) {
 	int index = group_names.find(_name);
 	if (index >= 0) {
 		group_names.remove_at(index);
@@ -1202,13 +1202,13 @@ int MAssetTable::group_count() const {
 	return groups.size();
 }
 
-void MAssetTable::group_add_tag(const String & _name, int tag) {
+void MAssetTable::group_add_tag(const String &_name, int tag) {
 	int index = group_names.find(_name);
 	ERR_FAIL_COND_MSG(index < 0, "Can not find group with name " + _name);
 	groups.ptrw()[index].add_tag(tag);
 }
 
-void MAssetTable::group_remove_tag(const String & _name, int tag) {
+void MAssetTable::group_remove_tag(const String &_name, int tag) {
 	int index = group_names.find(_name);
 	ERR_FAIL_COND_MSG(index < 0, "Can not find group with name " + _name);
 	groups.ptrw()[index].remove_tag(tag);
@@ -1227,7 +1227,7 @@ PackedInt32Array MAssetTable::group_get_tags(const String &gname) const {
 	return out;
 }
 
-PackedInt32Array MAssetTable::groups_get_collections_any(const String & _name) const {
+PackedInt32Array MAssetTable::groups_get_collections_any(const String &_name) const {
 	PackedInt32Array out;
 	int index = group_names.find(_name);
 	ERR_FAIL_COND_V_MSG(index < 0, out, "Can not find group with name " + _name);
@@ -1243,7 +1243,7 @@ PackedInt32Array MAssetTable::groups_get_collections_any(const String & _name) c
 	return out;
 }
 
-PackedInt32Array MAssetTable::groups_get_collections_all(const String & _name) const {
+PackedInt32Array MAssetTable::groups_get_collections_all(const String &_name) const {
 	PackedInt32Array out;
 	int index = group_names.find(_name);
 	ERR_FAIL_COND_V_MSG(index < 0, out, "Can not find group with name " + _name);

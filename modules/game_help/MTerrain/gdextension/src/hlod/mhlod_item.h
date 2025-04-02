@@ -20,7 +20,7 @@
 #define M_PACKED_SCENE_BIND_COUNT 2
 #define M_PACKED_SCENE_ARG_COUNT 3
 
-#define M_COLLISION_ROOT_DIR "res://massets/collissions/"
+#define M_COLLISION_ROOT_DIR "res://massets/collisions/"
 #define M_GET_COLLISION_PATH(id) String(M_COLLISION_ROOT_DIR) + itos(id) + String(".res")
 
 #define M_PACKEDSCENE_ROOT_DIR "res://massets/packed_scenes/"
@@ -167,7 +167,7 @@ struct MHLodItemDecal {
 struct MHLodItemCollision {
 	// Enum numbers should match CollisionType in MAssetTable
 	enum Type : int8_t { NONE = 0,
-		SHPERE = 1,
+		SPHERE = 1,
 		CYLINDER = 2,
 		CAPSULE = 3,
 		BOX = 4 };
@@ -243,7 +243,7 @@ public:
 		}
 		RID shape;
 		switch (param.type) {
-			case Type::SHPERE:
+			case Type::SPHERE:
 				shape = PhysicsServer3D::get_singleton()->sphere_shape_create();
 				PhysicsServer3D::get_singleton()->shape_set_data(shape, param.param_1);
 				break;
@@ -369,8 +369,8 @@ struct MHLodItemCollisionComplex {
 	}
 };
 
-struct MHLodItemLight { // No more memebr or increase item size
-	//Bellow light rid keeped here to reducing memory size
+struct MHLodItemLight { // No more member or increase item size
+	//Below light rid keeped here to reducing memory size
 	// if change this and put it inside struct set_data and get_data should be corrected also
 	static inline VMap<MHLodItemLight *, RID> lights_list;
 	enum Type { SPOT = 0,
@@ -423,7 +423,7 @@ struct MHLodItemLight { // No more memebr or increase item size
 				RSS->light_omni_set_shadow_mode(light, (RenderingServer::LightOmniShadowMode)shadow_mode);
 				break;
 			default:
-				ERR_FAIL_V_MSG(RID(), "Unkown light type " + itos((int)type));
+				ERR_FAIL_V_MSG(RID(), "Unknown light type " + itos((int)type));
 				break;
 		}
 		// color

@@ -310,8 +310,8 @@ Ref<MeshSlicedInfo> MCurveMesh::_generate_mesh_sliced_info(Ref<Mesh> mesh) {
 		Pair<float, int> p(vec.x, slice_index);
 		sliced_pos_indicies.push_back(p);
 	}
-	// setting the mesh lenght
-	s->lenght = biggest_x;
+	// setting the mesh length
+	s->length = biggest_x;
 	// setting vertex x pos to zero as we keep them inside s->sliced_pos
 	for (int i = 0; i < s->vertex.size(); i++) {
 		Vector3 vec = s->vertex[i];
@@ -530,12 +530,12 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 		Pair<float, float> c_t_limits = get_conn_ratio_limits(cid);
 		Pair<float, float> dis_limit = curve->conn_ratio_limit_to_dis_limit(cid, c_t_limits);
 		float curve_lenght = dis_limit.second - dis_limit.first;
-		mesh_count = round(curve_lenght / mesh_sliced->lenght);
+		mesh_count = round(curve_lenght / mesh_sliced->length);
 		if (mesh_count <= 0) {
 			mesh_count = 1;
 		}
-		float mesh_curve_lenght = curve_lenght / ((float)mesh_count); // more accurate mesh lenght in this curve
-		float curve_lenght_ratio = mesh_curve_lenght / mesh_sliced->lenght;
+		float mesh_curve_lenght = curve_lenght / ((float)mesh_count); // more accurate mesh length in this curve
+		float curve_lenght_ratio = mesh_curve_lenght / mesh_sliced->length;
 		Vector<float> slice_curve_pos;
 		slice_curve_pos.resize(mesh_sliced->slice_count());
 		for (int i = 0; i < mesh_sliced->slice_count(); i++) {

@@ -581,8 +581,8 @@ PackedVector3Array MCurve::get_conn_baked_points(int64_t input_conn) {
 			b_control = b->out;
 		}
 	}
-	float lenght = get_length_between_basic(a, b, a_control, b_control);
-	int pcount = lenght / bake_interval; // This is only for middle points
+	float length = get_length_between_basic(a, b, a_control, b_control);
+	int pcount = length / bake_interval; // This is only for middle points
 	pcount = pcount == 0 ? 1 : pcount;
 	out.resize(pcount + 1); // including start and end pos
 	out.set(0, a->position);
@@ -1328,7 +1328,7 @@ float MCurve::_get_conn_distance_ratios(const float *baked_dis, const float dist
 	float b;
 	float a_ratio;
 	/// Despite its name hight is the lower bound here
-	if (high < 0) { // is before point dis[0] and the zero lenght or start point
+	if (high < 0) { // is before point dis[0] and the zero length or start point
 		a = 0;
 		b = baked_dis[0];
 		a_ratio = 0.0f;
@@ -1371,18 +1371,18 @@ _FORCE_INLINE_ float *MCurve::_bake_conn_distance(int64_t conn_id) {
 
 	ConnDistances conn_d;
 	float _interval = 1.0f / LENGTH_POINT_SAMPLE_COUNT;
-	float lenght = 0;
+	float length = 0;
 	Vector3 last_pos = a->position;
 	for (int i = 1; i < LENGTH_POINT_SAMPLE_COUNT; i++) {
 		Vector3 current_pos = a->position.bezier_interpolate(a_control, b_control, b->position, _interval * i);
-		lenght += last_pos.distance_to(current_pos);
+		length += last_pos.distance_to(current_pos);
 		last_pos = current_pos;
 		if (i % DISTANCE_BAKE_INTERVAL == 0) {
-			conn_d.dis[(i / DISTANCE_BAKE_INTERVAL) - 1] = lenght;
+			conn_d.dis[(i / DISTANCE_BAKE_INTERVAL) - 1] = length;
 		}
 	}
-	lenght += last_pos.distance_to(b->position);
-	conn_d.dis[DISTANCE_BAKE_TOTAL - 1] = lenght;
+	length += last_pos.distance_to(b->position);
+	conn_d.dis[DISTANCE_BAKE_TOTAL - 1] = length;
 	conn_distances.insert(conn_id, conn_d);
 	return conn_distances[conn_id].dis;
 }
@@ -1804,17 +1804,17 @@ int MCurve::get_active_lod_limit() {
 }
 
 float MCurve::get_length_between_basic(const Point *a, const Point *b, const Vector3 &a_control, const Vector3 &b_control) {
-	float lenght = 0;
+	float length = 0;
 	Vector3 last_position = a->position;
 	if (LENGTH_POINT_SAMPLE_COUNT_BASIC >= 1) {
 		float p_interval = 1.0 / LENGTH_POINT_SAMPLE_COUNT_BASIC;
 		for (int i = 1; i <= LENGTH_POINT_SAMPLE_COUNT_BASIC; i++) {
 			Vector3 current_position = a->position.bezier_interpolate(a_control, b_control, b->position, p_interval * i);
-			lenght += current_position.distance_to(last_position);
+			length += current_position.distance_to(last_position);
 			last_position = current_position;
 		}
 	}
-	lenght += b->position.distance_to(last_position);
+	length += b->position.distance_to(last_position);
 
-	return lenght;
+	return length;
 }

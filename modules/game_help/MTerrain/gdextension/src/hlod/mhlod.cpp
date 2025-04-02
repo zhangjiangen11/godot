@@ -597,7 +597,7 @@ int32_t MHlod::get_mesh_id(int32_t item_id, bool current_lod, bool lowest_lod) c
 
 int MHlod::shape_add_sphere(const Transform3D &_transform, float radius, uint16_t layers, int body_id) {
 	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
-	MHLodItemCollision mcol(MHLodItemCollision::Type::SHPERE);
+	MHLodItemCollision mcol(MHLodItemCollision::Type::SPHERE);
 	mcol.set_param(radius);
 	mcol.set_body_id(body_id);
 	Item _item(MHlod::Type::COLLISION);

@@ -23,7 +23,7 @@ public:
 		HLOD = 32 };
 	// Enum numbers should match CollisionType in mhold_item.h
 	enum CollisionType : uint8_t { UNDEF = 0,
-		SHPERE = 1,
+		SPHERE = 1,
 		CYLINDER = 2,
 		CAPSULE = 3,
 		BOX = 4 };

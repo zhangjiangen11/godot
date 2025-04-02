@@ -117,7 +117,7 @@ func bake_to_hlod_resource():
 					var params:Vector3 = mdata.get_collision_params(cindex)
 					var iid:int = -1								
 					match type:
-						MAssetTable.CollisionType.SHPERE: iid = hlod_resource.shape_add_sphere(t,params[0],item_variation_layer,physics_settings_id)
+						MAssetTable.CollisionType.SPHERE: iid = hlod_resource.shape_add_sphere(t,params[0],item_variation_layer,physics_settings_id)
 						MAssetTable.CollisionType.CYLINDER: iid = hlod_resource.shape_add_cylinder(t,params[0],params[1],item_variation_layer,physics_settings_id)
 						MAssetTable.CollisionType.CAPSULE: iid = hlod_resource.shape_add_cylinder(t,params[0],params[1],item_variation_layer,physics_settings_id)
 						MAssetTable.CollisionType.BOX: iid = hlod_resource.shape_add_box(t,params,item_variation_layer,physics_settings_id)					

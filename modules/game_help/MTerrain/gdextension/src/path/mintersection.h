@@ -17,7 +17,7 @@
 class MIntersectionInfo : public RefCounted {
 public:
 	int num_sockts;
-	float lenght;
+	float length;
 	RID mesh_rid = RID();
 	Ref<Material> material;
 	PackedVector3Array vertex;

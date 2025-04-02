@@ -19,7 +19,7 @@
 
 class MeshSlicedInfo : public RefCounted {
 public:
-	float lenght;
+	float length;
 	RID mesh_rid = RID(); // This used to detect the uniqueness
 	Ref<Material> material;
 	PackedVector3Array vertex;
@@ -31,7 +31,7 @@ public:
 	PackedInt32Array index;
 	Vector<float> sliced_pos;
 	Vector<Vector<int32_t>> sliced_info;
-	void merge_vertex_by_distance(float merge_distance = 0.0001f); // after calling this sliced_pos and slice_info are invalide and should be recalculate
+	void merge_vertex_by_distance(float merge_distance = 0.0001f); // after calling this sliced_pos and slice_info are invalid and should be recalculate
 	void clear();
 	int slice_count() const;
 	void get_color(int mesh_count, PackedColorArray &input);

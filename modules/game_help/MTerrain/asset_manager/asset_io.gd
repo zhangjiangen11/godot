@@ -366,7 +366,7 @@ static func node_parse_name(node:Node)->Dictionary:
 		result["name"] = search_result.strings[2]
 		match(search_result.strings[4]):
 			"box": result["col"] = MAssetTable.CollisionType.BOX
-			"sphere": result["col"] = MAssetTable.CollisionType.SHPERE
+			"sphere": result["col"] = MAssetTable.CollisionType.SPHERE
 			"cylinder": result["col"] = MAssetTable.CollisionType.CYLINDER
 			"capsule": result["col"] = MAssetTable.CollisionType.CAPSULE
 			"convex":

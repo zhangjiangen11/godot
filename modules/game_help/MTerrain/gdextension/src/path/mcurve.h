@@ -1,6 +1,6 @@
 #pragma once
 
-// These two bellow should match in number
+// These two below should match in number
 // Max conn should not be bigger than 127
 #define MAX_CONN 4
 #define conn_DEFAULT_VALUE { 0, 0, 0, 0 }
@@ -11,9 +11,9 @@
 #define LENGTH_POINT_SAMPLE_COUNT_BASIC 1 // exclude start and end point only middle
 #define INVALID_POINT_LOD -1 // Must be bigger than MAX_LOD in octree -- Only for internal reason outside lod=-1 is invalid
 
-// RULE ---> LENGTH_POINT_SAMPLE_COUNT % DISTANCE_BAKE_INTERVAL = 0 ... Please change two bellow base on prev rule
+// RULE ---> LENGTH_POINT_SAMPLE_COUNT % DISTANCE_BAKE_INTERVAL = 0 ... Please change two below base on prev rule
 #define LENGTH_POINT_SAMPLE_COUNT 128
-// Each 3 point which get sampled one bake lenght will be added
+// Each 3 point which get sampled one bake length will be added
 #define DISTANCE_BAKE_INTERVAL 4 // Total_point_interrval = LENGTH_POINT_SAMPLE_COUNT / DISTANCE_BAKE_INTERVAL
 #define DISTANCE_BAKE_TOTAL (LENGTH_POINT_SAMPLE_COUNT / DISTANCE_BAKE_INTERVAL)
 #define RATIO_BAKE_INTERVAL (1.0f / DISTANCE_BAKE_TOTAL)
@@ -284,7 +284,7 @@ private:
 		tangent.normalize();
 		return tangent;
 	}
-	// This function must not be called with completly straight Up_Vector line
+	// This function must not be called with completely straight Up_Vector line
 	// It can handle if small part of line has a perpendiculare part
 	_FORCE_INLINE_ Transform3D _get_bezier_transform(const Vector3 &a, const Vector3 &b, const Vector3 &a_control, const Vector3 &b_control, const Vector3 &init_up_vec, float t) {
 		t = CLAMP(t, 0.0f, 1.0f);
@@ -296,7 +296,7 @@ private:
 		Vector3 pos = uu * u * a + 3 * ut * u * a_control + 3 * ut * t * b_control + tt * t * b;
 		Vector3 tangent;
 		Vector3 normal;
-		// normal by derivative which does not work unfortunatly
+		// normal by derivative which does not work unfortunately
 		// normal = 6*u*(b_control - 2*a_control + a) + 6*t*(b - 2*b_control + a_control);
 
 		// Handling tangent zero points

@@ -36,7 +36,7 @@ public:
 	static inline int64_t physic_space = 0; // RID will crash so using this
 	struct PhysicBodyInfo {
 		RID rid;
-		// bellow contain ItemGlobalIDs
+		// below contain ItemGlobalIDs
 		// index of it is the shape index in PhysicsServer
 		Vector<int64_t> shapes;
 		_FORCE_INLINE_ PhysicBodyInfo(RID body_rid) :
@@ -120,7 +120,7 @@ private:
 	/* Item List structure
 		[itemA_lod0,itemA_lod1,itemA_lod2, .... , itemB_lod0,itemB_lod1,itemB_lod2]
 		the start index (in this case index of itemA_lod0) is the id of that item
-		one LOD can be droped if it is a duplicate Base on this if item LOD does not exist we pick the last existing one
+		one LOD can be dropped if it is a duplicate Base on this if item LOD does not exist we pick the last existing one
 		Only two neghbor similar lod can be detected
 	*/
 public:
