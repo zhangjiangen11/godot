@@ -1,18 +1,15 @@
 #ifndef MCONFIG
 #define MCONFIG
 
-
 #define M_IMAGE_LAYER_ON
-
-
 
 #define M_DEBUG
 //#undef M_DEBUG
 
 #define M_SIZE_LIST_STRING "8,16,32,64,128,256,512,1024,2048"
-#define M_SIZE_LIST        {8,16,32,64,128,256,512,1024,2048}
+#define M_SIZE_LIST { 8, 16, 32, 64, 128, 256, 512, 1024, 2048 }
 #define M_H_SCALE_LIST_STRING "0.25,0.5,1,2,4,8,16,32"
-#define M_H_SCALE_LIST        {0.25,0.5,1,2,4,8,16,32}
+#define M_H_SCALE_LIST { 0.25, 0.5, 1, 2, 4, 8, 16, 32 }
 
 #define M_DEF_MAX_HEIGHT 1000
 #define M_DEF_MIN_HEIGHT 0
@@ -47,11 +44,10 @@
 #define FLOAT_HOLE std::numeric_limits<float>::quiet_NaN()
 
 #if defined(LINUX_ENABLED) || defined(WINDOWS_ENABLED)
-#define UABS_DIFF(a, b) ABS(a-b)
+#define UABS_DIFF(a, b) ABS(a - b)
 #else
 #define UABS_DIFF(a, b) ((a) > (b) ? (a) - (b) : (b) - (a))
 #endif
-
 
 #define DEFAULT_ACCURACY 0.02
 

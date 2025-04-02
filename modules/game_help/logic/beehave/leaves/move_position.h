@@ -24,13 +24,13 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"移动节点的位置,这个节点将不会被中断。\n如果需要结束,需要外部的装饰器强制结束");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"移动节点位置");
 	}
-	virtual StringName get_icon() {
+	virtual StringName get_icon() override {
 		return SNAME("action");
 	}
-	virtual int tick(const Ref<BeehaveRuncontext> &run_context) {
+	virtual int tick(const Ref<BeehaveRuncontext> &run_context) override {
 		Node3D *node = Object::cast_to<Node3D>(run_context->actor);
 		if (node == nullptr) {
 			return FAILURE;

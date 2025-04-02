@@ -97,7 +97,7 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"检测是否在地面上。");
 	}
-	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard);
+	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard) override;
 
 	PhysicsDirectSpaceState3D::RayResult result;
 	float check_move_height;

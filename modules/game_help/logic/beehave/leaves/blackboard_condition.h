@@ -15,10 +15,10 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"判断黑板条件是否成功。");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return L"黑板条件叶节点";
 	}
-	virtual StringName get_icon() {
+	virtual StringName get_icon() override {
 		return SNAME("condition");
 	}
 	virtual int tick(Node *actor, Blackboard *blackboard) {

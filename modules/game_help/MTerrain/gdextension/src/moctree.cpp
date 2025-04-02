@@ -1207,7 +1207,7 @@ PackedFloat32Array MOctree::get_lod_setting() const{
 }
 
 void MOctree::set_custom_capacity(int input){
-	input = CLAMP(input, 0 , MAX_CAPACITY);
+	input = CLAMP(input, 0 , int(MAX_CAPACITY));
 	custom_capacity = input;
 }
 

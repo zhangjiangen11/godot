@@ -73,6 +73,8 @@ protected:
 				return curr == value;
 			case AnimatorAICompareType::NotEqual:
 				return curr != value;
+			default:
+				break;
 		}
 		if (p_is_include) {
 			return true;

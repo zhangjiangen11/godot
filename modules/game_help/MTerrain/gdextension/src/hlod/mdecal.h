@@ -8,10 +8,12 @@
 
 class MDecal : public Resource {
 	using DecalTexture = RenderingServer::DecalTexture;
-    GDCLASS(MDecal,Resource);
-    protected:
-    static void _bind_methods();
-    private:
+	GDCLASS(MDecal, Resource);
+
+protected:
+	static void _bind_methods();
+
+private:
 	RID decal;
 	// Vector3 size = Vector3(2, 2, 2); -> size is fixed with this val
 	Ref<Texture2D> textures[DecalTexture::DECAL_TEXTURE_MAX];
@@ -25,9 +27,9 @@ class MDecal : public Resource {
 	bool distance_fade_enabled = false;
 	real_t distance_fade_begin = 40.0;
 	real_t distance_fade_length = 10.0;
-	
-    public:
-    MDecal();
+
+public:
+	MDecal();
 	~MDecal();
 
 	RID get_decal_rid() const;
@@ -43,7 +45,7 @@ class MDecal : public Resource {
 
 	void set_modulate(Color p_modulate);
 	Color get_modulate() const;
-	
+
 	void set_upper_fade(real_t p_energy);
 	real_t get_upper_fade() const;
 

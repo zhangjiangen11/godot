@@ -5,21 +5,22 @@
 #include "scene/3d/visual_instance_3d.h"
 
 class MDecalInstance : public VisualInstance3D {
-    GDCLASS(MDecalInstance,VisualInstance3D);
-    protected:
-    static void _bind_methods();
-    private:
-    Ref<MDecal> mdecal;
+	GDCLASS(MDecalInstance, VisualInstance3D);
 
+protected:
+	static void _bind_methods();
 
-    public:
-    bool has_decal() const;
-    void set_decal(Ref<MDecal> input);
-    Ref<MDecal> get_decal() const;
+private:
+	Ref<MDecal> mdecal;
 
-    AABB _get_aabb() const;
+public:
+	bool has_decal() const;
+	void set_decal(Ref<MDecal> input);
+	Ref<MDecal> get_decal() const;
 
-    void _notification(int32_t what);
+	AABB _get_aabb() const;
+
+	void _notification(int32_t what);
 };
 
 #endif

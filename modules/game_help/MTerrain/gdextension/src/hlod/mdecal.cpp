@@ -1,14 +1,12 @@
 #include "mdecal.h"
 
-
-void MDecal::_bind_methods(){
-	
+void MDecal::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_texture", "type", "texture"), &MDecal::set_texture);
 	ClassDB::bind_method(D_METHOD("get_texture", "type"), &MDecal::get_texture);
 
 	ClassDB::bind_method(D_METHOD("set_emission_energy", "energy"), &MDecal::set_emission_energy);
 	ClassDB::bind_method(D_METHOD("get_emission_energy"), &MDecal::get_emission_energy);
-	
+
 	ClassDB::bind_method(D_METHOD("set_albedo_mix", "energy"), &MDecal::set_albedo_mix);
 	ClassDB::bind_method(D_METHOD("get_albedo_mix"), &MDecal::get_albedo_mix);
 
@@ -17,7 +15,7 @@ void MDecal::_bind_methods(){
 
 	ClassDB::bind_method(D_METHOD("set_upper_fade", "fade"), &MDecal::set_upper_fade);
 	ClassDB::bind_method(D_METHOD("get_upper_fade"), &MDecal::get_upper_fade);
-	
+
 	ClassDB::bind_method(D_METHOD("set_lower_fade", "fade"), &MDecal::set_lower_fade);
 	ClassDB::bind_method(D_METHOD("get_lower_fade"), &MDecal::get_lower_fade);
 
@@ -35,7 +33,6 @@ void MDecal::_bind_methods(){
 
 	ClassDB::bind_method(D_METHOD("set_cull_mask", "mask"), &MDecal::set_cull_mask);
 	ClassDB::bind_method(D_METHOD("get_cull_mask"), &MDecal::get_cull_mask);
-
 
 	ADD_GROUP("Textures", "texture_");
 	ADD_PROPERTYI(PropertyInfo(Variant::OBJECT, "texture_albedo", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_texture", "get_texture", DecalTexture::DECAL_TEXTURE_ALBEDO);
@@ -64,26 +61,25 @@ void MDecal::_bind_methods(){
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "cull_mask", PROPERTY_HINT_LAYERS_3D_RENDER), "set_cull_mask", "get_cull_mask");
 }
 
-
-MDecal::MDecal(){
+MDecal::MDecal() {
 	decal = RenderingServer::get_singleton()->decal_create();
 }
-MDecal::~MDecal(){
+MDecal::~MDecal() {
 	ERR_FAIL_NULL(RenderingServer::get_singleton());
 	RSS->free(decal);
 }
 
-RID MDecal::get_decal_rid() const{
+RID MDecal::get_decal_rid() const {
 	return decal;
 }
 
 void MDecal::set_texture(DecalTexture p_type, const Ref<Texture2D> &p_texture) {
 	ERR_FAIL_INDEX(p_type, DecalTexture::DECAL_TEXTURE_MAX);
-	if(textures[p_type].is_valid()){
-		textures[p_type]->disconnect("changed",Callable(this,"emit_changed"));
+	if (textures[p_type].is_valid()) {
+		textures[p_type]->disconnect("changed", Callable(this, "emit_changed"));
 	}
-	if(p_texture.is_valid()){
-		p_texture->connect("changed",Callable(this,"emit_changed"));
+	if (p_texture.is_valid()) {
+		p_texture->connect("changed", Callable(this, "emit_changed"));
 	}
 	textures[p_type] = p_texture;
 	RID texture_rid = p_texture.is_valid() ? p_texture->get_rid() : RID();
@@ -188,5 +184,5 @@ uint32_t MDecal::get_cull_mask() const {
 }
 
 AABB MDecal::get_aabb() const {
-	return AABB(Vector3(-1,-1,-1),Vector3(2,2,2));
+	return AABB(Vector3(-1, -1, -1), Vector3(2, 2, 2));
 }

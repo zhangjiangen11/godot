@@ -30,7 +30,6 @@
 
 #pragma once
 
-
 #include <stddef.h>
 /**
  * Basic definitions and simple functions to be used everywhere.

@@ -32,8 +32,8 @@ void SceneInstanceBlock::hide_instance_by_cell_mask(const Vector3 &p_position_mo
 			Vector3 pos = transform[i].origin - p_position_move;
 			int x = pos.x / p_cell_mask->get_width();
 			int z = pos.z / p_cell_mask->get_height();
-			x = CLAMP(uint32_t(x), 0, p_cell_mask->get_width() - 1);
-			z = CLAMP(uint32_t(z), 0, p_cell_mask->get_height() - 1);
+			x = CLAMP(x, 0, int32_t(p_cell_mask->get_width() - 1));
+			z = CLAMP(z, 0, int32_t(p_cell_mask->get_height() - 1));
 
 			uint8_t v = p_cell_mask->get_pixel(x, z);
 			if (v < p_visble_value_min || v > p_visble_value_max) {

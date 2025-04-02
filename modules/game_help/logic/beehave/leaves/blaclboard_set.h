@@ -16,10 +16,10 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"设置黑板的值。");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"设置黑板的叶节点");
 	}
-	virtual StringName get_icon() {
+	virtual StringName get_icon() override {
 		return SNAME("BTSetVar");
 	}
 	virtual void after_run(const Ref<BeehaveRuncontext> &run_context) override {

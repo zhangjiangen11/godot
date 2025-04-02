@@ -5,66 +5,60 @@
 
 #include "register_types.h"
 
-
-
-
 #ifdef DEBUG_ENABLED
-#include "editor/mmesh_joiner.h"
 #include "editor/masset_mesh.h"
 #include "editor/masset_mesh_updater.h"
 #include "editor/masset_table.h"
+#include "editor/mmesh_joiner.h"
 #endif
 
-#include "mterrain.h"
-#include "mresource.h"
+#include "mbrush_manager.h"
 #include "mchunk_generator.h"
 #include "mchunks.h"
-#include "mtool.h"
-#include "mbrush_manager.h"
 #include "mcollision.h"
+#include "mresource.h"
+#include "mterrain.h"
+#include "mtool.h"
 
 #include "grass/mgrass.h"
 #include "grass/mgrass_data.h"
 #include "grass/mgrass_lod_setting.h"
-#include "navmesh/mnavigation_region_3d.h"
-#include "navmesh/mnavigation_mesh_data.h"
-#include "navmesh/mobstacle.h"
 #include "mbrush_layers.h"
 #include "mterrain_material.h"
+#include "navmesh/mnavigation_mesh_data.h"
+#include "navmesh/mnavigation_region_3d.h"
+#include "navmesh/mobstacle.h"
 
 #include "moctree.h"
 #include "octmesh/mmesh_lod.h"
 #include "octmesh/moctmesh.h"
 
-#include "path/mpath.h"
 #include "path/mcurve.h"
-#include "path/mintersection.h"
 #include "path/mcurve_mesh.h"
 #include "path/mcurve_mesh_override.h"
 #include "path/mcurve_terrain.h"
+#include "path/mintersection.h"
+#include "path/mpath.h"
 
-#include "hlod/mhlod_scene.h"
-#include "hlod/mhlod_node3d.h"
-#include "hlod/mhlod_collision_setting.h"
-#include "hlod/mmesh.h"
 #include "hlod/mdecal.h"
 #include "hlod/mdecal_instance.h"
-
+#include "hlod/mhlod_collision_setting.h"
+#include "hlod/mhlod_node3d.h"
+#include "hlod/mhlod_scene.h"
+#include "hlod/mmesh.h"
 
 void initialize_mterrain_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;
 	}
-	
-	#ifdef DEBUG_ENABLED
+
+#ifdef DEBUG_ENABLED
 	ClassDB::register_class<MMeshJoiner>();
 	ClassDB::register_class<MAssetMeshUpdater>();
 	ClassDB::register_class<MAssetMesh>();
 	ClassDB::register_class<MAssetMeshData>();
 	ClassDB::register_class<MAssetTable>();
-	#endif
-
-
+#endif
 
 	ClassDB::register_class<MTerrain>();
 	ClassDB::register_class<MResource>();
@@ -103,8 +97,8 @@ void initialize_mterrain_module(ModuleInitializationLevel p_level) {
 }
 
 void uninitialize_mterrain_module(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {}
-
+	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
+	}
 }
 
 // extern "C" {
