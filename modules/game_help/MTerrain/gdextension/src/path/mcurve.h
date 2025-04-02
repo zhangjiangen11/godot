@@ -1,5 +1,4 @@
-#ifndef _MCURVE
-#define _MCURVE
+#pragma once
 
 // These two bellow should match in number
 // Max conn should not be bigger than 127
@@ -331,5 +330,3 @@ private:
 };
 
 VARIANT_ENUM_CAST(MCurve::ConnType);
-
-#endif

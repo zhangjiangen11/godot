@@ -1,5 +1,4 @@
-#ifndef __MHLOD__
-#define __MHLOD__
+#pragma once
 
 #include "core/io/resource.h"
 #include "core/templates/vset.h"
@@ -346,4 +345,3 @@ _FORCE_INLINE_ void MHlod::clear_physic_body() {
 
 VARIANT_ENUM_CAST(MHlod::Type);
 VARIANT_ENUM_CAST(MHlod::GIMode);
-#endif

@@ -1,5 +1,4 @@
-#ifndef MRESOURCE
-#define MRESOURCE
+#pragma once
 
 #define CURRENT_MRESOURCE_VERSION 0 // Unless change which cause compatiblity break this will no change
 
@@ -252,5 +251,3 @@ public:
 
 VARIANT_ENUM_CAST(MResource::Compress);
 VARIANT_ENUM_CAST(MResource::FileCompress);
-
-#endif

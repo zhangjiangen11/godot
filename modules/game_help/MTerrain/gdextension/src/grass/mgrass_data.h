@@ -1,5 +1,4 @@
-#ifndef MGRASS_DATA
-#define MGRASS_DATA
+#pragma once
 
 #include "core/io/resource.h"
 #include "core/templates/hash_map.h"
@@ -51,4 +50,3 @@ public:
 	void clear_undo();
 	void undo();
 };
-#endif

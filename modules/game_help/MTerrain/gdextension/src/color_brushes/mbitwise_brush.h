@@ -1,5 +1,4 @@
-#ifndef MBITWISEBRUSH
-#define MBITWISEBRUSH
+#pragma once
 
 #include "../mcolor_brush.h"
 
@@ -12,4 +11,3 @@ class MBitwiseBrush : public MColorBrush {
 	void before_draw();
 	void set_color(uint32_t local_x, uint32_t local_y, uint32_t x, uint32_t y, MImage *img);
 };
-#endif

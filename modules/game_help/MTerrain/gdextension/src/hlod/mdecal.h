@@ -1,5 +1,4 @@
-#ifndef __MDECAL__
-#define __MDECAL__
+#pragma once
 
 #include "core/io/resource.h"
 #include "scene/resources/texture.h"
@@ -69,4 +68,3 @@ public:
 
 	AABB get_aabb() const;
 };
-#endif

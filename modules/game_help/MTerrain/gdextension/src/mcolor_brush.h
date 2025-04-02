@@ -1,5 +1,4 @@
-#ifndef MCOLORBRUSH
-#define MCOLORBRUSH
+#pragma once
 
 #include "core/object/object.h"
 #include "core/string/ustring.h"
@@ -23,4 +22,3 @@ public:
 	virtual void before_draw() = 0;
 	virtual void set_color(uint32_t local_x, uint32_t local_y, uint32_t x, uint32_t y, MImage *img) = 0;
 };
-#endif

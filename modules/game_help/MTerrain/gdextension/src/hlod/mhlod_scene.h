@@ -1,5 +1,4 @@
-#ifndef __MHLODSCENE
-#define __MHLODSCENE
+#pragma once
 
 #include "scene/3d/node_3d.h"
 
@@ -397,4 +396,3 @@ _FORCE_INLINE_ void MHlodScene::Proc::bind_item_set_disable(const MHlodScene::Gl
 			break;
 	}
 }
-#endif

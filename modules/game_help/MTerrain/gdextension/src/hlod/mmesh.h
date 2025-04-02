@@ -1,5 +1,4 @@
-#ifndef __MMESH___
-#define __MMESH___
+#pragma once
 
 #define MPATH_DELIMTER 59
 
@@ -104,4 +103,3 @@ public:
 
 	void debug_test();
 };
-#endif

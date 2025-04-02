@@ -1,5 +1,4 @@
-#ifndef MGRASS
-#define MGRASS
+#pragma once
 
 #define BUFFER_STRID_FLOAT 12
 #define BUFFER_STRID_BYTE 48
@@ -180,4 +179,3 @@ public:
 	void _update_visibilty();
 	void set_visibility(bool input);
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef MHEIGHTBRUSH
-#define MHEIGHTBRUSH
+#pragma once
 
 #include "core/object/object.h"
 #include "core/string/ustring.h"
@@ -40,4 +39,3 @@ public:
 	// grid -> grid class in mterrain to access information about all pixel, normals, height or anything that you need for your brush
 	virtual float get_height(uint32_t x, uint32_t y) = 0;
 };
-#endif

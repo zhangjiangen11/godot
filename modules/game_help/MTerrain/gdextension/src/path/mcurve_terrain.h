@@ -1,5 +1,4 @@
-#ifndef _MCURVE_TERRAIN
-#define _MCURVE_TERRAIN
+#pragma once
 
 #include "../mgrid.h"
 #include "../mterrain.h"
@@ -72,4 +71,3 @@ public:
 	void clear_grass(const PackedInt64Array &conn_ids, MGrass *grass, float radius_plus_offset);
 	void modify_grass(const PackedInt64Array &conn_ids, MGrass *grass, float g_start_offset, float g_radius, bool add);
 };
-#endif

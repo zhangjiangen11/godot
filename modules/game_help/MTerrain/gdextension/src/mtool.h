@@ -1,5 +1,4 @@
-#ifndef MTOOL
-#define MTOOL
+#pragma once
 
 // #include <godot_cpp/classes/object.hpp>
 // #include "core/object/ref_counted.h"
@@ -72,5 +71,3 @@ public:
 		return out;
 	}
 };
-
-#endif

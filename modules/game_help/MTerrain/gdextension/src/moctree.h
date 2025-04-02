@@ -1,5 +1,4 @@
-#ifndef __MOctree
-#define __MOctree
+#pragma once
 
 #define MIN_OCTANT_EDGE_LENGTH 0.2
 #define EXTRA_BOUND_MARGIN 200U //This should be alway some number bigger than zero, otherwise cause some points to not be inserted
@@ -232,4 +231,3 @@ public:
 	void update_scenario();
 	RID get_scenario();
 };
-#endif

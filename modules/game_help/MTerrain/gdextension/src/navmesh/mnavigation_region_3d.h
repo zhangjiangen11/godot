@@ -1,5 +1,4 @@
-#ifndef MNAVIGATIONREGION3D
-#define MNAVIGATIONREGION3D
+#pragma once
 
 #define BUFFER_STRID_FLOAT 12
 #include "core/math/vector4.h"
@@ -129,4 +128,3 @@ public:
 	static void add_obstacle(MObstacle *input);
 	static void remove_obstacle(MObstacle *input);
 };
-#endif

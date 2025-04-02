@@ -1,5 +1,4 @@
-#ifndef _MOCTMESH
-#define _MOCTMESH
+#pragma once
 
 #define OCT_POINT_ID_START 0
 #define CURRENT_LOD -2
@@ -114,4 +113,3 @@ public:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 };
-#endif

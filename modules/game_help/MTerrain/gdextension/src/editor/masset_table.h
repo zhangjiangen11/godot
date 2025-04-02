@@ -1,6 +1,4 @@
-#ifndef __MASSETTABLE__
-#define __MASSETTABLE__
-
+#pragma once
 #define MAX_MESH_LOD 10
 #define MAX_MATERIAL_SET_ID 126
 #include "core/io/resource.h"
@@ -257,4 +255,3 @@ public:
 };
 VARIANT_ENUM_CAST(MAssetTable::ItemType);
 VARIANT_ENUM_CAST(MAssetTable::CollisionType);
-#endif

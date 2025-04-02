@@ -1,5 +1,4 @@
-#ifndef MNAVIGATIONDATA
-#define MNAVIGATIONDATA
+#pragma once
 
 #include "core/io/resource.h"
 #include "core/variant/variant.h"
@@ -20,5 +19,3 @@ public:
 	void set_on_all_at_creation(bool input);
 	bool get_on_all_at_creation();
 };
-
-#endif

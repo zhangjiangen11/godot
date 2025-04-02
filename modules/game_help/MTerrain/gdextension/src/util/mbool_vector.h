@@ -1,5 +1,4 @@
-#ifndef __BOOLVEC__
-#define __BOOLVEC__
+#pragma once
 
 #include "core/templates/vector.h"
 
@@ -88,4 +87,3 @@ public:
 		return get(index);
 	}
 };
-#endif

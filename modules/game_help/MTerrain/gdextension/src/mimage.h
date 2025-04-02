@@ -1,5 +1,4 @@
-#ifndef MIMAGE
-#define MIMAGE
+#pragma once
 
 #include "mconfig.h"
 
@@ -115,5 +114,3 @@ private:
 	void load_layer(String lname);
 	_FORCE_INLINE_ String get_layer_data_dir();
 };
-
-#endif

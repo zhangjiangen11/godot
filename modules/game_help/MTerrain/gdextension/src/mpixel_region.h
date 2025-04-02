@@ -1,5 +1,4 @@
-#ifndef MPIXELREGION
-#define MPIXELREGION
+#pragma once
 
 #include "core/templates/vector.h"
 #include <stdint.h>
@@ -27,5 +26,3 @@ struct MPixelRegion {
 	void clear();
 	void print_region(String prefix);
 };
-
-#endif

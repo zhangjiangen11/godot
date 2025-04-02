@@ -1,5 +1,4 @@
-#ifndef MBOUND
-#define MBOUND
+#pragma once
 
 #include "core/math/math_funcs.h"
 #include "core/math/rect2i.h"
@@ -69,5 +68,3 @@ struct MBound {
 	bool get_next_region(const int32_t region_size, const MBound &limit_bound);
 	bool get_next_shared_edge_region(const int32_t region_size, const MBound &limit_bound);
 };
-
-#endif

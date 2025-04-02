@@ -1,5 +1,4 @@
-#ifndef MBRUSHLAYERS
-#define MBRUSHLAYERS
+#pragma once
 
 #include "core/io/resource.h"
 #include "core/templates/hash_map.h"
@@ -53,4 +52,3 @@ public:
 	Color get_layer_color(int index);
 	void set_layer(int index, MColorBrush *brush);
 };
-#endif

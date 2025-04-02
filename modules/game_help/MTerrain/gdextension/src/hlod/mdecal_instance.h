@@ -1,5 +1,4 @@
-#ifndef ___MDECALINSTANCE__
-#define ___MDECALINSTANCE__
+#pragma once
 
 #include "mdecal.h"
 #include "scene/3d/visual_instance_3d.h"
@@ -22,5 +21,3 @@ public:
 
 	void _notification(int32_t what);
 };
-
-#endif

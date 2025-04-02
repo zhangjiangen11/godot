@@ -1,5 +1,4 @@
-#ifndef _MSEGMENTMESH
-#define _MSEGMENTMESH
+#pragma once
 
 #include "core/io/resource.h"
 #include "core/templates/hash_map.h"
@@ -65,4 +64,3 @@ public:
 	int get_socket_count();
 	Vector<Transform3D> _get_sockets();
 };
-#endif

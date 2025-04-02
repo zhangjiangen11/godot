@@ -1,5 +1,4 @@
-#ifndef _MPATH
-#define _MPATH
+#pragma once
 #include "scene/3d/node_3d.h"
 #include "scene/resources/material.h"
 
@@ -31,4 +30,3 @@ public:
 	void update_scenario();
 	RID get_scenario();
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef MGRASSLODSETTING
-#define MGRASSLODSETTING
+#pragma once
 
 #include "core/io/resource.h"
 #include "core/math/vector3.h"
@@ -161,4 +160,3 @@ public:
 	bool _set(const StringName &p_name, const Variant &p_value);
 };
 VARIANT_ENUM_CAST(MGrassLodSetting::CUSTOM);
-#endif

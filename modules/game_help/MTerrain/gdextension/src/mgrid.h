@@ -1,5 +1,4 @@
-#ifndef MGRID
-#define MGRID
+#pragma once
 
 //#define NO_MERGE
 
@@ -329,5 +328,3 @@ public:
 	bool get_visibility();
 	void set_visibility(bool input);
 };
-
-#endif

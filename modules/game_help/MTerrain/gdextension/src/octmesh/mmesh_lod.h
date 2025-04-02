@@ -1,5 +1,4 @@
-#ifndef _MMESH_LOD
-#define _MMESH_LOD
+#pragma once
 
 #include "core/io/resource.h"
 #include "scene/resources/mesh.h"
@@ -31,4 +30,3 @@ public:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 	bool _property_can_revert(const StringName &p_name) const;
 };
-#endif

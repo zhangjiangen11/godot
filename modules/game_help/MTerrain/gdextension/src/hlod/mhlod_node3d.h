@@ -1,5 +1,4 @@
-#ifndef __MHLODNODE3D__
-#define __MHLODNODE3D__
+#pragma once
 
 #include "scene/3d/node_3d.h"
 
@@ -60,4 +59,3 @@ public:
 	GDVIRTUAL1(_update_lod, int);
 	GDVIRTUAL0(_before_remove);
 };
-#endif

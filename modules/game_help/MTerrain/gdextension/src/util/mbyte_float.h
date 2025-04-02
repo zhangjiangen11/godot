@@ -1,5 +1,4 @@
-#ifndef __MBYTEFLOAT__
-#define __MBYTEFLOAT__
+#pragma once
 
 #include "core/variant/variant.h"
 
@@ -102,4 +101,3 @@ public:
 		return value < other.value;
 	}
 };
-#endif

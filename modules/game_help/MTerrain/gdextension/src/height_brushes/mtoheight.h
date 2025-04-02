@@ -1,5 +1,4 @@
-#ifndef MTOHEIGHT
-#define MTOHEIGHT
+#pragma once
 
 #include "../mheight_brush.h"
 
@@ -19,4 +18,3 @@ public:
 	void before_draw();
 	float get_height(uint32_t x, uint32_t y);
 };
-#endif

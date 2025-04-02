@@ -1,5 +1,4 @@
-#ifndef __MHLODITEM__
-#define __MHLODITEM__
+#pragma once
 
 #include "core/templates/vmap.h"
 
@@ -527,4 +526,3 @@ struct MHLodItemPackedScene {
 		return d;
 	}
 };
-#endif

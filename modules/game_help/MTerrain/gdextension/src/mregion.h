@@ -1,5 +1,4 @@
-#ifndef MREGION
-#define MREGION
+#pragma once
 
 #include "core/io/image.h"
 #include "core/io/resource_loader.h"
@@ -117,4 +116,3 @@ private:
 	void correct_bottom_right_corner();
 	void correct_top_left_corner();
 };
-#endif

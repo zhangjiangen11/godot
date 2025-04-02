@@ -1,5 +1,4 @@
-#ifndef __MCURVE_OVERRIDE
-#define __MCURVE_OVERRIDE
+#pragma once
 
 #include "core/io/resource.h"
 
@@ -42,4 +41,3 @@ public:
 	void set_data(const PackedByteArray &input);
 	PackedByteArray get_data();
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef __LRUCACHE__
-#define __LRUCACHE__
+#pragma once
 
 #include "core/string/ustring.h"
 #include "core/templates/hash_map.h"
@@ -154,4 +153,3 @@ public:
 		return data[index].data;
 	}
 };
-#endif

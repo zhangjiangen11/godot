@@ -8,7 +8,7 @@
 MOctree *MCurve::octree = nullptr;
 
 void MCurve::set_octree(MOctree *input) {
-	ERR_FAIL_COND_MSG(octree != nullptr, "Only one octree can udpate MPath");
+	ERR_FAIL_COND_MSG(octree != nullptr, "Only one octree can update MPath");
 	octree = input;
 }
 
@@ -385,7 +385,7 @@ void MCurve::init_insert() {
 	if (is_init_insert) {
 		return;
 	}
-	ERR_FAIL_COND_MSG(octree == nullptr, "No octree asigned to update curves, please asign a octree by calling enable_as_curve_updater and restart Godot");
+	ERR_FAIL_COND_MSG(octree == nullptr, "No octree assigned to update curves, please assign a octree by calling enable_as_curve_updater and restart Godot");
 	// inserting points into octree
 	PackedVector3Array positions;
 	PackedInt32Array ids;
@@ -423,7 +423,7 @@ void MCurve::_octree_update_finish() {
 		PointUpdateInfo point_update_info;
 		if (update_info[i].lod > active_lod_limit) {
 			if (p->lod > active_lod_limit) {
-				continue; // Same as before was deactive
+				continue; // Same as before was deactivate
 			}
 			active_points.erase(update_info[i].id);
 			point_update_info.current_lod = -1;
@@ -445,14 +445,14 @@ void MCurve::_octree_update_finish() {
 		const Point *p = points_buffer.ptr() + cpoint;
 		for (int c = 0; c < MAX_CONN; c++) { // Here we really using c++
 			if (p->conn[c] != INVALID_POINT_INDEX) {
-				int32_t next_point_index = std::abs(p->conn[c]); // We don't care about conn type here! conneciton type is encode in positive and negetive of conn
+				int32_t next_point_index = std::abs(p->conn[c]); // We don't care about conn type here! connection type is encode in positive and negetive of conn
 				Conn conn(cpoint, next_point_index);
 				if (processed_conns.has(conn.id)) {
 					continue;
 				}
 				ERR_FAIL_COND(!has_point(next_point_index));
 				Point *next_point = points_buffer.ptrw() + next_point_index;
-				// bellow can be done considering the fact INVALID_POINT_LOD is a big number
+				// below can be done considering the fact INVALID_POINT_LOD is a big number
 				int8_t new_lod = p->lod < next_point->lod ? p->lod : next_point->lod;
 				int8_t last_lod = conn_list.has(conn.id) ? conn_list[conn.id] : INVALID_POINT_LOD;
 				conn_list.insert(conn.id, new_lod); // contain real lod without active_lod_limit

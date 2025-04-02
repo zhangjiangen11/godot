@@ -1,5 +1,4 @@
-#ifndef MCOLLISION
-#define MCOLLISION
+#pragma once
 
 #include "core/math/vector3.h"
 #include "core/object/ref_counted.h"
@@ -17,5 +16,3 @@ public:
 	bool is_collided();
 	Vector3 get_collision_position();
 };
-
-#endif

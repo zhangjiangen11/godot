@@ -1,5 +1,4 @@
-#ifndef MBRUSHMANAGER
-#define MBRUSHMANAGER
+#pragma once
 
 #include "core/object/object.h"
 #include "core/templates/hash_map.h"
@@ -39,4 +38,3 @@ public:
 	PackedStringArray get_color_brush_list();
 	void set_color_brush_propert(String prop_name, Variant value, int brush_id);
 };
-#endif

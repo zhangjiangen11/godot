@@ -210,8 +210,7 @@ The alpha value remains unchanged from the previous pixel.
 /* -----------------------------------------------------------------------------
 Header - Public functions */
 
-#ifndef QOI_H
-#define QOI_H
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -286,7 +285,6 @@ void *qoi_decode(const void *data, int size, qoi_desc *desc, int channels);
 
 #ifdef __cplusplus
 }
-#endif
 #endif /* QOI_H */
 
 /* -----------------------------------------------------------------------------
@@ -567,6 +565,7 @@ void *qoi_decode(const void *data, int size, qoi_desc *desc, int channels) {
 
 	return pixels;
 }
+#endif
 
 #ifndef QOI_NO_STDIO
 #include <stdio.h>
@@ -625,4 +624,3 @@ void *qoi_read(const char *filename, qoi_desc *desc, int channels) {
 }
 
 #endif /* QOI_NO_STDIO */
-#endif /* QOI_IMPLEMENTATION */

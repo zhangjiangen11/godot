@@ -1,5 +1,4 @@
-#ifndef MCHUNK_GENERATOR
-#define MCHUNK_GENERATOR
+#pragma once
 
 #include "core/object/object.h"
 #include "core/object/ref_counted.h"
@@ -14,5 +13,3 @@ protected:
 public:
 	static Ref<ArrayMesh> generate(real_t size, real_t h_scale, bool el, bool er, bool et, bool eb);
 };
-
-#endif

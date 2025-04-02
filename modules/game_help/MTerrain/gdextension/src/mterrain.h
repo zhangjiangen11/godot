@@ -1,5 +1,4 @@
-#ifndef TEST_H
-#define TEST_H
+#pragma once
 
 #include <chrono>
 #include <future>
@@ -262,5 +261,3 @@ public:
 	void _dummy_setter(bool input) {}
 	bool _dummy_getter() { return true; }
 };
-
-#endif

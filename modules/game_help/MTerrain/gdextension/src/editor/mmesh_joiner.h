@@ -1,5 +1,4 @@
-#ifndef __MESHJOINDER__
-#define __MESHJOINDER__
+#pragma once
 #include "core/object/ref_counted.h"
 #include "scene/resources/mesh.h"
 
@@ -54,4 +53,3 @@ public:
 	static Ref<Mesh> get_collission_mesh(Array meshes, Array transforms);
 	int get_data_count() const;
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef MTERRAINMATERIAL
-#define MTERRAINMATERIAL
+#pragma once
 
 #include "core/io/resource.h"
 #include "scene/resources/shader.h"
@@ -85,4 +84,3 @@ public:
 	void set_next_pass(int region_id);
 	void set_all_next_passes();
 };
-#endif

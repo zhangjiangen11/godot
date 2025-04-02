@@ -202,7 +202,7 @@ MOctMesh::~MOctMesh() {
 }
 
 // CURRENT_LOD means update current mesh without changing LOD
-// INVALID_LOD is invalide object, or it will removed
+// INVALID_LOD is invalid object, or it will removed
 void MOctMesh::update_lod_mesh(int8_t new_lod) {
 	if (new_lod == CURRENT_LOD) {
 		new_lod = lod;

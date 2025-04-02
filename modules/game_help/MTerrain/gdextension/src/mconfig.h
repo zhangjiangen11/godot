@@ -1,5 +1,4 @@
-#ifndef MCONFIG
-#define MCONFIG
+#pragma once
 
 #define M_IMAGE_LAYER_ON
 
@@ -50,5 +49,3 @@
 #endif
 
 #define DEFAULT_ACCURACY 0.02
-
-#endif

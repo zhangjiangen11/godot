@@ -1,5 +1,4 @@
-#ifndef __MASSETMESH__
-#define __MASSETMESH__
+#pragma once
 #include "core/templates/vset.h"
 #include "scene/3d/node_3d.h"
 
@@ -145,4 +144,3 @@ public:
 	Ref<ArrayMesh> get_merged_mesh(bool lowest_lod);
 	static Ref<ArrayMesh> get_collection_merged_mesh(int collection_id, bool lowest_lod);
 };
-#endif

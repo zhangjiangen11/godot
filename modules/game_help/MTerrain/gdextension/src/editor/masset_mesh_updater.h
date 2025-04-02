@@ -1,5 +1,4 @@
-#ifndef __MASSETMESHUPDATER__
-#define __MASSETMESHUPDATER__
+#pragma once
 #include "core/object/ref_counted.h"
 #include "core/templates/vset.h"
 
@@ -65,4 +64,3 @@ public:
 	void set_root_node(Node3D *input);
 	Node3D *get_root_node() const;
 };
-#endif

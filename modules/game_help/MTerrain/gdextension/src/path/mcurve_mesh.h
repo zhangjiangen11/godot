@@ -1,5 +1,4 @@
-#ifndef _MCURVEMESH
-#define _MCURVEMESH
+#pragma once
 
 #define SLICE_EPSILONE 0.001
 
@@ -143,4 +142,3 @@ public:
 	void dumy_set_restart(bool input);
 	bool dumy_get_true();
 };
-#endif
