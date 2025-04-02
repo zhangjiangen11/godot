@@ -1851,12 +1851,9 @@ void GraphEdit::gui_input(const Ref<InputEvent> &p_ev) {
 					if (graph_element) {
 						Rect2 r = graph_element->get_rect();
 						if (r.has_point(mb->get_position())) {
-							if(multi_select_active)
-							{
+							if (multi_select_active) {
 								graph_element->set_selected(false);
-							}
-							else
-							{
+							} else {
 								set_selected(graph_element);
 							}
 						}

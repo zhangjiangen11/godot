@@ -59,16 +59,15 @@
 #include "scene/scene_string_names.h"
 
 static Mutex property_display_name_mutex;
-static StringName get_object_property_display_name(const StringName& _property) {
+static StringName get_object_property_display_name(const StringName &_property) {
 	StringName ret;
 	property_display_name_mutex.lock();
-	static HashMap<StringName,StringName>* property_displayname_mutex_name = new (HashMap<StringName,StringName>);
+	static HashMap<StringName,StringName>* property_displayname_mutex_name = new HashMap<StringName,StringName>();
 	auto it = property_displayname_mutex_name->find(_property);
-	if(it == property_displayname_mutex_name->end()) {
+	if (it == property_displayname_mutex_name->end()) {
 		StringName name = StringName(_property.str() + "__display_name__");
 		property_displayname_mutex_name->insert(_property,name);
-	}
-	else {
+	} else {
 		ret = it->value;
 	}
 	property_display_name_mutex.unlock();
@@ -267,7 +266,7 @@ void EditorProperty::emit_changed(const StringName &p_property, const Variant &p
 	cache[p_property] = p_value;
 	emit_signalp(SNAME("property_changed"), (const Variant **)argptrs, 4);
 	if (is_custom_property) {
-		Object* obj = get_edited_object();
+		Object *obj = get_edited_object();
 		if (obj != nullptr) {
 			obj->set(p_property, p_value);
 		}
@@ -440,11 +439,10 @@ void EditorProperty::_notification(int p_what) {
 			// 获取显示名称
 			if(pro_dis_name.is_empty()) {
 				pro_dis_name = get_object_property_display_name(get_edited_property());
-				if(get_edited_object()->has_method(pro_dis_name)) {
+				if (get_edited_object()->has_method(pro_dis_name)) {
 					_draw_label = get_edited_object()->call(pro_dis_name);
 				}				
-			}
-			else {
+			} else {
 				_draw_label = pro_dis_name;
 			}
 			
@@ -3721,45 +3719,47 @@ void EditorInspector::update_tree() {
 
 			DocTools* dd = EditorHelp::get_doc_data();
 
-			if(dd != nullptr)
-			if (!found) {
-				// Do not cache the doc path information of scripts.
-				bool is_native_class = ClassDB::class_exists(classname);
-
-				HashMap<String, DocData::ClassDoc>::ConstIterator F = dd->class_list.find(classname);
-				while (F) {
-					Vector<String> slices = propname.operator String().split("/");
-					// Check if it's a theme item first.
-					if (slices.size() == 2 && slices[0].begins_with("theme_override_")) {
-						for (int i = 0; i < F->value.theme_properties.size(); i++) {
-							String doc_path_current = "class_theme_item:" + F->value.name + ":" + F->value.theme_properties[i].name;
-							if (F->value.theme_properties[i].name == slices[1]) {
-								doc_path = doc_path_current;
-								theme_item_name = F->value.theme_properties[i].name;
+			if(dd != nullptr) {
+				if (!found) {
+					// Do not cache the doc path information of scripts.
+					bool is_native_class = ClassDB::class_exists(classname);
+	
+					HashMap<String, DocData::ClassDoc>::ConstIterator F = dd->class_list.find(classname);
+					while (F) {
+						Vector<String> slices = propname.operator String().split("/");
+						// Check if it's a theme item first.
+						if (slices.size() == 2 && slices[0].begins_with("theme_override_")) {
+							for (int i = 0; i < F->value.theme_properties.size(); i++) {
+								String doc_path_current = "class_theme_item:" + F->value.name + ":" + F->value.theme_properties[i].name;
+								if (F->value.theme_properties[i].name == slices[1]) {
+									doc_path = doc_path_current;
+									theme_item_name = F->value.theme_properties[i].name;
+								}
+							}
+						} else {
+							for (int i = 0; i < F->value.properties.size(); i++) {
+								String doc_path_current = "class_property:" + F->value.name + ":" + F->value.properties[i].name;
+								if (F->value.properties[i].name == propname.operator String()) {
+									doc_path = doc_path_current;
+								}
 							}
 						}
-					} else {
-						for (int i = 0; i < F->value.properties.size(); i++) {
-							String doc_path_current = "class_property:" + F->value.name + ":" + F->value.properties[i].name;
-							if (F->value.properties[i].name == propname.operator String()) {
-								doc_path = doc_path_current;
-							}
+	
+						if (is_native_class) {
+							DocCacheInfo cache_info;
+							cache_info.doc_path = doc_path;
+							cache_info.theme_item_name = theme_item_name;
+							doc_cache[classname][propname] = cache_info;
 						}
+	
+						if (!doc_path.is_empty() || F->value.inherits.is_empty()) {
+							break;
+						}
+						// Couldn't find the doc path in the class itself, try its super class.
+						F = dd->class_list.find(F->value.inherits);
 					}
-
-					if (is_native_class) {
-						DocCacheInfo cache_info;
-						cache_info.doc_path = doc_path;
-						cache_info.theme_item_name = theme_item_name;
-						doc_cache[classname][propname] = cache_info;
-					}
-
-					if (!doc_path.is_empty() || F->value.inherits.is_empty()) {
-						break;
-					}
-					// Couldn't find the doc path in the class itself, try its super class.
-					F = dd->class_list.find(F->value.inherits);
 				}
+		
 			}
 		}
 
