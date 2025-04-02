@@ -1,5 +1,4 @@
-#ifndef _CHARACTER_NAVIGATION_AGENT_
-#define _CHARACTER_NAVIGATION_AGENT_
+#pragma once
 #include "scene/main/node.h"
 #include "servers/navigation/navigation_path_query_parameters_3d.h"
 #include "servers/navigation/navigation_path_query_result_3d.h"
@@ -254,5 +253,3 @@ private:
 	void _update_debug_path();
 #endif // DEBUG_ENABLED
 };
-
-#endif

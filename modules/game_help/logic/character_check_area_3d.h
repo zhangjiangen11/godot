@@ -1,5 +1,4 @@
-#ifndef _CHARACTER_CHECK_AREA_3D_H_
-#define _CHARACTER_CHECK_AREA_3D_H_
+#pragma once
 #include "scene/3d/node_3d.h"
 #include "scene/3d/physics/area_3d.h"
 #include "scene/3d/physics/character_body_3d.h"
@@ -226,5 +225,3 @@ protected:
 	uint32_t collision_check_mask = 0xFFFFFFFF;
 	bool is_update_coord = true;
 };
-
-#endif

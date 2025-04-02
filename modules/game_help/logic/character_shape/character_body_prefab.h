@@ -1,5 +1,4 @@
-#ifndef CHARACTER_SHAPE_CHARACTER_BODY_PREFAB_H
-#define CHARACTER_SHAPE_CHARACTER_BODY_PREFAB_H
+#pragma once
 #include "character_body_part.h"
 #include "core/io/resource.h"
 
@@ -66,5 +65,3 @@ public:
 	bool is_human = false;
 	bool is_loading = false;
 };
-
-#endif

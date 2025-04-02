@@ -1,5 +1,4 @@
-#ifndef BODY_PART_H
-#define BODY_PART_H
+#pragma once
 
 #include "scene/3d/bone_attachment_3d.h"
 #include "scene/3d/mesh_instance_3d.h"
@@ -242,4 +241,3 @@ public:
 	//     }
 	// }
 };
-#endif

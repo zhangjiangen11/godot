@@ -1,5 +1,4 @@
-#ifndef _NAVIGATION_MANAGER_H
-#define _NAVIGATION_MANAGER_H
+#pragma once
 #include "core/math/a_star.h"
 #include "core/object/ref_counted.h"
 
@@ -117,4 +116,3 @@ protected:
 	Ref<AStar3D> astar;
 	Ref<MainRoad> main_road;
 };
-#endif

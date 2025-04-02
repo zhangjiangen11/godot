@@ -1,6 +1,4 @@
-#ifndef _BODY_ANIMATOR_H
-#define _BODY_ANIMATOR_H
-
+#pragma once
 #include "../character_ai/animator_blackboard_set.h"
 #include "../character_ai/animator_condition.h"
 #include "../character_ai/body_animator_logic.h"
@@ -482,4 +480,3 @@ VARIANT_ENUM_CAST(CharacterAnimatorNodeBase::LoopType)
 VARIANT_ENUM_CAST(CharacterAnimationLogicNode::AnimatorAIStopCheckType)
 VARIANT_ENUM_CAST(CharacterAnimatorLayerConfig::BlendType)
 VARIANT_ENUM_CAST(CharacterAnimationLibrary::AnimationNodeType)
-#endif

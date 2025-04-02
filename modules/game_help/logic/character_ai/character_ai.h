@@ -1,5 +1,4 @@
-#ifndef _CHARACTER_AI_H_
-#define _CHARACTER_AI_H_
+#pragma once
 #include "../blackboard/blackboard_plan.h"
 #include "../body_main.h"
 #include "animator_condition.h"
@@ -456,4 +455,3 @@ public:
 	LocalVector<Ref<CharacterAILogicNode>> logic_node_array;
 	HashMap<StringName, Ref<CharacterAILogicNode>> logic_nodes;
 };
-#endif

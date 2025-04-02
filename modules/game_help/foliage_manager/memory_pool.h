@@ -1,5 +1,4 @@
-#ifndef FOLIAGE_MEMORY_POOL_H
-#define FOLIAGE_MEMORY_POOL_H
+#pragma once
 #include "core/templates/hash_map.h"
 
 namespace Foliage {
@@ -177,7 +176,7 @@ public:
 		// 查找是否存在可以链接的下一个空闲区域
 		int current_memory = freed_block->offset;
 		//int next_memory = freed_block.End;
-		Block* next_block_entry = nullptr;
+		Block *next_block_entry = nullptr;
 		int nextKey = freed_block->End();
 		auto it = m_block_map.find(nextKey);
 		if (it != m_block_map.end()) {
@@ -218,4 +217,3 @@ private:
 	HashMap<int, Block *> m_block_map; // 保存内存地址和Block信息的映射表
 };
 } //namespace Foliage
-#endif

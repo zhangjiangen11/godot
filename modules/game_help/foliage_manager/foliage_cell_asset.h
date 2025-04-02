@@ -1,5 +1,4 @@
-#ifndef FOLIAGE_CELL_ASSET_H
-#define FOLIAGE_CELL_ASSET_H
+#pragma once
 #include "core/io/file_access.h"
 #include "core/math/aabb.h"
 #include "core/math/color.h"
@@ -588,7 +587,7 @@ private:
 	/// <summary>
 	/// 1..n块的植被数据
 	/// </summary>
-	Vector<CellData> datas;
+	Vector<CellData> cell_data;
 	bool is_attach_to_manager = false;
 
 public:
@@ -601,20 +600,20 @@ public:
 		CellData data;
 		data.position.x = _x;
 		data.position.z = _z;
-		datas.push_back(data);
-		return datas.size() - 1;
+		cell_data.push_back(data);
+		return cell_data.size() - 1;
 	}
 	void add_instance_block(int cell_index, const Ref<SceneInstanceBlock> &block) {
 		FoliageCellPos cell_position;
-		cell_position.x = datas[cell_index].position.x + region_offset.x;
-		cell_position.z = datas[cell_index].position.z + region_offset.y;
-		datas.write[cell_index].add_instance_block(cell_position, block);
+		cell_position.x = cell_data[cell_index].position.x + region_offset.x;
+		cell_position.z = cell_data[cell_index].position.z + region_offset.y;
+		cell_data.write[cell_index].add_instance_block(cell_position, block);
 	}
 	Ref<SceneInstanceBlock> create_instance_block(int cell_index, int proto_type_index, int render_level) {
 		FoliageCellPos cell_position;
-		cell_position.x = datas[cell_index].position.x + region_offset.x;
-		cell_position.z = datas[cell_index].position.z + region_offset.y;
-		return datas.write[cell_index].create_instance_block(cell_position, proto_type_index, render_level);
+		cell_position.x = cell_data[cell_index].position.x + region_offset.x;
+		cell_position.z = cell_data[cell_index].position.z + region_offset.y;
+		return cell_data.write[cell_index].create_instance_block(cell_position, proto_type_index, render_level);
 	}
 
 protected:
@@ -866,4 +865,3 @@ public:
 };
 
 } //namespace Foliage
-#endif

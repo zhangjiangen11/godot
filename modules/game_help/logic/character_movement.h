@@ -1,5 +1,4 @@
-#ifndef _CHARACTER_MOVEMENT_H_
-#define _CHARACTER_MOVEMENT_H_
+#pragma once
 
 #include "core/object/ref_counted.h"
 #include "scene/3d/node_3d.h"
@@ -34,5 +33,3 @@ protected:
 	Transform3D local_rot;
 	bool is_move = true;
 };
-
-#endif

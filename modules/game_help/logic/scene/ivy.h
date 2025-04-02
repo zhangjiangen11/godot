@@ -18,8 +18,7 @@
 **
 ***************************************************************************************/
 
-#ifndef IVY_H
-#define IVY_H
+#pragma once
 
 #include "core/math/triangle_mesh.h"
 #include "core/math/vector2.h"
@@ -297,5 +296,3 @@ public:
 	float leafProbability;
 	float maxLength = 0.0f;
 };
-
-#endif

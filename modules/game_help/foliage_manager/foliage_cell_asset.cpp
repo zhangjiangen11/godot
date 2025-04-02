@@ -122,9 +122,9 @@ void FoliageCellAsset::load_imp(Ref<FileAccess> &file, uint32_t _version, bool i
 	z = file->get_32();
 
 	int32_t count = file->get_32();
-	datas.resize(count);
+	cell_data.resize(count);
 	for (int i = 0; i < count; i++) {
-		datas.write[i].load(file, is_big_endian);
+		cell_data.write[i].load(file, is_big_endian);
 	}
 }
 
@@ -172,7 +172,7 @@ void FoliageCellAsset::CellData::add_instance_block(FoliageCellPos &_cellPos, co
 /// 清除数据
 /// </summary>
 void FoliageCellAsset::unload_imp() {
-	datas.clear();
+	cell_data.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
