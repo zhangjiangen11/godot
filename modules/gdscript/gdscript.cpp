@@ -1839,11 +1839,38 @@ Variant::Type GDScriptInstance::get_property_type(const StringName &p_name, bool
 	return Variant::NIL;
 }
 
+static Mutex property_usage_mutex;
+static StringName get_object_property_usage(const StringName &_property) {
+	StringName ret;
+	property_usage_mutex.lock();
+	static HashMap<StringName, StringName> *property_usage_name = new HashMap<StringName, StringName>;
+	auto it = property_usage_name->find(_property);
+	if (it == property_usage_name->end()) {
+		StringName name = StringName(_property.str() + "__usage__");
+		property_usage_name->insert(_property, name);
+	} else {
+		ret = it->value;
+	}
+	property_usage_mutex.unlock();
+	return ret;
+}
+
 void GDScriptInstance::validate_property(PropertyInfo &p_property) const {
 	const GDScript *sptr = script.ptr();
+	StringName usage_name = get_object_property_usage(p_property.name);
 	while (sptr) {
 		if (likely(sptr->valid)) {
-			HashMap<StringName, GDScriptFunction *>::ConstIterator E = sptr->member_functions.find(GDScriptLanguage::get_singleton()->strings._validate_property);
+			HashMap<StringName, GDScriptFunction *>::ConstIterator E = sptr->member_functions.find(usage_name);
+			if (E) {
+				const Variant *args[1];
+				Callable::CallError err;
+				Variant ret = E->value->call(const_cast<GDScriptInstance *>(this), args, 0, err);
+				if (err.error == Callable::CallError::CALL_OK && ret.get_type() == Variant::INT) {
+					p_property.usage = ret;
+					return;
+				}
+			}
+			E = sptr->member_functions.find(GDScriptLanguage::get_singleton()->strings._validate_property);
 			if (E) {
 				Variant property = (Dictionary)p_property;
 				const Variant *args[1] = { &property };

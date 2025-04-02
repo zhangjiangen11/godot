@@ -1033,8 +1033,8 @@ void VariantUtilityFunctions::printerr(const Variant **p_args, int p_arg_count, 
 		}
 	}
 
-	print_error(s);
 	r_error.error = Callable::CallError::CALL_OK;
+	ERR_FAIL_MSG(s);
 }
 
 void VariantUtilityFunctions::printt(const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
@@ -1863,7 +1863,7 @@ void Variant::_register_variant_utility_functions() {
 	FUNCBINDR(rid_from_int64, sarray("base"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 
 	FUNCBINDR(is_same, sarray("a", "b"), Variant::UTILITY_FUNC_TYPE_GENERAL);
-	
+
 	FUNCBINDR(is_signaling_null, sarray("variant"), Variant::UTILITY_FUNC_TYPE_GENERAL);
 	FUNCBINDR(create_signaling_null, sarray(), Variant::UTILITY_FUNC_TYPE_GENERAL);
 }

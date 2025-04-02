@@ -572,21 +572,6 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 	}
 }
 
-static Mutex property_usage_mutex;
-static StringName get_object_property_usage(const StringName &_property) {
-	StringName ret;
-	property_usage_mutex.lock();
-	static HashMap<StringName, StringName> *property_usage_name = new HashMap<StringName, StringName>;
-	auto it = property_usage_name->find(_property);
-	if (it == property_usage_name->end()) {
-		StringName name = StringName(_property.str() + "__usage__");
-		property_usage_name->insert(_property, name);
-	} else {
-		ret = it->value;
-	}
-	property_usage_mutex.unlock();
-	return ret;
-}
 void Object::validate_property(PropertyInfo &p_property) const {
 	_validate_propertyv(p_property);
 
@@ -613,15 +598,6 @@ void Object::validate_property(PropertyInfo &p_property) const {
 
 	if (script_instance) { // Call it last to allow user altering already validated properties.
 		script_instance->validate_property(p_property);
-	}
-	StringName usage_name = get_object_property_usage(prop_name);
-
-	if (has_method(usage_name)) {
-		Object *obj = (Object *)this;
-		Variant r = obj->call(usage_name);
-		if (r.get_type() == Variant::INT) {
-			p_property.usage = r;
-		}
 	}
 }
 
