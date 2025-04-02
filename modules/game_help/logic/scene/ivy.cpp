@@ -87,7 +87,7 @@ void Ivy::grow() {
 			root->alive = false;
 		}
 
-		//grow vectors: primary direction, random influence, and adhesion of scene objectss
+		//grow vectors: primary direction, random influence, and adhesion of scene objects
 
 		//primary vector = weighted sum of previous grow vectors
 		Vector3 primaryVector = root->nodes.back().primaryDir;
