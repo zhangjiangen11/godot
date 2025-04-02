@@ -278,25 +278,25 @@ public:
 		return blend_data.position_array[p_index];
 	}
 
-	virtual void add_item() {
+	virtual void add_item() override {
 		Ref<CharacterAnimationItem> item;
 		item.instantiate();
 		animation_arrays.push_back(item);
 		blend_data.position_array.push_back(0.0f);
 	}
 
-	virtual void remove_item(int index) {
+	virtual void remove_item(int index) override {
 		animation_arrays.remove_at(index);
 		blend_data.position_array.remove_at(index);
 	}
-	virtual void move_up_item(int index) {
+	virtual void move_up_item(int index) override {
 		if (index > 0) {
 			animation_arrays.swap(index, index - 1);
 
 			blend_data.position_array.swap(index, index - 1);
 		}
 	}
-	virtual void move_down_item(int index) {
+	virtual void move_down_item(int index) override {
 		int size = (int)animation_arrays.size();
 		size -= 1;
 		if (index < size) {
@@ -365,12 +365,12 @@ public:
 		blend_data.is_init_precompute = false;
 	}
 
-	virtual void remove_item(int index) {
+	virtual void remove_item(int index) override {
 		animation_arrays.remove_at(index);
 		blend_data.position_array.remove_at(index);
 		blend_data.is_init_precompute = false;
 	}
-	virtual void move_up_item(int index) {
+	virtual void move_up_item(int index) override {
 		if (index > 0) {
 			animation_arrays.swap(index, index - 1);
 
@@ -378,7 +378,7 @@ public:
 			blend_data.is_init_precompute = false;
 		}
 	}
-	virtual void move_down_item(int index) {
+	virtual void move_down_item(int index) override {
 		int size = (int)animation_arrays.size();
 		size -= 1;
 		if (index < size) {

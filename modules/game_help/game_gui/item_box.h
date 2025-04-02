@@ -55,7 +55,7 @@ public:
 		}
 		int h_count = rect.size.x / item_size.x;
 
-		int h_diff = rect.size.x - (h_count * item_size.x);
+		//int h_diff = rect.size.x - (h_count * item_size.x);
 		if (h_count == 0) {
 			h_count = 1;
 		}

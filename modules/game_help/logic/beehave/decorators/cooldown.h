@@ -37,7 +37,7 @@ public:
 		}
 		int response;
 		Dictionary prop = run_context->get_property(this);
-		float total_time = prop.get(SNAME("total_time"), 0.0f);
+		// float total_time = prop.get(SNAME("total_time"), 0.0f);
 		bool is_init = prop.get(SNAME("is_init"), false);
 		if (!is_init) {
 			before_run(run_context);

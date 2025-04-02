@@ -157,15 +157,17 @@ struct NativeList {
 	}
 
 	void Add(T _data) {
-		AutoResize(listCount + 1, listCount + 1 + 200);
+		int last_count = listCount.get();
+		AutoResize(last_count + 1, last_count + 1 + 200);
 
-		memcpy(&data[listCount.get()], &_data, sizeof(T));
+		memcpy(&data[last_count], &_data, sizeof(T));
 		listCount.add(1);
 	}
 	void AddRange(T *_data, int64_t count) {
-		AutoResize(listCount + count, listCount + count + 200);
+		int last_count = listCount.get();
+		AutoResize(last_count + count, last_count + count + 200);
 
-		memcpy(&data[listCount.get()], _data, sizeof(T) * count);
+		memcpy(&data[last_count], _data, sizeof(T) * count);
 		listCount.add(count);
 	}
 	/// <summary>

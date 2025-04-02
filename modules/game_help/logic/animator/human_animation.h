@@ -78,15 +78,15 @@ struct HumanSkeleton {
 
 	static Basis compute_lookat_rotation_add(Ref<Animation> p_animation, int track_index, double time_start, double time_end) {
 		Vector3 loc, loc2;
-		Error err = p_animation->try_position_track_interpolate(track_index, time_start, &loc);
-		err = p_animation->try_position_track_interpolate(track_index, time_end, &loc2);
+		p_animation->try_position_track_interpolate(track_index, time_start, &loc);
+		p_animation->try_position_track_interpolate(track_index, time_end, &loc2);
 		return retarget_root_direction(loc, loc2);
 	}
 
 	static Vector3 compute_lookat_position_add(Ref<Animation> p_animation, int track_index, double time_start, double time_end) {
 		Vector3 loc, loc2;
-		Error err = p_animation->try_position_track_interpolate(track_index, time_start, &loc);
-		err = p_animation->try_position_track_interpolate(track_index, time_end, &loc2);
+		p_animation->try_position_track_interpolate(track_index, time_start, &loc);
+		p_animation->try_position_track_interpolate(track_index, time_end, &loc2);
 		return loc2 - loc;
 	}
 
@@ -727,7 +727,6 @@ private:
 			String bone_name = p_skeleton->get_bone_name(bone_index);
 			BonePose &pose = p_config.virtual_pose[bone_name];
 			Transform3D trans = p_skeleton->get_bone_global_pose(bone_index);
-			float height = 1.0;
 			Vector<int> children = p_skeleton->get_bone_children(bone_index);
 
 			for (int j = 0; j < children.size(); j++) {
@@ -789,9 +788,9 @@ private:
 			return 0;
 		}
 		intersect.normalize();
-		float rd = curr_forward.dot(rest_right);
-		float cd = curr_forward.dot(curr_right);
-		float id = curr_forward.dot(intersect);
+		curr_forward.dot(rest_right);
+		curr_forward.dot(curr_right);
+		curr_forward.dot(intersect);
 
 		return rest_right.signed_angle_to(intersect, curr_forward);
 	}
@@ -820,9 +819,9 @@ private:
 		Basis local_trans;
 		Basis roll_trans;
 	};
-	static void retarget(HumanBoneConfig &p_config, BonePose &pose, Transform3D &parent_trans, HumanSkeleton &p_skeleton_config, RetargetTemp &temp) {
+	static void retarget(HumanBoneConfig &p_config, BonePose &p_pose, Transform3D &parent_trans, HumanSkeleton &p_skeleton_config, RetargetTemp &temp) {
 		// 重定向骨骼的世界坐标
-		for (auto &it : pose.child_bones) {
+		for (auto &it : p_pose.child_bones) {
 			BonePose &pose = p_config.virtual_pose[it];
 			Transform3D &real_global_pose = p_skeleton_config.real_global_pose[it];
 			real_global_pose = parent_trans * real_global_pose;

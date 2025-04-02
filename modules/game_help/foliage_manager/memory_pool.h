@@ -174,7 +174,6 @@ public:
 
 		//Block current_block = freed_block;
 		// 查找是否存在可以链接的下一个空闲区域
-		int current_memory = freed_block->offset;
 		//int next_memory = freed_block.End;
 		Block *next_block_entry = nullptr;
 		int nextKey = freed_block->End();

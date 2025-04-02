@@ -135,11 +135,11 @@ Rect2 AtlasTexture::_get_region_rect() const {
 	return rc;
 }
 
-void AtlasTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color& modulate , bool p_transpose ) const {
+void AtlasTexture::draw_nine(RID p_canvas_item, const Rect2 &p_rect, const Color &modulate, bool p_transpose) const {
 	if (atlas.is_null()) {
 		return;
 	}
-	if(p_rect.size.x == 0 || p_rect.size.y == 0) {
+	if (p_rect.size.x == 0 || p_rect.size.y == 0) {
 		return;
 	}
 	float _left = nine_left;
@@ -147,8 +147,7 @@ void AtlasTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color
 	float _top = nine_top;
 	float _bottom = nine_bottom;
 
-	if (nine_left + nine_right > p_rect.size.x || nine_top + nine_bottom > p_rect.size.y)
-	{
+	if (nine_left + nine_right > p_rect.size.x || nine_top + nine_bottom > p_rect.size.y) {
 		float scale_x = p_rect.size.x / (_left + _right);
 		float scale_y = p_rect.size.y / (_top + _bottom);
 		float scale = MIN(scale_x, scale_y);
@@ -157,7 +156,6 @@ void AtlasTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color
 		_right = Math::ceil(_right * scale);
 		_top = Math::floor(_top * scale);
 		_bottom = Math::ceil(_bottom * scale);
-
 	}
 	Rect2 _piece_rects[9];
 	_update_piece_rects(_piece_rects, region);
@@ -165,63 +163,64 @@ void AtlasTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color
 	float mid_h = MAX(p_rect.size.y - (_top + _bottom), 0);
 
 	Point2 pos = p_rect.position;
-	if (_top > 0)
-	{
-		if (_left > 0)   draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _top)), _piece_rects[0], modulate, p_transpose);
+	if (_top > 0) {
+		if (_left > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _top)), _piece_rects[0], modulate, p_transpose);
+		}
 		pos += Vector2(_left, 0);
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, _top)), _piece_rects[1], nine_horizontal_fill, nine_vertical_fill, modulate);
 		pos += Vector2(mid_w, 0);
-		if (_right > 0)  draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _top)), _piece_rects[2], modulate);
-
+		if (_right > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _top)), _piece_rects[2], modulate);
+		}
 	}
 
 	pos = Vector2(p_rect.position.x, pos.y + _top);
-	if (mid_h > 0)
-	{
+	if (mid_h > 0) {
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(_left, mid_h)), _piece_rects[3], nine_horizontal_fill, nine_vertical_fill, modulate);
 		pos += Vector2(_left, 0);
-		if (nine_draw_center && mid_w > 0)  fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, mid_h)), _piece_rects[4], nine_horizontal_fill, nine_vertical_fill, modulate);
+		if (nine_draw_center && mid_w > 0) {
+			fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, mid_h)), _piece_rects[4], nine_horizontal_fill, nine_vertical_fill, modulate);
+		}
 		pos += Vector2(mid_w, 0);
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(_right, mid_h)), _piece_rects[5], nine_horizontal_fill, nine_vertical_fill, modulate);
 	}
 
 	pos = Vector2(p_rect.position.x, pos.y + mid_h);
-	if (_bottom > 0)
-	{
-		if (_left > 0)   draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _bottom)), _piece_rects[6], modulate);
+	if (_bottom > 0) {
+		if (_left > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _bottom)), _piece_rects[6], modulate);
+		}
 		pos += Vector2(_left, 0);
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, _bottom)), _piece_rects[7], nine_horizontal_fill, nine_vertical_fill, modulate);
 		pos += Vector2(mid_w, 0);
-		if (_right > 0)  draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _bottom)), _piece_rects[8], modulate);
-
+		if (_right > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _bottom)), _piece_rects[8], modulate);
+		}
 	}
 }
 
-
-void AtlasTexture::_update_piece_rects(Rect2* _piece_rects, const Rect2& _texture_region) const
-{
-	float mid_w = MAX(get_width() - (nine_left + nine_right), 0);
-	float mid_h = MAX(get_height() - (nine_top + nine_bottom), 0);
-
+void AtlasTexture::_update_piece_rects(Rect2 *_piece_rects, const Rect2 &_texture_region) const {
 	float _x = _texture_region.position.x;
 	float _y = _texture_region.position.y;
 
 	float _w = _texture_region.size.x;
 	float _h = _texture_region.size.y;
 
+	float mid_w = MAX(_w - (nine_left + nine_right), 0);
+	float mid_h = MAX(_h - (nine_top + nine_bottom), 0);
 
-	_piece_rects[0] = Rect2(_x, _y, nine_left, nine_top);  // TL
-	_piece_rects[1] = Rect2(_x + nine_left, _y, mid_w, nine_top);  // T
-	_piece_rects[2] = Rect2(_x + (_w - nine_right), _y, nine_right, nine_top);  // TR
+	_piece_rects[0] = Rect2(_x, _y, nine_left, nine_top); // TL
+	_piece_rects[1] = Rect2(_x + nine_left, _y, mid_w, nine_top); // T
+	_piece_rects[2] = Rect2(_x + (_w - nine_right), _y, nine_right, nine_top); // TR
 
-	_piece_rects[3] = Rect2(_x, _y + nine_top, nine_left, mid_h);  // L
-	_piece_rects[4] = Rect2(_x + nine_left, _y + nine_top, mid_w, mid_h);  // M
-	_piece_rects[5] = Rect2(_x + (_w - nine_right), _y + nine_top, nine_right, mid_h);  // R
+	_piece_rects[3] = Rect2(_x, _y + nine_top, nine_left, mid_h); // L
+	_piece_rects[4] = Rect2(_x + nine_left, _y + nine_top, mid_w, mid_h); // M
+	_piece_rects[5] = Rect2(_x + (_w - nine_right), _y + nine_top, nine_right, mid_h); // R
 
-	_piece_rects[6] = Rect2(_x, _y + (get_height() - nine_bottom), nine_left, nine_bottom);  // BL
-	_piece_rects[7] = Rect2(_x + nine_left, _y + (get_height() - nine_bottom), mid_w, nine_bottom);  // B
-	_piece_rects[8] = Rect2(_x + (_w - nine_right), _y + (get_height() - nine_bottom), nine_right, nine_bottom);  // BR
-
+	_piece_rects[6] = Rect2(_x, _y + (_h - nine_bottom), nine_left, nine_bottom); // BL
+	_piece_rects[7] = Rect2(_x + nine_left, _y + (_h - nine_bottom), mid_w, nine_bottom); // B
+	_piece_rects[8] = Rect2(_x + (_w - nine_right), _y + (_h - nine_bottom), nine_right, nine_bottom); // BR
 }
 void AtlasTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_atlas", "atlas"), &AtlasTexture::set_atlas);
@@ -241,7 +240,6 @@ void AtlasTexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::RECT2, "margin", PROPERTY_HINT_NONE, "suffix:px"), "set_margin", "get_margin");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "filter_clip"), "set_filter_clip", "has_filter_clip");
 
-	
 	ClassDB::bind_method(D_METHOD("set_nine_draw", "nine_draw"), &AtlasTexture::set_nine_draw);
 	ClassDB::bind_method(D_METHOD("get_nine_draw"), &AtlasTexture::get_nine_draw);
 
@@ -277,11 +275,10 @@ void AtlasTexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_top"), "set_nine_top", "get_nine_top");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_right"), "set_nine_right", "get_nine_right");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_bottom"), "set_nine_bottom", "get_nine_bottom");
-
 }
 
 void AtlasTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_modulate, bool p_transpose) const {
-	if(nine_draw) {
+	if (nine_draw) {
 		const Rect2 rc = _get_region_rect();
 		draw_nine(p_canvas_item, Rect2(p_pos + margin.position, rc.size), p_modulate, p_transpose);
 		return;
@@ -294,7 +291,7 @@ void AtlasTexture::draw(RID p_canvas_item, const Point2 &p_pos, const Color &p_m
 }
 
 void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile, const Color &p_modulate, bool p_transpose) const {
-	if(nine_draw) {
+	if (nine_draw) {
 		draw_nine(p_canvas_item, p_rect, p_modulate, p_transpose);
 		return;
 	}
@@ -312,7 +309,6 @@ void AtlasTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 }
 
 void AtlasTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, const Rect2 &p_src_rect, const Color &p_modulate, bool p_transpose, bool p_clip_uv) const {
-
 	// This might not necessarily work well if using a rect, needs to be fixed properly.
 	if (atlas.is_null()) {
 		return;
