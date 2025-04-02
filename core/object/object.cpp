@@ -269,8 +269,7 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 
 	_edited = true;
 #endif
-	if(master_script_instance)
-	{
+	if (master_script_instance) {
 		if (master_script_instance->set(p_name, p_value)) {
 			if (r_valid) {
 				*r_valid = true;
@@ -303,7 +302,7 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 			return;
 		}
 	}
-	if(p_name == CoreStringNames::get_singleton()->_master_script) {
+	if (p_name == CoreStringNames::get_singleton()->_master_script) {
 		set_master_script(p_value);
 		if (r_valid) {
 			*r_valid = true;
@@ -365,8 +364,7 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 
 Variant Object::get(const StringName &p_name, bool *r_valid) const {
 	Variant ret;
-	if(master_script_instance)
-	{
+	if (master_script_instance) {
 		if (master_script_instance->get(p_name, ret)) {
 			if (r_valid) {
 				*r_valid = true;
@@ -582,7 +580,7 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 
 	if (!is_class("Script")) { // can still be set, but this is for user-friendliness
 		p_list->push_back(PropertyInfo(Variant::OBJECT, "script", PROPERTY_HINT_RESOURCE_TYPE, "Script", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
-		
+
 		// lua 配置
 		p_list->push_back(PropertyInfo(Variant::STRING_NAME, "master_script", PROPERTY_HINT_RESOURCE_TYPE, "Lua Table Name", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
 	}
@@ -726,7 +724,7 @@ bool Object::has_method(const StringName &p_method) const {
 	if (p_method == CoreStringName(free_)) {
 		return true;
 	}
-	if(master_script_instance && master_script_instance->has_method(p_method)) {
+	if (master_script_instance && master_script_instance->has_method(p_method)) {
 		return true;
 	}
 	if (script_instance && script_instance->has_method(p_method)) {
@@ -842,7 +840,7 @@ Variant Object::callp(const StringName &p_method, const Variant **p_args, int p_
 
 	if (p_method == CoreStringName(free_)) {
 		// 执行一下退出函数
-		if(master_script_instance) {
+		if (master_script_instance) {
 			OBJ_DEBUG_LOCK
 			master_script_instance->callp(p_method, p_args, p_argcount, r_error);
 		}
@@ -874,7 +872,7 @@ Variant Object::callp(const StringName &p_method, const Variant **p_args, int p_
 	Variant ret;
 	OBJ_DEBUG_LOCK
 
-	if(master_script_instance) {
+	if (master_script_instance) {
 		ret = master_script_instance->callp(p_method, p_args, p_argcount, r_error);
 		//force jumptable
 		switch (r_error.error) {
@@ -990,19 +988,14 @@ Variant Object::call_const(const StringName &p_method, const Variant **p_args, i
 	return ret;
 }
 
-void Object::notification(int p_notification, bool p_reversed) {
-
-	if (p_reversed) {
-		if (script_instance) {
-			script_instance->notification(p_notification, p_reversed);
-		}
-	} else {
-		_notificationv(p_notification, p_reversed);
-	}
+void Object::_notification_forward(int p_notification) {
+	// Notify classes starting with Object and ending with most derived subclass.
+	// e.g. Object -> Node -> Node3D
+	_notification_forwardv(p_notification);
 
 	if (_extension) {
 		if (_extension->notification2) {
-			_extension->notification2(_extension_instance, p_notification, static_cast<GDExtensionBool>(p_reversed));
+			_extension->notification2(_extension_instance, p_notification, static_cast<GDExtensionBool>(false));
 #ifndef DISABLE_DEPRECATED
 		} else if (_extension->notification) {
 			_extension->notification(_extension_instance, p_notification);
@@ -1010,13 +1003,29 @@ void Object::notification(int p_notification, bool p_reversed) {
 		}
 	}
 
-	if (p_reversed) {
-		_notificationv(p_notification, p_reversed);
-	} else {
-		if (script_instance) {
-			script_instance->notification(p_notification, p_reversed);
+	if (script_instance) {
+		script_instance->notification(p_notification, false);
+	}
+}
+
+void Object::_notification_backward(int p_notification) {
+	if (script_instance) {
+		script_instance->notification(p_notification, true);
+	}
+
+	if (_extension) {
+		if (_extension->notification2) {
+			_extension->notification2(_extension_instance, p_notification, static_cast<GDExtensionBool>(true));
+#ifndef DISABLE_DEPRECATED
+		} else if (_extension->notification) {
+			_extension->notification(_extension_instance, p_notification);
+#endif // DISABLE_DEPRECATED
 		}
 	}
+
+	// Notify classes starting with most derived subclass and ending in Object.
+	// e.g. Node3D -> Node -> Object
+	_notification_backwardv(p_notification);
 }
 
 String Object::to_string() {
@@ -1079,17 +1088,14 @@ void Object::set_script(const Variant &p_script) {
 	emit_signal(CoreStringName(script_changed));
 }
 
-
-void Object::set_master_script(StringName name)
-{
+void Object::set_master_script(StringName name) {
 	master_script_name = name;
-	if(ObjectDB::s_create_master_func != nullptr)
-	{
+	if (ObjectDB::s_create_master_func != nullptr) {
 		set_master_script_instance(nullptr);
-		if(name == StringName()) {
+		if (name == StringName()) {
 			return;
 		}
-		(*ObjectDB::s_create_master_func)(this,name);
+		(*ObjectDB::s_create_master_func)(this, name);
 	}
 }
 
@@ -1111,12 +1117,11 @@ void Object::set_script_instance(ScriptInstance *p_instance) {
 	}
 }
 
-void Object::set_master_script_instance(ScriptInstance *p_instance)
-{
+void Object::set_master_script_instance(ScriptInstance *p_instance) {
 	if (master_script_instance == p_instance) {
 		return;
 	}
-	if(master_script_instance) {
+	if (master_script_instance) {
 		memdelete(master_script_instance);
 	}
 	master_script_instance = p_instance;
@@ -1995,7 +2000,7 @@ Variant::Type Object::get_static_property_type(const StringName &p_property, boo
 }
 
 Variant::Type Object::get_static_property_type_indexed(const Vector<StringName> &p_path, bool *r_valid) const {
-	if (p_path.size() == 0) {
+	if (p_path.is_empty()) {
 		if (r_valid) {
 			*r_valid = false;
 		}
@@ -2250,7 +2255,7 @@ void Object::detach_from_objectdb() {
 }
 
 Object::~Object() {
-	if(master_script_instance) {
+	if (master_script_instance) {
 		memdelete(master_script_instance);
 	}
 	master_script_instance = nullptr;
