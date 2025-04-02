@@ -126,7 +126,7 @@ public:
 	// 处理动画
 	void _process_animator(const Ref<Blackboard> &p_playback_info, double p_delta, bool is_first = true);
 	// 处理动画
-	void _process_animation(const Ref<Blackboard> &p_playback_info, CharacterRootMotion &root_motion, HashMap<String, float> &bone_blend_weight, double p_delta, bool is_using_root_motion, bool is_first = true);
+	void _process_animation_item(const Ref<Blackboard> &p_playback_info, CharacterRootMotion &root_motion, HashMap<String, float> &bone_blend_weight, double p_delta, bool is_using_root_motion, bool is_first = true);
 
 	void finish_update();
 
@@ -351,14 +351,14 @@ public:
 			layer->_process_animator(p_playback_info, p_delta, is_first);
 		}
 	}
-	void _process_animation(const Ref<Blackboard> &p_playback_info, CharacterRootMotion &root_motion, HashMap<String, float> &bone_blend_weight, double p_delta, bool p_is_root_motion, bool is_first = true) {
+	void _process_animation_item(const Ref<Blackboard> &p_playback_info, CharacterRootMotion &root_motion, HashMap<String, float> &bone_blend_weight, double p_delta, bool p_is_root_motion, bool is_first = true) {
 		CharacterAnimatorLayer *layer = get_layer();
 		if (layer == nullptr) {
 			return;
 		}
 
 		if (layer->is_active()) {
-			layer->_process_animation(p_playback_info, root_motion, bone_blend_weight, p_delta, p_is_root_motion, is_first);
+			layer->_process_animation_item(p_playback_info, root_motion, bone_blend_weight, p_delta, p_is_root_motion, is_first);
 		}
 	}
 	void finish_update() {

@@ -118,13 +118,13 @@ struct NativeList {
 	void ZeroMemory() {
 		auto ptr = GetUnsafePtr();
 		if (ptr != nullptr) {
-			memset(ptr, 0, sizeof(T) * listCount);
+			memset(ptr, 0, sizeof(T) * listCount.get());
 		}
 	}
 	void MemSet(uint8_t value) {
 		auto ptr = GetUnsafePtr();
 		if (ptr != nullptr) {
-			memset(ptr, 0, sizeof(T) * listCount);
+			memset(ptr, 0, sizeof(T) * listCount.get());
 		}
 	}
 	void AddRef(T &_data) {
@@ -149,7 +149,7 @@ struct NativeList {
 	/// </summary>
 	/// <param name="_data"></param>
 	void Thread_AddRange(T *_data, int64_t count) {
-		auto idx = listCount.Add(count) - count;
+		auto idx = listCount.add(count) - count;
 		if (idx + count <= memorySize) {
 			memcpy(&data[idx], _data, sizeof(T) * count);
 		}

@@ -742,7 +742,7 @@ class FoliageCellMask : public RefCounted {
 	static void _bind_methods();
 
 public:
-	void init(int p_width, int p_height, bool p_is_bit);
+	void init(uint32_t p_width, uint32_t p_height, bool p_is_bit);
 	void set_pixel(int p_x, int p_y, uint8_t p_value);
 	// 矩形
 	void set_rect_pixel(int p_x, int p_y, int p_width, int p_height, uint8_t p_value);
@@ -757,28 +757,28 @@ public:
 	void set_data(const Vector<uint8_t> &p_data) { data = p_data; }
 	const Vector<uint8_t> &get_data() { return data; }
 
-	void set_width(int p_width) { width = p_width; }
-	void set_height(int p_height) { height = p_height; }
+	void set_width(uint32_t p_width) { width = p_width; }
+	void set_height(uint32_t p_height) { height = p_height; }
 
-	int get_width() { return width; }
-	int get_height() { return height; }
+	uint32_t get_width() { return width; }
+	uint32_t get_height() { return height; }
 
-	void set_real_width(int p_real_width) { real_width = p_real_width; }
-	int get_real_width() { return real_width; }
+	void set_real_width(uint32_t p_real_width) { real_width = p_real_width; }
+	uint32_t get_real_width() { return real_width; }
 
 	void set_is_bit(bool p_is_bit) { is_bit = p_is_bit; }
 	bool get_is_bit() { return is_bit; }
 
-	int get_data_size() { return width * height; }
+	uint32_t get_data_size() { return width * height; }
 
 	void scale_instance(const Ref<SceneInstanceBlock> &p_block, float p_sacle_min, float p_scale_max, bool is_invert = false);
 
 private:
 	Vector<uint8_t> data;
-	int width = 0;
-	int height = 0;
+	uint32_t width = 0;
+	uint32_t height = 0;
 
-	int real_width = 0;
+	uint32_t real_width = 0;
 
 	bool is_bit = false;
 	Ref<FoliageCellMask> parent;
@@ -790,9 +790,9 @@ class FoliageHeightMap : public RefCounted {
 	static void _bind_methods();
 
 public:
-	void init(int p_width, int p_height);
-	void init_form_image(int p_width, int p_height, const Ref<Image> &p_image, const Rect2i &p_rect);
-	void init_form_half_data(int p_width, int p_height, const Vector<uint8_t> &p_data);
+	void init(uint32_t p_width, uint32_t p_height);
+	void init_form_image(uint32_t p_width, uint32_t p_height, const Ref<Image> &p_image, const Rect2i &p_rect);
+	void init_form_half_data(uint32_t p_width, uint32_t p_height, const Vector<uint8_t> &p_data);
 	_FORCE_INLINE_ void set_pixel(int p_x, int p_y, float p_value) {
 		if (p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
 			return;
@@ -807,10 +807,10 @@ public:
 		uint64_t index = p_x + p_y * width;
 		return data[index];
 	}
-	int get_width() { return width; }
-	int get_height() { return height; }
-	void set_width(int p_width) { width = p_width; }
-	void set_height(int p_height) { height = p_height; }
+	uint32_t get_width() { return width; }
+	uint32_t get_height() { return height; }
+	void set_width(uint32_t p_width) { width = p_width; }
+	void set_height(uint32_t p_height) { height = p_height; }
 	void set_data(const Vector<float> &p_data) { data = p_data; }
 	const Vector<float> &get_data() { return data; }
 	// 隐藏不在高度范围内的实例

@@ -302,7 +302,7 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"复合节点以特定方式控制其子节点的执行流。");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"组合节点");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
@@ -314,7 +314,7 @@ public:
 		return rs;
 	}
 	// 獲取支持放几个子节点,-1 是任意多子节点
-	virtual int get_supper_child_count() {
+	virtual int get_supper_child_count() override {
 		return -1;
 	}
 };
@@ -328,7 +328,7 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"装饰器节点用于转换其子节点接收到的结果。\n只能有一个子节点。");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"装饰器节点");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
@@ -354,7 +354,7 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"树的所有叶节点的基类。");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"叶节点");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
@@ -381,7 +381,7 @@ class BeehaveAction : public BeehaveLeaf {
 	}
 
 public:
-	virtual StringName get_icon() {
+	virtual StringName get_icon() override {
 		return SNAME("action");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
@@ -466,7 +466,7 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"这个节点可以引用一个模板,并且可以对这个模板节点进行编辑,\n编辑模板节点后可以应用到所有的引用的这个模板节点中");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"模板引用节点");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {

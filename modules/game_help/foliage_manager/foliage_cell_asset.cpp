@@ -208,7 +208,7 @@ void FoliageCellMask::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "is_bit"), "set_is_bit", "get_is_bit");
 }
 
-void FoliageCellMask::init(int p_width, int p_height, bool p_is_bit) {
+void FoliageCellMask::init(uint32_t p_width, uint32_t p_height, bool p_is_bit) {
 	width = p_width;
 	height = p_height;
 	is_bit = p_is_bit;
@@ -352,12 +352,12 @@ void FoliageHeightMap::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "height"), "set_height", "get_height");
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_BYTE_ARRAY, "data"), "set_data", "get_data");
 }
-void FoliageHeightMap::init(int p_width, int p_height) {
+void FoliageHeightMap::init(uint32_t p_width, uint32_t p_height) {
 	width = p_width;
 	height = p_height;
 	data.resize(height * (uint64_t)width);
 }
-void FoliageHeightMap::init_form_image(int p_width, int p_height, const Ref<Image> &p_image, const Rect2i &p_rect) {
+void FoliageHeightMap::init_form_image(uint32_t p_width, uint32_t p_height, const Ref<Image> &p_image, const Rect2i &p_rect) {
 	width = p_width;
 	height = p_height;
 	int start_x = p_rect.position.x;
@@ -369,7 +369,7 @@ void FoliageHeightMap::init_form_image(int p_width, int p_height, const Ref<Imag
 		}
 	}
 }
-void FoliageHeightMap::init_form_half_data(int p_width, int p_height, const Vector<uint8_t> &p_data) {
+void FoliageHeightMap::init_form_half_data(uint32_t p_width, uint32_t p_height, const Vector<uint8_t> &p_data) {
 	width = p_width;
 	height = p_height;
 
@@ -471,7 +471,7 @@ Ref<TaskJobHandle> FoliageHeightMap::update_height(const Ref<SceneInstanceBlock>
 Vector3 FoliageHeightMap::get_height_map_normal(int x, int z, float p_scale_height, float stepX, float stepZ) const {
 	Vector3 p0(x * stepX, get_pixel(x, z) * p_scale_height, z * stepZ);
 	Vector3 sumNormal(0, 0, 0);
-	Vector3 normals = Vector3(0, 0, 0);
+
 	int validTriangleCount = 0;
 
 	// 左上三角形
@@ -528,7 +528,7 @@ static float get_height_form_data(const uint8_t *p_data, int p_width, int p_heig
 Vector3 FoliageHeightMap::get_height_map_normal_form_data(const Vector<uint8_t> &p_data, int width, int height, int x, int z, float p_scale_height, float stepX, float stepZ) {
 	Vector3 p0(x * stepX, get_height_form_data(p_data.ptr(), width, height, x, z, p_scale_height, stepX, stepZ), z * stepZ);
 	Vector3 sumNormal(0, 0, 0);
-	Vector3 normals = Vector3(0, 0, 0);
+
 	int validTriangleCount = 0;
 
 	// 左上三角形
@@ -835,7 +835,7 @@ static void thread_get_xz_normal_map_texture(int index, int64_t dest_ptr, int64_
 Ref<ImageTexture> FoliageNormalMap::get_xz_normal_map_texture() const {
 	// 法线贴图的y轴时钟向上,所以不需要存储y轴
 	const Vector3 *normal_ptr = data.ptr();
-	Color c;
+
 	Vector<uint8_t> image_data;
 	image_data.resize((uint64_t)width * height * 2);
 	uint8_t *image_ptr = image_data.ptrw();

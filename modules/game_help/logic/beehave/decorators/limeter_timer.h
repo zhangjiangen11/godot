@@ -14,7 +14,7 @@ public:
 		return String(L"时间限制装饰器将为其处于“RUNNING”状态的子级提供一定时间来完成,\n如果子级还未返回“RUNNING”状态，此装饰器将在等待时间结束后返回“FAILURE”。");
 	}
 
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return L"时间限制装饰器";
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {

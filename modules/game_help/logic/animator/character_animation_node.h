@@ -317,7 +317,7 @@ class CharacterAnimatorLoopLast : public CharacterAnimatorNodeBase {
 
 public:
 	virtual void process_animation(class CharacterAnimatorLayer *p_layer, CharacterAnimationInstance *p_playback_info, float total_weight, const Ref<Blackboard> &p_blackboard) override;
-	virtual float _get_animation_length();
+	virtual float _get_animation_length() override;
 };
 
 class CharacterAnimatorNode2D : public CharacterAnimatorNodeBase {
@@ -357,7 +357,7 @@ public:
 	}
 	float get_position_y(uint32_t p_index) { return blend_data.position_array[p_index].y; }
 
-	virtual void add_item() {
+	virtual void add_item() override {
 		Ref<CharacterAnimationItem> item;
 		item.instantiate();
 		animation_arrays.push_back(item);

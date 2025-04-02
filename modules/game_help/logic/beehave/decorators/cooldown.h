@@ -13,7 +13,7 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"冷却装饰器将在执行其子进程后在规定的时间内返回“FAILURE”。\n下次执行其子进程且其未处于“RUNNING”状态时,计时器将重置");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"冷却装饰器");
 	}
 	virtual TypedArray<StringName> get_class_name() override {

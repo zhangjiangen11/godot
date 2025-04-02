@@ -82,9 +82,7 @@ public:
 			current_block = entry.value;
 			if (current_block->available && current_block->size >= requested_size) {
 				current_gap = current_block->size - requested_size;
-				if (current_gap < 0) {
-					continue;
-				}
+
 				if (current_gap < min_gap) {
 					min_gap = current_gap;
 					best_fit_block = current_block;
@@ -112,9 +110,7 @@ public:
 				remaining_block->size = remaining_size;
 				remaining_block->available = true;
 				remaining_block->next = nullptr;
-				if (remaining_block->offset < 0) {
-					//Debug.LogError("纳尼！有毛病！");
-				}
+
 				m_block_map.insert(remaining_block->offset, remaining_block);
 
 			} else {
@@ -123,7 +119,7 @@ public:
 			}
 			return best_fit_block;
 		}
-		if (_auto_addcount >= 0) {
+		if (_auto_addcount > 0) {
 			// 还没有找到，并且允许自动分配就新增一个内存块
 			_auto_addcount = MAX(requested_size, _auto_addcount);
 			AddFreeBlock(_auto_addcount);

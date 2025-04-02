@@ -13,10 +13,10 @@ public:
 	virtual String get_tooltip() override {
 		return String(L"延迟装饰器将在执行其子级之前返回“RUNNING”一段时间。\n当计时器及其子级均未处于“RUNNING”状态时,计时器将重置等待时间（以秒为单位）");
 	}
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return String(L"延迟装饰器");
 	}
-	virtual StringName get_icon() {
+	virtual StringName get_icon() override {
 		return SNAME("delayer");
 	}
 	virtual int tick(const Ref<BeehaveRuncontext> &run_context) override {
