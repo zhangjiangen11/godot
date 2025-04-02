@@ -30,10 +30,10 @@
 
 #include "character_navigation_agent.h"
 
-#include "scene/3d/navigation/navigation_link_3d.h"
-#include "servers/navigation_server_3d.h"
 #include "../body_main.h"
+#include "scene/3d/navigation/navigation_link_3d.h"
 #include "scene/3d/node_3d.h"
+#include "servers/navigation_server_3d.h"
 
 void CharacterNavigationAgent3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_rid"), &CharacterNavigationAgent3D::get_rid);
@@ -395,7 +395,7 @@ void CharacterNavigationAgent3D::set_agent_parent(CharacterBodyMain *p_agent_par
 	if (Object::cast_to<CharacterBodyMain>(p_agent_parent) != nullptr) {
 		// place agent on navigation map first or else the RVO agent callback creation fails silently later
 		agent_parent = Object::cast_to<CharacterBodyMain>(p_agent_parent);
-		if(!agent_parent->is_inside_tree()) {
+		if (!agent_parent->is_inside_tree()) {
 			return;
 		}
 		if (map_override.is_valid()) {
@@ -639,14 +639,12 @@ void CharacterNavigationAgent3D::set_target_position(Vector3 p_position) {
 Vector3 CharacterNavigationAgent3D::get_target_position() const {
 	return target_position;
 }
-void CharacterNavigationAgent3D::set_navigation_finished(bool p_navigation_finished)
-{
-	if(p_navigation_finished){
+void CharacterNavigationAgent3D::set_navigation_finished(bool p_navigation_finished) {
+	if (p_navigation_finished) {
 		_transition_to_navigation_finished();
 	}
 }
-bool CharacterNavigationAgent3D::get_navigation_finished() const
-{
+bool CharacterNavigationAgent3D::get_navigation_finished() const {
 	return !target_position_submitted;
 }
 
@@ -719,7 +717,6 @@ void CharacterNavigationAgent3D::_avoidance_done(Vector3 p_new_velocity) {
 	}
 	emit_signal(SNAME("velocity_computed"), safe_velocity);
 }
-
 
 void CharacterNavigationAgent3D::_update_navigation() {
 	if (agent_parent == nullptr) {

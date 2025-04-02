@@ -12,7 +12,7 @@
 //
 //
 //    void HumanSkeleton::rest(HumanBoneConfig& p_config) {
-//        clear(); 
+//        clear();
 //
 //		for (auto& it : p_config.virtual_pose) {
 //			HumanAnimationBoneResult& result = bone_result[it.key];
@@ -27,12 +27,12 @@
 //
 //    }
 //
-//    void HumanSkeleton::clear() { 
+//    void HumanSkeleton::clear() {
 //		bone_result.clear();
 //    }
 //
 //    void HumanSkeleton::set_human_lookat(StringName p_bone,const Vector3& p_lookat) {
-//        
+//
 //        HumanAnimationBoneNameMapping * mapping = HumanAnimationBoneNameMapping::get_singleton();
 //        StringName name = mapping->get_bone_name(p_bone);
 //        if(mapping == nullptr) return;
@@ -58,7 +58,7 @@
 //            basis = Basis(axis, angle_rads);
 //        }
 //        return basis;
-//        
+//
 //    }
 //
 //    Basis HumanSkeleton::compute_lookat_rotation_add(Ref<Animation> p_animation,int track_index , double time_start, double time_end) {
@@ -66,7 +66,7 @@
 //            Error err = p_animation->try_position_track_interpolate(track_index, time_start, &loc);
 //            err = p_animation->try_position_track_interpolate(track_index, time_end, &loc2);
 //            return retarget_root_direction(loc,loc2);
-//        
+//
 //    }
 //
 //    Vector3 HumanSkeleton::compute_lookat_position_add(Ref<Animation> p_animation,int track_index , double time_start, double time_end) {
@@ -74,7 +74,7 @@
 //            Error err = p_animation->try_position_track_interpolate(track_index, time_start, &loc);
 //            err = p_animation->try_position_track_interpolate(track_index, time_end, &loc2);
 //            return loc2 - loc;
-//        
+//
 //    }
 //
 //    void HumanSkeleton::set_root_lookat(Ref<Animation> p_animation,StringName p_bone, int track_index ,double time,double delta) {
@@ -101,7 +101,7 @@
 //
 //        }
 //        StringName name;
-//        
+//
 //        HumanAnimationBoneNameMapping * mapping = HumanAnimationBoneNameMapping::get_singleton();
 //        if(mapping != nullptr) {
 //            name = mapping->get_bone_name(p_bone);
@@ -145,7 +145,7 @@
 //
 //        }
 //        StringName name;
-//        
+//
 //        HumanAnimationBoneNameMapping * mapping = HumanAnimationBoneNameMapping::get_singleton();
 //        if(mapping != nullptr) {
 //            name = mapping->get_bone_name(p_bone);
@@ -157,7 +157,7 @@
 //    //         Vector3 loc;
 //    //         p_animation->try_position_track_interpolate(track_index, time, &loc);
 //        //root_position[name] = loc;
-//        
+//
 //    }
 //
 //    void HumanSkeleton::blend(HumanSkeleton& p_other,float p_weight) {
@@ -193,11 +193,11 @@
 //                q = q.slerp(it.value, p_weight);
 //            }
 //        }
-//        
+//
 //    }
 //
 //    void HumanSkeleton::apply_root_motion(Node3D* node) {
-//        
+//
 //        Transform3D curr_trans = node->get_transform();
 //
 //        Transform3D add_trans;
@@ -241,7 +241,7 @@
 //        if(root_global_rotation.size() > 0) {
 //            p_rotation = p_rotation.slerp(root_global_rotation.begin()->value.get_rotation_quaternion(),p_weight);
 //        }
-//        
+//
 //        if (root_global_rotation_add.size() > 0) {
 //            p_rotation_add = p_rotation.slerp(root_global_rotation_add.begin()->value.get_rotation_quaternion(),p_weight);
 //        }
@@ -269,7 +269,7 @@
 //            BonePose& child_pose = p_config.virtual_pose[pose.child_bones[0]];
 //            forward = child_pose.global_pose.origin - parent_pose.global_pose.origin;
 //        }
-//        
+//
 //        Vector3::Axis min_axis = forward.min_axis_index();
 //
 //        Vector3 up = Vector3(0, 1, 0);
@@ -309,7 +309,7 @@
 //            for(int j=0;j<children.size();j++) {
 //                StringName child_name = p_skeleton->get_bone_name(children[j]);
 //                if(p_human_bone_label.has(child_name)) {
-//                    pose.child_bones.push_back(child_name);                        
+//                    pose.child_bones.push_back(child_name);
 //                }
 //            }
 //            pose.child_bones.sort_custom<SortStringName>();
@@ -337,11 +337,11 @@
 //                BonePose& child_pose = p_config.virtual_pose[pose.child_bones[j]];
 //				child_pose.global_pose = pose.global_pose * Transform3D(Basis(child_pose.rotation), child_pose.position);
 //                build_virtual_pose_global(p_config,child_pose,p_human_bone_label);
-//                
+//
 //                // 計算骨骼的右方向
 //                computer_bone_right(p_config,pose,child_pose);
 //            }
-//        }                
+//        }
 //    }
 //	void HumanAnimmation::build_virtual_pose(Skeleton3D* p_skeleton, HumanBoneConfig& p_config, BonePose& pose,  HashMap<String, String>& p_human_bone_label) {
 //
@@ -375,7 +375,7 @@
 //
 //
 //	void HumanAnimmation::build_virtual_pose_global(HumanBoneConfig& p_config, BonePose& p_parent_pose, HashMap<String, String>& p_human_bone_label) {
-//        
+//
 //        for(int j=0;j< p_parent_pose.child_bones.size();j++) {
 //            BonePose& child_pose = p_config.virtual_pose[p_parent_pose.child_bones[j]];
 //			child_pose.local_pose = Transform3D(Basis(child_pose.rotation), child_pose.position);
@@ -385,7 +385,7 @@
 //            // 計算骨骼的右方向
 //            computer_bone_right(p_config, p_parent_pose,child_pose);
 //        }
-//        
+//
 //    }
 //
 //
@@ -596,21 +596,21 @@
 //                    key.value = Vector3(lookat.x, lookat.y, lookat.z);
 //                    track->positions.set(i,key);
 //
-//                    
+//
 //                    Animation::TKey<Variant> value_key;
 //                    value_key.time = time;
 //                    value_key.value = lookat.w;
 //                    value_track->values.set(i, value_key);
 //                }
 //            }
-//            
+//
 //        }
 //        // 拷贝轨迹
 //        for(auto& it : other_tracks) {
 //            out_anim->add_track_ins(it->duplicate());
 //        }
 //
-//        // 
+//        //
 //        return out_anim;
 //
 //
@@ -636,7 +636,7 @@
 //			p_skeleton_config.root_global_rotation[it] = (local_trans.basis.inverse() * trans.basis).get_rotation_quaternion();
 //
 //        }
-//        
+//
 //    }
 //
 //    // 重定向骨骼
@@ -652,9 +652,9 @@
 //			result.real_global_pose = pose.local_pose;
 //            retarget(p_config, pose, local_trans,p_skeleton_config);
 //
-//            
+//
 //        }
-//        
+//
 //    }
 //
 //
@@ -780,17 +780,17 @@
 //        rest_trans.basis.rotate_to_align(rest_forward, curr_forward);
 //
 //        Vector3 rest_right = rest_trans.basis.xform(right);
-//        
+//
 //        Transform3D curr_trans = parent_pose * trans;
 //        Vector3 curr_right = curr_trans.basis.xform(right);
 //
-//        
+//
 //
 //		Plane plane = Plane(curr_forward, 0.0);
 //		Vector3 intersect;
 //		plane.intersects_ray(curr_right - curr_forward,-curr_forward, &intersect);
 //
-//		
+//
 //		if(intersect.x + intersect.y + intersect.z == 0)
 //		{
 //			return 0;
@@ -810,7 +810,7 @@
 //            result.real_global_pose = parent_pose * child_pose.local_pose;
 //
 //			build_skeleton_lookat(p_skeleton,p_config, child_pose, result.real_global_pose, p_skeleton_config);
-//            
+//
 //            Vector3 forward;
 //            if(child_pose.child_bones.size() == 0) {
 //				forward = child_pose.global_pose.origin - parent_pose.origin;
@@ -827,7 +827,7 @@
 //            // 计算自身轴旋转
 //			result.bone_global_lookat.w = compute_self_roll(p_config, parent_pose, child_pose, trans, Vector3(result.bone_global_lookat.x, result.bone_global_lookat.y, result.bone_global_lookat.z), child_pose.right);
 //        }
-//        
+//
 //    }
 //
 //    static void lookat_to_bone_pose(HumanBoneConfig& p_config,BonePose& pose,Transform3D& parent_trans,HumanAnimationBoneResult& result) {
@@ -875,7 +875,7 @@
 //                retarget(p_config,pose,global_trans,p_skeleton_config);
 //            }
 //        }
-//        
+//
 //    }
 //
 //

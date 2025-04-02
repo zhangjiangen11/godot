@@ -178,12 +178,10 @@ public:
 			E = E->prev();
 			return *this;
 		}
-		operator bool()
-		{
+		operator bool() {
 			return E != nullptr;
 		}
-		Element* data()
-		{
+		Element *data() {
 			return E;
 		}
 
@@ -192,9 +190,8 @@ public:
 
 		_FORCE_INLINE_ Iterator(Element *p_E) { E = p_E; }
 		_FORCE_INLINE_ Iterator() {}
-		_FORCE_INLINE_ Iterator(const Iterator &p_it) { E = p_it.E; }
 
-		_FORCE_INLINE_  operator ConstIterator() const {
+		_FORCE_INLINE_ operator ConstIterator() const {
 			return ConstIterator(E);
 		}
 
@@ -330,7 +327,7 @@ public:
 		}
 	}
 	void append(const List &p_list) {
-		for(auto it : p_list) {
+		for (auto it : p_list) {
 			push_back(it);
 		}
 	}
@@ -462,8 +459,7 @@ public:
 	 * erase an element in the list, by iterator pointing to it. Return true if it was found/erased.
 	 */
 	_FORCE_INLINE_ Iterator erase(Iterator it) {
-		if(!it)
-		{
+		if (!it) {
 			return it;
 		}
 		Element *p_I = it.data();

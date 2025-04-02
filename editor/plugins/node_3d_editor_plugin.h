@@ -91,7 +91,7 @@ class ViewportRotationControl : public Control {
 protected:
 	void _notification(int p_what);
 	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-	void _draw();
+	void _draw() override;
 	void _draw_axis(const Axis2D &p_axis);
 	void _get_sorted_axis(Vector<Axis2D> &r_axis);
 	void _update_focus();
@@ -458,7 +458,7 @@ private:
 	void _update_camera(real_t p_interp_delta);
 	void _update_navigation_controls_visibility();
 	Transform3D to_camera_transform(const Cursor &p_cursor) const;
-	void _draw();
+	void _draw() override;
 
 	// These allow tool scripts to set the 3D cursor location by updating the camera transform.
 	Transform3D last_camera_transform;
@@ -1078,7 +1078,7 @@ class ViewportNavigationControl : public Control {
 protected:
 	void _notification(int p_what);
 	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-	void _draw();
+	void _draw() override;
 	void _process_click(int p_index, Vector2 p_position, bool p_pressed);
 	void _process_drag(int p_index, Vector2 p_position, Vector2 p_relative_position);
 	void _update_navigation();

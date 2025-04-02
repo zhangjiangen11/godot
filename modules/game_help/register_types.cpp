@@ -43,7 +43,6 @@
 #include "core/object/class_db.h"
 #include "modules/game_help/Terrain3D/src/register_types.h"
 #include "modules/game_help/foliage_manager/register_types.h"
-#include "modules/game_help/game_gui/game_gui_compoent.h"
 #include "modules/game_help/game_gui/item_box.h"
 #include "modules/game_help/logic/beehave/beehave_node.h"
 #include "modules/game_help/logic/beehave/beehave_tree.h"

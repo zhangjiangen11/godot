@@ -85,7 +85,7 @@ public:
 	Ref<Blackboard> create_blackboard(Node *p_agent, const Ref<Blackboard> &p_parent_scope = Ref<Blackboard>());
 	void populate_blackboard(const Ref<Blackboard> &p_blackboard, bool overwrite, Node *p_node);
 
-	void get_property_names_by_type(Variant::Type p_type,Array p_result);
+	void get_property_names_by_type(Variant::Type p_type, Array p_result);
 
 	// 获取编辑器的黑板
 	Ref<Blackboard> get_editor_blackboard();

@@ -4,11 +4,8 @@
 #include "servers/navigation/navigation_path_query_parameters_3d.h"
 #include "servers/navigation/navigation_path_query_result_3d.h"
 
-
-
 class CharacterNavigationAgent3D : public RefCounted {
 	GDCLASS(CharacterNavigationAgent3D, RefCounted);
-
 
 	class CharacterBodyMain *body_main = nullptr;
 	class CharacterBodyMain *agent_parent = nullptr;
@@ -100,8 +97,7 @@ public:
 	virtual ~CharacterNavigationAgent3D();
 	void _notification(int p_what);
 
-	void set_body_main(CharacterBodyMain *p_body_main)
-	{
+	void set_body_main(CharacterBodyMain *p_body_main) {
 		body_main = p_body_main;
 		set_agent_parent(body_main);
 	}
@@ -209,7 +205,6 @@ public:
 
 	void _avoidance_done(Vector3 p_new_velocity);
 
-
 	void set_avoidance_layers(uint32_t p_layers);
 	uint32_t get_avoidance_layers() const;
 
@@ -259,6 +254,5 @@ private:
 	void _update_debug_path();
 #endif // DEBUG_ENABLED
 };
-
 
 #endif

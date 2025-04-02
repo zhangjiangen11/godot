@@ -26,7 +26,7 @@ class FoliageGlobals {
 	/// 植被分块大小(米)，地图中的植被按块进行存储
 	/// </summary>
 public:
-	static const int CELL_SIZE = 32;
+	static const int FOLIAGE_CELL_SIZE = 32;
 
 	// 版本号
 	static const int VERSION = 1;
@@ -34,14 +34,14 @@ public:
 	/// <summary>
 	/// 植被分块中一个Tile的大小(米)
 	/// </summary>
-	static const int TILE_SIZE = 32;
+	static const int FOLIAGE_TILE_SIZE = 32;
 
-	static const int PAGE_SIZE = TILE_SIZE * 16;
+	static const int FOLIAGE_PAGE_SIZE = FOLIAGE_TILE_SIZE * 16;
 
 	/// <summary>
 	/// 植被分块的Tile分辨率, CELL_SIZE / TILE_SIZE
 	/// </summary>
-	static const int TILE_RESOLUTION_OF_CELL = CELL_SIZE / TILE_SIZE;
+	static const int TILE_RESOLUTION_OF_CELL = FOLIAGE_CELL_SIZE / FOLIAGE_TILE_SIZE;
 
 	/// <summary>
 	/// 植被分块的Tile数量，TILE_RESOLUTION_OF_CELL * TILE_RESOLUTION_OF_CELL
@@ -56,12 +56,12 @@ public:
 	/// <summary>
 	/// 植被分块的出生区域分辨率, SPAWN_SPOT_RESOLUTION_PER_METER * CELL_SIZE
 	/// </summary>
-	static const int SPAWN_SPOT_RESOLUTION_OF_CELL = SPAWN_SPOT_RESOLUTION_PER_METER * CELL_SIZE;
+	static const int SPAWN_SPOT_RESOLUTION_OF_CELL = SPAWN_SPOT_RESOLUTION_PER_METER * FOLIAGE_CELL_SIZE;
 
 	/// <summary>
 	/// 一个Tile的出生区域分辨率，SPAWN_SPOT_RESOLUTION_PER_METER * TILE_SIZE
 	/// </summary>
-	static const int SPAWN_SPOT_RESOLUTION_OF_TILE = SPAWN_SPOT_RESOLUTION_PER_METER * TILE_SIZE;
+	static const int SPAWN_SPOT_RESOLUTION_OF_TILE = SPAWN_SPOT_RESOLUTION_PER_METER * FOLIAGE_TILE_SIZE;
 
 	/// <summary>
 	/// 一个植被分块有多少个出生区域，SPAWN_SPOT_RESOLUTION_OF_CELL * SPAWN_SPOT_RESOLUTION_OF_CELL
@@ -121,7 +121,7 @@ public:
 	/// <summary>
 	/// 一个Cell的高度图分辨率，值等于CELL_SIZE / CELL_HEIGHT_MAP_PRECISION
 	/// </summary>
-	static const int CELL_HEIGHT_MAP_RESOLUTION = CELL_SIZE * 2;
+	static const int CELL_HEIGHT_MAP_RESOLUTION = FOLIAGE_CELL_SIZE * 2;
 
 	static const int LOAD_TAG_NONE = 0;
 	static const int LOAD_TAG_LOAD = 1;
@@ -148,12 +148,12 @@ public:
 	/// <summary>
 	/// 一张世界地图的格子分辨率
 	/// </summary>
-	static const int CELL_RESOLUTION = MAP_SIZE / FoliageGlobals::CELL_SIZE;
+	static const int CELL_RESOLUTION = MAP_SIZE / FoliageGlobals::FOLIAGE_CELL_SIZE;
 
 	/// <summary>
 	/// 格子坐标起始位置，从-40公里开始
 	/// </summary>
-	static const int ORIGIN = -MAP_SIZE / 2 / FoliageGlobals::CELL_SIZE;
+	static const int ORIGIN = -MAP_SIZE / 2 / FoliageGlobals::FOLIAGE_CELL_SIZE;
 
 public:
 	int x, z;
@@ -163,11 +163,11 @@ public:
 		x = _x;
 		z = _z;
 	}
-	void Offset(Vector2i &_delta, int _cellSize = FoliageGlobals::CELL_SIZE) {
+	void Offset(Vector2i &_delta, int _cellSize = FoliageGlobals::FOLIAGE_CELL_SIZE) {
 		x += Math::fast_ftoi(_delta.x / _cellSize);
 		z += Math::fast_ftoi(_delta.y / _cellSize);
 	}
-	void Offset(Vector3 &_delta, int _cellSize = FoliageGlobals::CELL_SIZE) {
+	void Offset(Vector3 &_delta, int _cellSize = FoliageGlobals::FOLIAGE_CELL_SIZE) {
 		x += Math::fast_ftoi(_delta.x / _cellSize);
 		z += Math::fast_ftoi(_delta.z / _cellSize);
 	}
@@ -206,15 +206,15 @@ public:
 	}
 
 	Vector3 worldPosition() const {
-		return Vector3(FoliageGlobals::CELL_SIZE * x, 0.0f, FoliageGlobals::CELL_SIZE * z);
+		return Vector3(FoliageGlobals::FOLIAGE_CELL_SIZE * x, 0.0f, FoliageGlobals::FOLIAGE_CELL_SIZE * z);
 	}
 	// 頁面的世界位置
 	Vector3 pageWorldPosition() const {
-		return Vector3(FoliageGlobals::PAGE_SIZE * x, 0.0f, FoliageGlobals::PAGE_SIZE * z);
+		return Vector3(FoliageGlobals::FOLIAGE_PAGE_SIZE * x, 0.0f, FoliageGlobals::FOLIAGE_PAGE_SIZE * z);
 	}
 
 	Vector3 centerPosition() {
-		return Vector3(FoliageGlobals::CELL_SIZE * (x + 0.5f), 0.0f, FoliageGlobals::CELL_SIZE * (z + 0.5f));
+		return Vector3(FoliageGlobals::FOLIAGE_CELL_SIZE * (x + 0.5f), 0.0f, FoliageGlobals::FOLIAGE_CELL_SIZE * (z + 0.5f));
 	}
 };
 /// <summary>
@@ -269,11 +269,11 @@ public:
 		}
 
 		CompressedPosition(const FoliageCellPos &_cellPos, const Vector3 &_uncompressedPos) {
-			float _relativeX = _uncompressedPos.x - FoliageGlobals::CELL_SIZE * _cellPos.x;
-			float _relativeZ = _uncompressedPos.z - FoliageGlobals::CELL_SIZE * _cellPos.z;
-			x = (int16_t)(_relativeX / FoliageGlobals::CELL_SIZE * 32767);
+			float _relativeX = _uncompressedPos.x - FoliageGlobals::FOLIAGE_CELL_SIZE * _cellPos.x;
+			float _relativeZ = _uncompressedPos.z - FoliageGlobals::FOLIAGE_CELL_SIZE * _cellPos.z;
+			x = (int16_t)(_relativeX / FoliageGlobals::FOLIAGE_CELL_SIZE * 32767);
 			y = _uncompressedPos.y;
-			z = (short)(_relativeZ / FoliageGlobals::CELL_SIZE * 32767);
+			z = (short)(_relativeZ / FoliageGlobals::FOLIAGE_CELL_SIZE * 32767);
 		}
 
 		/// <summary>
@@ -283,9 +283,9 @@ public:
 		/// <returns></returns>
 		Vector3 Decompress(const FoliageCellPos &_cellPos) const {
 			Vector3 _result;
-			_result.x = FoliageGlobals::CELL_SIZE * ((float)x / 32767 + _cellPos.x);
+			_result.x = FoliageGlobals::FOLIAGE_CELL_SIZE * ((float)x / 32767 + _cellPos.x);
 			_result.y = y;
-			_result.z = FoliageGlobals::CELL_SIZE * ((float)z / 32767 + _cellPos.z);
+			_result.z = FoliageGlobals::FOLIAGE_CELL_SIZE * ((float)z / 32767 + _cellPos.z);
 			return _result;
 		}
 		/// <summary>
@@ -295,9 +295,9 @@ public:
 		/// <returns></returns>
 		Vector3 DecompressLocal() const {
 			Vector3 _result;
-			_result.x = FoliageGlobals::CELL_SIZE * ((float)x / 32767);
+			_result.x = FoliageGlobals::FOLIAGE_CELL_SIZE * ((float)x / 32767);
 			_result.y = y;
-			_result.z = FoliageGlobals::CELL_SIZE * ((float)z / 32767);
+			_result.z = FoliageGlobals::FOLIAGE_CELL_SIZE * ((float)z / 32767);
 			return _result;
 		}
 	};

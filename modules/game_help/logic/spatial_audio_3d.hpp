@@ -2,15 +2,13 @@
 #ifndef SPATIAL_AUDIO_3D_H
 #define SPATIAL_AUDIO_3D_H
 #include "scene/3d/audio_stream_player_3d.h"
-#include "scene/resources/immediate_mesh.h"
-#include "scene/3d/physics/ray_cast_3d.h"
+#include "scene/3d/camera_3d.h"
 #include "scene/3d/label_3d.h"
 #include "scene/3d/mesh_instance_3d.h"
-#include "scene/main/viewport.h"
+#include "scene/3d/physics/ray_cast_3d.h"
 #include "scene/animation/tween.h"
-#include "scene/3d/camera_3d.h"
-
-
+#include "scene/main/viewport.h"
+#include "scene/resources/immediate_mesh.h"
 
 //@icon("icon.png")
 
@@ -41,45 +39,48 @@ class Soundsource;
 class Soundplayer;
 class SpatialAudio3D : public AudioStreamPlayer3D {
 	GDCLASS(SpatialAudio3D, AudioStreamPlayer3D);
-public:
 
 public:
-	bool reverb_enabled = true;//# Enable reverb-effects with all its computations.[br][br]Disable if you just need it for occlusion detection, for example fading ambient rain when entering a house.
-	double reverb_volume_db = -6;//# Maximum volume of the reverbs.
-	double reverb_fadeintime = 2.0;//# Fade-in time when a reverb is added at a wall.[br][br]The default of 2s is a good value where changes in environment merge well into the overall sound mix.[br]If you have small areas with little changes of distances, set this value to low (0.2s) so that repositioned reverbs don't get stuck for too long in a position. In a large area, when the raycast suddenly hits a close wall, the sudden appearing reverb can sound unnatural.[br][br]Set to -1 for dynamic fade time (based on wetness).
-	double reverb_fadeouttime = 2.0;//# Fade-out time when a reverb is removed.[br][br]The default of 2s is a good value where changes in environment merge well into the overall sound mix.[br]If you have small areas with little changes of distances, set this value to low (0.2s) so that repositioned reverbs don't get stuck for too long in a position.[br][br]Set to -1 for dynamic fade time (based on wetness).
-	int occlusion_lp_cutoff = 600;//# Frequency when soundsource is occluded behind walls.
-	double occlusion_fadetime = 0.5;//# Fadetime when occlusion changes.
-	int bass_proximity = 50;//# The closer you are to a wall, the more bass you will hear.[br][br]The effect starts at this value (distance to the wall).[br][br]0 to disable.
+public:
+	bool reverb_enabled = true; //# Enable reverb-effects with all its computations.[br][br]Disable if you just need it for occlusion detection, for example fading ambient rain when entering a house.
+	double reverb_volume_db = -6; //# Maximum volume of the reverbs.
+	double reverb_fadeintime = 2.0; //# Fade-in time when a reverb is added at a wall.[br][br]The default of 2s is a good value where changes in environment merge well into the overall sound mix.[br]If you have small areas with little changes of distances, set this value to low (0.2s) so that repositioned reverbs don't get stuck for too long in a position. In a large area, when the raycast suddenly hits a close wall, the sudden appearing reverb can sound unnatural.[br][br]Set to -1 for dynamic fade time (based on wetness).
+	double reverb_fadeouttime = 2.0; //# Fade-out time when a reverb is removed.[br][br]The default of 2s is a good value where changes in environment merge well into the overall sound mix.[br]If you have small areas with little changes of distances, set this value to low (0.2s) so that repositioned reverbs don't get stuck for too long in a position.[br][br]Set to -1 for dynamic fade time (based on wetness).
+	int occlusion_lp_cutoff = 600; //# Frequency when soundsource is occluded behind walls.
+	double occlusion_fadetime = 0.5; //# Fadetime when occlusion changes.
+	int bass_proximity = 50; //# The closer you are to a wall, the more bass you will hear.[br][br]The effect starts at this value (distance to the wall).[br][br]0 to disable.
 
-	int max_raycast_distance = 100;//# Maximum distance for the reverb raycasts.
-	int collision_mask = 1;//# Mask for the raycast where to add reverb.
-	double roomsize_multiplicator = 6.0;//# How much hall to add compared to room size.[br]Sometimes you have a small room but you need a long reverb.
-	int speed_of_sound = 340;//# How fast sound travels through the air.
+	int max_raycast_distance = 100; //# Maximum distance for the reverb raycasts.
+	int collision_mask = 1; //# Mask for the raycast where to add reverb.
+	double roomsize_multiplicator = 6.0; //# How much hall to add compared to room size.[br]Sometimes you have a small room but you need a long reverb.
+	int speed_of_sound = 340; //# How fast sound travels through the air.
 
-	int audiophysics_ticks = 10;//# The number of audio physics calculations per second.[br]Tied to _physics_process().[br][br]Use 30-60 for fast moving sounds like a motorcycle passing by.[br][br]Default: 10.
-	bool loop = false;//# Loop audio indefinitely.
-	bool shut_up = false;//# Mute output.
-	bool debug = false;//# Visualize raycasts, measurement rays and reverb-audioplayers.
+	int audiophysics_ticks = 10; //# The number of audio physics calculations per second.[br]Tied to _physics_process().[br][br]Use 30-60 for fast moving sounds like a motorcycle passing by.[br][br]Default: 10.
+	bool loop = false; //# Loop audio indefinitely.
+	bool shut_up = false; //# Mute output.
+	bool debug = false; //# Visualize raycasts, measurement rays and reverb-audioplayers.
 
-	Camera3D* player_camera = nullptr;// store reference to camera so that global_position is always up to date
+	Camera3D *player_camera = nullptr; // store reference to camera so that global_position is always up to date
 	LocalVector<Vector3> raycasts_coords;
 
 	// this is the soundsource audioplayer.
-	Soundsource* soundsource = nullptr;
+	Soundsource *soundsource = nullptr;
 
 	// internal vars
 	bool do_update = false;
 	int tick_interval;
-	int _tick_counter = -1;// initialize the counter with enough time for the engine to initialize
+	int _tick_counter = -1; // initialize the counter with enough time for the engine to initialize
 	Dictionary _debug;
-	class Debugsphere* debugsphere;
+	class Debugsphere *debugsphere;
 	Ref<Tween> fade_tween;
 	Ref<Tween> lowpass_tween;
 	double xfadetime = 1.0;
 
 public:
-	enum fx { delay, reverb, reverb_hipass, lowpass };
+	enum fx { delay,
+		reverb,
+		reverb_hipass,
+		lowpass };
 
 	void _ready() override;
 
@@ -91,11 +92,11 @@ public:
 
 	virtual void do_set_stream(Ref<AudioStream> sound);
 
-	RayCast3D* create_raycast(StringName name_p, const Vector3& target_position);
+	RayCast3D *create_raycast(StringName name_p, const Vector3 &target_position);
 
-	LocalVector<RayCast3D*> create_raycast_sector(int start_angle = 0, double width_factor = 1.5, int bearing_raycount = 20, int heading_count = 7);
+	LocalVector<RayCast3D *> create_raycast_sector(int start_angle = 0, double width_factor = 1.5, int bearing_raycount = 20, int heading_count = 7);
 
-	Soundplayer* create_soundplayer(String name_p, bool with_reverb_fx = true);
+	Soundplayer *create_soundplayer(String name_p, bool with_reverb_fx = true);
 
 	void create_audiobus(StringName bus_name, int vol_db = 0);
 
@@ -162,16 +163,15 @@ public:
 	static void _bind_methods();
 };
 
-
 class Reverber : public SpatialAudio3D {
 	GDCLASS(Reverber, SpatialAudio3D);
-public:
 
+public:
 	int raycast_index;
 	double distance_to_soundsource;
 	double distance_to_player;
-	class Soundplayer* soundplayer_active;
-	class Soundplayer* soundplayer_standby;
+	class Soundplayer *soundplayer_active;
+	class Soundplayer *soundplayer_standby;
 
 public:
 	void _ready() override;
@@ -194,15 +194,14 @@ public:
 	static void _bind_methods();
 };
 
-
 class Soundsource : public SpatialAudio3D {
 	GDCLASS(Soundsource, SpatialAudio3D);
-public:
 
+public:
 protected:
-	LocalVector<RayCast3D*> raycasts;
-	LocalVector<Reverber*> reverbers;
-	LocalVector<RayCast3D*> measurement_rays;
+	LocalVector<RayCast3D *> raycasts;
+	LocalVector<Reverber *> reverbers;
+	LocalVector<RayCast3D *> measurement_rays;
 	Array distances;
 	double distance_to_player;
 	double distance_to_player_since_last_delay_update;
@@ -215,8 +214,8 @@ public:
 public:
 	double room_size = 0.0;
 	double wetness = 1.0;
-	Soundplayer* soundplayer_active = nullptr;
-	Soundplayer* soundplayer_standby = nullptr;
+	Soundplayer *soundplayer_active = nullptr;
+	Soundplayer *soundplayer_standby = nullptr;
 	int _playing_since;
 
 public:
@@ -226,7 +225,7 @@ public:
 
 	void _exit_tree();
 
-	Reverber* create_reverber(StringName name_p, int raycast_index);
+	Reverber *create_reverber(StringName name_p, int raycast_index);
 
 	void do_set_stream(Ref<AudioStream> s) override;
 
@@ -238,8 +237,8 @@ public:
 
 	void calculate_all_distances();
 
-// Reverber:
-// responsible for playing and positioning Soundplayers
+	// Reverber:
+	// responsible for playing and positioning Soundplayers
 	void calculate_reverb();
 
 	static void _bind_methods();
@@ -247,13 +246,21 @@ public:
 
 class Soundplayer : public SpatialAudio3D {
 	GDCLASS(Soundplayer, SpatialAudio3D);
-public:
 
+public:
 protected:
-	Dictionary ds = Dictionary {/* initializer lists are unsupported */ {0, "active"},{1, "inactive"},{2, "fading_to_active"},{3, "fading_to_inactive"}, };
+	Dictionary ds = Dictionary{
+		/* initializer lists are unsupported */ { 0, "active" },
+		{ 1, "inactive" },
+		{ 2, "fading_to_active" },
+		{ 3, "fading_to_inactive" },
+	};
 
 public:
-	enum ss {active, inactive, fading_to_active, fading_to_inactive};
+	enum ss { active,
+		inactive,
+		fading_to_active,
+		fading_to_inactive };
 
 public:
 	bool with_reverb_fx;
@@ -316,7 +323,7 @@ public:
 	int get_lp_cutoff();
 
 protected:
-	RayCast3D* occlusion_raycast = nullptr;
+	RayCast3D *occlusion_raycast = nullptr;
 	String audiobus_name;
 
 public:
@@ -336,7 +343,7 @@ public:
 
 	void set_inactive(double fadetime = 0, Tween::EaseType easing = Tween::EaseType::EASE_IN, Tween::TransitionType transition = Tween::TransitionType::TRANS_QUINT);
 
-// turn down reverb volume by [reduction] dB when closer to the wall
+	// turn down reverb volume by [reduction] dB when closer to the wall
 	void update_effect_params();
 
 	int calculate_proximity_volume();
@@ -349,13 +356,13 @@ public:
 };
 class Debugsphere : public Node3D {
 	GDCLASS(Debugsphere, Node3D);
-public:
 
+public:
 public:
 	Color color = "00f";
 	double size = 0.5;
 	int max_raycast_distance;
-	Label3D* label = nullptr;
+	Label3D *label = nullptr;
 	String line1;
 	String line2;
 	String line3;
@@ -372,8 +379,8 @@ public:
 
 class Debugray : public MeshInstance3D {
 	GDCLASS(Debugray, MeshInstance3D);
-public:
 
+public:
 protected:
 	Ref<ImmediateMesh> immediate_mesh;
 	Ref<ORMMaterial3D> material;
@@ -387,7 +394,6 @@ public:
 
 	static void _bind_methods();
 };
-
 
 VARIANT_ENUM_CAST(Soundplayer::ss)
 VARIANT_ENUM_CAST(SpatialAudio3D::fx)
