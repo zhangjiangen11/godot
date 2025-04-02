@@ -550,6 +550,9 @@ void Object::get_property_list(List<PropertyInfo> *p_list, bool p_reversed) cons
 
 	if (!is_class("Script")) { // can still be set, but this is for user-friendliness
 		p_list->push_back(PropertyInfo(Variant::OBJECT, "script", PROPERTY_HINT_RESOURCE_TYPE, "Script", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
+
+		// lua 配置
+		p_list->push_back(PropertyInfo(Variant::STRING_NAME, "master_script", PROPERTY_HINT_RESOURCE_TYPE, "Lua Table Name", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_NEVER_DUPLICATE));
 	}
 
 	if (script_instance && !p_reversed) {
@@ -702,7 +705,6 @@ bool Object::has_method(const StringName &p_method) const {
 	if (p_method == CoreStringName(free_)) {
 		return true;
 	}
-
 	if (script_instance && script_instance->has_method(p_method)) {
 		return true;
 	}
@@ -815,7 +817,7 @@ Variant Object::callp(const StringName &p_method, const Variant **p_args, int p_
 	r_error.error = Callable::CallError::CALL_OK;
 
 	if (p_method == CoreStringName(free_)) {
-//free must be here, before anything, always ready
+		//free must be here, before anything, always ready
 #ifdef DEBUG_ENABLED
 		if (p_argcount != 0) {
 			r_error.error = Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS;
@@ -1935,7 +1937,7 @@ Variant::Type Object::get_static_property_type(const StringName &p_property, boo
 }
 
 Variant::Type Object::get_static_property_type_indexed(const Vector<StringName> &p_path, bool *r_valid) const {
-	if (p_path.size() == 0) {
+	if (p_path.is_empty()) {
 		if (r_valid) {
 			*r_valid = false;
 		}

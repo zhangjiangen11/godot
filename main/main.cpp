@@ -145,6 +145,7 @@
 #endif // TOOLS_ENABLED && !GDSCRIPT_NO_LSP
 #endif // MODULE_GDSCRIPT_ENABLED
 
+#include "modules/godot_luaAPI/src/classes/luaAPI.h"
 /* Static members */
 
 // Singletons
@@ -408,6 +409,7 @@ void finalize_theme_db() {
 	memdelete(theme_db);
 	theme_db = nullptr;
 }
+
 
 //#define DEBUG_INIT
 #ifdef DEBUG_INIT
@@ -2106,7 +2108,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 		OS::get_singleton()->add_logger(memnew(RotatedFileLogger(base_path, max_files)));
 	}
 
-	if (main_args.size() == 0 && String(GLOBAL_GET("application/run/main_scene")) == "") {
+	if (main_args.is_empty() && String(GLOBAL_GET("application/run/main_scene")) == "") {
 #ifdef TOOLS_ENABLED
 		if (!editor && !project_manager) {
 #endif
@@ -3509,6 +3511,7 @@ Error Main::setup2(bool p_show_boot_logo) {
 	// Default theme will be initialized later, after modules and ScriptServer are ready.
 	initialize_theme_db();
 
+
 #if !defined(NAVIGATION_2D_DISABLED) || !defined(NAVIGATION_3D_DISABLED)
 	MAIN_PRINT("Main: Load Navigation");
 #endif // !defined(NAVIGATION_2D_DISABLED) || !defined(NAVIGATION_3D_DISABLED)
@@ -4648,10 +4651,10 @@ bool Main::iteration() {
 		uint64_t navigation_begin = OS::get_singleton()->get_ticks_usec();
 
 #ifndef NAVIGATION_2D_DISABLED
-		NavigationServer2D::get_singleton()->process(physics_step * time_scale);
+		NavigationServer2D::get_singleton()->physics_process(physics_step * time_scale);
 #endif // NAVIGATION_2D_DISABLED
 #ifndef NAVIGATION_3D_DISABLED
-		NavigationServer3D::get_singleton()->process(physics_step * time_scale);
+		NavigationServer3D::get_singleton()->physics_process(physics_step * time_scale);
 #endif // NAVIGATION_3D_DISABLED
 
 		navigation_process_ticks = MAX(navigation_process_ticks, OS::get_singleton()->get_ticks_usec() - navigation_begin); // keep the largest one for reference
@@ -4690,6 +4693,13 @@ bool Main::iteration() {
 		exit = true;
 	}
 	message_queue->flush();
+
+#ifndef NAVIGATION_2D_DISABLED
+	NavigationServer2D::get_singleton()->process(process_step * time_scale);
+#endif // NAVIGATION_2D_DISABLED
+#ifndef NAVIGATION_3D_DISABLED
+	NavigationServer3D::get_singleton()->process(process_step * time_scale);
+#endif // NAVIGATION_3D_DISABLED
 
 	RenderingServer::get_singleton()->sync(); //sync if still drawing from previous frames.
 
@@ -4894,6 +4904,8 @@ void Main::cleanup(bool p_force) {
 
 	finalize_theme_db();
 
+
+	// Before deinitializing server extensions, finalize servers which may be loaded as extensions.
 // Before deinitializing server extensions, finalize servers which may be loaded as extensions.
 #ifndef NAVIGATION_2D_DISABLED
 	NavigationServer2DManager::finalize_server();
