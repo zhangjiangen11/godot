@@ -23,7 +23,7 @@ public:
 	}
 
 protected:
-	virtual void update_name() {
+	virtual void update_name() override {
 	}
 	virtual Array _get_compare_value() override {
 		Array ret;
@@ -51,6 +51,8 @@ protected:
 				return curr == value;
 			case AnimatorAICompareType::NotEqual:
 				return curr != value;
+			default:
+				break;
 		}
 		if (p_is_include) {
 			return true;
@@ -70,6 +72,8 @@ protected:
 				return curr == value;
 			case AnimatorAICompareType::NotEqual:
 				return curr != value;
+			default:
+				break;
 		}
 		if (p_is_include) {
 			return true;

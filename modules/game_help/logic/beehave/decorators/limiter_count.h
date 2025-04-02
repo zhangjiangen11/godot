@@ -16,7 +16,7 @@ public:
 		return L"限制器将执行其“正在运行”的子项“x”次。\n当达到最大刻度数时,它将返回“FAILURE”状态代码。\n下次子项不再处于“正在运行”状态时,计数将重置";
 	}
 
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return L"次数限制装饰器";
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {

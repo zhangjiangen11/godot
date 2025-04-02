@@ -30,7 +30,7 @@ protected:
 		ret.append(StringName("<="));
 		return ret;
 	}
-	virtual void update_name() {
+	virtual void update_name() override {
 	}
 	virtual Array _get_blackbord_propertys() override {
 		Array rs;
@@ -60,13 +60,15 @@ protected:
 				return curr < v;
 			case AnimatorAICompareType::LessEqual:
 				return curr <= v;
+			default:
+				break;
 		}
 		if (p_is_include) {
 			return true;
 		}
 		return false;
 	}
-	virtual bool is_enable(const Ref<BlackboardPlan> &p_blackboard, bool p_is_include) {
+	virtual bool is_enable(const Ref<BlackboardPlan> &p_blackboard, bool p_is_include) override {
 		if (!p_blackboard->has_var(propertyName)) {
 			if (p_is_include) {
 				return true;
@@ -87,6 +89,8 @@ protected:
 				return curr < v;
 			case AnimatorAICompareType::LessEqual:
 				return curr <= v;
+			default:
+				break;
 		}
 		if (p_is_include) {
 			return true;

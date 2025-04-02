@@ -398,7 +398,7 @@ public:
 	}
 	virtual int tick(const Ref<BeehaveRuncontext> &run_context) override {
 		if (GDVIRTUAL_IS_OVERRIDDEN(_tick)) {
-			int rs;
+			int rs = 0;
 			GDVIRTUAL_CALL(_tick, run_context, rs);
 			run_context->set_run_state(this, rs);
 			return rs;

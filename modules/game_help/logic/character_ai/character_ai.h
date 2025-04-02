@@ -129,7 +129,7 @@ class CharacterAI_CheckEnemy : public CharacterAI_CheckBase {
 	}
 
 public:
-	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard);
+	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard) override;
 	void set_enemy_layer(int32_t p_layer) {
 		enemy_layer = p_layer;
 	}
@@ -181,7 +181,7 @@ class CharacterAI_CheckJump : public CharacterAI_CheckBase {
 	static void _bind_methods() {}
 
 public:
-	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard) {
+	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard) override {
 		if (blackboard->get("is_fall")) {
 			return false;
 		}
@@ -207,7 +207,7 @@ class CharacterAI_CheckJump2 : public CharacterAI_CheckBase {
 	static void _bind_methods() {}
 
 public:
-	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard) {
+	bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard) override {
 		// 检测玩家是否请求跳跃
 		if (blackboard->get("is_jump") && blackboard->get("request_jump") && !blackboard->get("is_jump2")) {
 			float distance = blackboard->get("to_ground_distance");

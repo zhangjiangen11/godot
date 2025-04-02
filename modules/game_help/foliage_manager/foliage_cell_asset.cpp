@@ -32,8 +32,8 @@ void SceneInstanceBlock::hide_instance_by_cell_mask(const Vector3 &p_position_mo
 			Vector3 pos = transform[i].origin - p_position_move;
 			int x = pos.x / p_cell_mask->get_width();
 			int z = pos.z / p_cell_mask->get_height();
-			x = CLAMP(x, 0, p_cell_mask->get_width() - 1);
-			z = CLAMP(z, 0, p_cell_mask->get_height() - 1);
+			x = CLAMP(uint32_t(x), 0, p_cell_mask->get_width() - 1);
+			z = CLAMP(uint32_t(z), 0, p_cell_mask->get_height() - 1);
 
 			uint8_t v = p_cell_mask->get_pixel(x, z);
 			if (v < p_visble_value_min || v > p_visble_value_max) {
@@ -227,7 +227,7 @@ void FoliageCellMask::init(uint32_t p_width, uint32_t p_height, bool p_is_bit) {
 	}
 }
 void FoliageCellMask::set_pixel(int p_x, int p_y, uint8_t p_value) {
-	if (p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+	if (p_x < 0 || p_x >= int(width) || p_y < 0 || p_y >= int(height)) {
 		return;
 	}
 	if (!is_bit) {
@@ -249,7 +249,7 @@ uint8_t FoliageCellMask::get_pixel(int p_x, int p_y) {
 	if (parent.is_valid()) {
 		return parent->get_pixel(use_parent_offset.x + p_x, use_parent_offset.y + p_y);
 	}
-	if (p_x < 0 || p_x >= width || p_y < 0 || p_y >= height) {
+	if (p_x < 0 || p_x >= int(width) || p_y < 0 || p_y >= int(height)) {
 		return 0;
 	}
 	if (!is_bit) {
@@ -311,8 +311,8 @@ void FoliageCellMask::scale_instance(const Ref<SceneInstanceBlock> &p_block, flo
 	if (is_bit) {
 		return;
 	}
-	for (int x = 0; x < width; x++) {
-		for (int y = 0; y < height; y++) {
+	for (int x = 0; x < int(width); x++) {
+		for (int y = 0; y < int(height); y++) {
 			if (p_block->get_instance_render_level(y * width + x) == -1) {
 				continue;
 			}

@@ -37,7 +37,7 @@ protected:
 	StringName get_value_property_name() {
 		return value_property_name;
 	}
-	virtual void update_name() {
+	virtual void update_name() override {
 	}
 
 	virtual Array _get_compare_value() override {
@@ -82,13 +82,15 @@ protected:
 				return curr <= v;
 			case AnimatorAICompareType::NotEqual:
 				return curr != v;
+			default:
+				break;
 		}
 		if (p_is_include) {
 			return true;
 		}
 		return false;
 	}
-	virtual bool is_enable(const Ref<BlackboardPlan> &p_blackboard, bool p_is_include) {
+	virtual bool is_enable(const Ref<BlackboardPlan> &p_blackboard, bool p_is_include) override {
 		if (!p_blackboard->has_var(propertyName)) {
 			if (p_is_include) {
 				return true;
@@ -113,6 +115,8 @@ protected:
 				return curr <= v;
 			case AnimatorAICompareType::NotEqual:
 				return curr != v;
+			default:
+				break;
 		}
 		if (p_is_include) {
 			return true;

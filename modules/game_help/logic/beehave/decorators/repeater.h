@@ -18,7 +18,7 @@ public:
 		return L"转发器将执行其子进程，直到它返回一定次数的 `SUCCESS`当达到最大刻度数时，它将返回 `SUCCESS` 状态代码。如果子进程返回 `FAILURE`，转发器将立即返回 `FAILURE`。";
 	}
 
-	virtual String get_lable_name() {
+	virtual String get_lable_name() override {
 		return L"重复执行装饰器";
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
