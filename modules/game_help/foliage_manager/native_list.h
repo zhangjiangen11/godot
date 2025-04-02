@@ -105,7 +105,7 @@ struct NativeList {
 		//}
 		int64_t last_index = start + count;
 		int64_t copy_count = listCount.get() - last_index;
-		T *temp = (T *)allocal(sizeof(T) * copy_count);
+		T *temp = (T *)alloca(sizeof(T) * copy_count);
 		memcpy(temp, &data[last_index], sizeof(T) * copy_count);
 		memcpy(&data[start], temp, sizeof(T) * copy_count);
 	}

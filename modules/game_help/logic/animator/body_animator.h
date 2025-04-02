@@ -124,9 +124,9 @@ public:
 public:
 	void _process_logic(const Ref<Blackboard> &p_playback_info, double p_delta, bool is_first = true);
 	// 处理动画
-	void _process_animator(const Ref<Blackboard> &p_playback_info, double p_delta, bool is_first = true) ;
+	void _process_animator(const Ref<Blackboard> &p_playback_info, double p_delta, bool is_first = true);
 	// 处理动画
-	void _process_animation(const Ref<Blackboard> &p_playback_info, CharacterRootMotion &root_motion, HashMap<String, float> &bone_blend_weight, double p_delta, bool is_using_root_motion, bool is_first = true) ;
+	void _process_animation(const Ref<Blackboard> &p_playback_info, CharacterRootMotion &root_motion, HashMap<String, float> &bone_blend_weight, double p_delta, bool is_using_root_motion, bool is_first = true);
 
 	void finish_update();
 
