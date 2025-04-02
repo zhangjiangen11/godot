@@ -8,7 +8,7 @@
 //using namespace godot;
 
 #define CHECK_SURFACE_IDX(m_idx) ERR_FAIL_COND(m_idx < 0 || m_idx >= surfaces.size())
-#define CHECK_SURFACE_IDX_V(m_idx, m_ret) ERR_FAIL_COND_V(m_idx < 0 || m_idx >= surfaces.size(), m_ret)
+#define CHECK_SURFACE_IDX_V(m_idx, m_ret) ERR_FAIL_COND_V(m_idx < 0 || m_idx >= (uint64_t)surfaces.size(), m_ret)
 
 void PathMesh3D::set_tile_rotation(uint64_t p_surface_idx, Vector3 p_rotation) {
     CHECK_SURFACE_IDX(p_surface_idx);

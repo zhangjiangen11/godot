@@ -262,7 +262,8 @@ bool Ivy::computeCollision(const Vector3 &oldPos, Vector3 &newPos, bool &climbin
 		Vector3 point;
 		Vector3 normal;
 		int32_t surf_index = -1;
-		bool is_inside = meshList[m]->intersect_segment(from, to, point, normal, &surf_index, false);
+		int32_t r_face_index = 0;
+		bool is_inside = meshList[m]->intersect_segment(from, to, point, normal, &surf_index, &r_face_index, false);
 		if (is_inside) {
 			if (normal.dot(direction) < 0.0) {
 				float dis = point.distance_to(from);
