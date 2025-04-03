@@ -305,8 +305,8 @@ void MCurveTerrain::deform_on_conns(const PackedInt64Array &conn_ids) {
 				}
 				processed_px.insert(t_px);
 				float h = grid->get_height_by_pixel(t_px.x, t_px.y);
-				float t = VariantUtilityFunctions::smoothstep(total_dis, _paint_radius, std::abs(side_dis));
-				h = (ppp.y - h) * t + h;
+				float _t = VariantUtilityFunctions::smoothstep(total_dis, _paint_radius, std::abs(side_dis));
+				h = (ppp.y - h) * _t + h;
 				grid->set_height_by_pixel(t_px.x, t_px.y, h);
 				side_dis += interval_meter;
 			}
@@ -442,9 +442,9 @@ void MCurveTerrain::paint_on_conns(const PackedInt64Array &conn_ids) {
 					continue;
 				}
 				processed_px.insert(t_px);
-				float t = VariantUtilityFunctions::smoothstep(total_dis, _paint_falloff, std::abs(side_dis));
+				float _t = VariantUtilityFunctions::smoothstep(total_dis, _paint_falloff, std::abs(side_dis));
 				Color tbg = grid->get_pixel(t_px.x, t_px.y, img_id);
-				Color fcol = tbg.lerp(paint_color, t);
+				Color fcol = tbg.lerp(paint_color, _t);
 				grid->set_pixel(t_px.x, t_px.y, fcol, img_id);
 				side_dis += interval_meter;
 			}

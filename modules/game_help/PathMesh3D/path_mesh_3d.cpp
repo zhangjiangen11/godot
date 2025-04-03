@@ -364,7 +364,7 @@ bool PathMesh3D::_property_can_revert(const StringName &p_name) const {
 bool PathMesh3D::_property_get_revert(const StringName &p_name, Variant &r_property) const {
 	if (p_name.begins_with("surface_")) {
 		Pair<uint64_t, String> subprop = _decode_dynamic_propname(p_name);
-		uint64_t surf_idx = subprop.first;
+		//uint64_t surf_idx = subprop.first;
 		String sub_name = subprop.second;
 		if (sub_name == "distribution") {
 			r_property = Distribution::DISTRIBUTE_BY_MODEL_LENGTH;

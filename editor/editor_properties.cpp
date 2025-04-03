@@ -59,16 +59,15 @@
 #include "scene/resources/visual_shader_nodes.h"
 
 static Mutex enum_property_name_list;
-static StringName get_object_enum_property_name_list(const StringName& _property) {
+static StringName get_object_enum_property_name_list(const StringName &_property) {
 	StringName ret;
 	enum_property_name_list.lock();
-	static HashMap<StringName,StringName>* enum_property_list_name = new (HashMap<StringName,StringName>);
+	static HashMap<StringName, StringName> *enum_property_list_name = new (HashMap<StringName, StringName>);
 	auto it = enum_property_list_name->find(_property);
-	if(it == enum_property_list_name->end()) {
+	if (it == enum_property_list_name->end()) {
 		StringName name = StringName(_property.str() + "__enum_list__");
-		enum_property_list_name->insert(_property,name);
-	}
-	else {
+		enum_property_list_name->insert(_property, name);
+	} else {
 		ret = it->value;
 	}
 	enum_property_name_list.unlock();
@@ -279,7 +278,6 @@ void EditorPropertyTextEnum::_emit_changed_value(const String &p_string) {
 	} else {
 		emit_changed(get_edited_property(), p_string);
 	}
-	Object* obj = get_edited_object();
 }
 
 void EditorPropertyTextEnum::_option_selected(int p_which) {
@@ -367,13 +365,12 @@ void EditorPropertyTextEnum::setup(const Vector<String> &p_options, bool p_strin
 		edit_button->show();
 	}
 }
-void EditorPropertyTextEnum::cb_update_options(OptionButton* p_ob)
-{
-	if(get_edited_object() == nullptr) {
+void EditorPropertyTextEnum::cb_update_options(OptionButton *p_ob) {
+	if (get_edited_object() == nullptr) {
 		return;
 	}
 	StringName name = get_object_enum_property_name_list(get_edited_property());
-	if(get_edited_object()->has_method(name)) {
+	if (get_edited_object()->has_method(name)) {
 		Array options_array = get_edited_object()->call(name);
 		p_ob->clear();
 		options.clear();
@@ -385,8 +382,7 @@ void EditorPropertyTextEnum::cb_update_options(OptionButton* p_ob)
 		String current_value = get_edited_property_value();
 		int default_option = options.find(current_value);
 		option_button->select(default_option);
-	}	
-	else if (is_dynamic_options) {
+	} else if (is_dynamic_options) {
 		if (!get_edited_object()->has_method(dyn_options_method)) {
 			return;
 		}
@@ -477,7 +473,6 @@ void EditorTextEnum::_emit_changed_value(const String &p_string) {
 	} else {
 		emit_changed(get_edited_property(), p_string);
 	}
-	Object* obj = get_edited_object();
 }
 
 void EditorTextEnum::_option_selected(int p_which) {
@@ -561,10 +556,9 @@ void EditorTextEnum::setup(const Vector<String> &p_options, bool p_string_name, 
 		edit_button->show();
 	}
 }
-void EditorTextEnum::cb_update_options(OptionButton* p_ob)
-{
+void EditorTextEnum::cb_update_options(OptionButton *p_ob) {
 	if (is_dynamic_options) {
-		Object* obj = get_edited_object();
+		Object *obj = get_edited_object();
 		if (obj == nullptr) {
 			return;
 		}
@@ -638,8 +632,6 @@ EditorTextEnum::EditorTextEnum() {
 	cancel_button->set_flat(true);
 	edit_custom_layout->add_child(cancel_button);
 	cancel_button->connect(SceneStringName(pressed), callable_mp(this, &EditorTextEnum::_custom_value_canceled));
-
-
 }
 
 //////////////////// LOCALE ////////////////////////
@@ -720,8 +712,7 @@ void EditorPropertyPath::_path_selected(const String &p_path) {
 				full_path = ResourceUID::get_singleton()->id_to_text(id);
 			}
 		}
-	}
-	else {
+	} else {
 		if (!DirAccess::exists(full_path)) {
 			full_path = old_full_path;
 		}
@@ -2908,11 +2899,11 @@ void EditorPropertyColor::set_live_changes_enabled(bool p_enabled) {
 }
 
 EditorPropertyColor::EditorPropertyColor() {
-	VBoxContainer * vb = memnew(VBoxContainer);
+	VBoxContainer *vb = memnew(VBoxContainer);
 	add_child(vb);
-	
-	Control * c = memnew(Control);
-	c->set_custom_minimum_size(Vector2(0,4));
+
+	Control *c = memnew(Control);
+	c->set_custom_minimum_size(Vector2(0, 4));
 	vb->add_child(c);
 
 	picker = memnew(ColorPickerButton);
@@ -2920,9 +2911,9 @@ EditorPropertyColor::EditorPropertyColor() {
 	picker->set_flat(true);
 
 	c = memnew(Control);
-	c->set_custom_minimum_size(Vector2(0,4));
+	c->set_custom_minimum_size(Vector2(0, 4));
 	vb->add_child(c);
-	
+
 	picker->connect("color_changed", callable_mp(this, &EditorPropertyColor::_color_changed));
 	picker->connect("picker_created", callable_mp(this, &EditorPropertyColor::_picker_created), CONNECT_ONE_SHOT);
 }
@@ -3269,7 +3260,7 @@ EditorPropertyRID::EditorPropertyRID() {
 ///////////////////// Button /////////////////////////
 
 void EditorPropertyButton::update_property() {
-	button->set_text(label);	
+	button->set_text(label);
 	Ref<StyleBoxFlat> style = button->get_theme_stylebox("normal", "Button")->duplicate();
 	style->set_bg_color(color);
 	button->add_theme_style_override("normal", style);
@@ -3279,8 +3270,7 @@ void EditorPropertyButton::update_property() {
 	button->add_theme_style_override("hover", style);
 }
 
-void EditorPropertyButton::setup(Object * p_object, const String &p_hit_string)
-{
+void EditorPropertyButton::setup(Object *p_object, const String &p_hit_string) {
 	object = p_object;
 	Vector<String> sv = p_hit_string.split(";", false);
 	if (sv.size() == 3) {
@@ -3294,11 +3284,9 @@ void EditorPropertyButton::setup(Object * p_object, const String &p_hit_string)
 		label = "none_name";
 	}
 	update_property();
-
 }
 void EditorPropertyButton::_button_pressed() {
-	if (expr.is_valid())
-	{
+	if (expr.is_valid()) {
 		expr->execute(Array(), object, true);
 	}
 }
@@ -3764,8 +3752,6 @@ bool EditorInspectorDefaultPlugin::can_handle(Object *p_object) {
 }
 
 bool EditorInspectorDefaultPlugin::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide) {
-	
-	
 	if (p_hint == PROPERTY_HINT_BUTTON) {
 		EditorPropertyButton *editor = memnew(EditorPropertyButton);
 		editor->setup(p_object, p_hint_text);
@@ -3775,7 +3761,6 @@ bool EditorInspectorDefaultPlugin::parse_property(Object *p_object, const Varian
 		if (editor) {
 			add_property_editor(p_path, editor);
 		}
-
 	}
 	return false;
 }
@@ -3854,9 +3839,6 @@ static EditorPropertyRangeHint _parse_range_hint(PropertyHint p_hint, const Stri
 }
 
 EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide) {
-	
-
-	
 	double default_float_step = EDITOR_GET("interface/inspector/default_float_step");
 	switch (p_type) {
 		// atomic types
@@ -3968,9 +3950,9 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			} else if (p_hint == PROPERTY_HINT_ENUM_DYNAMIC_LIST) {
 				EditorPropertyTextEnum *editor = memnew(EditorPropertyTextEnum);
 				Vector<String> options;
-				if(p_object->has_method(p_hint_text)) {
+				if (p_object->has_method(p_hint_text)) {
 					Array options_array = p_object->call(p_hint_text);
-					for(int i=0;i<options_array.size();i++) {
+					for (int i = 0; i < options_array.size(); i++) {
 						String opt = options_array[i];
 						options.push_back(opt);
 					}
@@ -4003,8 +3985,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 					editor->set_save_mode();
 				}
 				return editor;
-			}
-			 else {
+			} else {
 				EditorPropertyText *editor = memnew(EditorPropertyText);
 				if (p_hint == PROPERTY_HINT_PLACEHOLDER_TEXT) {
 					editor->set_placeholder(p_hint_text);
@@ -4019,7 +4000,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			// math types
 
 		case Variant::VECTOR2: {
-			if(p_hint == PROPERTY_HINT_RANGE) {
+			if (p_hint == PROPERTY_HINT_RANGE) {
 				PackedStringArray range_hint = p_hint_text.split(",");
 				float min = range_hint[0].to_float();
 				float max = range_hint[1].to_float();
@@ -4033,8 +4014,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 				Vector2MinMaxPropertyEditor *editor = memnew(Vector2MinMaxPropertyEditor);
 				editor->setup(min, max, step, allow_less, allow_greater, degrees);
 				return editor;
-			}
-			else {
+			} else {
 				EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
 				EditorPropertyVector2 *editor = memnew(EditorPropertyVector2(p_wide));
 				editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix);
@@ -4043,7 +4023,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 
 		} break;
 		case Variant::VECTOR2I: {
-			if(p_hint == PROPERTY_HINT_RANGE) {
+			if (p_hint == PROPERTY_HINT_RANGE) {
 				PackedStringArray range_hint = p_hint_text.split(",");
 				float min = range_hint[0].to_float();
 				float max = range_hint[1].to_float();
@@ -4055,14 +4035,13 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 				bool allow_greater = range_hint.find("or_greater", 3) > -1;
 				bool degrees = range_hint.find("degrees", 3) > -1;
 				Vector2MinMaxPropertyEditor *editor = memnew(Vector2MinMaxPropertyEditor);
-				editor->setup(min, max, step < 1.0 ? 1.0 : step, allow_less, allow_greater, degrees,true);
+				editor->setup(min, max, step < 1.0 ? 1.0 : step, allow_less, allow_greater, degrees, true);
 				return editor;
-			}
-			else {
+			} else {
 				EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
 				EditorPropertyVector2i *editor = memnew(EditorPropertyVector2i(p_wide));
 				editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix);
-				return editor;				
+				return editor;
 			}
 
 		} break;
@@ -4167,9 +4146,9 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			} else if (p_hint == PROPERTY_HINT_ENUM_DYNAMIC_LIST) {
 				EditorPropertyTextEnum *editor = memnew(EditorPropertyTextEnum);
 				Vector<String> options;
-				if(p_object->has_method(p_hint_text)) {
+				if (p_object->has_method(p_hint_text)) {
 					Array options_array = p_object->call(p_hint_text);
-					for(int i=0;i<options_array.size();i++) {
+					for (int i = 0; i < options_array.size(); i++) {
 						String opt = options_array[i];
 						options.push_back(opt);
 					}

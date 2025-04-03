@@ -173,17 +173,17 @@ static void process_fbx_mesh(const String &p_path, const String &p_group, Node *
 	save_fbx_res("prefab", p_group, prefab, bone_map_save_path, true);
 }
 // 創建一個預製體
-static void create_fbx_prefab(const String &p_path, const String &name, const LocalVector<String> &p_paths, const String &p_skeleton_path) {
-	Ref<CharacterBodyPrefab> prefab;
-	prefab->set_name("prefab_" + name);
-	for (uint32_t i = 0; i < p_paths.size(); i++) {
-		prefab->parts[p_paths[i]] = true;
-	}
-	prefab->skeleton_path = p_skeleton_path;
-	String temp;
-	// 保存预制体
-	save_fbx_res("prefab", p_path, prefab, temp, true);
-}
+//static void create_fbx_prefab(const String &p_path, const String &name, const LocalVector<String> &p_paths, const String &p_skeleton_path) {
+//	Ref<CharacterBodyPrefab> prefab;
+//	prefab->set_name("prefab_" + name);
+//	for (uint32_t i = 0; i < p_paths.size(); i++) {
+//		prefab->parts[p_paths[i]] = true;
+//	}
+//	prefab->skeleton_path = p_skeleton_path;
+//	String temp;
+//	// 保存预制体
+//	save_fbx_res("prefab", p_path, prefab, temp, true);
+//}
 
 enum class UnityDataType : int32_t {
 	AnimationNode = 1,

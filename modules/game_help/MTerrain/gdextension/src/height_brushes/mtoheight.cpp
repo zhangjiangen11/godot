@@ -82,7 +82,7 @@ float MToHeight::get_height(uint32_t x, uint32_t y) {
 	real_t dis = grid->brush_world_pos.distance_to(world_pos);
 	dis = dis / grid->brush_radius;
 	dis = VariantUtilityFunctions::smoothstep(1, hardness, dis);
-	float toh;
+	float toh = 0.0f;
 	if (mode == 2) { // absoulte
 		toh = offset;
 	} else if (mode == 0) { // relative

@@ -176,7 +176,7 @@ void MMeshJoiner::_join_meshes(const Vector<int> &data_ids, Array &mesh_arr, uin
 	if (flags & Flags::COLOR) {
 		mesh_arr[Mesh::ARRAY_COLOR] = colors;
 	}
-	int fvcount = vertices.size();
+	//int fvcount = vertices.size();
 	/*
 	ERR_FAIL_COND(fvcount!=uv.size() && uv.size()!=0);
 	ERR_FAIL_COND(fvcount!=uv2.size() && uv2.size()!=0);

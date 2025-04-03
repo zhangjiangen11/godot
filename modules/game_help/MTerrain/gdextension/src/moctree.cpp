@@ -221,7 +221,7 @@ MOctree::Octant *MOctree::Octant::find_octant_by_point_classic(const int32_t id,
 }
 
 bool MOctree::Octant::check_id_exist_classic(int32_t id) {
-	bool found = false;
+	//bool found = false;
 	if (octs != nullptr) {
 		for (uint8_t i = 0; i < 8; i++) {
 			if (octs[i].check_id_exist_classic(id)) {
@@ -934,7 +934,7 @@ bool MOctree::insert_point(const Vector3 &pos, const int32_t id, int oct_id) {
 	OctPoint p(id, pos, oct_id);
 	bool res = root.insert_point(p, fcapacity);
 	ERR_FAIL_COND_V_MSG(!res, res, "Can not re-insert point at move");
-	ERR_FAIL_COND_V(get_points_count() != point_count, res);
+	ERR_FAIL_COND_V(get_points_count() != int32_t(point_count), res);
 	return res;
 }
 
@@ -1014,7 +1014,7 @@ void MOctree::move_point(const PointMoveReq &mp, int8_t updated_lod, uint8_t _up
 	}
 	p.update_id = _update_id;
 	//UtilityFunctions::print("oct change ",p.position);
-	bool res = root.insert_point(p, fcapacity);
+	root.insert_point(p, fcapacity);
 	// Check if we can merge again some octs
 	if (!is_reacreate) {
 		check_for_mergeable(poct);
@@ -1029,7 +1029,7 @@ void MOctree::add_move_req(const PointMoveReq &mv_data) {
 	if (moves_req_cache.has(mv_data)) {
 		auto el = moves_req_cache.find(mv_data);
 		el->get().new_pos = mv_data.new_pos;
-		auto el2 = moves_req_cache.find(mv_data);
+		//auto el2 = moves_req_cache.find(mv_data);
 		//UtilityFunctions::print("2old ",el2->get().old_pos," new ",el2->get().new_pos);
 	} else {
 		moves_req_cache.insert(mv_data);
@@ -1106,7 +1106,7 @@ void MOctree::update_lod(bool include_root_bound) {
 	Pair<Vector3, Vector3> last_bound;
 	// Updating LOD 0 -> as it does not need exclude region we do that differently here
 	{
-		float lod_dis = lod_setting[0];
+		//float lod_dis = lod_setting[0];
 		last_bound.first = camera_position - Vector3(lod_dis, lod_dis, lod_dis);
 		last_bound.second = camera_position + Vector3(lod_dis, lod_dis, lod_dis);
 		OctUpdateInfo update_info;
@@ -1120,7 +1120,7 @@ void MOctree::update_lod(bool include_root_bound) {
 	for (uint16_t i = 1; i < lod_setting.size(); i++) {
 		OctUpdateInfo update_info;
 		update_info.exclude_bound = last_bound;
-		float lod_dis = lod_setting[i];
+		//float lod_dis = lod_setting[i];
 		update_info.bound.first = camera_position - Vector3(lod_dis, lod_dis, lod_dis);
 		update_info.bound.second = camera_position + Vector3(lod_dis, lod_dis, lod_dis);
 		update_info.update_id = update_id;

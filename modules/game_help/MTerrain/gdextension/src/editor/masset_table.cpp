@@ -1310,7 +1310,7 @@ void MAssetTable::set_collection_data(int collection_id, const PackedByteArray &
 	int sub_t_total_size = sub_count * (sizeof(Transform3D));
 	int col_s_total_size = col_count * (sizeof(CollisionShape));
 	int col_t_total_size = col_count * (sizeof(Transform3D));
-	ERR_FAIL_COND(data.size() != COLLECTION_DATA_HEADER_SIZE + sizeof(Collection) + sub_id_total_size + sub_t_total_size + col_s_total_size + col_t_total_size);
+	ERR_FAIL_COND(uint32_t(data.size()) != COLLECTION_DATA_HEADER_SIZE + sizeof(Collection) + sub_id_total_size + sub_t_total_size + col_s_total_size + col_t_total_size);
 	int head = COLLECTION_DATA_HEADER_SIZE;
 	memcpy(collections.ptrw() + collection_id, data.ptr() + head, sizeof(Collection));
 	head += sizeof(Collection);
@@ -1345,10 +1345,10 @@ PackedByteArray MAssetTable::get_collection_data(int collection_id) const {
 		return data;
 	}
 	data.resize(COLLECTION_DATA_HEADER_SIZE);
-	const Collection &cl = collections[collection_id];
+	//const Collection &cl = collections[collection_id];
 	int sub_count = 0;
-	const PackedInt32Array *sub_cl;
-	const Vector<Transform3D> *sub_t;
+	const PackedInt32Array *sub_cl = nullptr;
+	const Vector<Transform3D> *sub_t = nullptr;
 	{
 		int c = sub_collections.find(collection_id);
 		if (c != -1) {
@@ -1358,8 +1358,8 @@ PackedByteArray MAssetTable::get_collection_data(int collection_id) const {
 		}
 	}
 	int col_count = 0;
-	const Vector<CollisionShape> *col_shapes;
-	const Vector<Transform3D> *col_t;
+	const Vector<CollisionShape> *col_shapes = nullptr;
+	const Vector<Transform3D> *col_t = nullptr;
 	{
 		int c = collisions_data.find(collection_id);
 		if (c != -1) {
@@ -1546,9 +1546,9 @@ void MAssetTable::auto_asset_update_from_dir(ItemType type) {
 			ERR_FAIL_MSG("Invalid Item Type");
 	}
 	Ref<DirAccess> dir = DirAccess::open(dir_path);
-	PackedStringArray file_names = dir->get_files();
+	PackedStringArray file_names;
 	if (dir.is_valid()) {
-		PackedStringArray file_names = dir->get_files();
+		file_names = dir->get_files();
 		dir.unref();
 	}
 	//UtilityFunctions::print("File names ",file_names);
@@ -1590,7 +1590,7 @@ void MAssetTable::auto_asset_update_from_dir(ItemType type) {
 	}
 	// What not handled is new
 	for (HashMap<int32_t, String>::ConstIterator it = found_item_id_names.begin(); it != found_item_id_names.end(); ++it) {
-		int new_collection = collection_create(it->value, it->key, type, -1);
+		collection_create(it->value, it->key, type, -1);
 	}
 	save();
 }

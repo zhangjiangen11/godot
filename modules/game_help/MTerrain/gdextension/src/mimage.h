@@ -39,7 +39,7 @@ struct MImage {
 	uint32_t width;
 	uint32_t height;
 	uint32_t current_size;
-	uint32_t current_scale = 1;
+	int32_t current_scale = 1;
 	uint32_t pixel_size;
 	uint32_t total_pixel_amount;
 	Image::Format format = Image::Format::FORMAT_MAX; //Setting an invalid format so in case it is not set we can generate error

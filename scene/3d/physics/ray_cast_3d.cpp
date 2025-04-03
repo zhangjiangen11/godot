@@ -559,9 +559,6 @@ void RayCast3D::_clear_debug_shape() {
 RayCast3D::RayCast3D() {
 }
 
-
-
-
 /*******************************************************RayCastCompoent3D********************************************************************/
 void RayCastCompoent3D::set_target_position(const Vector3 &p_point) {
 	target_position = p_point;
@@ -733,7 +730,7 @@ void RayCastCompoent3D::_notification(int p_what) {
 				break;
 			}
 
-			bool prev_collision_state = collided;
+			//bool prev_collision_state = collided;
 			_update_raycast_state();
 			// if (get_tree()->is_debugging_collisions_hint()) {
 			// 	if (prev_collision_state != collided) {
@@ -813,7 +810,7 @@ void RayCastCompoent3D::remove_exception(const CollisionObject3D *p_node) {
 void RayCastCompoent3D::clear_exceptions() {
 	exclude.clear();
 
-	if (exclude_parent_body ) {
+	if (exclude_parent_body) {
 		CollisionObject3D *parent = Object::cast_to<CollisionObject3D>(owenr);
 		if (parent) {
 			exclude.insert(parent->get_rid());
@@ -854,7 +851,6 @@ bool RayCastCompoent3D::is_hit_back_faces_enabled() const {
 }
 
 void RayCastCompoent3D::_bind_methods() {
-
 	ClassDB::bind_method(D_METHOD("set_rotation", "rotation"), &RayCastCompoent3D::set_rotation);
 	ClassDB::bind_method(D_METHOD("get_rotation"), &RayCastCompoent3D::get_rotation);
 
@@ -968,7 +964,7 @@ void RayCastCompoent3D::set_debug_shape_thickness(const int p_debug_shape_thickn
 
 	if (Engine::get_singleton()->is_editor_hint()) {
 		//if (is_inside_tree()) {
-			_update_debug_shape_vertices();
+		_update_debug_shape_vertices();
 		//}
 	} else if (debug_instance.is_valid()) {
 		_update_debug_shape();
@@ -1102,5 +1098,3 @@ void RayCastCompoent3D::_clear_debug_shape() {
 
 RayCastCompoent3D::RayCastCompoent3D() {
 }
-
-

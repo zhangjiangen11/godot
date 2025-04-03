@@ -711,7 +711,7 @@ void BoxMesh::_create_mesh_array(Array &p_arr) const {
 	BoxMesh::create_mesh_array(p_arr, size, subdivide_w, subdivide_h, subdivide_d, _add_uv2, _uv2_padding, start_by_center);
 }
 
-void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int subdivide_h, int subdivide_d, bool p_add_uv2, const float p_uv2_padding,bool start_by_center) {
+void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int subdivide_h, int subdivide_d, bool p_add_uv2, const float p_uv2_padding, bool start_by_center) {
 	int i, j, prevrow, thisrow, point;
 	float x, y, z;
 	float onethird = 1.0 / 3.0;
@@ -730,7 +730,6 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 	float depth_v = size.z / total_v;
 
 	Vector3 start_pos = size * -0.5;
-
 
 	// set our bounding box
 
@@ -937,9 +936,9 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 		thisrow = point;
 	}
 	if (!start_by_center) {
-		Vector3* ptr = points.ptrw();
-		for(int i = 0; i < points.size(); ++i) {
-			ptr[i] -= start_pos;
+		Vector3 *ptr = points.ptrw();
+		for (int p = 0; p < points.size(); ++p) {
+			ptr[p] -= start_pos;
 		}
 	}
 
@@ -1441,15 +1440,15 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 			} else if (orientation == FACE_Z) {
 				points.push_back(Vector3(-x, z, 0.0) + center_offset);
 			}
-			if(using_normal) {
+			if (using_normal) {
 				normals.push_back(normal);
 				if (orientation == FACE_X) {
 					ADD_TANGENT(0.0, 0.0, -1.0, 1.0);
 				} else {
 					ADD_TANGENT(1.0, 0.0, 0.0, 1.0);
-				}				
+				}
 			}
-			if(using_uv) {
+			if (using_uv) {
 				uvs.push_back(Vector2(1.0 - u, 1.0 - v)); /* 1.0 - uv to match orientation with Quad */
 			}
 			point++;
@@ -1482,18 +1481,18 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 			off.x = start_pos.x;
 			off.y = start_pos.y;
 		}
-		Vector3* ptr = points.ptrw();
-		for(int i = 0; i < points.size(); ++i) {
-			ptr[i] -= off;
+		Vector3 *ptr = points.ptrw();
+		for (int p = 0; p < points.size(); ++p) {
+			ptr[p] -= off;
 		}
 	}
 
 	p_arr[RS::ARRAY_VERTEX] = points;
-	if(using_normal) {
+	if (using_normal) {
 		p_arr[RS::ARRAY_NORMAL] = normals;
 		p_arr[RS::ARRAY_TANGENT] = tangents;
 	}
-	if(using_uv) {
+	if (using_uv) {
 		p_arr[RS::ARRAY_TEX_UV] = uvs;
 	}
 	p_arr[RS::ARRAY_INDEX] = indices;
@@ -1514,13 +1513,13 @@ void PlaneMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_orientation", "orientation"), &PlaneMesh::set_orientation);
 	ClassDB::bind_method(D_METHOD("get_orientation"), &PlaneMesh::get_orientation);
 
-	ClassDB::bind_method(D_METHOD("set_start_by_center","enable"), &PlaneMesh::set_start_by_center);
+	ClassDB::bind_method(D_METHOD("set_start_by_center", "enable"), &PlaneMesh::set_start_by_center);
 	ClassDB::bind_method(D_METHOD("is_start_by_center"), &PlaneMesh::is_start_by_center);
 
-	ClassDB::bind_method(D_METHOD("set_using_normal","enable"), &PlaneMesh::set_using_normal);
+	ClassDB::bind_method(D_METHOD("set_using_normal", "enable"), &PlaneMesh::set_using_normal);
 	ClassDB::bind_method(D_METHOD("is_using_normal"), &PlaneMesh::is_using_normal);
 
-	ClassDB::bind_method(D_METHOD("set_using_uv","enable"), &PlaneMesh::set_using_uv);
+	ClassDB::bind_method(D_METHOD("set_using_uv", "enable"), &PlaneMesh::set_using_uv);
 	ClassDB::bind_method(D_METHOD("is_using_uv"), &PlaneMesh::is_using_uv);
 
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "size", PROPERTY_HINT_NONE, "suffix:m"), "set_size", "get_size");

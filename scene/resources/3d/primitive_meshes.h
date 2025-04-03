@@ -291,14 +291,14 @@ public:
 	void set_orientation(const Orientation p_orientation);
 	Orientation get_orientation() const;
 
-	void set_start_by_center(bool v) { start_by_center = v;}
-	bool is_start_by_center(){return start_by_center;}
+	void set_start_by_center(bool v) { start_by_center = v; }
+	bool is_start_by_center() { return start_by_center; }
 
-	void set_using_normal(bool v) { using_normal = v;}
-	bool is_using_normal() {return using_normal;}
+	void set_using_normal(bool v) { using_normal = v; }
+	bool is_using_normal() { return using_normal; }
 
-	void set_using_uv(bool v) { using_uv = v;}
-	bool is_using_uv() {return using_uv;}
+	void set_using_uv(bool v) { using_uv = v; }
+	bool is_using_uv() { return using_uv; }
 
 	PlaneMesh();
 };

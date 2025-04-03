@@ -100,7 +100,7 @@ void SceneChunk::MeshInstance::update_mesh_instance(RID p_world_3d_scenario) {
 
 	int block_count = 0;
 	for (auto &it : blocks) {
-		if (it == nullptr) {
+		if (it.is_null()) {
 			continue;
 		}
 		block_count += it->get_instance_count();
@@ -149,7 +149,7 @@ void SceneChunk::MeshInstance::update_mesh_instance(RID p_world_3d_scenario) {
 		++i;
 	}
 	for (auto &it : blocks) {
-		if (it == nullptr) {
+		if (it.is_null()) {
 			continue;
 		}
 		if (it->last_index != i) {

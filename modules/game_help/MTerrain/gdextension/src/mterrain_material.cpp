@@ -460,7 +460,7 @@ void MTerrainMaterial::create_empty_terrain_image(StringName _name, Image::Forma
 	terrain_textures_ids.insert(_name, terrain_textures_added.size() - 1);
 }
 
-int MTerrainMaterial::get_texture_id(const String & _name) {
+int MTerrainMaterial::get_texture_id(const String &_name) {
 	if (!terrain_textures_ids.has(_name)) {
 		if (_name.is_empty()) {
 			//WARN_PRINT("Texture name is empty");
@@ -557,7 +557,7 @@ void MTerrainMaterial::refresh_all_uniform() {
 void MTerrainMaterial::clear_all_uniform() {
 	for (HashMap<int, RID>::Iterator it = materials.begin(); it != materials.end(); ++it) {
 		RID m = it->value;
-		int region_id = it->key;
+		//int region_id = it->key;
 		//Setting uniforms
 		Dictionary region_uniforms;
 		Dictionary default_uniforms;

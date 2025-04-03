@@ -410,7 +410,7 @@ void MCurve::_octree_update_finish() {
 	}
 	conn_update.clear();
 	point_update.clear();
-	Point *ptrw = points_buffer.ptrw();
+	//Point *ptrw = points_buffer.ptrw();
 	//HashSet<int32_t> updated_points;
 	Vector<int32_t> updated_points;
 	for (int i = 0; i < update_info.size(); i++) {
@@ -1691,7 +1691,7 @@ void MCurve::_set_data(const PackedByteArray &data) {
 	uint32_t points_buffer_count = PackedByteArray_decode_u32(&data, 12);
 	size_t size_free_indicies_byte = free_indicies_count * sizeof(int32_t);
 	size_t size_points_buffer_byte = points_buffer_count * sizeof(MCurve::PointSave);
-	ERR_FAIL_COND(data.size() != MCURVE_DATA_HEADER_SIZE + size_free_indicies_byte + size_points_buffer_byte);
+	ERR_FAIL_COND(size_t(data.size()) != MCURVE_DATA_HEADER_SIZE + size_free_indicies_byte + size_points_buffer_byte);
 
 	// Finish header
 	points_buffer.resize(points_buffer_count);

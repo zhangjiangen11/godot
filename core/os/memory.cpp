@@ -33,8 +33,8 @@
 
 #include "core/templates/safe_refcount.h"
 
-#include <stdlib.h>
 #include "thirdparty/embree/common/sys/mutex.h"
+#include <stdlib.h>
 // #include "thirdparty/embree/common/sys/platform.h"
 // #include "thirdparty/embree/common/simd/simd.h"
 // #include "thirdparty/embree/common/math/vec2.h"
@@ -76,143 +76,95 @@ SafeNumeric<uint64_t> Memory::max_usage;
 SafeNumeric<uint64_t> Memory::alloc_count;
 #define SAMLL_MEMORY_MANAGER 0
 
-
 template <int SIZE_COUNT>
-struct SmallMemoryBuffer
-{
+struct SmallMemoryBuffer {
 	uint64_t size_or_next = 0;
 	uint8_t data[SIZE_COUNT];
 };
 template <int SIZE_COUNT>
-struct SmallMemory
-{
-	_FORCE_INLINE_ void * alloc_mem(int p_count) {
-		{			
-			void * ret = nullptr;
+struct SmallMemory {
+	_FORCE_INLINE_ void *alloc_mem(int p_count) {
+		{
+			void *ret = nullptr;
 			mutex.lock();
-			if(buffers != nullptr)
-			{
+			if (buffers != nullptr) {
 				SmallMemoryBuffer<SIZE_COUNT> *b = buffers;
 				buffers = (SmallMemoryBuffer<SIZE_COUNT> *)b->size_or_next;
 				ret = b->data;
 				b->size_or_next = p_count;
 			}
 			mutex.unlock();
-			if(ret != nullptr)
-			{
+			if (ret != nullptr) {
 				return ret;
 			}
 		}
 		SmallMemoryBuffer<SIZE_COUNT> *b = (SmallMemoryBuffer<SIZE_COUNT> *)malloc(sizeof(SmallMemoryBuffer<SIZE_COUNT>));
-		if(b == nullptr)
-		{
+		if (b == nullptr) {
 			return nullptr;
 		}
 		b->size_or_next = p_count;
 		return b->data;
-		
 	}
 	_FORCE_INLINE_ void free_mem(void *p_ptr) {
-		if(p_ptr == nullptr)
-		{
+		if (p_ptr == nullptr) {
 			return;
 		}
 
-		uint8_t* mem = (uint8_t*)p_ptr;
+		uint8_t *mem = (uint8_t *)p_ptr;
 		mem -= sizeof(uint64_t);
-		if(free_count.get() > 500)
-		{
+		if (free_count.get() > 500) {
 			free(mem);
 			return;
 		}
-		SmallMemoryBuffer<SIZE_COUNT>* b = (SmallMemoryBuffer<SIZE_COUNT> *) mem;
+		SmallMemoryBuffer<SIZE_COUNT> *b = (SmallMemoryBuffer<SIZE_COUNT> *)mem;
 		mutex.lock();
 		b->size_or_next = (uint64_t)buffers;
 		buffers = b;
 		mutex.unlock();
 	}
-	 
+
 	MutexSys mutex;
-	SmallMemoryBuffer<SIZE_COUNT> * buffers = nullptr;
+	SmallMemoryBuffer<SIZE_COUNT> *buffers = nullptr;
 	SafeNumeric<uint64_t> free_count;
 };
 
-struct SmallMemoryManager
-{
-	#define SAMLL_MEMORY_MEMBER(count) SmallMemory<count> small_memory_## count
-	#define SAMLL_MEMORY_MEMBER_BREAH(value,count) if(value <= count) {return small_memory_## count.alloc_mem(count);}
-	#define SAMLL_MEMORY_MEMBER_BREAH_FREE(ptr,value,count) if(value <= count) {small_memory_## count.free_mem(ptr);}
-	#define SAMLL_MEMORY_MEMBER_BREAH_INDEX(value,count,index) if(value <= count) {return index;}
+struct SmallMemoryManager {
+#define SAMLL_MEMORY_MEMBER(count) SmallMemory<count> small_memory_##count
+#define SAMLL_MEMORY_MEMBER_BREAH(value, count)       \
+	if (value <= count) {                             \
+		return small_memory_##count.alloc_mem(count); \
+	}
+#define SAMLL_MEMORY_MEMBER_BREAH_FREE(ptr, value, count) \
+	if (value <= count) {                                 \
+		small_memory_##count.free_mem(ptr);               \
+	}
+#define SAMLL_MEMORY_MEMBER_BREAH_INDEX(value, count, index) \
+	if (value <= count) {                                    \
+		return index;                                        \
+	}
 
-	void* alloc_mem(int p_count) {
-		if(p_count <= 0)
+	void *alloc_mem(int p_count) {
+		if (p_count <= 0) {
 			return nullptr;
+		}
 		SAMLL_MEMORY_MEMBER_BREAH(p_count, 20)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 40)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 80)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 120)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 160)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 180)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 256)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 320)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 480)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 512)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 800)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1024)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1500)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1800)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 2048)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 3000)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 5000)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 7000)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 8000)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 12000)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 15000)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 20000)
-		else
-		{
+		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 40) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 80) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 120) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 160) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 180) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 256) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 320) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 480) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 512) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 800) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1024) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1500) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1800) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 2048) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 3000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 5000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 7000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 8000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 12000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 15000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 20000) else {
 			uint8_t *mem = (uint8_t *)malloc(p_count + sizeof(uint64_t));
-			if(mem == nullptr)
-			{
+			if (mem == nullptr) {
 				return nullptr;
 			}
 			*(uint64_t *)mem = p_count;
 			return mem + sizeof(uint64_t);
-			
 		}
-
 	}
 	void free_mem(void *p_ptr) {
-		if(p_ptr == nullptr)
-		{
+		if (p_ptr == nullptr) {
 			return;
 		}
 		uint64_t p_count = get_buffer_count(p_ptr);
-		SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count,20)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count,40)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count,80)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 120)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 160)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 180)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 256)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 320)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 480)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 512)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 800)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 1024)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 1500)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 1800)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 2048)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 3000)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 5000)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 7000)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 8000)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 12000)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 15000)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr,p_count, 20000)
-		else
-		{
-			uint8_t* mem = (uint8_t*)p_ptr - sizeof(uint64_t);
+		SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 20)
+		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 40) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 80) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 120) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 160) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 180) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 256) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 320) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 480) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 512) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 800) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 1024) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 1500) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 1800) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 2048) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 3000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 5000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 7000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 8000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 12000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 15000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 20000) else {
+			uint8_t *mem = (uint8_t *)p_ptr - sizeof(uint64_t);
 			free(mem);
 		}
 	}
@@ -220,67 +172,39 @@ struct SmallMemoryManager
 		if (p_memory == nullptr) {
 			return alloc_mem(p_new_bytes);
 		}
-		uint8_t *mem = (uint8_t *)p_memory;
-		if(p_new_bytes == 0)
-		{
+		//uint8_t *mem = (uint8_t *)p_memory;
+		if (p_new_bytes == 0) {
 			free_mem(p_memory);
 			return nullptr;
-		}	else {
+		} else {
 			auto old_count = get_buffer_count(p_memory);
-	
+
 			int index = get_buffer_type_index(old_count);
-			if(index >= 0 && index == get_buffer_type_index(p_new_bytes) )
-			{
+			if (index >= 0 && index == get_buffer_type_index(p_new_bytes)) {
 				return p_memory;
 			}
-			void* new_mem = alloc_mem(p_new_bytes);
+			void *new_mem = alloc_mem(p_new_bytes);
 			memcpy(new_mem, p_memory, MIN(old_count, p_new_bytes));
 			free_mem(p_memory);
 			return new_mem;
 		}
 	}
-	_FORCE_INLINE_ uint64_t get_buffer_count(void* p_ptr)
-	{
+	_FORCE_INLINE_ uint64_t get_buffer_count(void *p_ptr) {
 		uint8_t *mem = (uint8_t *)p_ptr - sizeof(uint64_t);
 		return *(uint64_t *)(mem);
 	}
-	_FORCE_INLINE_ int get_buffer_type_index(void* p_ptr)
-	{
+	_FORCE_INLINE_ int get_buffer_type_index(void *p_ptr) {
 		uint8_t *mem = (uint8_t *)p_ptr - sizeof(uint64_t);
 		uint64_t count = *(uint64_t *)(mem);
 		return get_buffer_type_index(count);
 	}
 
-	int get_buffer_type_index(int p_count)
-	{
-		SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 20,0)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count,40,1)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count,80,2)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 120,3)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 160,4)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 180,5)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 256,6)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 320,7)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 480,8)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 512,9)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 800,10)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1024,11)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1500,12)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1800,13)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 2048,14)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 3000,15)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 5000,16)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 7000,17)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 8000,18)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 12000,19)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 15000,20)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 20000,21)
-		
-		return -1;
+	int get_buffer_type_index(int p_count) {
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 20, 0)
+		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 40, 1) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 80, 2) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 120, 3) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 160, 4) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 180, 5) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 256, 6) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 320, 7) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 480, 8) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 512, 9) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 800, 10) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1024, 11) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1500, 12) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1800, 13) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 2048, 14) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 3000, 15) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 5000, 16) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 7000, 17) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 8000, 18) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 12000, 19) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 15000, 20) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 20000, 21)
+
+				return -1;
 	}
-
-
-
 
 	SAMLL_MEMORY_MEMBER(20);
 	SAMLL_MEMORY_MEMBER(40);
@@ -305,27 +229,21 @@ struct SmallMemoryManager
 	SAMLL_MEMORY_MEMBER(15000);
 	SAMLL_MEMORY_MEMBER(20000);
 
-	#undef SAMLL_MEMORY_MEMBER
-	#undef SAMLL_MEMORY_MEMBER_BREAH
-	#undef SAMLL_MEMORY_MEMBER_BREAH_FREE
-	#undef SAMLL_MEMORY_MEMBER_BREAH_INDEX
-
+#undef SAMLL_MEMORY_MEMBER
+#undef SAMLL_MEMORY_MEMBER_BREAH
+#undef SAMLL_MEMORY_MEMBER_BREAH_FREE
+#undef SAMLL_MEMORY_MEMBER_BREAH_INDEX
 };
 
-
-static _FORCE_INLINE_ SmallMemoryManager& get_small_memory_manager()
-{
-	static SmallMemoryManager* s_manager = new(malloc(sizeof(SmallMemoryManager))) SmallMemoryManager();
+static _FORCE_INLINE_ SmallMemoryManager &get_small_memory_manager() {
+	static SmallMemoryManager *s_manager = new (malloc(sizeof(SmallMemoryManager))) SmallMemoryManager();
 	return *s_manager;
 }
 
-
-
-
 void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
-	#if SAMLL_MEMORY_MANAGER
+#if SAMLL_MEMORY_MANAGER
 	return get_small_memory_manager().alloc_mem(p_bytes);
-	#endif
+#endif
 	DEV_ASSERT(is_power_of_2(p_alignment));
 
 	void *p1, *p2;
@@ -339,10 +257,10 @@ void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
 }
 
 void *Memory::realloc_aligned_static(void *p_memory, size_t p_bytes, size_t p_prev_bytes, size_t p_alignment) {
-	#if SAMLL_MEMORY_MANAGER
-	return get_small_memory_manager().realloc_mem(p_memory,p_bytes);
-	#endif
-	
+#if SAMLL_MEMORY_MANAGER
+	return get_small_memory_manager().realloc_mem(p_memory, p_bytes);
+#endif
+
 	if (p_memory == nullptr) {
 		return alloc_aligned_static(p_bytes, p_alignment);
 	}
@@ -366,9 +284,9 @@ void Memory::free_aligned_static(void *p_memory) {
 }
 
 void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
-	#if SAMLL_MEMORY_MANAGER
+#if SAMLL_MEMORY_MANAGER
 	return get_small_memory_manager().alloc_mem(p_bytes);
-	#endif
+#endif
 #ifdef DEBUG_ENABLED
 	bool prepad = true;
 #else
@@ -379,7 +297,6 @@ void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
 	void *mem = malloc(p_bytes + (prepad ? DATA_OFFSET : 0));
 
 	ERR_FAIL_NULL_V(mem, nullptr);
-
 
 	if (prepad) {
 		uint8_t *s8 = (uint8_t *)mem;
@@ -398,9 +315,9 @@ void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
 }
 
 void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
-	#if SAMLL_MEMORY_MANAGER
-	return get_small_memory_manager().realloc_mem(p_memory,p_bytes);
-	#endif
+#if SAMLL_MEMORY_MANAGER
+	return get_small_memory_manager().realloc_mem(p_memory, p_bytes);
+#endif
 	if (p_memory == nullptr) {
 		return alloc_static(p_bytes, p_pad_align);
 	}
@@ -451,10 +368,10 @@ void *Memory::realloc_static(void *p_memory, size_t p_bytes, bool p_pad_align) {
 }
 
 void Memory::free_static(void *p_ptr, bool p_pad_align) {
-	#if SAMLL_MEMORY_MANAGER
+#if SAMLL_MEMORY_MANAGER
 	get_small_memory_manager().free_mem(p_ptr);
 	return;
-	#endif
+#endif
 	ERR_FAIL_NULL(p_ptr);
 
 	uint8_t *mem = (uint8_t *)p_ptr;

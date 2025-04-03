@@ -400,8 +400,8 @@ int MHlod::add_mesh_item(const Transform3D &transform, const PackedInt32Array &m
 	transforms.push_back(transform);
 	/// Lasts for checking duplicate
 	int64_t last_mesh = -1;
-	uint8_t last_shadow_setting;
-	uint8_t last_gi_mode_setting;
+	uint8_t last_shadow_setting = 0;
+	uint8_t last_gi_mode_setting = 0;
 	/////////////////////////////////
 	int lod = -1;
 	for (int i = 0; i < lod_count; i++) {

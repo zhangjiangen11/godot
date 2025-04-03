@@ -32,208 +32,191 @@
 
 #include "core/io/logger.h"
 #include "core/object/object_id.h"
-#include "core/os/os.h"
-#include "core/string/ustring.h"
 #include "core/object/script_instance.h"
 #include "core/object/script_language.h"
+#include "core/os/os.h"
+#include "core/string/ustring.h"
 
-
-
-    struct StackFrame {
-        String file;
-        String function;
-        int32_t line;
-		void to_string(String& out)
-		{
-			if(out.length() > 0)
-			{
-				out += "\n";
-			}
-			out += file + "(" + itos(line) + "):" + function + "";
+struct StackFrame {
+	String file;
+	String function;
+	int32_t line;
+	void to_string(String &out) {
+		if (out.length() > 0) {
+			out += "\n";
 		}
-    };
+		out += file + "(" + itos(line) + "):" + function + "";
+	}
+};
 
-    static void initialize();
+static void initialize();
 
-    static void getStackTrace(LocalVector<StackFrame>& stackTrace);
-	
-
-
+static void getStackTrace(LocalVector<StackFrame> &stackTrace);
 
 #if defined(WINDOWS_ENABLED)
 
-    #include <windows.h>
-    #include <dbghelp.h>
+#include <windows.h>
+// 调试
+#include <dbghelp.h>
 
+//static void initialize() {
 
-        static void initialize() {
+//}
 
-        }
+static void getStackTrace(LocalVector<StackFrame> &stackTrace) {
+	HANDLE process = GetCurrentProcess();
+	HANDLE thread = GetCurrentThread();
 
-        static void getStackTrace(LocalVector<StackFrame> &stackTrace) {
+	CONTEXT context = {};
+	context.ContextFlags = CONTEXT_FULL;
+	RtlCaptureContext(&context);
 
-            HANDLE process = GetCurrentProcess();
-            HANDLE thread = GetCurrentThread();
+	SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_EXACT_SYMBOLS);
+	SymInitialize(process, nullptr, TRUE);
 
-            CONTEXT context = {};
-            context.ContextFlags = CONTEXT_FULL;
-            RtlCaptureContext(&context);
+	DWORD image;
+	STACKFRAME64 stackFrame;
+	ZeroMemory(&stackFrame, sizeof(STACKFRAME64));
 
-			SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_EXACT_SYMBOLS);
-            SymInitialize(process, nullptr, TRUE);
-
-            DWORD image;
-            STACKFRAME64 stackFrame;
-            ZeroMemory(&stackFrame, sizeof(STACKFRAME64));
-
-            image = IMAGE_FILE_MACHINE_AMD64;
-            stackFrame.AddrPC.Offset = context.Rip;
-            stackFrame.AddrPC.Mode = AddrModeFlat;
-            stackFrame.AddrFrame.Offset = context.Rsp;
-            stackFrame.AddrFrame.Mode = AddrModeFlat;
-            stackFrame.AddrStack.Offset = context.Rsp;
-            stackFrame.AddrStack.Mode = AddrModeFlat;
+	image = IMAGE_FILE_MACHINE_AMD64;
+	stackFrame.AddrPC.Offset = context.Rip;
+	stackFrame.AddrPC.Mode = AddrModeFlat;
+	stackFrame.AddrFrame.Offset = context.Rsp;
+	stackFrame.AddrFrame.Mode = AddrModeFlat;
+	stackFrame.AddrStack.Offset = context.Rsp;
+	stackFrame.AddrStack.Mode = AddrModeFlat;
 #if defined(_M_X64)
-			stackFrame.AddrPC.Offset = context.Rip;
-			stackFrame.AddrStack.Offset = context.Rsp;
-			stackFrame.AddrFrame.Offset = context.Rbp;
+	stackFrame.AddrPC.Offset = context.Rip;
+	stackFrame.AddrStack.Offset = context.Rsp;
+	stackFrame.AddrFrame.Offset = context.Rbp;
 #elif defined(_M_ARM64) || defined(_M_ARM64EC)
-			stackFrame.AddrPC.Offset = context.Pc;
-			stackFrame.AddrStack.Offset = context.Sp;
-			stackFrame.AddrFrame.Offset = context->Fp;
+	stackFrame.AddrPC.Offset = context.Pc;
+	stackFrame.AddrStack.Offset = context.Sp;
+	stackFrame.AddrFrame.Offset = context->Fp;
 #elif defined(_M_ARM)
-			stackFrame.AddrPC.Offset = context.Pc;
-			stackFrame.AddrStack.Offset = context.Sp;
-			stackFrame.AddrFrame.Offset = context->R11;
+	stackFrame.AddrPC.Offset = context.Pc;
+	stackFrame.AddrStack.Offset = context.Sp;
+	stackFrame.AddrFrame.Offset = context->R11;
 #else
-			stackFrame.AddrPC.Offset = context.Eip;
-			stackFrame.AddrStack.Offset = context.Esp;
-			stackFrame.AddrFrame.Offset = context.Ebp;
+	stackFrame.AddrPC.Offset = context.Eip;
+	stackFrame.AddrStack.Offset = context.Esp;
+	stackFrame.AddrFrame.Offset = context.Ebp;
 
 #endif
 
-			typedef SYMBOL_INFO sym_type;
-			sym_type *symbol = (sym_type *) alloca(sizeof(sym_type) + 1024);
-			int index = 0;
-			bool is_in_gdscript = false;
-            while (true) {
-                if (StackWalk64(
-                        image, process, thread,
-                        &stackFrame, &context, nullptr,
-                        SymFunctionTableAccess64, SymGetModuleBase64, nullptr) == FALSE)
-                    break;
+	typedef SYMBOL_INFO sym_type;
+	sym_type *symbol = (sym_type *)alloca(sizeof(sym_type) + 1024);
+	int index = 0;
+	bool is_in_gdscript = false;
+	while (true) {
+		if (StackWalk64(
+					image, process, thread,
+					&stackFrame, &context, nullptr,
+					SymFunctionTableAccess64, SymGetModuleBase64, nullptr) == FALSE) {
+			break;
+		}
 
-                if (stackFrame.AddrReturn.Offset == stackFrame.AddrPC.Offset)
-                    break;
-					
-				++index;
-				if(index < 2)
-				{
-					continue;
-				}
-				memset(symbol, '\0', sizeof(sym_type) + 1024);
-                symbol->SizeOfStruct = sizeof(sym_type);
-                symbol->MaxNameLen = 1024;
+		if (stackFrame.AddrReturn.Offset == stackFrame.AddrPC.Offset) {
+			break;
+		}
 
-                DWORD64 displacementSymbol = 0;
-                const char *symbolName;
-                if (SymFromAddr(process, stackFrame.AddrPC.Offset, &displacementSymbol, symbol) == TRUE) {
-                    symbolName = symbol->Name;
-                } else {
-                    symbolName = "??";
-                }
+		++index;
+		if (index < 2) {
+			continue;
+		}
+		memset(symbol, '\0', sizeof(sym_type) + 1024);
+		symbol->SizeOfStruct = sizeof(sym_type);
+		symbol->MaxNameLen = 1024;
 
-                SymSetOptions(SYMOPT_LOAD_LINES);
+		DWORD64 displacementSymbol = 0;
+		const char *symbolName;
+		if (SymFromAddr(process, stackFrame.AddrPC.Offset, &displacementSymbol, symbol) == TRUE) {
+			symbolName = symbol->Name;
+		} else {
+			symbolName = "??";
+		}
 
-                IMAGEHLP_LINE64 line;
-                line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+		SymSetOptions(SYMOPT_LOAD_LINES);
 
-                DWORD displacementLine = 0;
+		IMAGEHLP_LINE64 line;
+		line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
 
-                int32_t lineNumber = -1;
-                const char *fileName;
-                if (SymGetLineFromAddr64(process, stackFrame.AddrPC.Offset, &displacementLine, &line) == TRUE) {
-                    lineNumber = line.LineNumber;
-                    fileName = line.FileName;
-                } else {
-                    lineNumber = -1;
-                    fileName = "??";
-                }
-				if(is_in_gdscript == false && strcmp(symbolName, "GDScriptFunction::call") == 0)
-				{
-					is_in_gdscript = true;
-					for (int i = 0; i < ScriptServer::get_language_count(); i++) {
-						if(ScriptServer::get_language(i)->get_type() == "GDScript" )
-						{
-							Vector<ScriptLanguage::StackInfo> si = ScriptServer::get_language(i)->debug_get_current_stack_info();
-							for(int j = 0; j < si.size(); j++ ) {
-								stackTrace.push_back(StackFrame { si[j].file, si[j].func, si[j].line });
-							}							
-						}
+		DWORD displacementLine = 0;
+
+		int32_t lineNumber = -1;
+		const char *fileName;
+		if (SymGetLineFromAddr64(process, stackFrame.AddrPC.Offset, &displacementLine, &line) == TRUE) {
+			lineNumber = line.LineNumber;
+			fileName = line.FileName;
+		} else {
+			lineNumber = -1;
+			fileName = "??";
+		}
+		if (is_in_gdscript == false && strcmp(symbolName, "GDScriptFunction::call") == 0) {
+			is_in_gdscript = true;
+			for (int i = 0; i < ScriptServer::get_language_count(); i++) {
+				if (ScriptServer::get_language(i)->get_type() == "GDScript") {
+					Vector<ScriptLanguage::StackInfo> si = ScriptServer::get_language(i)->debug_get_current_stack_info();
+					for (int j = 0; j < si.size(); j++) {
+						stackTrace.push_back(StackFrame{ si[j].file, si[j].func, si[j].line });
 					}
 				}
-				{
-					stackTrace.push_back(StackFrame { fileName, symbolName, lineNumber });
-				}
+			}
+		}
+		{
+			stackTrace.push_back(StackFrame{ fileName, symbolName, lineNumber });
+		}
+	}
 
-            }
+	SymCleanup(process);
 
-            SymCleanup(process);
-
-            return ;
-        }
-
-    
+	return;
+}
 
 #elif defined(UNIX_ENABLED) || defined(X11_ENABLED)
 
-    #if  __has_include(<execinfo.h>)
+#if __has_include(<execinfo.h>)
 
-        #include <execinfo.h>
-        #include <dlfcn.h>
-		#include <cxxabi.h>
-		#include <stdlib.h>
+#include <cxxabi.h>
+#include <dlfcn.h>
+#include <execinfo.h>
+#include <stdlib.h>
 
+//static void initialize() {
 
-            static void initialize() {
+//}
 
-            }
+static void getStackTrace(LocalVector<StackFrame> &stackFrame) {
+	void *bt_buffer[256];
+	const size_t count = backtrace(bt_buffer, 256);
 
-            static void getStackTrace(LocalVector<StackFrame>& stackFrame) {
+	Dl_info info;
+	for (size_t i = 0; i < count; i += 1) {
+		dladdr(addresses[i], &info);
 
-				void *bt_buffer[256];
-                const size_t count = backtrace(bt_buffer, 256);
+		auto fileName = info.dli_fname != nullptr ? info.dli_fname : "file??";
+		auto demangledName = "??";
+		if (info.dli_sname != nullptr) {
+			demangledName = abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
+		}
 
-                Dl_info info;
-                for (size_t i = 0; i < count; i += 1) {
-                    dladdr(addresses[i], &info);
+		result.push_back(StackFrame{ std::move(fileName), demangledName, 0 });
+		if (info.dli_sname != nullptr) {
+			free(demangledName);
+		}
+	}
 
-                    auto fileName = info.dli_fname != nullptr ? info.dli_fname : "file??";
-                    auto demangledName = "??";
-					if(info.dli_sname != nullptr)
-					{
-						demangledName = abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
-					}
+	return;
+}
 
-                    result.push_back(StackFrame { std::move(fileName), demangledName, 0 });
-					if (info.dli_sname != nullptr) {
-						free(demangledName);
-					}
-                }
-
-                return ;
-            }
-
-        
-
-    #endif
-
+#endif
 
 #else
 
-
-        static void initialize() { }
-        static void getStackTrace(LocalVector<StackFrame> &stackFrame) { stackFrame.push_back({ "??", "Stacktrace collecting not available!", 0 } ); }
+static void initialize() {}
+static void getStackTrace(LocalVector<StackFrame> &stackFrame) {
+	stackFrame.push_back({ "??", "Stacktrace collecting not available!", 0 });
+}
 
 #endif
 
@@ -292,7 +275,7 @@ void _err_print_error(const char *p_function, const char *p_file, int p_line, co
 struct LastLogInfo {
 	Mutex mutex;
 	String function;
-	String file ;
+	String file;
 	int line = 0;
 	String error;
 	String message;
@@ -300,62 +283,57 @@ struct LastLogInfo {
 	double last_time = 0;
 
 	bool on_log(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
-		
 		MutexLock lock(mutex);
 		double tm = OS::get_singleton()->get_unix_time();
-		if(tm - last_time  > 5){
+		if (tm - last_time > 5) {
 			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 			return true;
 		}
-		if(p_type != type){
+		if (p_type != type) {
 			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 			return true;
 		}
-		if(p_function){
-			if(function != p_function){
+		if (p_function) {
+			if (function != p_function) {
 				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 				return true;
 			}
-		}
-		else if(!function.is_empty()){
+		} else if (!function.is_empty()) {
 			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 			return true;
 		}
 
-		if(p_file){
-			if(file != p_file){
+		if (p_file) {
+			if (file != p_file) {
 				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 				return true;
 			}
-		}
-		else if(!file.is_empty()){
+		} else if (!file.is_empty()) {
 			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 			return true;
 		}
 
-		if(line != p_line){
+		if (line != p_line) {
 			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 			return true;
 		}
 
-		if(p_error){
-			if(error != p_error){
+		if (p_error) {
+			if (error != p_error) {
 				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 				return true;
 			}
-		}
-		else if(!error.is_empty()){
+		} else if (!error.is_empty()) {
 			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 			return true;
 		}
 
-		if(p_message){
-			if(message != p_message){
+		if (p_message) {
+			if (message != p_message) {
 				cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 				return true;
 			}
-		}
-		else if(!message.is_empty()){
+		} else if (!message.is_empty()) {
 			cache(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type);
 			return true;
 		}
@@ -364,83 +342,71 @@ struct LastLogInfo {
 	}
 	void cache(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
 		last_time = OS::get_singleton()->get_unix_time();
-		if(p_function != nullptr)
-		{
+		if (p_function != nullptr) {
 			function = p_function;
-		}
-		else
-		{
+		} else {
 			function = "";
 		}
 
-		if(p_file != nullptr) {
+		if (p_file != nullptr) {
 			file = p_file;
-		}
-		else {
+		} else {
 			file = "";
 		}
 
 		line = p_line;
-		if(p_error != nullptr) {
+		if (p_error != nullptr) {
 			error = p_error;
-		}
-		else {
+		} else {
 			error = "";
 		}
 
-		if(p_message != nullptr) {
+		if (p_message != nullptr) {
 			message = p_message;
-		}
-		else {
+		} else {
 			message = "";
 		}
 		type = p_type;
 	}
-	
+
 } last_log_info;
 // Main error printing function.
 void _err_print_error(const char *p_function, const char *p_file, int p_line, const char *p_error, const char *p_message, bool p_editor_notify, ErrorHandlerType p_type) {
 	if (OS::get_singleton() == nullptr) {
 		return;
 	}
-	if(!last_log_info.on_log(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type))
-	{
+	if (!last_log_info.on_log(p_function, p_file, p_line, p_error, p_message, p_editor_notify, p_type)) {
 		return;
 	}
 	String temp;
 	CharString data;
-	if(p_type == ERR_HANDLER_ERROR)
-	{
-		if(p_file) {
+	if (p_type == ERR_HANDLER_ERROR) {
+		if (p_file) {
 			temp += p_file;
 			temp += "(";
 			temp += itos(p_line);
 			temp += "): ";
 		}
-        if(p_message)
-        {
-            temp += ": ";
-            temp += p_message;
-            temp += " ";
-        }
-		if(p_function != nullptr) {
-			
-            temp += "->";
-            temp += p_function;		
-            temp += "()";	
+		if (p_message) {
+			temp += ": ";
+			temp += p_message;
+			temp += " ";
+		}
+		if (p_function != nullptr) {
+			temp += "->";
+			temp += p_function;
+			temp += "()";
 		}
 		temp += p_error;
 		LocalVector<StackFrame> stackFrame;
 		_global_lock();
 		getStackTrace(stackFrame);
 		_global_unlock();
-		for(uint32_t i = 0; i < stackFrame.size(); ++i)
-		{
+		for (uint32_t i = 0; i < stackFrame.size(); ++i) {
 			stackFrame[i].to_string(temp);
 		}
 		data = temp.utf8();
 		p_message = data.get_data();
-
 	}
 	if (OS::get_singleton()) {
 		OS::get_singleton()->print_error(p_function, p_file, p_line, p_error, p_message, p_editor_notify, (Logger::ErrorType)p_type);

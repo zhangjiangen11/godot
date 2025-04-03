@@ -165,7 +165,7 @@ void MImage::load_layer(String lname) {
 	String layer_path = get_layer_data_dir().path_join(ltname);
 	if (FileAccess::exists(layer_path)) {
 		Ref<FileAccess> file = FileAccess::open(layer_path, FileAccess::READ);
-		ERR_FAIL_COND(file->get_length() != data.size());
+		ERR_FAIL_COND(file->get_length() != uint32_t(data.size()));
 		PackedByteArray *img_layer_data = memnew(PackedByteArray);
 		img_layer_data->resize(data.size());
 		uint8_t *ptrw = img_layer_data->ptrw();
@@ -217,12 +217,12 @@ void MImage::merge_layer() {
 				tmp_data.resize(region->grid->region_pixel_size * region->grid->region_pixel_size * get_format_pixel_size(Image::FORMAT_RF));
 			}
 			Ref<FileAccess> file = FileAccess::open(path, FileAccess::READ);
-			ERR_FAIL_COND(file->get_length() != tmp_data.size());
+			ERR_FAIL_COND(file->get_length() != uint64_t(tmp_data.size()));
 			PackedByteArray tmp_layer_data;
 			tmp_layer_data.resize(tmp_data.size());
 			// Loading
-			bool is_all_zero = true;
-			for (int s = 0; s < tmp_data.size(); s++) {
+			//bool is_all_zero = true;
+			for (int64_t s = 0; s < tmp_data.size(); s++) {
 				tmp_layer_data.set(s, file->get_8());
 			}
 			file->close();

@@ -1480,7 +1480,7 @@ Variant ClassDB::create_class_instance(StringName p_class_name) {
 			Ref<Script> _script = script_class_load_script(p_class_name);
 			if (_script.is_valid()) {
 				// Store in a variant to initialize the refcount if needed.
-				Variant obj = ClassDB::instantiate(_script->get_instance_base_type());
+				obj = ClassDB::instantiate(_script->get_instance_base_type());
 				if (obj) {
 					Object::cast_to<Object>(obj)->set_meta(StringName("_custom_type_script"), _script);
 					obj.operator Object *()->set_script(_script);
@@ -1493,9 +1493,7 @@ Variant ClassDB::create_class_instance(StringName p_class_name) {
 	}
 
 	return obj;
-
 }
-
 
 Variant ClassDB::get_instance(ObjectID object_id) {
 	return ObjectDB::get_instance(object_id);

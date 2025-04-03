@@ -413,7 +413,7 @@ Vector4 TriangleMesh::get_closest_point_to(const Vector3 &p_point, float max_dis
 
 	float sq_max_distance = max_distance * max_distance;
 
-	real_t d = 1e20;
+	//real_t d = 1e20;
 	bool inters = false;
 
 	int level = 0;
@@ -435,7 +435,7 @@ Vector4 TriangleMesh::get_closest_point_to(const Vector3 &p_point, float max_dis
 
 		switch (stack[level] >> VISITED_BIT_SHIFT) {
 			case TEST_AABB_BIT: {
-				float distance_squared = b.aabb.get_closest_point(p_point).distance_squared_to(p_point);
+				//float distance_squared = b.aabb.get_closest_point(p_point).distance_squared_to(p_point);
 				if (last_min_distance_squared > sq_max_distance) {
 					stack[level] = (VISIT_DONE_BIT << VISITED_BIT_SHIFT) | node;
 				} else {

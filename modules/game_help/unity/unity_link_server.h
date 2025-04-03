@@ -38,55 +38,46 @@
 
 class UnityLinkServer : public Object {
 	GDCLASS(UnityLinkServer, Object);
-	static void _bind_methods()
-	{
+	static void _bind_methods() {
 	}
 
-	private:
-	struct ClientPeer : RefCounted
-	{
+private:
+	struct ClientPeer : RefCounted {
 		Ref<StreamPeerTCP> connection;
 
 		bool poll();
 		bool process_msg();
 
-		void clear()
-		{
+		void clear() {
 			curr_read_count = 0;
 			is_msg_statred = false;
-			if(data)
-			{
+			if (data) {
 				memdelete_arr(data);
 				data = nullptr;
 			}
 			buffer_size = 0;
 		}
-		~ClientPeer()
-		{
+		~ClientPeer() {
 			clear();
 		}
 
-		int get_msg_size()
-		{
-			if(curr_read_count < 8 || data == nullptr)
-			{
+		int get_msg_size() {
+			if (curr_read_count < 8 || data == nullptr) {
 				return 0;
 			}
-			return *(((int *)data)+1);
+			return *(((int *)data) + 1);
 		}
 
 		int curr_read_count = 0;
 		uint8_t *data = nullptr;
 		int buffer_size = 0;
 		bool is_msg_statred = false;
-		
 	};
 	Ref<TCPServer> server;
 	String password;
 	int port = 0;
 	bool active = false;
 	List<Ref<ClientPeer>> clients;
-
 
 public:
 	void poll();
@@ -95,11 +86,10 @@ public:
 	void stop();
 
 	bool is_active() const;
-	static UnityLinkServer * instance;
+	static UnityLinkServer *instance;
 
 	UnityLinkServer();
 	~UnityLinkServer();
 };
-
 
 #endif // EDITOR_FILE_SERVER_H

@@ -272,8 +272,8 @@ void MMesh::create_from_mesh(Ref<Mesh> input) {
 	___m.push_back(_bpaths);
 	_surfaces.push_back(___m);
 	// Mesh data
-	for (int i = 0; i < surface_count; i++) {
-		RS::SurfaceData sd = RSS->mesh_get_surface(input_rid, i);
+	for (int s = 0; s < surface_count; s++) {
+		RS::SurfaceData sd = RSS->mesh_get_surface(input_rid, s);
 
 		Dictionary d;
 		d["primitive"] = sd.primitive;
@@ -295,10 +295,10 @@ void MMesh::create_from_mesh(Ref<Mesh> input) {
 
 		if (sd.lods.size()) {
 			Array lods;
-			for (int i = 0; i < sd.lods.size(); i++) {
+			for (int l = 0; l < sd.lods.size(); l++) {
 				Dictionary ld;
-				ld["edge_length"] = sd.lods[i].edge_length;
-				ld["index_data"] = sd.lods[i].index_data;
+				ld["edge_length"] = sd.lods[l].edge_length;
+				ld["index_data"] = sd.lods[l].index_data;
 				lods.push_back(lods);
 			}
 			d["lods"] = lods;
@@ -319,7 +319,7 @@ void MMesh::create_from_mesh(Ref<Mesh> input) {
 		if (sd.material.is_valid()) {
 			d["material"] = sd.material;
 		}
-		d["name"] = input->call("surface_get_name", i);
+		d["name"] = input->call("surface_get_name", s);
 		_surfaces.push_back(d);
 	}
 	_set_surfaces(_surfaces);
@@ -585,8 +585,8 @@ Array MMesh::_get_surfaces() const {
 	}
 	int surface_count = get_surface_count();
 	PackedStringArray _surfaces_names = surfaces_get_names();
-	for (int i = 0; i < surface_count; i++) {
-		RS::SurfaceData sd = RSS->mesh_get_surface(mesh, i);
+	for (int s = 0; s < surface_count; s++) {
+		RS::SurfaceData sd = RSS->mesh_get_surface(mesh, s);
 		Dictionary d;
 		d["primitive"] = sd.primitive;
 		d["format"] = sd.format;
@@ -631,7 +631,7 @@ Array MMesh::_get_surfaces() const {
 		if (sd.material.is_valid()) {
 			d["material"] = sd.material;
 		}
-		d["name"] = _surfaces_names[i];
+		d["name"] = _surfaces_names[s];
 		_surfaces.push_back(d);
 	}
 	return _surfaces;

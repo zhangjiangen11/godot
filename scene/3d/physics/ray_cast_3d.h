@@ -175,6 +175,7 @@ class RayCastCompoent3D : public RefCounted {
 
 	CollisionObject3D *owenr = nullptr;
 	Transform3D transform;
+
 public:
 	void _notification(int p_what);
 	void set_rotation(const Vector3 &p_rotation) {
@@ -189,7 +190,6 @@ public:
 	Vector3 get_position() const {
 		return transform.origin;
 	}
-
 
 protected:
 	void _update_raycast_state();
@@ -251,5 +251,4 @@ public:
 	void remove_exception(const CollisionObject3D *p_node);
 	void clear_exceptions();
 	RayCastCompoent3D();
-	
 };

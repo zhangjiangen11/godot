@@ -55,7 +55,6 @@ TypedArray<MCurveMesh> MCurveMesh::get_all_curve_mesh_nodes() {
 
 // after calling this sliced_pos and slice_info are invalid and should be recalculate
 void MeshSlicedInfo::merge_vertex_by_distance(float merge_distance) {
-	return;
 	ERR_FAIL_COND_MSG(sliced_pos.size() > 0, "Can not merge vertecies slice_pos is already created!");
 	int32_t merge_index_first = -1;
 	int32_t merge_index_second = -1;
@@ -595,8 +594,8 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 			Transform3D transform = transforms[mesh_index * mesh_sliced->slice_count() + j];
 			/// Looping through this slice indices
 			int start_index = vertex_count * mesh_index;
-			for (int index = 0; index < mesh_sliced->sliced_info[j].size(); index++) {
-				int index_index = mesh_sliced->sliced_info[j][index];
+			for (int sindex = 0; sindex < mesh_sliced->sliced_info[j].size(); sindex++) {
+				int index_index = mesh_sliced->sliced_info[j][sindex];
 				int vindex = start_index + index_index;
 				vertex.set(vindex, transform.xform(mesh_sliced->vertex[index_index]));
 				if (has_normal) {

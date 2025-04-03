@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "editor/editor_inspector.h"
 #include "core/math/expression.h"
+#include "editor/editor_inspector.h"
 
 class CheckBox;
 class ColorPickerButton;
@@ -129,26 +129,24 @@ class EditorPropertyTextEnum : public EditorProperty {
 protected:
 	virtual void _set_read_only(bool p_read_only) override;
 	void _notification(int p_what);
-	void cb_update_options(OptionButton* p_ob);
+	void cb_update_options(OptionButton *p_ob);
 
 public:
 	void setup(const Vector<String> &p_options, bool p_string_name = false, bool p_loose_mode = false);
 	virtual void update_property() override;
-	void set_dynamic(bool p_is_dynamic, const String & p_method) {
+	void set_dynamic(bool p_is_dynamic, const String &p_method) {
 		is_dynamic_options = p_is_dynamic;
 		dyn_options_method = p_method;
 	}
 	EditorPropertyTextEnum();
 };
 
-
-
 class EditorTextEnum : public HBoxContainer {
 	GDCLASS(EditorTextEnum, HBoxContainer);
 
 	Object *object = nullptr;
 	StringName property;
-	
+
 	HBoxContainer *default_layout = nullptr;
 	HBoxContainer *edit_custom_layout = nullptr;
 
@@ -176,11 +174,11 @@ class EditorTextEnum : public HBoxContainer {
 	void _custom_value_canceled();
 
 protected:
-	virtual void _set_read_only(bool p_read_only) ;
+	virtual void _set_read_only(bool p_read_only);
 	void _notification(int p_what);
-	void cb_update_options(OptionButton* p_ob);
-protected:
+	void cb_update_options(OptionButton *p_ob);
 
+protected:
 	Object *get_edited_object() {
 		return object;
 	}
@@ -189,36 +187,35 @@ protected:
 		return property;
 	}
 	inline Variant get_edited_property_value() const { return object->get(property); }
-	void emit_changed(const StringName &p_property, const Variant &p_value, const StringName& p_field = StringName(), bool p_changing = false) {
+	void emit_changed(const StringName &p_property, const Variant &p_value, const StringName &p_field = StringName(), bool p_changing = false) {
 		Variant args[4] = { p_property, p_value, p_field, p_changing };
 		const Variant *argptrs[4] = { &args[0], &args[1], &args[2], &args[3] };
 
 		emit_signalp(SNAME("property_changed"), (const Variant **)argptrs, 4);
-		//if (is_custom_property) 
+		//if (is_custom_property)
 		{
-			Object* obj = get_edited_object();
+			Object *obj = get_edited_object();
 			if (obj != nullptr) {
 				obj->set(p_property, p_value);
 			}
 		}
 	}
+
 public:
 	void set_object_and_property(Object *p_object, const StringName &p_property) {
 		object = p_object;
 		property = p_property;
-
 	}
 
 public:
 	void setup(const Vector<String> &p_options, bool p_string_name = false, bool p_loose_mode = false);
-	virtual void update_property() ;
-	void set_dynamic(bool p_is_dynamic, const String & p_method) {
+	virtual void update_property();
+	void set_dynamic(bool p_is_dynamic, const String &p_method) {
 		is_dynamic_options = p_is_dynamic;
 		dyn_options_method = p_method;
 	}
 	EditorTextEnum();
 };
-
 
 class EditorPropertyPath : public EditorProperty {
 	GDCLASS(EditorPropertyPath, EditorProperty);
@@ -755,7 +752,6 @@ public:
 	EditorPropertyRID();
 };
 
-
 class EditorPropertyButton : public VBoxContainer {
 	GDCLASS(EditorPropertyButton, VBoxContainer);
 	Object *object;
@@ -766,8 +762,9 @@ class EditorPropertyButton : public VBoxContainer {
 	Ref<Expression> expr;
 
 	void _button_pressed();
+
 public:
-	void setup(Object *p_object,const String &p_hit_string);
+	void setup(Object *p_object, const String &p_hit_string);
 	virtual void update_property();
 
 	virtual Size2 get_minimum_size() const override;

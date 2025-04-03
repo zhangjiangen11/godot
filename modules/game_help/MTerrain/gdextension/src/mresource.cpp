@@ -372,7 +372,7 @@ void MResource::QuadTreeRF::save_quad_tree_data(PackedByteArray &save_data, uint
 		return;
 	}
 	// Otherwise on all condition the min and max height should be encoded
-	double dh = max_height - min_height;
+	//double dh = max_height - min_height;
 	if (data_encoding == DATA_ENCODE_U2) {
 		encode_data_u2(save_data, save_index);
 		return;
@@ -886,7 +886,7 @@ void MResource::insert_data(const PackedByteArray &data, const StringName &_name
 		new_compressed_data.write[4] = (uint8_t)format;
 		encode_uint16(width, new_compressed_data.ptrw() + 6);
 	}
-	uint32_t save_index = 0;
+	//uint32_t save_index = 0;
 	PackedByteArray data_part;
 	if (compress == Compress::COMPRESS_NONE) {
 		data_part = final_data;
@@ -1138,7 +1138,7 @@ PackedByteArray MResource::get_heightmap_rf(bool two_plus_one) {
 	max_height_cache = max_height;
 	comp_data = comp_data.slice(MRESOURCE_HEIGHTMAP_HEADER_SIZE);
 	uint32_t decompress_index = 0;
-	uint32_t data_size = width * width * pixel_size;
+	//uint32_t data_size = width * width * pixel_size;
 	if (flags & FLAG_COMPRESSION_FASTLZ) {
 		comp_data = _PackedByteArray_decompress(&comp_data, data_size_before_file_compress, FileAccess::COMPRESSION_FASTLZ); // comp_data.decompress(data_size_before_file_compress,FileAccess::COMPRESSION_FASTLZ);
 	} else if (flags & FLAG_COMPRESSION_DEFLATE) {
@@ -1156,7 +1156,7 @@ PackedByteArray MResource::get_heightmap_rf(bool two_plus_one) {
 	}
 	// Getting Flatten header if Flatten_OLS FLAG is active, This will also increate the decompress index
 	Vector<uint32_t> flatten_section_header;
-	uint16_t devision;
+	uint16_t devision = 0;
 	if (flags & FLAG_FLATTEN_OLS) { // This should be at bottom later
 		uint8_t devision_log2 = comp_data[decompress_index];
 		decompress_index += FLATTEN_HEADER_SIZE;
@@ -1229,7 +1229,7 @@ void MResource::compress_qtq_rf(PackedByteArray &uncompress_data, PackedByteArra
 	quad_tree->divide_upto_leaf();
 	uint32_t size = quad_tree->get_optimal_size();
 	compress_data.resize(save_index + size);
-	uint8_t before_save_index = save_index;
+	//uint8_t before_save_index = save_index;
 #ifdef PRINT_DEBUG
 	dump_header(compress_data);
 	dump_qtq_header(compress_data);

@@ -385,11 +385,11 @@ void MGrass::create_grass_chunk(int grid_index, MGrassChunk *grass_chunk) {
 					for (int r = 0; r < cell_instance_count; r++) {
 						index = count * buffer_strid_float;
 						int rand_index = y * grass_region_pixel_width_lod + x * cell_instance_count + r;
-						const float *ptr = rand_buffer + (rand_index % rand_buffer_size) * buffer_strid_float;
+						const float *p_ptr = rand_buffer + (rand_index % rand_buffer_size) * buffer_strid_float;
 						buffer.resize(buffer.size() + buffer_strid_float);
 						float *ptrw = (float *)buffer.ptrw();
 						ptrw += index;
-						memcpy(ptrw, ptr, buffer_strid_byte);
+						memcpy(ptrw, p_ptr, buffer_strid_byte);
 						Vector3 pos;
 						pos.x = root_g->world_pos.x + x * grass_data->density + ptrw[3];
 						pos.z = root_g->world_pos.z + y * grass_data->density + ptrw[11];
@@ -774,18 +774,18 @@ void MGrass::draw_grass(Vector3 brush_pos, real_t radius, bool add) {
 	// LOD Scale
 	//int lod_scale = pow(2,lod);
 	// LOOP
-	uint32_t x = px.left;
-	uint32_t y = px.top;
-	uint32_t i = 0;
-	uint32_t j = 1;
-	for (uint32_t y = px.top; y <= px.bottom; y++) {
-		for (uint32_t x = px.left; x <= px.right; x++) {
-			uint32_t dif_x = Math::abs((int32_t)x - (int32_t)brush_px_pos_x);
-			uint32_t dif_y = Math::abs((int32_t)y - (int32_t)brush_px_pos_y);
+	//uint32_t x = px.left;
+	//uint32_t y = px.top;
+	//uint32_t i = 0;
+	//uint32_t j = 1;
+	for (uint32_t _y = px.top; _y <= px.bottom; _y++) {
+		for (uint32_t _x = px.left; _x <= px.right; _x++) {
+			uint32_t dif_x = Math::abs((int32_t)_x - (int32_t)brush_px_pos_x);
+			uint32_t dif_y = Math::abs((int32_t)_y - (int32_t)brush_px_pos_y);
 			uint32_t dis = sqrt(dif_x * dif_x + dif_y * dif_y);
-			Vector2i grid_px = grass_px_to_grid_px(x, y);
+			Vector2i grid_px = grass_px_to_grid_px(_x, _y);
 			if (dis < brush_px_radius && grid->get_brush_mask_value_bool(grid_px.x, grid_px.y)) {
-				set_grass_by_pixel(x, y, add);
+				set_grass_by_pixel(_x, _y, add);
 			}
 		}
 	}
@@ -991,7 +991,7 @@ void MGrass::update_physics(Vector3 cam_pos) {
 	ERR_FAIL_COND(!is_grass_init);
 	int cell_instance_count = settings[0]->cell_instance_count;
 	uint32_t buffer_strid_float = settings[0]->get_buffer_strid_float();
-	uint32_t buffer_strid_byte = settings[0]->get_buffer_strid_byte();
+	//uint32_t buffer_strid_byte = settings[0]->get_buffer_strid_byte();
 	cam_pos -= grid->offset;
 	cam_pos = cam_pos / grass_data->density;
 	int px_x = round(cam_pos.x);
@@ -1003,14 +1003,14 @@ void MGrass::update_physics(Vector3 cam_pos) {
 	}
 	physics_search_bound = MBound(MGridPos(px_x, 0, px_y));
 	physics_search_bound.grow(grass_bound_limit, col_r, col_r);
-	if (!(physics_search_bound.left < int32_t(width)&& physics_search_bound.top < int32_t(height))) {
+	if (!(physics_search_bound.left < int32_t(width) && physics_search_bound.top < int32_t(height))) {
 		remove_all_physics();
 		return;
 	}
 	//UtilityFunctions::print("Left ",physics_search_bound.left," right ",physics_search_bound.right," top ",physics_search_bound.top," bottom ",physics_search_bound.bottom );
 	// culling
 	/// Removing out of bound shapes
-	int remove_count = 0;
+	//int remove_count = 0;
 	for (int y = last_physics_search_bound.top; y <= last_physics_search_bound.bottom; y++) {
 		for (int x = last_physics_search_bound.left; x <= last_physics_search_bound.right; x++) {
 			if (!physics_search_bound.has_point(x, y)) {

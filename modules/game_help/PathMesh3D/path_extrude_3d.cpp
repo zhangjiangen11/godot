@@ -594,51 +594,51 @@ void PathExtrude3D::_rebuild_mesh() {
 
 			if (has_column[Mesh::ARRAY_NORMAL]) {
 				new_normals.resize(new_normals.size() + cap.size());
-				uint64_t tmp_k = k;
-				for (const int &i : cap) {
-					new_normals.write[tmp_k] = this_transform.basis.xform(cap_normal);
-					tmp_k++;
+				uint64_t _tmp_k = k;
+				for (int i = 0; i < cap.size(); ++i) {
+					new_normals.write[_tmp_k] = this_transform.basis.xform(cap_normal);
+					_tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TANGENT]) {
 				new_tangents.resize(new_tangents.size() + cap.size() * 4);
-				uint64_t tmp_k = k * 4;
-				for (const int &i : cap) {
+				uint64_t _tmp_k = k * 4;
+				for (int i = 0; i < cap.size(); ++i) {
 					Vector3 tang = this_transform.basis.xform(Vector3(old_tang[4 * i], old_tang[4 * i + 1], old_tang[4 * i + 2]));
-					new_tangents.write[tmp_k] = tang.x;
-					new_tangents.write[tmp_k + 1] = tang.y;
-					new_tangents.write[tmp_k + 2] = tang.z;
-					new_tangents.write[tmp_k + 3] = old_tang[4 * i + 3];
-					tmp_k += 4;
+					new_tangents.write[_tmp_k] = tang.x;
+					new_tangents.write[_tmp_k + 1] = tang.y;
+					new_tangents.write[_tmp_k + 2] = tang.z;
+					new_tangents.write[_tmp_k + 3] = old_tang[4 * i + 3];
+					_tmp_k += 4;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV]) {
 				new_uv1.resize(new_uv1.size() + cap.size());
-				uint64_t tmp_k = k;
-				for (const int &i : cap) {
-					new_uv1.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
-					tmp_k++;
+				uint64_t _tmp_k = k;
+				for (int i = 0; i < cap.size(); ++i) {
+					new_uv1.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
+					_tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV2]) {
 				new_uv1.resize(new_uv2.size() + cap.size());
-				uint64_t tmp_k = k;
-				for (const int &i : cap) {
-					new_uv2.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
-					tmp_k++;
+				uint64_t _tmp_k = k;
+				for (int i = 0; i < cap.size(); ++i) {
+					new_uv2.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
+					_tmp_k++;
 				}
 			}
 
 #define ADD_CAP_ARRAY(m_new, m_old, m_idx)       \
 	if (has_column[m_idx]) {                     \
 		m_new.resize(m_new.size() + cap.size()); \
-		uint64_t tmp_k = k;                      \
-		for (const int &i : cap) {               \
-			m_new.write[tmp_k] = m_old[i];       \
-			tmp_k++;                             \
+		uint64_t _tmp_k = k;                     \
+		for (int i = 0; i < cap.size(); ++i) {   \
+			m_new.write[_tmp_k] = m_old[i];      \
+			_tmp_k++;                            \
 		}                                        \
 	}
 			ADD_CAP_ARRAY(new_colors, old_colors, Mesh::ARRAY_COLOR);
@@ -666,51 +666,51 @@ void PathExtrude3D::_rebuild_mesh() {
 
 			if (has_column[Mesh::ARRAY_NORMAL]) {
 				new_normals.resize(new_normals.size() + cap.size());
-				uint64_t tmp_k = k;
-				for (const int &i : cap) {
-					new_normals.write[tmp_k] = this_transform.basis.xform(cap_normal);
-					tmp_k++;
+				uint64_t _tmp_k = k;
+				for (int i = 0; i < cap.size(); ++i) {
+					new_normals.write[_tmp_k] = this_transform.basis.xform(cap_normal);
+					_tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TANGENT]) {
 				new_tangents.resize(new_tangents.size() + cap.size() * 4);
-				uint64_t tmp_k = k * 4;
-				for (const int &i : cap) {
+				uint64_t _tmp_k = k * 4;
+				for (int i = 0; i < cap.size(); ++i) {
 					Vector3 tang = this_transform.basis.xform(Vector3(old_tang[4 * i], old_tang[4 * i + 1], old_tang[4 * i + 2]));
-					new_tangents.write[tmp_k] = tang.x;
-					new_tangents.write[tmp_k + 1] = tang.y;
-					new_tangents.write[tmp_k + 2] = tang.z;
-					new_tangents.write[tmp_k + 3] = old_tang[4 * i + 3];
-					tmp_k += 4;
+					new_tangents.write[_tmp_k] = tang.x;
+					new_tangents.write[_tmp_k + 1] = tang.y;
+					new_tangents.write[_tmp_k + 2] = tang.z;
+					new_tangents.write[_tmp_k + 3] = old_tang[4 * i + 3];
+					_tmp_k += 4;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV]) {
 				new_uv1.resize(new_uv1.size() + cap.size());
-				uint64_t tmp_k = k;
-				for (const int &i : cap) {
-					new_uv1.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
-					tmp_k++;
+				uint64_t _tmp_k = k;
+				for (int i = 0; i < cap.size(); ++i) {
+					new_uv1.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
+					_tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV2]) {
 				new_uv1.resize(new_uv2.size() + cap.size());
-				uint64_t tmp_k = k;
-				for (const int &i : cap) {
-					new_uv2.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
-					tmp_k++;
+				uint64_t _tmp_k = k;
+				for (int i = 0; i < cap.size(); ++i) {
+					new_uv2.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
+					_tmp_k++;
 				}
 			}
 
 #define ADD_CAP_ARRAY(m_new, m_old, m_idx)       \
 	if (has_column[m_idx]) {                     \
 		m_new.resize(m_new.size() + cap.size()); \
-		uint64_t tmp_k = k;                      \
-		for (const int &i : cap) {               \
-			m_new.write[tmp_k] = m_old[i];       \
-			tmp_k++;                             \
+		uint64_t _tmp_k = k;                     \
+		for (int i = 0; i < cap.size(); ++i) {   \
+			m_new.write[_tmp_k] = m_old[i];      \
+			_tmp_k++;                            \
 		}                                        \
 	}
 			ADD_CAP_ARRAY(new_colors, old_colors, Mesh::ARRAY_COLOR);

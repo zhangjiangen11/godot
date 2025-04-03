@@ -2,7 +2,6 @@
 
 #include "mhlod_node3d.h"
 
-
 #ifdef DEBUG_ENABLED
 #include "../editor/mmesh_joiner.h"
 #endif
@@ -447,9 +446,9 @@ void MHlodScene::Proc::update_lod(int8_t c_lod, const bool immediate) {
 	for (int i = 0; i < (*lod_table).size(); i++) {
 		ERR_FAIL_INDEX(lod_table->operator[](i), hlod->item_list.size()); // maybe remove this check later
 		MHlod::Item *item = hlod->item_list.ptrw() + (*lod_table)[i];
-		if (item->item_layers != 0) {
-			bool lres = (item->item_layers & scene_layers) != 0;
-		}
+		//if (item->item_layers != 0) {
+		//	bool lres = (item->item_layers & scene_layers) != 0;
+		//}
 		if (item->item_layers == 0 || (item->item_layers & scene_layers) != 0) { // Layers filter
 			add_item(item, (*lod_table)[i], immediate);
 			exist_transform_index.insert(item->transform_index);

@@ -44,7 +44,6 @@ public:
 		int32_t surface_index = 0;
 	};
 
-
 private:
 	Vector<Triangle> triangles;
 	Vector<Vector3> vertices;

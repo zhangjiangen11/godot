@@ -224,16 +224,16 @@ void MNavigationRegion3D::_update_navmesh(Vector3 _cam_pos) {
 				}
 			}
 			if (!has_null_npoint) {
-				Vector3 top_left = grid->get_pixel_world_pos(x, y);
-				Vector3 top_right = grid->get_pixel_world_pos(x + l, y);
-				Vector3 bottom_left = grid->get_pixel_world_pos(x, y + l);
-				Vector3 bottom_right = grid->get_pixel_world_pos(x + l, y + l);
-				faces.push_back(top_right);
-				faces.push_back(bottom_left);
-				faces.push_back(top_left);
-				faces.push_back(top_right);
-				faces.push_back(bottom_right);
-				faces.push_back(bottom_left);
+				Vector3 _top_left = grid->get_pixel_world_pos(x, y);
+				Vector3 _top_right = grid->get_pixel_world_pos(x + l, y);
+				Vector3 _bottom_left = grid->get_pixel_world_pos(x, y + l);
+				Vector3 _bottom_right = grid->get_pixel_world_pos(x + l, y + l);
+				faces.push_back(_top_right);
+				faces.push_back(_bottom_left);
+				faces.push_back(_top_left);
+				faces.push_back(_top_right);
+				faces.push_back(_bottom_right);
+				faces.push_back(_bottom_left);
 			}
 		}
 	}
@@ -645,10 +645,10 @@ void MNavigationRegion3D::draw_npoints(Vector3 brush_pos, real_t radius, bool ad
 	// LOD Scale
 	//int lod_scale = pow(2,lod);
 	// LOOP
-	uint32_t x = px.left;
-	uint32_t y = px.top;
-	uint32_t i = 0;
-	uint32_t j = 1;
+	//uint32_t x = px.left;
+	//uint32_t y = px.top;
+	//uint32_t i = 0;
+	//uint32_t j = 1;
 	for (uint32_t y = px.top; y <= px.bottom; y++) {
 		for (uint32_t x = px.left; x <= px.right; x++) {
 			uint32_t dif_x = Math::abs((int32_t)x - (int32_t)brush_px_pos_x);

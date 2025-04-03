@@ -1062,9 +1062,9 @@ void WorkerTaskPool::_process_task_queue(int thread_id) {
 	if (node != nullptr) {
 		ThreadTaskGroup *task = node;
 		task_queue = task_queue->next;
-		bool _capture_stack = capture_stack;
+		//bool _capture_stack = capture_stack;
 		task_mutex.unlock();
-		uint64_t start_time;
+		uint64_t start_time = 0;
 		if (capture_stack) {
 			start_time = OS::get_singleton()->get_ticks_usec();
 		}

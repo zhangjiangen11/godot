@@ -224,7 +224,7 @@ Vector3 Ivy::computeAdhesion(const Vector3 &pos) {
 	Vector3 adhesionVector;
 
 	//define a maximum distance
-	float local_maxAdhesionDistance = maxAdhesionDistance;
+	//float local_maxAdhesionDistance = maxAdhesionDistance;
 
 	//float minDistance = local_maxAdhesionDistance;
 	float last_distance = maxAdhesionDistance * 2;
@@ -249,7 +249,7 @@ bool Ivy::computeCollision(const Vector3 &oldPos, Vector3 &newPos, bool &climbin
 	//reset climbing state
 	climbing = false;
 
-	bool intersection;
+	bool intersection = false;
 
 	//int deadlockCounter = 0;
 	Vector3 direction = newPos - oldPos;

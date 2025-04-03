@@ -138,7 +138,7 @@ void MIntersection::_generate_mesh_info(Ref<Mesh> m, Ref<MIntersectionInfo> info
 		float w_sum = 0;
 		for (int j = 0; j < vertex_socket.ptrw()[i].distance_socket.size(); j++) {
 			int socket_index = vertex_socket.ptrw()[i].distance_socket[j].socket_index;
-			float dis = vertex_socket.ptrw()[i].distance_socket[j].distance;
+			//float dis = vertex_socket.ptrw()[i].distance_socket[j].distance;
 			float w = info->weights[(i * num_sockets) + socket_index];
 			w_sum += w;
 		}
@@ -146,19 +146,19 @@ void MIntersection::_generate_mesh_info(Ref<Mesh> m, Ref<MIntersectionInfo> info
 
 	return;
 	/// Debug mesh creating
-	if (debug_mesh.is_null()) {
-		debug_mesh.instantiate();
-	}
-	PackedColorArray vcol;
-	vcol.resize(info->vertex.size());
-	memcpy(vcol.ptrw(), info->weights.ptr(), info->weights.size() * sizeof(float));
-	Array msurf_info;
-	msurf_info.resize(Mesh::ARRAY_MAX);
-	msurf_info[Mesh::ARRAY_VERTEX] = info->vertex;
-	msurf_info[Mesh::ARRAY_COLOR] = vcol;
-	msurf_info[Mesh::ARRAY_INDEX] = info->index;
+	//if (debug_mesh.is_null()) {
+	//	debug_mesh.instantiate();
+	//}
+	//PackedColorArray vcol;
+	//vcol.resize(info->vertex.size());
+	//memcpy(vcol.ptrw(), info->weights.ptr(), info->weights.size() * sizeof(float));
+	//Array msurf_info;
+	//msurf_info.resize(Mesh::ARRAY_MAX);
+	//msurf_info[Mesh::ARRAY_VERTEX] = info->vertex;
+	//msurf_info[Mesh::ARRAY_COLOR] = vcol;
+	//msurf_info[Mesh::ARRAY_INDEX] = info->index;
 
-	debug_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, msurf_info);
+	//debug_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, msurf_info);
 }
 
 Ref<ArrayMesh> MIntersection::get_debug_mesh() {

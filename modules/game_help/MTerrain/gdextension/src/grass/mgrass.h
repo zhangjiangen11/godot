@@ -33,7 +33,7 @@ private:
 	Ref<PhysicsMaterial> physics_material;
 	int collision_layer = 1;
 	int collision_mask = 1;
-	int64_t update_id;
+	uint64_t update_id;
 	std::mutex update_mutex;
 	uint64_t final_count = 0;
 	int grass_count_limit = 9000000;
