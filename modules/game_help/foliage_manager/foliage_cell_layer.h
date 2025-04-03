@@ -59,7 +59,7 @@ namespace Foliage
             FoliageCellPos worldpos = _cell->position;
             worldpos.Offset(map_offset_pos);
             _cell->is_load = false;
-            _cell->data_block = memoryPoolData.allocal(_cell->prototypes.size());
+            _cell->data_block = memoryPoolData.allocate(_cell->prototypes.size());
             cell_datas[key] = *_cell;
             m_pendingDictLoadCells[key] = _cell->data_block;
             auto buf_ptr = memoryPoolData.get_buffer(_cell->data_block);

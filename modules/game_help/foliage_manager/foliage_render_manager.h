@@ -1,5 +1,4 @@
-#ifndef FOLIAGE_RENDER_MANAGER_H
-#define FOLIAGE_RENDER_MANAGER_H
+#pragma once
 
 #include "foliage_cell_asset.h"
 #include "foliage_cell_layer.h"
@@ -281,7 +280,7 @@ public:
 		int key = GetSpawnKey(_cellBox->protoID, _cellBox->cellWorldPos);
 		auto cell = cellLayer.write[_cellBox->layerId].get_cell(_cellBox->cellWorldPos);
 		if (!renderBlock.has(key) && cell != nullptr) {
-			CellBlockItem *item = CellBlockItem::Allocal();
+			CellBlockItem *item = CellBlockItem::allocate();
 			item->block = foliageRenderBuffer.instanceRenderBuffer.allocal(_cellBox->instanceCount, foliageRenderBuffer.instanceBufferChangeINfo);
 			item->protoTypeID = _cellBox->protoID;
 
@@ -370,7 +369,7 @@ public:
 		for (auto &it : renderBlock) {
 			foliageRenderBuffer.instanceRenderBuffer.free_buffer(it.value->block);
 
-			CellBlockItem::Release(it.value);
+			CellBlockItem::release(it.value);
 		}
 		renderBlock.clear();
 		for (int i = 0; i < foliageRenderBuffer.instanceBufferChangeINfo.size(); ++i) {
@@ -441,5 +440,3 @@ public:
 	bool isUpdateLoad = false;
 };
 } //namespace Foliage
-
-#endif

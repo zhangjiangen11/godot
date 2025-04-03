@@ -237,7 +237,7 @@ class CharacterAI_CheckPatrol : public CharacterAI_CheckBase {
 	static void _bind_methods() {}
 
 public:
-	virtual bool _execute_check(CharacterBodyMain* node, Blackboard* blackboard) override {
+	virtual bool _execute_check(CharacterBodyMain *node, Blackboard *blackboard) override {
 		return false;
 	}
 

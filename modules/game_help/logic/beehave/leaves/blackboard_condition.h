@@ -21,7 +21,7 @@ public:
 	virtual StringName get_icon() override {
 		return SNAME("condition");
 	}
-	virtual int tick(const Ref<BeehaveRuncontext>& run_context) override {
+	virtual int tick(const Ref<BeehaveRuncontext> &run_context) override {
 		if (blackboard_condition.is_valid()) {
 			if (blackboard_condition->is_enable(run_context->blackboard.ptr())) {
 				return SUCCESS;
