@@ -3038,7 +3038,7 @@ void EditorInspector::_parse_added_editors(VBoxContainer *current_vbox, EditorIn
 			ep->connect("property_pinned", callable_mp(this, &EditorInspector::_property_pinned));
 			ep->connect("selected", callable_mp(this, &EditorInspector::_property_selected));
 			ep->connect("multiple_properties_changed", callable_mp(this, &EditorInspector::_multiple_properties_changed));
-			ep->connect("resource_selected", callable_mp(this, &EditorInspector::_resource_selected), CONNECT_DEFERRED);
+			ep->connect("resource_selected", callable_mp(get_root_inspector(), &EditorInspector::_resource_selected), CONNECT_DEFERRED);
 			ep->connect("object_id_selected", callable_mp(this, &EditorInspector::_object_id_selected), CONNECT_DEFERRED);
 
 			if (F.properties.size()) {
@@ -3883,7 +3883,7 @@ void EditorInspector::update_tree() {
 				ep->connect("property_pinned", callable_mp(this, &EditorInspector::_property_pinned));
 				ep->connect("selected", callable_mp(this, &EditorInspector::_property_selected));
 				ep->connect("multiple_properties_changed", callable_mp(this, &EditorInspector::_multiple_properties_changed));
-				ep->connect("resource_selected", callable_mp(this, &EditorInspector::_resource_selected), CONNECT_DEFERRED);
+				ep->connect("resource_selected", callable_mp(get_root_inspector(), &EditorInspector::_resource_selected), CONNECT_DEFERRED);
 				ep->connect("object_id_selected", callable_mp(this, &EditorInspector::_object_id_selected), CONNECT_DEFERRED);
 
 				if (use_doc_hints) {
