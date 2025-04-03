@@ -19,7 +19,7 @@ public:
 		int End() {
 			return offset + size;
 		}
-		static Block *Allocate() {
+		static Block *allocate() {
 			if (s_freeBlock != nullptr) {
 				Block *r = s_freeBlock;
 				s_freeBlock = s_freeBlock->next;
@@ -28,7 +28,7 @@ public:
 			}
 			return memnew(Block);
 		}
-		static void Free(Block *_block) {
+		static void free(Block *_block) {
 			_block->next = s_freeBlock;
 			s_freeBlock = _block;
 		}
@@ -47,12 +47,12 @@ public:
 	// 析构函数，释放内存池和Block信息
 	void Release() {
 		for (auto &entry : m_block_map) {
-			Block::Free(entry.value);
+			Block::free(entry.value);
 		}
 		m_block_map.clear();
 	}
 	Block *AddFreeBlock(int count = 256) {
-		Block *first_block = Block::Allocate();
+		Block *first_block = Block::allocate();
 		first_block->available = true;
 		first_block->offset = m_totalMemorySize;
 		first_block->size = count;
@@ -64,7 +64,7 @@ public:
 
 	// Best Fit 分配算法
 	// 注意如果_auto_addcount 不为0，返回的区间有可能自动分配，超出当前的区间
-	Block *Allocate(uint32_t requested_size, uint32_t _auto_addcount = 0) {
+	Block *allocate(uint32_t requested_size, uint32_t _auto_addcount = 0) {
 		if (requested_size <= 0) {
 			//Debug.LogError($"无法分配{requested_size}内存，数量非法！");
 			return nullptr;
@@ -104,7 +104,7 @@ public:
 				best_fit_block->available = false;
 
 				// 在空闲链表中添加一个新的内存块
-				Block *remaining_block = Block::Allocate();
+				Block *remaining_block = Block::allocate();
 				remaining_block->offset = best_fit_block->offset + requested_size;
 				// 设置大小为剩余大小
 				remaining_block->size = remaining_size;
@@ -123,7 +123,7 @@ public:
 			// 还没有找到，并且允许自动分配就新增一个内存块
 			_auto_addcount = MAX(requested_size, _auto_addcount);
 			AddFreeBlock(_auto_addcount);
-			return Allocate(requested_size);
+			return allocate(requested_size);
 		}
 		// 如果没有找到合适的内存块，返回nullptr
 		return nullptr;
@@ -142,19 +142,19 @@ public:
 			return block;
 		}
 
-		Block *free = Block::Allocate();
+		Block *free = Block::allocate();
 		block->size -= reduction_count;
 		free->offset = block->End();
 		free->size = reduction_count;
 		free->available = false;
 		m_block_map.insert(free->Start(), free);
-		Free(free);
+		free_block(free);
 		return block;
 	}
-	void Free(int block_offset) {
+	void free_block(int block_offset) {
 		auto it = m_block_map.find(block_offset);
 		if (it != m_block_map.end()) {
-			Free(it->value);
+			free_block(it->value);
 
 		} else {
 			//Debug.LogError("非法索引！block_offset 不存在！");
@@ -162,7 +162,7 @@ public:
 	}
 
 	// 释放内存块
-	void Free(Block *freed_block) {
+	void free_block(Block *freed_block) {
 		if (freed_block->available == true) {
 			return;
 		}
@@ -183,7 +183,7 @@ public:
 
 				// 从映射表和堆内存中删除被合并的相邻内存块
 				m_block_map.erase(nextKey);
-				Block::Free(next_block);
+				Block::free(next_block);
 			}
 		}
 
@@ -200,7 +200,7 @@ public:
 				}
 
 				current_block->size += freed_block->size;
-				Block::Free(freed_block);
+				Block::free(freed_block);
 				m_block_map.erase(freed_block->offset);
 				break;
 			}

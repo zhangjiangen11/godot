@@ -281,7 +281,7 @@ public:
 		auto cell = cellLayer.write[_cellBox->layerId].get_cell(_cellBox->cellWorldPos);
 		if (!renderBlock.has(key) && cell != nullptr) {
 			CellBlockItem *item = CellBlockItem::allocate();
-			item->block = foliageRenderBuffer.instanceRenderBuffer.allocal(_cellBox->instanceCount, foliageRenderBuffer.instanceBufferChangeINfo);
+			item->block = foliageRenderBuffer.instanceRenderBuffer.allocate(_cellBox->instanceCount, foliageRenderBuffer.instanceBufferChangeINfo);
 			item->protoTypeID = _cellBox->protoID;
 
 			item->data.start = item->block->Start();

@@ -1,5 +1,4 @@
-#ifndef FOLIAGE_RENDER_BUFFER_H
-#define FOLIAGE_RENDER_BUFFER_H
+#pragma once
 #include "foliage_cell_asset.h"
 #include "memory_pool.h"
 #include "native_list.h"
@@ -161,13 +160,13 @@ struct FoliageInstanceRenderData {
 	RID gpuMatrix;
 	int lastCount = 0;
 	MemoryPool memoryPool;
-	MemoryPool::Block *allocal(int count, Vector<FoliageInstanceRenderDataChangeInfo> &data_change_list) {
+	MemoryPool::Block *allocate(int count, Vector<FoliageInstanceRenderDataChangeInfo> &data_change_list) {
 		if (lastCount == 0) {
 			lastCount = 50000;
 			gpuTreeInstance = RD::get_singleton()->storage_buffer_create(sizeof(GPUTreeInstance) * lastCount);
 			gpuMatrix = RD::get_singleton()->storage_buffer_create(sizeof(float) * lastCount * 16);
 		}
-		auto block = memoryPool.Allocate(count, 20000);
+		auto block = memoryPool.allocate(count, 20000);
 		if (block->End() > lastCount) {
 			FoliageInstanceRenderDataChangeInfo info;
 			info.preGpuTreeInstance = gpuTreeInstance;
@@ -184,7 +183,7 @@ struct FoliageInstanceRenderData {
 		return block;
 	}
 	void free_buffer(MemoryPool::Block *point) {
-		memoryPool.Free(point);
+		memoryPool.free_block(point);
 	}
 };
 struct CellLoadComputeArg {
@@ -277,7 +276,7 @@ public:
 	~MemoryPoolData() {
 	}
 	MemoryPool::Block *allocate(int count) {
-		MemoryPool::Block *r = pool.Allocate(count);
+		MemoryPool::Block *r = pool.allocate(count);
 		list.AutoResize(r->End(), r->End() + 500);
 		if (r->End() > list.size()) {
 			list.ResizeUninitialized(r->End(), 5000);
@@ -291,7 +290,7 @@ public:
 		if (_block->End() == list.size()) {
 			list.ResizeUninitialized(_block->Start(), 0);
 		}
-		pool.Free(_block);
+		pool.free_block(_block);
 	}
 	T *get_buffer(MemoryPool::Block *_block) {
 		return list.GetUnsafePtr(_block->Start());
@@ -305,5 +304,3 @@ public:
 };
 
 } //namespace Foliage
-
-#endif
