@@ -115,19 +115,19 @@ struct NativeList {
 	void *GetUnsafeReadOnlyPtr(int64_t index = 0) {
 		return GetUnsafePtr(index);
 	}
-	void ZeroMemory() {
+	void zero_memory_value() {
 		auto ptr = GetUnsafePtr();
 		if (ptr != nullptr) {
 			memset(ptr, 0, sizeof(T) * listCount.get());
 		}
 	}
-	void MemSet(uint8_t value) {
+	void memset_value(uint8_t value) {
 		auto ptr = GetUnsafePtr();
 		if (ptr != nullptr) {
 			memset(ptr, 0, sizeof(T) * listCount.get());
 		}
 	}
-	void AddRef(T &_data) {
+	void add_ref(T &_data) {
 		int64_t last_count = listCount.get();
 		AutoResize(last_count + 1, last_count + 1 + 200);
 

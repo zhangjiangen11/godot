@@ -30,6 +30,7 @@
 class CharacterAI;
 // 身体的插槽信息
 class BodySocket {
+public:
 	Transform3D localPose;
 	Transform3D globalPose;
 

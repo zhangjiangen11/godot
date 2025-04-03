@@ -26,7 +26,7 @@ public:
 	}
 
 protected:
-	virtual void update_name() {
+	virtual void update_name() override {
 	}
 	virtual Array _get_blackbord_propertys() override {
 		Array rs;

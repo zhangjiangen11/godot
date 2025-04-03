@@ -147,7 +147,7 @@ public:
 			l_clip_data->type = TimelineFileManager::get_instance().get_file_info(p_paths[0]).type;
 			l_clip_data->start_frame = l_start_frame;
 
-			undo_redo->create_action(TTR("Add Clip"));
+			undo_redo->create_action(TTRC("Add Clip"));
 			undo_redo->add_do_method(callable_mp(this, &TimelineClipPanel::_add_new_clips).bind(l_clip_data, l_track_id));
 			undo_redo->add_undo_method(callable_mp(this, &TimelineClipPanel::_remove_new_clips).bind(l_clip_data, l_track_id));
 			undo_redo->commit_action();
@@ -163,7 +163,7 @@ public:
 			if (!l_clip_button) {
 				return;
 			}
-			undo_redo->create_action(TTR("Move Clip"));
+			undo_redo->create_action(TTRC("Move Clip"));
 			undo_redo->add_do_method(callable_mp(this, &TimelineClipPanel::_move_clip).bind(l_clip_button, private_position));
 			undo_redo->add_undo_method(callable_mp(this, &TimelineClipPanel::_move_clip).bind(l_clip_button, l_clip_button->get_position()));
 			undo_redo->commit_action();
@@ -225,7 +225,7 @@ public:
 		int64_t l_new_track_id = TimelineButton::get_track_id(a_new_pos.y);
 
 		int64_t l_old_frame = get_frame_nr(node->get_position().x);
-		int64_t l_new_frame = get_frame_nr(a_new_pos.x);
+		//int64_t l_new_frame = get_frame_nr(a_new_pos.x);
 
 		timeline->delete_clip(l_old_track_id, l_old_frame);
 		timeline->_add_clip(node->get_clip_data(), l_new_track_id);

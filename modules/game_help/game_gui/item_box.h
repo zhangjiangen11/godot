@@ -66,9 +66,7 @@ public:
 		uint32_t end_x = start_x + max_show_v_count * h_count * 2;
 
 		start_x -= max_show_v_count * h_count;
-		if (start_x < 0) {
-			start_x = 0;
-		}
+
 		if (end_x > items.size()) {
 			end_x = items.size();
 		}

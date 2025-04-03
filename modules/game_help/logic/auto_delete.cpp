@@ -19,7 +19,7 @@ void AutoDelete::start(StringName p_name, ObjectID p_owner, ObjectID p_item, dou
 bool AutoDelete::is_running(float p_delta) {
 	start_time += p_delta;
 	if (GDVIRTUAL_IS_OVERRIDDEN(_is_running)) {
-		bool rs;
+		bool rs = false;
 		GDVIRTUAL_CALL(_is_running, p_delta, rs);
 		return rs;
 	}
