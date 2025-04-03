@@ -447,7 +447,7 @@ Vector4 TriangleMesh::get_closest_point_to(const Vector3 &p_point, float max_dis
 						if (closest_point_distance_squared < last_min_distance_squared) {
 							last_min_distance_squared = closest_point_distance_squared;
 							last_min_point = closest_point;
-							f3.get_plane().get_normal();
+							r_normal = f3.get_plane().get_normal();
 							is_inside = true;
 						}
 

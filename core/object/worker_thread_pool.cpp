@@ -856,14 +856,14 @@ WorkerThreadPool *WorkerThreadPool::get_named_pool(const StringName &p_name) {
 	if (pool_ptr) {
 		return *pool_ptr;
 	} else {
-		WorkerThreadPool *pool = memnew(WorkerThreadPool(p_name,false));
+		WorkerThreadPool *pool = memnew(WorkerThreadPool(p_name, false));
 		pool->init();
 		named_pools[p_name] = pool;
 		return pool;
 	}
 }
 
-WorkerThreadPool::WorkerThreadPool(const String & name,bool p_singleton) {
+WorkerThreadPool::WorkerThreadPool(const String &name, bool p_singleton) {
 	thread_name = name;
 	if (p_singleton) {
 		singleton = this;
@@ -883,38 +883,27 @@ WorkerThreadPool::~WorkerThreadPool() {
 	}
 }
 
-
-
-
-
-
-void TaskJobHandle::set_task_completed(int count)
-{	
+void TaskJobHandle::set_task_completed(int count) {
 	uint32_t completed_amount = completed_index.add(count);
 	bool do_post = false;
 	if (completed_amount >= taskMax) {
 		do_post = true;
 	}
-	if(do_post)
-	{
+	if (do_post) {
 		set_completed();
 	}
 }
-void TaskJobHandle::set_completed()
-{
+void TaskJobHandle::set_completed() {
 	completed.set();
 	// 通知等待的线程
 	std::lock_guard<std::mutex> lock(done_mutex);
 	cv.notify_all();
 }
-bool TaskJobHandle::is_completed()  {	
-	if(dependJob.size() > 0)
-	{
+bool TaskJobHandle::is_completed() {
+	if (dependJob.size() > 0) {
 		depend_mutex.lock();
-		for(uint32_t i = 0; i < dependJob.size(); ++i)
-		{
-			if(!dependJob[i]->is_completed())
-			{
+		for (uint32_t i = 0; i < dependJob.size(); ++i) {
+			if (!dependJob[i]->is_completed()) {
 				return false;
 			}
 		}
@@ -924,59 +913,43 @@ bool TaskJobHandle::is_completed()  {
 	return completed.is_set();
 }
 
-	// 等待所有依赖信号完成
-void TaskJobHandle::wait_depend_completion()
-{
-
-	if(dependJob.size() > 0)
-	{
+// 等待所有依赖信号完成
+void TaskJobHandle::wait_depend_completion() {
+	if (dependJob.size() > 0) {
 		depend_mutex.lock();
-		for(uint32_t i = 0; i < dependJob.size(); ++i)
-		{
+		for (uint32_t i = 0; i < dependJob.size(); ++i) {
 			dependJob[i]->wait_completion();
 		}
 		// 都结束了，就把完成的句柄清除
 		dependJob.clear();
 	}
 	depend_mutex.unlock();
-
 }
-void TaskJobHandle::wait_completion()
-{
-	if(!is_init)
-	{
+void TaskJobHandle::wait_completion() {
+	if (!is_init) {
 		return;
 	}
 	// 等待依赖全部完成
 	wait_depend_completion();
-	if(completed.is_set())
-	{
+	if (completed.is_set()) {
 		// 已经标记完成了
 		return;
-	}		
-	if(is_job)
-	{
+	}
+	if (is_job) {
 		// 如果完成，等待完成信号
 		std::unique_lock<std::mutex> lock(done_mutex);
-		cv.wait(lock, [this] { return  WorkerTaskPool::get_singleton() == nullptr || completed.is_set(); });
+		cv.wait(lock, [this] { return WorkerTaskPool::get_singleton() == nullptr || completed.is_set(); });
 	}
 }
-void TaskJobHandle::_bind_methods()
-{
+void TaskJobHandle::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_completed"), &TaskJobHandle::is_completed);
 	ClassDB::bind_method(D_METHOD("wait_completion"), &TaskJobHandle::wait_completion);
-	ClassDB::bind_method(D_METHOD("new_next_group","task_name","action","elements_count","batch_count"), &TaskJobHandle::new_next_group);
-	ClassDB::bind_method(D_METHOD("new_next","task_name","action"), &TaskJobHandle::new_next);
+	ClassDB::bind_method(D_METHOD("new_next_group", "task_name", "action", "elements_count", "batch_count"), &TaskJobHandle::new_next_group);
+	ClassDB::bind_method(D_METHOD("new_next", "task_name", "action"), &TaskJobHandle::new_next);
 	ClassDB::bind_method(D_METHOD("push_depend", "depend_task"), &TaskJobHandle::push_depend);
-
 }
 
-
-
-
-
-
-// 
+//
 class ThreadTaskGroup {
 	// 事件的句柄
 	Ref<TaskJobHandle> handle;
@@ -985,58 +958,49 @@ class ThreadTaskGroup {
 	void *native_func_userdata = nullptr;
 	int start = 0;
 	int end = 0;
-	ThreadTaskGroup* next = nullptr;
+	ThreadTaskGroup *next = nullptr;
 	friend class WorkerTaskPool;
-  protected:
-	void Process()
-	{
+
+protected:
+	void Process() {
 		// 等待所有依赖完成
 		handle->wait_depend_completion();
-		try
+		//try
 		{
-			if(native_group_func != nullptr)
-			{
-				for(int i = start; i < end; ++i)
-				{
-					(*native_group_func)(native_func_userdata,i);
-					if(WorkerTaskPool::get_singleton()->exit_threads)
-					{
+			if (native_group_func != nullptr) {
+				for (int i = start; i < end; ++i) {
+					(*native_group_func)(native_func_userdata, i);
+					if (WorkerTaskPool::get_singleton()->exit_threads) {
 						handle->set_completed();
 						return;
 					}
 				}
-			}
-			else
-			{
-				for(int i = start; i < end; ++i)
-				{
-					if(WorkerTaskPool::get_singleton()->exit_threads)
-					{
+			} else {
+				for (int i = start; i < end; ++i) {
+					if (WorkerTaskPool::get_singleton()->exit_threads) {
 						handle->set_completed();
 						return;
 					}
-				    callable.call(i);
+					callable.call(i);
 				}
 			}
-
 		}
-		catch (const std::exception& e) {
-			handle->set_completed();
-			String str = String(e.what()) + "\n";
-			// 处理其他类型的异常
-			//PRINT_STACK_TRACE(str);
-			CRASH_NOW_MSG(str);
-			return;
-		} catch (...) {
-			handle->set_completed();
-			// 处理所有其他未被上述 catch 语句捕捉的异常
-			String str = "Unknown exception:\n";
-			//PRINT_STACK_TRACE(str);
-			CRASH_NOW_MSG(str);
-			return;
-		}
-		if(WorkerTaskPool::get_singleton()->exit_threads)
-		{
+		//catch (const std::exception& e) {
+		//	handle->set_completed();
+		//	String str = String(e.what()) + "\n";
+		//	// 处理其他类型的异常
+		//	//PRINT_STACK_TRACE(str);
+		//	CRASH_NOW_MSG(str);
+		//	return;
+		//} catch (...) {
+		//	handle->set_completed();
+		//	// 处理所有其他未被上述 catch 语句捕捉的异常
+		//	String str = "Unknown exception:\n";
+		//	//PRINT_STACK_TRACE(str);
+		//	CRASH_NOW_MSG(str);
+		//	return;
+		//}
+		if (WorkerTaskPool::get_singleton()->exit_threads) {
 			handle->set_completed();
 			return;
 		}
@@ -1047,41 +1011,34 @@ class ThreadTaskGroup {
 
 WorkerTaskPool *WorkerTaskPool::singleton = nullptr;
 
-
 void WorkerTaskPool::_thread_task_function(void *p_user) {
-	ThreadData* thread_data = (ThreadData*)p_user;
+	ThreadData *thread_data = (ThreadData *)p_user;
 	while (true) {
 		singleton->task_available_semaphore.wait();
 		if (singleton->exit_threads) {
 			break;
 		}
 		singleton->_process_task_queue(thread_data->index);
-		if (singleton->exit_threads) 
-		{
+		if (singleton->exit_threads) {
 			return;
 		}
 	}
 }
 
-class ThreadTaskGroup * WorkerTaskPool::allocal_task()
-{
-	ThreadTaskGroup* ret = nullptr;
+class ThreadTaskGroup *WorkerTaskPool::allocal_task() {
+	ThreadTaskGroup *ret = nullptr;
 	free_mutex.lock();
-	if(free_queue != nullptr)
-	{
+	if (free_queue != nullptr) {
 		ret = free_queue;
 		free_queue = free_queue->next;
 	}
 	free_mutex.unlock();
-	if(ret == nullptr)
-	{
+	if (ret == nullptr) {
 		ret = memnew(ThreadTaskGroup);
 	}
 	return ret;
 }
-void WorkerTaskPool::free_task(class ThreadTaskGroup * task)
-{
-
+void WorkerTaskPool::free_task(class ThreadTaskGroup *task) {
 	task->callable = Callable();
 	task->native_func_userdata = nullptr;
 	task->native_group_func = nullptr;
@@ -1091,8 +1048,7 @@ void WorkerTaskPool::free_task(class ThreadTaskGroup * task)
 	free_queue = task;
 	free_mutex.unlock();
 }
-void WorkerTaskPool::add_task(class ThreadTaskGroup * task)
-{
+void WorkerTaskPool::add_task(class ThreadTaskGroup *task) {
 	task_mutex.lock();
 	task->next = task_queue;
 	task_queue = task;
@@ -1102,128 +1058,104 @@ void WorkerTaskPool::add_task(class ThreadTaskGroup * task)
 }
 void WorkerTaskPool::_process_task_queue(int thread_id) {
 	task_mutex.lock();
-	ThreadTaskGroup* node = task_queue;
-	if(node != nullptr)
-	{
+	ThreadTaskGroup *node = task_queue;
+	if (node != nullptr) {
 		ThreadTaskGroup *task = node;
 		task_queue = task_queue->next;
 		bool _capture_stack = capture_stack;
 		task_mutex.unlock();
 		uint64_t start_time;
-		if(capture_stack) {
+		if (capture_stack) {
 			start_time = OS::get_singleton()->get_ticks_usec();
-
 		}
 		task->Process();
 		task->native_func_userdata = nullptr;
 		task->native_group_func = nullptr;
 		task->callable = Callable();
 
-
-		if(capture_stack) {
+		if (capture_stack) {
 			uint64_t end_time = OS::get_singleton()->get_ticks_usec();
-			push_task_stack(thread_id,task->handle->task_name,task->start,task->end,start_time / 1000.0,end_time / 1000.0);
+			push_task_stack(thread_id, task->handle->task_name, task->start, task->end, start_time / 1000.0, end_time / 1000.0);
 		}
 		// 放到释放列队里面
 		free_task(task);
 
-	}
-	else
-	{
+	} else {
 		task_mutex.unlock();
 	}
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName& task_name,void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements,int _batch_count,TaskJobHandle* depend_task)
-{
+Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
 	hand->task_name = task_name;
 	// 增加依赖，保持依赖链条是正确的
-	if(depend_task != nullptr)
-	{
+	if (depend_task != nullptr) {
 		hand->dependJob.push_back(depend_task);
 	}
-	if(p_elements <= 0)
-	{
+	if (p_elements <= 0) {
 		return hand;
 	}
 	hand->is_job = true;
-	if(_batch_count	<= 0)
-	{
+	if (_batch_count <= 0) {
 		_batch_count = 1;
 	}
 	hand->taskMax = p_elements;
-	for(int i = 0; i < p_elements; i += _batch_count)
-	{
-		ThreadTaskGroup* task = allocal_task();
+	for (int i = 0; i < p_elements; i += _batch_count) {
+		ThreadTaskGroup *task = allocal_task();
 		task->handle = hand;
 		task->native_func_userdata = p_userdata;
 		task->native_group_func = p_func;
 		task->start = i;
 		task->end = i + _batch_count;
-		if(task->end > p_elements)
-		{
+		if (task->end > p_elements) {
 			task->end = p_elements;
 		}
 		// 增加一个任务
 		add_task(task);
 	}
 	return hand;
-
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName& task_name,const Callable &p_action, int p_elements, int _batch_count,TaskJobHandle* depend_task )
-{
+Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
 	hand->task_name = task_name;
 	// 增加依赖，保持依赖链条是正确的
-	if (depend_task != nullptr)
-	{
+	if (depend_task != nullptr) {
 		hand->dependJob.push_back(depend_task);
 	}
-	if(p_elements <= 0)
-	{
+	if (p_elements <= 0) {
 		return hand;
 	}
 	hand->is_job = true;
-	if(_batch_count	<= 0)
-	{
+	if (_batch_count <= 0) {
 		_batch_count = 1;
 	}
 	hand->taskMax = p_elements;
-	for(int i = 0; i < p_elements; i += _batch_count)
-	{
-		ThreadTaskGroup* task = allocal_task();
+	for (int i = 0; i < p_elements; i += _batch_count) {
+		ThreadTaskGroup *task = allocal_task();
 		task->handle = hand;
 		task->callable = p_action;
 		task->start = i;
 		task->end = i + _batch_count;
-		if(task->end > p_elements)
-		{
+		if (task->end > p_elements) {
 			task->end = p_elements;
 		}
 		// 增加一个任务
 		add_task(task);
 	}
 	return hand;
-	
 }
-Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle> _handles )
-{
-	if(_handles.size() == 0)
-	{
+Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle> _handles) {
+	if (_handles.size() == 0) {
 		return nullptr;
 	}
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
 	hand->dependJob.resize(_handles.size());
-	for(int i = 0; i < _handles.size(); ++i)
-	{
-		if(_handles[i] != nullptr)
-		{
-			Ref<TaskJobHandle> job =  _handles[i];
-			if(job == nullptr)
-			{
+	for (int i = 0; i < _handles.size(); ++i) {
+		if (_handles[i] != nullptr) {
+			Ref<TaskJobHandle> job = _handles[i];
+			if (job == nullptr) {
 				String err_str = "combined_job_handle job is not TaskJobHandle" + itos(i) + "\n";
 				//PRINT_STACK_TRACE(err_str);
 				continue;
@@ -1234,39 +1166,31 @@ Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle>
 	return hand;
 }
 void WorkerTaskPool::_bind_methods() {
-
 	//ClassDB::bind_method(D_METHOD("add_native_group_task", "func", "userdata", "elements","batch_count","depend_task"), &WorkerTaskPool::add_native_group_task);
-	ClassDB::bind_method(D_METHOD("add_group_task","task_name", "action", "elements","batch_count","depend_task"), &WorkerTaskPool::add_group_task);
+	ClassDB::bind_method(D_METHOD("add_group_task", "task_name", "action", "elements", "batch_count", "depend_task"), &WorkerTaskPool::add_group_task);
 	ClassDB::bind_method(D_METHOD("combined_job_handle", "handles"), &WorkerTaskPool::combined_job_handle);
-
 }
 
-void WorkerTaskPool::init()
-{
+void WorkerTaskPool::init() {
 	int cpu_count = OS::get_singleton()->get_processor_count();
 	threads.resize(cpu_count * 2);
-	for(uint32_t i = 0; i < threads.size(); ++i)
-	{
+	for (uint32_t i = 0; i < threads.size(); ++i) {
 		threads[i].index = i;
 		Thread::Settings settings;
 		settings.priority = Thread::PRIORITY_NORMAL;
-		
-		threads[i].thread.start(&WorkerTaskPool::_thread_task_function, &threads[i],settings);
+
+		threads[i].thread.start(&WorkerTaskPool::_thread_task_function, &threads[i], settings);
 		threads[i].thread.set_thread_name(String("Worker Job Pool Thread:") + String::num_int64(i));
 	}
-
 }
 
-
-void WorkerTaskPool::push_task_stack(int thread_index,const StringName& task_name,uint32_t task_start,uint32_t task_end, double task_start_time,double task_end_time) {
-	if(!capture_stack) {
+void WorkerTaskPool::push_task_stack(int thread_index, const StringName &task_name, uint32_t task_start, uint32_t task_end, double task_start_time, double task_end_time) {
+	if (!capture_stack) {
 		return;
 	}
 	stack_mutex.lock();
-	if(stack_use_count < task_run_stack_pool.size())
-	{
-		if(first_stack == nullptr)
-		{
+	if (stack_use_count < task_run_stack_pool.size()) {
+		if (first_stack == nullptr) {
 			first_stack = &task_run_stack_pool[stack_use_count];
 			last_stack = &task_run_stack_pool[stack_use_count];
 			stack_use_count = 1;
@@ -1279,9 +1203,7 @@ void WorkerTaskPool::push_task_stack(int thread_index,const StringName& task_nam
 			last_stack->next = nullptr;
 			stack_mutex.unlock();
 			return;
-		}
-		else
-		{
+		} else {
 			last_stack->next = &task_run_stack_pool[stack_use_count];
 			last_stack = last_stack->next;
 
@@ -1296,9 +1218,8 @@ void WorkerTaskPool::push_task_stack(int thread_index,const StringName& task_nam
 			stack_mutex.unlock();
 			return;
 		}
-		
-	}	
-	else {
+
+	} else {
 		last_stack->next = first_stack;
 		last_stack = last_stack->next;
 		first_stack = first_stack->next;
@@ -1311,7 +1232,6 @@ void WorkerTaskPool::push_task_stack(int thread_index,const StringName& task_nam
 		last_stack->next = nullptr;
 		stack_mutex.unlock();
 	}
-
 }
 void WorkerTaskPool::reset_task_stack() {
 	stack_mutex.lock();
@@ -1319,23 +1239,18 @@ void WorkerTaskPool::reset_task_stack() {
 	last_stack = nullptr;
 	stack_use_count = 0;
 	stack_mutex.unlock();
-
 }
-void WorkerTaskPool::get_task_stack_data(LocalVector<ThreadRunStack> & stack) {
-	
+void WorkerTaskPool::get_task_stack_data(LocalVector<ThreadRunStack> &stack) {
 	stack_mutex.lock();
 	stack.reserve(stack_use_count);
-	ThreadRunStack * it = first_stack;
-	while(it)
-	{
+	ThreadRunStack *it = first_stack;
+	while (it) {
 		stack.push_back(*it);
 		it = it->next;
 	}
 	stack_mutex.unlock();
-
 }
-void WorkerTaskPool::finish()
-{
+void WorkerTaskPool::finish() {
 	exit_threads = true;
 
 	for (uint32_t i = 0; i < threads.size(); i++) {
@@ -1346,7 +1261,7 @@ void WorkerTaskPool::finish()
 		data.thread.wait_to_finish();
 	}
 	singleton = nullptr;
-	class ThreadTaskGroup* it = task_queue;
+	class ThreadTaskGroup *it = task_queue;
 	while (it) {
 		memdelete(it);
 		it = it->next;
@@ -1358,7 +1273,6 @@ void WorkerTaskPool::finish()
 	}
 	task_queue = nullptr;
 	free_queue = nullptr;
-
 }
 WorkerTaskPool::WorkerTaskPool() {
 	singleton = this;
@@ -1368,4 +1282,3 @@ WorkerTaskPool::WorkerTaskPool() {
 WorkerTaskPool::~WorkerTaskPool() {
 	finish();
 }
-

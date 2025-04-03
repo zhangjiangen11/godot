@@ -371,19 +371,20 @@ void Soundsource::_ready() {
 
 		// create reverbers
 		raycast_index = 0;
-		while (raycast_index < raycasts.size()) {
-			Reverber *reverber = create_reverber(name, raycast_index);
+		uint32_t index = 0;
+		while (index < raycasts.size()) {
+			Reverber *reverber = create_reverber(name, index);
 			get_tree()->get_root()->add_child(reverber);
 			reverbers.push_back(reverber);
-			raycast_index += 1;
+			index += 1;
 		}
 
 		// create measurement rays
 		measurement_rays = create_raycast_sector(0, 2 * Math_PI, 12, 3);
-		raycast_index = 0;
-		while (raycast_index < measurement_rays.size()) {
+		index = 0;
+		while (index < measurement_rays.size()) {
 			distances.push_back(-1);
-			raycast_index += 1;
+			index += 1;
 		}
 	}
 }

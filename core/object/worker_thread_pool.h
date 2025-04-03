@@ -290,7 +290,7 @@ public:
 	void init(int p_thread_count = -1, float p_low_priority_task_ratio = 0.3);
 	void exit_languages_threads();
 	void finish();
-	WorkerThreadPool(const String & name,bool p_singleton = true);
+	WorkerThreadPool(const String &name, bool p_singleton = true);
 	~WorkerThreadPool();
 };
 
@@ -301,8 +301,8 @@ class WorkerTaskPool : public Object {
 	GDCLASS(WorkerTaskPool, Object)
 	static void _bind_methods();
 	static WorkerTaskPool *singleton;
-public:
 
+public:
 	struct ThreadRunStack {
 		uint32_t thread_index;
 		StringName task_name;
@@ -311,13 +311,14 @@ public:
 		// 毫秒ms
 		double tast_start_time;
 		double task_end_time;
-		ThreadRunStack* next = nullptr;
+		ThreadRunStack *next = nullptr;
 	};
+
 protected:
 	bool exit_threads = false;
-	class ThreadTaskGroup* task_queue = nullptr;
+	class ThreadTaskGroup *task_queue = nullptr;
 	// 释放的列队
-	class ThreadTaskGroup* free_queue = nullptr;
+	class ThreadTaskGroup *free_queue = nullptr;
 	Mutex task_mutex;
 	Mutex free_mutex;
 	Semaphore task_available_semaphore;
@@ -328,106 +329,104 @@ protected:
 	};
 	TightLocalVector<ThreadData> threads;
 
-
 	Mutex stack_mutex;
 	LocalVector<ThreadRunStack> task_run_stack_pool;
-	ThreadRunStack* first_stack = nullptr;
-	ThreadRunStack* last_stack = nullptr;
-	int stack_use_count = 0;
+	ThreadRunStack *first_stack = nullptr;
+	ThreadRunStack *last_stack = nullptr;
+	uint32_t stack_use_count = 0;
 	bool capture_stack = false;
 
-	void push_task_stack(int thread_index,const StringName& task_name,uint32_t task_start,uint32_t task_end, double task_start_time,double task_end_time);
+	void push_task_stack(int thread_index, const StringName &task_name, uint32_t task_start, uint32_t task_end, double task_start_time, double task_end_time);
 	void reset_task_stack();
-	void get_task_stack_data(LocalVector<ThreadRunStack> & stack);
+	void get_task_stack_data(LocalVector<ThreadRunStack> &stack);
 
 public:
 	template <typename... VarArgs>
-	_FORCE_INLINE_ Ref<TaskJobHandle> add_group_task_bind(const StringName& _task_name,const Callable &p_action, int p_elements_count, int _batch_count,TaskJobHandle* depend_task,VarArgs... p_args) {
+	_FORCE_INLINE_ Ref<TaskJobHandle> add_group_task_bind(const StringName &_task_name, const Callable &p_action, int p_elements_count, int _batch_count, TaskJobHandle *depend_task, VarArgs... p_args) {
 		return add_group_task(p_action.bind(p_args...), p_elements_count, _batch_count, depend_task);
 	}
 	template <typename... VarArgs>
-	_FORCE_INLINE_ Ref<TaskJobHandle> add_task_bind(const StringName& _task_name,const Callable &p_action, TaskJobHandle* depend_task,VarArgs... p_args) {
+	_FORCE_INLINE_ Ref<TaskJobHandle> add_task_bind(const StringName &_task_name, const Callable &p_action, TaskJobHandle *depend_task, VarArgs... p_args) {
 		return add_group_task(p_action.bind(p_args...), 1, 1, depend_task);
 	}
 
 public:
-	Ref<TaskJobHandle> add_native_group_task(const StringName& _task_name,void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements_count,int _batch_count,TaskJobHandle* depend_task);
-	Ref<TaskJobHandle> add_group_task(const StringName& _task_name,const Callable &p_action, int p_elements, int _batch_count,TaskJobHandle* depend_task);
+	Ref<TaskJobHandle> add_native_group_task(const StringName &_task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements_count, int _batch_count, TaskJobHandle *depend_task);
+	Ref<TaskJobHandle> add_group_task(const StringName &_task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task);
 
 public:
-	Ref<TaskJobHandle> combined_job_handle(TypedArray<TaskJobHandle> _handles );
+	Ref<TaskJobHandle> combined_job_handle(TypedArray<TaskJobHandle> _handles);
+
 public:
-	
 	static WorkerTaskPool *get_singleton() { return singleton; }
 
 	void init();
 	void finish();
 
-
 	WorkerTaskPool();
 	~WorkerTaskPool();
+
 protected:
 	static void _thread_task_function(void *p_user);
-	void _process_task_queue(int thread_id) ;
-	class ThreadTaskGroup * allocal_task();
-	void free_task(class ThreadTaskGroup * task);
-	void add_task(class ThreadTaskGroup * task);
+	void _process_task_queue(int thread_id);
+	class ThreadTaskGroup *allocal_task();
+	void free_task(class ThreadTaskGroup *task);
+	void add_task(class ThreadTaskGroup *task);
 	friend class ThreadTaskGroup;
-private:
 
+private:
 };
 /*=================================================================TaskJobHandle==================================================================*/
 // 任务Job句柄
-class TaskJobHandle : public RefCounted
-{
+class TaskJobHandle : public RefCounted {
 	GDCLASS(TaskJobHandle, RefCounted);
 	static void _bind_methods();
 	friend class WorkerTaskPool;
 	friend class ThreadTaskGroup;
- public:
- 	// 新建下一个组任务
+
+public:
+	// 新建下一个组任务
 	template <typename... VarArgs>
-	_FORCE_INLINE_ Ref<TaskJobHandle> new_next_group_t(const StringName& _task_name,const Callable &p_action, int p_elements_count, int _batch_count,VarArgs... p_args) {
-		return add_group_task(_task_name,p_action.bind(p_args...), p_elements_count, _batch_count, this);
+	_FORCE_INLINE_ Ref<TaskJobHandle> new_next_group_t(const StringName &_task_name, const Callable &p_action, int p_elements_count, int _batch_count, VarArgs... p_args) {
+		return add_group_task(_task_name, p_action.bind(p_args...), p_elements_count, _batch_count, this);
 	}
 
 	// 新建下一个任务
 	template <typename... VarArgs>
-	_FORCE_INLINE_ Ref<TaskJobHandle> new_next_t(const StringName& _task_name,const Callable &p_action, VarArgs... p_args) {
-		return add_group_task(_task_name,p_action.bind(p_args...), 1, 1, this);
+	_FORCE_INLINE_ Ref<TaskJobHandle> new_next_t(const StringName &_task_name, const Callable &p_action, VarArgs... p_args) {
+		return add_group_task(_task_name, p_action.bind(p_args...), 1, 1, this);
 	}
 
 public:
 	// 新建下一个组任务
-   Ref<TaskJobHandle> new_next_group(const StringName& _task_name,const Callable &p_action, int p_elements_count, int _batch_count) {
-		return WorkerTaskPool::get_singleton()->add_group_task(_task_name,p_action, p_elements_count, _batch_count, this);
-   }
+	Ref<TaskJobHandle> new_next_group(const StringName &_task_name, const Callable &p_action, int p_elements_count, int _batch_count) {
+		return WorkerTaskPool::get_singleton()->add_group_task(_task_name, p_action, p_elements_count, _batch_count, this);
+	}
 
-   // 新建下一个任务
-   Ref<TaskJobHandle> new_next(const StringName& _task_name,const Callable &p_action) {
-	   return WorkerTaskPool::get_singleton()->add_group_task(_task_name,p_action, 1, 1, this);
-   }
+	// 新建下一个任务
+	Ref<TaskJobHandle> new_next(const StringName &_task_name, const Callable &p_action) {
+		return WorkerTaskPool::get_singleton()->add_group_task(_task_name, p_action, 1, 1, this);
+	}
 
 	// 添加依赖，这个句柄,必须是自己心分配的,不能复用
-	void push_depend(TaskJobHandle* depend_task) {
+	void push_depend(TaskJobHandle *depend_task) {
 		ERR_FAIL_COND(is_init);
 		dependJob.push_back(depend_task);
 	}
-	bool is_completed() ;
+	bool is_completed();
 	// 等待信号完成
 	void wait_completion();
 
- protected:
- 	void init(){
- 		is_init = true;
- 	}
+protected:
+	void init() {
+		is_init = true;
+	}
 	void set_task_completed(int count);
 	void set_completed();
 	// 等待所有依赖信号完成
 	void wait_depend_completion();
 
-	
- protected:
+protected:
 	// 任务名称
 	StringName task_name;
 	Mutex depend_mutex;
