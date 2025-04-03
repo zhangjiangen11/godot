@@ -226,7 +226,7 @@ Vector3 Ivy::computeAdhesion(const Vector3 &pos) {
 	//define a maximum distance
 	float local_maxAdhesionDistance = maxAdhesionDistance;
 
-	float minDistance = local_maxAdhesionDistance;
+	//float minDistance = local_maxAdhesionDistance;
 	float last_distance = maxAdhesionDistance * 2;
 	bool is_insde = false;
 	for (uint32_t m = 0; m < meshList.size(); m++) {
@@ -251,7 +251,7 @@ bool Ivy::computeCollision(const Vector3 &oldPos, Vector3 &newPos, bool &climbin
 
 	bool intersection;
 
-	int deadlockCounter = 0;
+	//int deadlockCounter = 0;
 	Vector3 direction = newPos - oldPos;
 
 	Vector3 from = oldPos;
@@ -468,7 +468,7 @@ void Ivy::birth() {
 
 					tmpTriangle.matid = 1;
 
-					float probability = Math::rand() / (float)RAND_MAX;
+					//float probability = Math::rand() / (float)RAND_MAX;
 					if (probability * weight > leafProbability) {
 						tmpTriangle.matid = 2;
 					}

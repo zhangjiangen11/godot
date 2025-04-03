@@ -486,7 +486,7 @@ void SceneChunk::remove_mesh_collision_instance(int id, const String &p_path) {
 
 void SceneChunk::process(double p_delta) {
 	// 處理裁剪
-	Camera3D *camera = get_viewport()->get_camera_3d();
+	//Camera3D *camera = get_viewport()->get_camera_3d();
 	RID world_3d_scenario = get_world_3d()->get_scenario();
 
 	for (auto it : mult_mesh_instances) {

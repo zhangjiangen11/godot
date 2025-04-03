@@ -201,7 +201,7 @@ void CharacterAnimationUpdateTool::process_anim(const AnimationMixer::AnimationI
 	//Animation::LoopedFlag looped_flag = ai.playback_info.looped_flag;
 	bool is_external_seeking = ai.playback_info.is_external_seeking;
 	//const real_t *track_weights_ptr = ai.playback_info.track_weights.ptr();
-	int track_weights_count = ai.playback_info.track_weights.size();
+	//int track_weights_count = ai.playback_info.track_weights.size();
 	bool backward = signbit(delta); // This flag is used by the root motion calculates or detecting the end of audio stream.
 	//bool seeked_backward = signbit(delta);
 #ifndef _3D_DISABLED

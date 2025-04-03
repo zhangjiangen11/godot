@@ -320,7 +320,7 @@ void MGrid::update_search_bound() {
 }
 
 void MGrid::cull_out_of_bound() {
-	RenderingServer *rs = RenderingServer::get_singleton();
+	//RenderingServer *rs = RenderingServer::get_singleton();
 	for (int32_t z = _last_search_bound.top; z <= _last_search_bound.bottom; z++) {
 		for (int32_t x = _last_search_bound.left; x <= _last_search_bound.right; x++) {
 			if (!_search_bound.has_point(x, z)) {
@@ -533,9 +533,9 @@ bool MGrid::check_bigger_size(const int8_t lod, const int8_t size, const int32_t
 						remove_instance_list.push_back(points[z][x].instance);
 						points[z][x].instance = RID();
 					}
-					int32_t region_id = get_region_id_by_point(x, z);
+					int32_t _region_id = get_region_id_by_point(x, z);
 					//MRegion* region = get_region_by_point(x,z);
-					points[z][x].create_instance(get_world_pos(x, 0, z), _scenario, regions[region_id].get_material_rid(), is_visible);
+					points[z][x].create_instance(get_world_pos(x, 0, z), _scenario, regions[_region_id].get_material_rid(), is_visible);
 					rs->instance_set_visible(points[z][x].instance, false);
 					rs->instance_set_base(points[z][x].instance, mesh);
 					/*
@@ -543,7 +543,7 @@ bool MGrid::check_bigger_size(const int8_t lod, const int8_t size, const int32_t
 					*/
 					MGridUpdateInfo update_info;
 					update_info.terrain_instance = points[z][x].instance;
-					update_info.region_id = region_id;
+					update_info.region_id = _region_id;
 					update_info.region_world_pos = get_region_world_pos_by_point(x, z);
 					update_info.region_offset_ratio = get_point_region_offset_ratio(x, z);
 					update_info.lod = lod;
@@ -629,7 +629,7 @@ Ref<MTerrainMaterial> MGrid::get_terrain_material() {
 }
 
 MGridPos MGrid::get_3d_grid_pos_by_middle_point(MGridPos input) {
-	MRegion *r = get_region_by_point(input.x, input.z);
+	//MRegion *r = get_region_by_point(input.x, input.z);
 	//Calculating middle point in chunks
 	real_t half = ((real_t)_chunks->base_size_meter) / 2;
 	Vector3 middle_point_chunk = get_world_pos(input) + Vector3(half, 0, half);
@@ -932,9 +932,9 @@ void MGrid::set_pixel(uint32_t x, uint32_t y, const Color &col, const int32_t in
 	MRegion *r = get_region(rx, ry);
 	r->set_pixel(x, y, col, index);
 	// Take care of the edges
-	ex = (ex && rx != _region_grid_bound.right);
+	ex = (ex && int32_t(rx) != _region_grid_bound.right);
 	// Same for ey
-	ey = (ey && ry != _region_grid_bound.bottom);
+	ey = (ey && int32_t(ry) != _region_grid_bound.bottom);
 	if (ex && ey) {
 		MRegion *re = get_region(rx + 1, ry + 1);
 		re->set_pixel(0, 0, col, index);
@@ -962,9 +962,9 @@ void MGrid::set_pixel_by_pointer(uint32_t x, uint32_t y, uint8_t *ptr, const int
 	MRegion *r = get_region(rx, ry);
 	r->images[index]->set_pixel_by_data_pointer(x, y, ptr);
 	// Take care of the edges
-	ex = (ex && rx != _region_grid_bound.right);
+	ex = (ex && int32_t(rx) != _region_grid_bound.right);
 	// Same for ey
-	ey = (ey && ry != _region_grid_bound.bottom);
+	ey = (ey && int32_t(ry) != _region_grid_bound.bottom);
 	if (ex && ey) {
 		MRegion *re = get_region(rx + 1, ry + 1);
 		re->images[index]->set_pixel_by_data_pointer(0, 0, ptr);
@@ -1007,9 +1007,9 @@ void MGrid::set_height_by_pixel(uint32_t x, uint32_t y, const real_t value) {
 	r->set_height_by_pixel(x, y, value);
 	// Take care of the edges
 	// We dont want ex to be true at the edge of the terrain
-	ex = (ex && rx != _region_grid_bound.right);
+	ex = (ex && int32_t(rx) != _region_grid_bound.right);
 	// Same for ey
-	ey = (ey && ry != _region_grid_bound.bottom);
+	ey = (ey && int32_t(ry) != _region_grid_bound.bottom);
 	if (ex && ey) {
 		MRegion *re = get_region(rx + 1, ry + 1);
 		re->set_height_by_pixel(0, 0, value);
@@ -1341,7 +1341,7 @@ void MGrid::draw_color(Vector3 brush_pos, real_t radius, MColorBrush *brush, int
 	Image::Format format = regions[0].images[index]->format;
 	current_paint_index = index;
 	Vector2i bpxpos = get_closest_pixel(brush_pos);
-	if (bpxpos.x < 0 || bpxpos.y < 0 || bpxpos.x > int32_t(grid_pixel_region.right)|| bpxpos.y > int32_t(grid_pixel_region.bottom)) {
+	if (bpxpos.x < 0 || bpxpos.y < 0 || bpxpos.x > int32_t(grid_pixel_region.right) || bpxpos.y > int32_t(grid_pixel_region.bottom)) {
 		return;
 	}
 	brush_px_pos_x = bpxpos.x;
@@ -1383,7 +1383,7 @@ void MGrid::draw_color(Vector3 brush_pos, real_t radius, MColorBrush *brush, int
 	uint32_t local_y = 0;
 	uint32_t x = draw_pixel_region.left;
 	uint32_t y = draw_pixel_region.top;
-	int print_index = 0;
+	//int print_index = 0;
 	while (local_y < draw_image->height) {
 		while (local_x < draw_image->width) {
 			uint32_t ofs = (local_x + local_y * draw_image->width) * draw_image->pixel_size;

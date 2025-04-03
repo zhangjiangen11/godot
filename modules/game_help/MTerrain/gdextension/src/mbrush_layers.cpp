@@ -243,7 +243,7 @@ Color MBrushLayers::get_layer_color(int index) {
 		bool blue = dic["blue"];
 		bool alpha = dic["alpha"];
 		if (alpha && !green && !blue && !red) {
-			float alpha_val = dic["blue-value"];
+			//float alpha_val = dic["blue-value"];
 			col = Color(alpha, alpha, alpha);
 			return col;
 		}
