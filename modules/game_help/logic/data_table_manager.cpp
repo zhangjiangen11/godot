@@ -5,8 +5,6 @@
 #include <map>
 #include <regex>
 
-
-
 static DataTableManager *singleton = nullptr;
 DataTableManager::DataTableManager() {
 	singleton = this;
@@ -55,7 +53,6 @@ void DataTableManager::init() {
 	is_init = true;
 }
 Ref<JSON> DataTableManager::parse_yaml_file(const String &file_path) {
-
 	return Ref<JSON>();
 }
 Ref<JSON> DataTableManager::parse_yaml(const String &text) {
