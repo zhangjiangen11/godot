@@ -68,10 +68,11 @@ void CharacterMovement::moveing_forward(float dis, bool is_ground) {
 }
 void CharacterMovement::looking(const Vector3 &pos, bool is_ground) {
 	if (attach_target.is_valid()) {
+		Vector3 target_pos = pos;
 		if (is_ground) {
 			target_pos.y = world_pos.origin.y;
 		}
-		world_pos = world_pos.looking_at(pos, Vector3(0, 1, 0));
+		world_pos = world_pos.looking_at(target_pos, Vector3(0, 1, 0));
 		local_rot = attach_world_pos.inverse() * world_pos;
 	} else {
 		world_pos = world_pos.looking_at(pos, Vector3(0, 1, 0));
