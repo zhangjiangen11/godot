@@ -177,7 +177,7 @@ public:
 	void _ready() override;
 
 	// don't inherit this from SpatialAudio3D
-	void _exit_tree();
+	void _exit_tree() override;
 
 	void physics_process(double _delta) override;
 
@@ -223,7 +223,7 @@ public:
 
 	void physics_process(double _delta) override;
 
-	void _exit_tree();
+	void _exit_tree() override;
 
 	Reverber *create_reverber(StringName name_p, int raycast_index);
 
@@ -333,7 +333,7 @@ public:
 
 	void physics_process(double _delta) override;
 
-	void _exit_tree();
+	void _exit_tree() override;
 
 	void do_play() override;
 
@@ -359,7 +359,7 @@ class Debugsphere : public Node3D {
 
 public:
 public:
-	Color color = "00f";
+	Color color = Color("#0000ff");
 	double size = 0.5;
 	int max_raycast_distance;
 	Label3D *label = nullptr;

@@ -151,16 +151,17 @@ enum PropertyUsageFlags {
 // PropertyInfo(Variant::ARRAY, "fallbacks", PROPERTY_HINT_ARRAY_TYPE, MAKE_RESOURCE_TYPE_HINT("Font")
 #define MAKE_RESOURCE_TYPE_HINT(m_type) vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, m_type)
 
-
-#define DECL_MEMBER_BUTTON(bt_name) \
-	void _set_## bt_name ## _property(int v){}\
-	int _get_ ## bt_name ##_property(){return 0;}\
+#define DECL_MEMBER_BUTTON(bt_name)          \
+	void _set_##bt_name##_property(int v) {} \
+	int _get_##bt_name##_property() {        \
+		return 0;                            \
+	}                                        \
 	void bt_name()
-#define ADD_MEMBER_BUTTON(bt_name,lable_name,class_name)\
-	ClassDB::bind_method(D_METHOD("_set_"  #bt_name  "_property", "v"), &class_name::_set_ ## bt_name ## _property);\
-	ClassDB::bind_method(D_METHOD("_get_"  #bt_name  "_property"), &class_name::_get_ ## bt_name ## _property);\
-	ClassDB::bind_method(D_METHOD(#bt_name), &class_name::bt_name);\
-	ADD_PROPERTY(PropertyInfo(Variant::INT, #bt_name, PROPERTY_HINT_BUTTON, "#F622AA;" lable_name ";" #bt_name "()",PROPERTY_USAGE_EDITOR), "_set_"  #bt_name  "_property", "_get_"  #bt_name  "_property");
+#define ADD_MEMBER_BUTTON(bt_name, lable_name, class_name)                                                     \
+	ClassDB::bind_method(D_METHOD("_set_" #bt_name "_property", "v"), &class_name::_set_##bt_name##_property); \
+	ClassDB::bind_method(D_METHOD("_get_" #bt_name "_property"), &class_name::_get_##bt_name##_property);      \
+	ClassDB::bind_method(D_METHOD(#bt_name), &class_name::bt_name);                                            \
+	ADD_PROPERTY(PropertyInfo(Variant::INT, #bt_name, PROPERTY_HINT_BUTTON, "#F622AA;" lable_name ";" #bt_name "()", PROPERTY_USAGE_EDITOR), "_set_" #bt_name "_property", "_get_" #bt_name "_property");
 
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
@@ -184,7 +185,7 @@ struct PropertyInfo {
 
 	PropertyInfo() {}
 
-	PropertyInfo(const Variant::Type p_type, const String& p_name, const PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", const uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName()) :
+	PropertyInfo(const Variant::Type p_type, const String &p_name, const PropertyHint p_hint = PROPERTY_HINT_NONE, const String &p_hint_string = "", const uint32_t p_usage = PROPERTY_USAGE_DEFAULT, const StringName &p_class_name = StringName()) :
 			type(p_type),
 			name(p_name),
 			hint(p_hint),
@@ -281,10 +282,10 @@ struct MethodInfo {
 		}
 	}
 
-	MethodInfo(const StringName&p_name) { name = p_name; }
+	MethodInfo(const StringName &p_name) { name = p_name; }
 
 	template <typename... VarArgs>
-	MethodInfo(const StringName&p_name, VarArgs... p_params) {
+	MethodInfo(const StringName &p_name, VarArgs... p_params) {
 		name = p_name;
 		arguments = Vector<PropertyInfo>{ p_params... };
 	}
@@ -296,19 +297,19 @@ struct MethodInfo {
 	}
 
 	template <typename... VarArgs>
-	MethodInfo(Variant::Type ret, const StringName&p_name, VarArgs... p_params) {
+	MethodInfo(Variant::Type ret, const StringName &p_name, VarArgs... p_params) {
 		name = p_name;
 		return_val.type = ret;
 		arguments = Vector<PropertyInfo>{ p_params... };
 	}
 
-	MethodInfo(const PropertyInfo &p_ret, const StringName&p_name) {
+	MethodInfo(const PropertyInfo &p_ret, const StringName &p_name) {
 		return_val = p_ret;
 		name = p_name;
 	}
 
 	template <typename... VarArgs>
-	MethodInfo(const PropertyInfo &p_ret, const StringName&p_name, VarArgs... p_params) {
+	MethodInfo(const PropertyInfo &p_ret, const StringName &p_name, VarArgs... p_params) {
 		return_val = p_ret;
 		name = p_name;
 		arguments = Vector<PropertyInfo>{ p_params... };
@@ -889,7 +890,7 @@ public:
 	bool property_can_revert(const StringName &p_name) const;
 	Variant property_get_revert(const StringName &p_name) const;
 
-	StringName get_property_display_name(const StringName& p_property_name);
+	StringName get_property_display_name(const StringName &p_property_name);
 
 	bool has_method(const StringName &p_method) const;
 	int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const;

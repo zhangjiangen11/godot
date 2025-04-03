@@ -1270,7 +1270,7 @@ void ClassDB::get_enum_constants(const StringName &p_class, const StringName &p_
 		type = type->inherits_ptr;
 	}
 }
-PackedStringArray ClassDB::class_get_enum_constants(const StringName &p_class, const StringName &p_enum, bool p_no_inheritance)  {
+PackedStringArray ClassDB::class_get_enum_constants(const StringName &p_class, const StringName &p_enum, bool p_no_inheritance) {
 	List<StringName> constants;
 	get_enum_constants(p_class, p_enum, &constants, p_no_inheritance);
 

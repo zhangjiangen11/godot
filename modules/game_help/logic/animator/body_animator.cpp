@@ -411,7 +411,6 @@ void CharacterAnimator::set_body(class CharacterBodyMain *p_body) {
 		m_Body_ID = p_body->get_instance_id();
 	}
 	auto it = m_LayerConfigInstanceList.begin();
-	bool is_first = true;
 	while (it != m_LayerConfigInstanceList.end()) {
 		Ref<CharacterAnimatorLayerConfigInstance> layer = *it;
 		layer->set_body(p_body);

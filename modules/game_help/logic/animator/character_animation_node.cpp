@@ -130,7 +130,7 @@ void CharacterAnimatorNodeBase::_blend_anmation(CharacterAnimatorLayer *p_layer,
 
 				if (get_loop() == LOOP_Once) {
 					double length = item->animation->get_length();
-					double time = p_playback_info_ptr[i].time;
+					//double time = p_playback_info_ptr[i].time;
 					while (p_playback_info_ptr[i].time > length) {
 						p_playback_info_ptr[i].time -= length;
 					}
@@ -694,7 +694,7 @@ void CharacterAnimatorLoopLast::process_animation(class CharacterAnimatorLayer *
 				p_playback_info->play_index = p_playback_info->play_index + 1;
 			}
 		} else {
-			double time = playback_info.time;
+			//double time = playback_info.time;
 			while (playback_info.time > length) {
 				playback_info.time -= length;
 			}

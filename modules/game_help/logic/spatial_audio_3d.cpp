@@ -371,7 +371,7 @@ void Soundsource::_ready() {
 
 		// create reverbers
 		raycast_index = 0;
-		for (RayCast3D *rc : raycasts) {
+		while (raycast_index < raycasts.size()) {
 			Reverber *reverber = create_reverber(name, raycast_index);
 			get_tree()->get_root()->add_child(reverber);
 			reverbers.push_back(reverber);
@@ -380,8 +380,10 @@ void Soundsource::_ready() {
 
 		// create measurement rays
 		measurement_rays = create_raycast_sector(0, 2 * Math_PI, 12, 3);
-		for (RayCast3D *mr : measurement_rays) {
+		raycast_index = 0;
+		while (raycast_index < measurement_rays.size()) {
 			distances.push_back(-1);
+			raycast_index += 1;
 		}
 	}
 }
