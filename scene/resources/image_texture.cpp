@@ -171,7 +171,7 @@ void ImageTexture::draw_rect(RID p_canvas_item, const Rect2 &p_rect, bool p_tile
 	if ((w | h) == 0) {
 		return;
 	}
-	if(p_rect.size.x == 0 || p_rect.size.y == 0) {
+	if (p_rect.size.x == 0 || p_rect.size.y == 0) {
 		return;
 	}
 	RenderingServer::get_singleton()->canvas_item_add_texture_rect(p_canvas_item, p_rect, texture, p_tile, p_modulate, p_transpose);
@@ -184,11 +184,11 @@ void ImageTexture::draw_rect_region(RID p_canvas_item, const Rect2 &p_rect, cons
 	RenderingServer::get_singleton()->canvas_item_add_texture_rect_region(p_canvas_item, p_rect, texture, p_src_rect, p_modulate, p_transpose, p_clip_uv);
 }
 
-void ImageTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color& modulate , bool p_transpose ) const {
+void ImageTexture::draw_nine(RID p_canvas_item, const Rect2 &p_rect, const Color &modulate, bool p_transpose) const {
 	if ((w | h) == 0) {
 		return;
 	}
-	if(p_rect.size.x == 0 || p_rect.size.y == 0) {
+	if (p_rect.size.x == 0 || p_rect.size.y == 0) {
 		return;
 	}
 	float _left = nine_left;
@@ -196,8 +196,7 @@ void ImageTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color
 	float _top = nine_top;
 	float _bottom = nine_bottom;
 
-	if (nine_left + nine_right > p_rect.size.x || nine_top + nine_bottom > p_rect.size.y)
-	{
+	if (nine_left + nine_right > p_rect.size.x || nine_top + nine_bottom > p_rect.size.y) {
 		float scale_x = p_rect.size.x / (_left + _right);
 		float scale_y = p_rect.size.y / (_top + _bottom);
 		float scale = MIN(scale_x, scale_y);
@@ -206,7 +205,6 @@ void ImageTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color
 		_right = Math::ceil(_right * scale);
 		_top = Math::floor(_top * scale);
 		_bottom = Math::ceil(_bottom * scale);
-
 	}
 	Rect2 _piece_rects[9];
 	_update_piece_rects(_piece_rects, Rect2(0, 0, w, h));
@@ -214,39 +212,43 @@ void ImageTexture::draw_nine(RID p_canvas_item, const Rect2& p_rect, const Color
 	float mid_h = MAX(p_rect.size.y - (_top + _bottom), 0);
 
 	Point2 pos = p_rect.position;
-	if (_top > 0)
-	{
-		if (_left > 0)   draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _top)), _piece_rects[0], modulate, p_transpose);
+	if (_top > 0) {
+		if (_left > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _top)), _piece_rects[0], modulate, p_transpose);
+		}
 		pos += Vector2(_left, 0);
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, _top)), _piece_rects[1], nine_horizontal_fill, nine_vertical_fill, modulate);
 		pos += Vector2(mid_w, 0);
-		if (_right > 0)  draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _top)), _piece_rects[2], modulate);
-
+		if (_right > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _top)), _piece_rects[2], modulate);
+		}
 	}
 
 	pos = Vector2(p_rect.position.x, pos.y + _top);
-	if (mid_h > 0)
-	{
+	if (mid_h > 0) {
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(_left, mid_h)), _piece_rects[3], nine_horizontal_fill, nine_vertical_fill, modulate);
 		pos += Vector2(_left, 0);
-		if (nine_draw_center && mid_w > 0)  fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, mid_h)), _piece_rects[4], nine_horizontal_fill, nine_vertical_fill, modulate);
+		if (nine_draw_center && mid_w > 0) {
+			fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, mid_h)), _piece_rects[4], nine_horizontal_fill, nine_vertical_fill, modulate);
+		}
 		pos += Vector2(mid_w, 0);
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(_right, mid_h)), _piece_rects[5], nine_horizontal_fill, nine_vertical_fill, modulate);
 	}
 
 	pos = Vector2(p_rect.position.x, pos.y + mid_h);
-	if (_bottom > 0)
-	{
-		if (_left > 0)   draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _bottom)), _piece_rects[6], modulate);
+	if (_bottom > 0) {
+		if (_left > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_left, _bottom)), _piece_rects[6], modulate);
+		}
 		pos += Vector2(_left, 0);
 		fill_texture(p_canvas_item, Rect2(pos, Vector2(mid_w, _bottom)), _piece_rects[7], nine_horizontal_fill, nine_vertical_fill, modulate);
 		pos += Vector2(mid_w, 0);
-		if (_right > 0)  draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _bottom)), _piece_rects[8], modulate);
-
+		if (_right > 0) {
+			draw_rect_region(p_canvas_item, Rect2(pos, Vector2(_right, _bottom)), _piece_rects[8], modulate);
+		}
 	}
 }
-void ImageTexture::_update_piece_rects(Rect2* _piece_rects, const Rect2& _texture_region) const
-{
+void ImageTexture::_update_piece_rects(Rect2 *_piece_rects, const Rect2 &_texture_region) const {
 	float mid_w = MAX(w - (nine_left + nine_right), 0);
 	float mid_h = MAX(h - (nine_top + nine_bottom), 0);
 
@@ -256,19 +258,17 @@ void ImageTexture::_update_piece_rects(Rect2* _piece_rects, const Rect2& _textur
 	float _w = _texture_region.size.x;
 	float _h = _texture_region.size.y;
 
+	_piece_rects[0] = (Rect2(_x, _y, nine_left, nine_top)); // TL
+	_piece_rects[1] = (Rect2(_x + nine_left, _y, mid_w, nine_top)); // T
+	_piece_rects[2] = (Rect2(_x + (_w - nine_right), _y, nine_right, nine_top)); // TR
 
-	_piece_rects[0] = (Rect2(_x, _y, nine_left, nine_top));  // TL
-	_piece_rects[1] = (Rect2(_x + nine_left, _y, mid_w, nine_top));  // T
-	_piece_rects[2] = (Rect2(_x + (_w - nine_right), _y, nine_right, nine_top));  // TR
+	_piece_rects[3] = (Rect2(_x, _y + nine_top, nine_left, mid_h)); // L
+	_piece_rects[4] = (Rect2(_x + nine_left, _y + nine_top, mid_w, mid_h)); // M
+	_piece_rects[5] = (Rect2(_x + (_w - nine_right), _y + nine_top, nine_right, mid_h)); // R
 
-	_piece_rects[3] = (Rect2(_x, _y + nine_top, nine_left, mid_h));  // L
-	_piece_rects[4] = (Rect2(_x + nine_left, _y + nine_top, mid_w, mid_h));  // M
-	_piece_rects[5] = (Rect2(_x + (_w - nine_right), _y + nine_top, nine_right, mid_h));  // R
-
-	_piece_rects[6] = (Rect2(_x, _y + (h - nine_bottom), nine_left, nine_bottom));  // BL
-	_piece_rects[7] = (Rect2(_x + nine_left, _y + (h - nine_bottom), mid_w, nine_bottom));  // B
-	_piece_rects[8] = (Rect2(_x + (_w - nine_right), _y + (h - nine_bottom), nine_right, nine_bottom));  // BR
-
+	_piece_rects[6] = Rect2(_x, _y + (_h - nine_bottom), nine_left, nine_bottom); // BL
+	_piece_rects[7] = Rect2(_x + nine_left, _y + (_h - nine_bottom), mid_w, nine_bottom); // B
+	_piece_rects[8] = Rect2(_x + (_w - nine_right), _y + (_h - nine_bottom), nine_right, nine_bottom); // BR
 }
 bool ImageTexture::is_pixel_opaque(int p_x, int p_y) const {
 	if (alpha_cache.is_null()) {
@@ -329,7 +329,6 @@ void ImageTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_image", "image"), &ImageTexture::set_image);
 	ClassDB::bind_method(D_METHOD("update", "image"), &ImageTexture::update);
 	ClassDB::bind_method(D_METHOD("set_size_override", "size"), &ImageTexture::set_size_override);
-
 
 	ClassDB::bind_method(D_METHOD("set_nine_draw", "nine_draw"), &ImageTexture::set_nine_draw);
 	ClassDB::bind_method(D_METHOD("get_nine_draw"), &ImageTexture::get_nine_draw);

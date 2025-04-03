@@ -198,12 +198,12 @@ void CharacterAnimationUpdateTool::process_anim(const AnimationMixer::AnimationI
 	double time = ai.playback_info.time;
 	double delta = ai.playback_info.delta;
 	bool seeked = ai.playback_info.seeked;
-	Animation::LoopedFlag looped_flag = ai.playback_info.looped_flag;
+	//Animation::LoopedFlag looped_flag = ai.playback_info.looped_flag;
 	bool is_external_seeking = ai.playback_info.is_external_seeking;
-	const real_t *track_weights_ptr = ai.playback_info.track_weights.ptr();
+	//const real_t *track_weights_ptr = ai.playback_info.track_weights.ptr();
 	int track_weights_count = ai.playback_info.track_weights.size();
 	bool backward = signbit(delta); // This flag is used by the root motion calculates or detecting the end of audio stream.
-	bool seeked_backward = signbit(delta);
+	//bool seeked_backward = signbit(delta);
 #ifndef _3D_DISABLED
 	bool calc_root = !seeked || is_external_seeking;
 #endif // _3D_DISABLED
@@ -240,7 +240,7 @@ void CharacterAnimationUpdateTool::process_anim(const AnimationMixer::AnimationI
 				temp_anim_skeleton.set_root_position_add(a, name, i, time, delta);
 			} else if (name.begins_with("hm.a.") && animation_track->type == Animation::TYPE_POSITION_3D) {
 				Vector3 loc;
-				Error err = a->try_position_track_interpolate(i, time, &loc);
+				a->try_position_track_interpolate(i, time, &loc);
 				temp_anim_skeleton.set_human_lookat(animation_track->path.get_name(0), loc);
 			} else if (name.begins_with("hm.r.") && animation_track->type == Animation::TYPE_VALUE) {
 				float loc = a->value_track_interpolate(i, time);
@@ -514,6 +514,8 @@ void CharacterAnimationUpdateTool::process_anim(const AnimationMixer::AnimationI
 				}
 				t->value = Math::lerp((double)t->value, (double)value, blend);
 			} break;
+			default:
+				break;
 		}
 	}
 	if (is_human && human_config.ptr()) {
@@ -523,12 +525,12 @@ void CharacterAnimationUpdateTool::process_anim(const AnimationMixer::AnimationI
 }
 
 void CharacterAnimationUpdateTool::process_human_anim() {
-	skeleton->force_update_all_dirty_bones(false);
-	int count = 0;
-	for (uint32_t i = 0; i < animation_instances.size(); ++i) {
-		AnimationMixer::AnimationInstance &ai = animation_instances[i];
-	}
-	if (count > 0) {
-		skeleton->_make_dirty();
-	}
+	//skeleton->force_update_all_dirty_bones(false);
+	//int count = 0;
+	// for (uint32_t i = 0; i < animation_instances.size(); ++i) {
+	// 	AnimationMixer::AnimationInstance &ai = animation_instances[i];
+	// }
+	// if (count > 0) {
+	// 	skeleton->_make_dirty();
+	// }
 }

@@ -479,11 +479,11 @@ void CharacterAnimator::_thread_update_animation(float delta) {
 }
 void CharacterAnimator::finish_update() {
 	auto it = m_LayerConfigInstanceList.begin();
-	bool is_first = true;
+	//bool is_first = true;
 	while (it != m_LayerConfigInstanceList.end()) {
 		Ref<CharacterAnimatorLayerConfigInstance> layer = *it;
 		layer->finish_update();
-		is_first = false;
+		//is_first = false;
 		++it;
 	}
 }

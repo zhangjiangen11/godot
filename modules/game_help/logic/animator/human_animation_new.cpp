@@ -122,7 +122,7 @@ Ref<Animation> HumanBonePostRotation::build_human_animation(Skeleton3D *p_skelet
 				if (bone_index < 0) {
 					continue;
 				}
-				Error err = p_animation->try_position_track_interpolate(j, time, &loc);
+				p_animation->try_position_track_interpolate(j, time, &loc);
 				p_skeleton->set_bone_pose_position(bone_index, loc);
 			} else if (track->type == Animation::TYPE_ROTATION_3D) {
 				Animation::RotationTrack *track_cache = static_cast<Animation::RotationTrack *>(track);
@@ -130,7 +130,7 @@ Ref<Animation> HumanBonePostRotation::build_human_animation(Skeleton3D *p_skelet
 				if (bone_index < 0) {
 					continue;
 				}
-				Error err = p_animation->try_rotation_track_interpolate(j, time, &rot);
+				p_animation->try_rotation_track_interpolate(j, time, &rot);
 				p_skeleton->set_bone_pose_rotation(bone_index, rot);
 			} else if (track->type == Animation::TYPE_SCALE_3D) {
 				Animation::ScaleTrack *track_cache = static_cast<Animation::ScaleTrack *>(track);
@@ -138,7 +138,7 @@ Ref<Animation> HumanBonePostRotation::build_human_animation(Skeleton3D *p_skelet
 				if (bone_index < 0) {
 					continue;
 				}
-				Error err = p_animation->try_scale_track_interpolate(j, time, &scale);
+				p_animation->try_scale_track_interpolate(j, time, &scale);
 				p_skeleton->set_bone_pose_scale(bone_index, scale);
 			}
 		}
@@ -213,7 +213,7 @@ Ref<Animation> HumanBonePostRotation::build_human_animation(Skeleton3D *p_skelet
 }
 
 void HumanBonePostRotation::retarget() {
-	Basis global_basis;
+	//Basis global_basis;
 	for (auto &it : root_bone) {
 		HumanBonePoseOutput &output = post[it];
 		output.local_post_rotation = output.global_post_rotation;
@@ -272,7 +272,7 @@ bool HumanBonePostRotation::apply_animation(Ref<Animation> p_animation, const An
 	if (path_name.begins_with("hm.g.")) {
 		HumanAnimationBoneNameMapping *mapping = HumanAnimationBoneNameMapping::get_singleton();
 		Quaternion rot;
-		Error err = p_animation->try_rotation_track_interpolate(track_index, time, &rot);
+		p_animation->try_rotation_track_interpolate(track_index, time, &rot);
 
 		set_animation_rotation(rot, mapping->get_bone_name(path_name));
 

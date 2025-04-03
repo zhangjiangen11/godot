@@ -206,33 +206,33 @@ void SpatialAudio3D::add_audioeffect(StringName bus_name, fx effect_type) {
 	int a = AudioServer::get_singleton()->get_bus_index(bus_name);
 
 	if (effect_type == fx::delay) {
-		Ref<AudioEffectDelay> delay;
-		delay.instantiate();
-		delay->set_dry(0);
-		delay->set_tap1_delay_ms(0);
-		delay->set_tap1_level_db(0);
-		delay->set_tap1_pan(0.0);
-		delay->set_tap2_active(false);
-		AudioServer::get_singleton()->add_bus_effect(a, delay, 0);
+		Ref<AudioEffectDelay> _delay;
+		_delay.instantiate();
+		_delay->set_dry(0);
+		_delay->set_tap1_delay_ms(0);
+		_delay->set_tap1_level_db(0);
+		_delay->set_tap1_pan(0.0);
+		_delay->set_tap2_active(false);
+		AudioServer::get_singleton()->add_bus_effect(a, _delay, 0);
 	}
 
 	if (effect_type == fx::reverb) {
-		Ref<AudioEffectReverb> reverb;
-		reverb.instantiate();
-		reverb->set_dry(0);
-		reverb->set_spread(0);
-		reverb->set_hpf(0.2);
-		reverb->set_dry(0);
-		reverb->set_wet(1);
-		reverb->set_predelay_feedback(0);
-		AudioServer::get_singleton()->add_bus_effect(a, reverb, 1);
+		Ref<AudioEffectReverb> _reverb;
+		_reverb.instantiate();
+		_reverb->set_dry(0);
+		_reverb->set_spread(0);
+		_reverb->set_hpf(0.2);
+		_reverb->set_dry(0);
+		_reverb->set_wet(1);
+		_reverb->set_predelay_feedback(0);
+		AudioServer::get_singleton()->add_bus_effect(a, _reverb, 1);
 	}
 
 	if (effect_type == fx::lowpass) {
-		Ref<AudioEffectLowPassFilter> lowpass;
-		lowpass.instantiate();
-		lowpass->set_cutoff(20500);
-		AudioServer::get_singleton()->add_bus_effect(a, lowpass, 2);
+		Ref<AudioEffectLowPassFilter> _lowpass;
+		_lowpass.instantiate();
+		_lowpass->set_cutoff(20500);
+		AudioServer::get_singleton()->add_bus_effect(a, _lowpass, 2);
 	}
 }
 
@@ -259,26 +259,26 @@ void SpatialAudio3D::set_audioeffect(StringName bus_name, fx effect_type, Dictio
 
 	if (effect_type == fx::lowpass) {
 		Ref<AudioEffectLowPassFilter> lowpass_fx = AudioServer::get_singleton()->get_bus_effect(a, 2);
-		float fadetime = params["fadetime"];
-		float lowpass = params["lowpass"];
-		if (fadetime == 0.0) {
-			lowpass_fx->set_cutoff(lowpass);
+		float _fadetime = params["fadetime"];
+		float _lowpass = params["lowpass"];
+		if (_fadetime == 0.0) {
+			lowpass_fx->set_cutoff(_lowpass);
 		} else {
-			if (fadetime > 0.0) {
+			if (_fadetime > 0.0) {
 				if (lowpass_tween.is_valid()) {
 					lowpass_tween->kill();
 				}
 				lowpass_tween = create_tween();
 				// fading in higher frequencies (20'000 - 6'000) is less noticeable than fading in the lower frequencies.
-				if (lowpass < lowpass_fx->get_cutoff()) { // fade fast through the higher frequencies
+				if (_lowpass < lowpass_fx->get_cutoff()) { // fade fast through the higher frequencies
 					lowpass_tween->set_ease(Tween::EaseType::EASE_OUT);
 				} else {
 					lowpass_tween->set_ease(Tween::EaseType::EASE_IN); // we are low, start slowly
 				}
 				lowpass_tween->set_trans(Tween::TransitionType::TRANS_QUINT);
-				lowpass_tween->tween_property(lowpass_fx.ptr(), NodePath("cutoff_hz"), lowpass, fadetime)->from_current();
+				lowpass_tween->tween_property(lowpass_fx.ptr(), NodePath("cutoff_hz"), _lowpass, _fadetime)->from_current();
 			} else {
-				//UtilityFunctions::push_error("ERROR: fadetime not set in SpatialAudioStreamPlayer3D --> set_audioeffect --> fx.lowpass!");
+				//UtilityFunctions::push_error("ERROR: _fadetime not set in SpatialAudioStreamPlayer3D --> set_audioeffect --> fx.lowpass!");
 			}
 		}
 	}
