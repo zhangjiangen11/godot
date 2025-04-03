@@ -1,6 +1,5 @@
 
-#ifndef SPATIAL_AUDIO_3D_H
-#define SPATIAL_AUDIO_3D_H
+#pragma once
 #include "scene/3d/audio_stream_player_3d.h"
 #include "scene/3d/camera_3d.h"
 #include "scene/3d/label_3d.h"
@@ -397,5 +396,3 @@ public:
 
 VARIANT_ENUM_CAST(Soundplayer::ss)
 VARIANT_ENUM_CAST(SpatialAudio3D::fx)
-
-#endif // SPATIAL_AUDIO_3D_H
