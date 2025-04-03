@@ -2885,7 +2885,8 @@ uint32_t RenderingDeviceDriverD3D12::_shader_patch_dxil_specialization_constant(
 		case PIPELINE_SPECIALIZATION_CONSTANT_TYPE_INT: {
 			uint32_t int_value = *((const int *)p_value);
 			if (int_value & (1 << 31)) {
-				ERR_FAIL_COND_V(int_value & (1 << 31), 0);
+				//ERR_FAIL_COND_V(int_value & (1 << 31), 0);
+				return 0;
 			}
 			patch_val = int_value;
 		} break;
@@ -2896,7 +2897,8 @@ uint32_t RenderingDeviceDriverD3D12::_shader_patch_dxil_specialization_constant(
 		case PIPELINE_SPECIALIZATION_CONSTANT_TYPE_FLOAT: {
 			uint32_t int_value = *((const int *)p_value);
 			if (int_value & (1 << 31)) {
-				ERR_FAIL_COND_V(int_value & (1 << 31), 0);
+				//ERR_FAIL_COND_V(int_value & (1 << 31), 0);
+				return 0;
 			}
 			patch_val = (int_value >> 1);
 		} break;

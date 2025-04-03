@@ -151,7 +151,7 @@ public:
 			}
 		}
 	}
-	virtual Variant get_drag_data(const Point2 &p_point) {
+	virtual Variant get_drag_data(const Point2 &p_point) override {
 		if (is_resizing_left || is_resizing_right) {
 			return Variant();
 		}
@@ -339,7 +339,7 @@ public:
 		start_frame = clip_data->start_frame;
 
 		max_left_resize = clip_data->start_frame;
-		max_right_resize = max_right_resize;
+		max_right_resize = clip_data->start_frame + clip_data->duration;
 
 		_add_risize_button(PRESET_LEFT_WIDE, true);
 		_add_risize_button(PRESET_RIGHT_WIDE, false);

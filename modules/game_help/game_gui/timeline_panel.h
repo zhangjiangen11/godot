@@ -76,7 +76,7 @@ public:
 	int64_t get_frame_nr(float a_pos_x) const {
 		return floori(a_pos_x / timeline->timeline_scale);
 	}
-	bool can_drop_data(const Point2 &a_pos, const Variant &p_data) const {
+	virtual bool can_drop_data(const Point2 &a_pos, const Variant &p_data) const override {
 		Dictionary d = p_data;
 		float duration = 0;
 		if (d["type"] == "files") {
@@ -132,7 +132,7 @@ public:
 		return false;
 	}
 
-	void drop_data(const Point2 &p_point, const Variant &p_data) {
+	virtual void drop_data(const Point2 &p_point, const Variant &p_data) override {
 		int64_t l_start_frame = get_frame_nr(private_position.x);
 		int64_t l_track_id = TimelineButton::get_track_id(private_position.y);
 

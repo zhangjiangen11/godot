@@ -21,7 +21,6 @@ void CharacterMovement::set_attach_target(ObjectID id) {
 		return;
 	}
 
-	Transform3D old_world_pos = get_global_transform();
 	detach_target();
 	if (id.is_valid()) {
 		Object *obj = ObjectDB::get_instance(id);
@@ -69,7 +68,6 @@ void CharacterMovement::moveing_forward(float dis, bool is_ground) {
 }
 void CharacterMovement::looking(const Vector3 &pos, bool is_ground) {
 	if (attach_target.is_valid()) {
-		Vector3 target_pos = pos;
 		if (is_ground) {
 			target_pos.y = world_pos.origin.y;
 		}

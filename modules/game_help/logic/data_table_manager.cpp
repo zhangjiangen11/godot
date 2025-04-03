@@ -229,9 +229,9 @@ void decode_dictionary(yml::ConstNodeRef const &node, Variant &value) {
 		auto child_node = *iterator;
 
 		auto key = String(std::string(child_node.key().data(), child_node.key().len).c_str());
-		Variant value;
-		node[child_node.key()] >> value;
-		dict[key] = value;
+		Variant v;
+		node[child_node.key()] >> v;
+		dict[key] = v;
 	}
 	if (dict.size() == 4) {
 		if (dict.has("r") && dict.has("g") && dict.has("b") && dict.has("a")) {
@@ -275,123 +275,6 @@ Color decode_color(yml::ConstNodeRef const &node) {
 		node["a"] >> color.a;
 	}
 	return color;
-}
-
-void write(yml::NodeRef *node, const Variant &variant) {
-	Variant::Type var_type = variant.get_type();
-	bool needs_tag = false;
-	switch (var_type) {
-		case Variant::NIL: {
-			node->set_val(nullptr);
-			break;
-		}
-		case Variant::VECTOR2: {
-			needs_tag = true;
-			encode_vector_2(node, variant);
-			break;
-		}
-		case Variant::VECTOR3: {
-			needs_tag = true;
-			encode_vector_3(node, variant);
-			break;
-		}
-		case Variant::PACKED_INT32_ARRAY:
-		case Variant::PACKED_FLOAT32_ARRAY:
-		case Variant::PACKED_STRING_ARRAY:
-		case Variant::PACKED_VECTOR2_ARRAY:
-		case Variant::PACKED_VECTOR3_ARRAY:
-		case Variant::PACKED_COLOR_ARRAY:
-		case Variant::PACKED_BYTE_ARRAY:
-			// Pool arrays need a tag to correctly decode them as a pool.
-			needs_tag = true;
-		case Variant::ARRAY: {
-			encode_array(node, variant);
-			break;
-		}
-		case Variant::INT: {
-			*node << variant.operator int();
-			break;
-		}
-		case Variant::FLOAT: {
-			*node << variant.operator double();
-			break;
-		}
-		case Variant::STRING: {
-			*node |= VALQUO;
-			String string = variant.operator String();
-			csubstr str_val = to_csubstr(string.utf8().get_data());
-			*node << str_val;
-			break;
-		}
-		case Variant::BOOL: {
-			if (variant.operator bool()) {
-				*node << "true";
-			} else {
-				*node << "false";
-			}
-			break;
-		}
-		case Variant::DICTIONARY: {
-			encode_dictionary(node, variant);
-			break;
-		}
-		case Variant::RECT2: {
-			encode_rect_2(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::AABB: {
-			encode_aabb(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::TRANSFORM3D: {
-			encode_transform(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::TRANSFORM2D: {
-			encode_transform_2_d(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::PLANE: {
-			encode_plane(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::QUATERNION: {
-			encode_quat(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::BASIS: {
-			encode_basis(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::COLOR: {
-			encode_color(node, variant);
-			needs_tag = true;
-			break;
-		}
-		case Variant::NODE_PATH: {
-			*node |= VALQUO;
-			String string = variant.operator String();
-			csubstr str_val = to_csubstr(string.utf8().get_data());
-			*node << str_val;
-			needs_tag = true;
-			break;
-		}
-		default:
-			*node << Variant(variant.operator String());
-			break;
-	}
-	if (needs_tag) {
-		auto buf = new char[256];
-		sprintf_s(buf, 256, "Godot/%s", TYPE_NAMES[var_type]);
-		node->set_val_tag(to_csubstr(buf));
-	}
 }
 
 ////	 Tries to convert a node to a Godot Variant. There should be (almost?) no value that is not converted.
