@@ -108,7 +108,7 @@ void MeshSlicedInfo::merge_vertex_by_distance(float merge_distance) {
 	if (uv2.size() > 0) {
 		uv2.remove_at(merge_index_second);
 	}
-	// correcting indecies
+	// correcting indices
 	for (int i = 0; i < index.size(); i++) {
 		if (index[i] > merge_index_second) {
 			index.set(i, index[i] - 1);
@@ -399,10 +399,10 @@ void MCurveMesh::reload() {
 void MCurveMesh::recreate() {
 	clear();
 	if (curve.is_valid()) {
-		PackedInt32Array apoints = curve->get_active_points();
+		PackedInt32Array appoints = curve->get_active_points();
 		PackedInt64Array aconns = curve->get_active_conns();
-		for (int i = 0; i < apoints.size(); i++) {
-			_point_force_update(apoints[i]);
+		for (int i = 0; i < appoints.size(); i++) {
+			_point_force_update(appoints[i]);
 		}
 		for (int i = 0; i < aconns.size(); i++) {
 			_connection_force_update(aconns[i]);
@@ -488,7 +488,7 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 		return;
 	}
 	/////////////////////////////////////////////////////
-	/////// Grabing Correct MeshSliced //////////////////
+	/////// Grabbing Correct MeshSliced //////////////////
 	/////////////////////////////////////////////////////
 	// mesh override
 	int mesh_slice_index = c_override.mesh > 0 && c_override.mesh < meshlod_sliced_info.size() ? c_override.mesh : 0;

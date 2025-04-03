@@ -249,7 +249,7 @@ public:
 				break;
 			case Type::BOX:
 				shape = PhysicsServer3D::get_singleton()->box_shape_create();
-				// in case of box we devided param /2 on insert
+				// in case of box we divided param /2 on insert
 				PhysicsServer3D::get_singleton()->shape_set_data(shape, Vector3(param.param_1, param.param_2, param.param_3));
 				break;
 			case Type::CYLINDER:

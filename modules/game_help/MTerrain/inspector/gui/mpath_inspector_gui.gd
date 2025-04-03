@@ -115,7 +115,7 @@ func update_curve_mesh_items():
 func update_curve_item_selection():
 	if not current_curve_mesh or not gizmo: return
 	var ids: PackedInt64Array = get_selected_ids()
-	var ov_index: int = -100 # some invalide number
+	var ov_index: int = -100 # some invalid number
 	for cid in ids:
 		var current_index: int
 		if mesh_mode: current_index = current_curve_mesh.override.get_mesh_override(cid)

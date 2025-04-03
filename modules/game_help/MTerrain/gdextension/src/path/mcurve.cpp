@@ -1388,7 +1388,7 @@ _FORCE_INLINE_ float *MCurve::_bake_conn_distance(int64_t conn_id) {
 }
 /*
 	below rename_ ... methods has only internal use and should not be called
-	for now it used for swaping two point
+	for now it used for swapping two point
 */
 void MCurve::toggle_conn_type(int32_t point, int64_t conn_id) {
 	ERR_FAIL_COND(!has_point(point));
@@ -1568,7 +1568,7 @@ int32_t MCurve::sort_from(int32_t root_point, bool increasing) {
 		int32_t sorted_pid = all_points_sorted[i];
 		if ((sorted_pid < pid && increasing) || (sorted_pid > pid && !increasing)) {
 			swap_points(pid, sorted_pid);
-			// swaping in all_point
+			// swapping in all_point
 			// as we pass this index we don't check it we need to only change other index
 			int oswap = all_points.find(sorted_pid);
 			ERR_FAIL_COND_V(oswap == -1, root_point);

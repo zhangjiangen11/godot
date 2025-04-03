@@ -933,7 +933,7 @@ func swap_points():
 	if not curve: return
 	if not curve.has_point(active_point): return
 	if selected_points.size() != 1:
-		printerr("For swaping point you should select only two points")
+		printerr("For swapping point you should select only two points")
 		return
 	curve.swap_points_with_validation(active_point, selected_points[0])
 	ur.create_action("swap_points")

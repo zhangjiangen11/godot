@@ -377,7 +377,7 @@ func get_node_item_id(node_unique_name: String, type_hint: MHlod.Type) -> int:
 		return -1
 	var n = get_node("%" + node_unique_name)
 	if not n.has_meta("item_ids"):
-		printerr("Node \"", node_unique_name, "\" Item id is invalide!")
+		printerr("Node \"", node_unique_name, "\" Item id is invalid!")
 		return -1
 	var item_ids: PackedInt32Array = n.get_meta("item_ids")
 	var final_item_ids: PackedInt32Array
@@ -388,7 +388,7 @@ func get_node_item_id(node_unique_name: String, type_hint: MHlod.Type) -> int:
 			if hlod_resource.get_item_type(iid) == type_hint:
 				final_item_ids.push_back(iid)
 	if final_item_ids.size() == 0:
-		if item_ids.size(): printerr("Node \"", node_unique_name, "\" Item id is invalide!")
+		if item_ids.size(): printerr("Node \"", node_unique_name, "\" Item id is invalid!")
 		else: printerr("can not find item with the type hint in \"", node_unique_name, "\" Node")
 		return -1
 	if final_item_ids.size() > 1:

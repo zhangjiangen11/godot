@@ -223,7 +223,7 @@ func add_static_body() -> void:
 			continue
 		var ii: int = s.resource_path.get_file().get_basename().to_int()
 		if ii == 0:
-			printerr("invalide Setting path: ", s.resource_path)
+			printerr("invalid Setting path: ", s.resource_path)
 			continue
 		exist_ids.push_back(ii)
 	exist_ids.sort()

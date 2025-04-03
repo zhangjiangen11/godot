@@ -42,7 +42,7 @@ class MPath;
 	Each unique ID is defined as int64_t to also be consistate with Variant integer
 	//////////////////////  INVALID ID INDEX RULE ///////////////////////////////////
 	Due to nature of using negetive number we can not use point with id of 0
-	So we use the point with id of 0 to be invalide point index
+	So we use the point with id of 0 to be invalid point index
 	In total id of 0 are not usable and they be left empty in points_buffer
 */
 class MCurve : public Resource {
@@ -53,7 +53,7 @@ protected:
 
 public:
 	struct PointSave;
-	struct Point // Index zero is considerd to be null
+	struct Point // Index zero is considered to be null
 	{
 		int8_t lod = INVALID_POINT_LOD;
 		int32_t conn[MAX_CONN] = conn_DEFAULT_VALUE;

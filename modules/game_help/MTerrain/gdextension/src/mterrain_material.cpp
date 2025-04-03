@@ -440,36 +440,36 @@ void MTerrainMaterial::add_terrain_image(StringName _name, bool is_ram_image, Im
 	terrain_textures_ids.insert(_name, terrain_textures_added.size() - 1);
 }
 
-void MTerrainMaterial::create_empty_terrain_image(StringName name, Image::Format format) {
-	String uniform_name = "mterrain_" + name;
+void MTerrainMaterial::create_empty_terrain_image(StringName _name, Image::Format format) {
+	String uniform_name = "mterrain_" + _name;
 	MGridPos region_grid_size = grid->get_region_grid_size();
 	for (int z = 0; z < region_grid_size.z; z++) {
 		for (int x = 0; x < region_grid_size.x; x++) {
 			MRegion *region = grid->get_region(x, z);
 			MGridPos rpos(x, 0, z);
-			MImage *i = memnew(MImage(name, uniform_name, rpos, region));
+			MImage *i = memnew(MImage(_name, uniform_name, rpos, region));
 			i->format = format;
 			region->add_image(i);
 			all_images.push_back(i);
-			if (name == HEIGHTMAP_NAME) {
+			if (_name == HEIGHTMAP_NAME) {
 				all_heightmap_images.push_back(i);
 			}
 		}
 	}
-	terrain_textures_added.push_back(name);
-	terrain_textures_ids.insert(name, terrain_textures_added.size() - 1);
+	terrain_textures_added.push_back(_name);
+	terrain_textures_ids.insert(_name, terrain_textures_added.size() - 1);
 }
 
-int MTerrainMaterial::get_texture_id(const String &name) {
-	if (!terrain_textures_ids.has(name)) {
-		if (name.is_empty()) {
+int MTerrainMaterial::get_texture_id(const String & _name) {
+	if (!terrain_textures_ids.has(_name)) {
+		if (_name.is_empty()) {
 			//WARN_PRINT("Texture name is empty");
 			return -1;
 		}
-		WARN_PRINT("Texture " + name + " does not exist");
+		WARN_PRINT("Texture " + _name + " does not exist");
 		return -1;
 	}
-	return terrain_textures_ids[name];
+	return terrain_textures_ids[_name];
 }
 
 PackedStringArray MTerrainMaterial::get_textures_list() {
