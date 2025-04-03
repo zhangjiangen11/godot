@@ -5,7 +5,7 @@ signal edit_mode_changed
 signal clear_last_edit_mode_setting
 
 var item_container
-var exit_edit_mode_button 
+var exit_edit_mode_button
 var edit_selected_button
 var active_object
 
@@ -21,11 +21,11 @@ var navigation_icon
 func _ready():
 	var panel = get_child(0)
 	panel.visible = false
-	panel.position.y = -panel.size.y-1
+	panel.position.y = - panel.size.y - 1
 	
 	item_container = find_child("edit_mode_item_container")
-	exit_edit_mode_button = get_node("../edit_mode_exit_button")		
-	edit_selected_button = get_node("../edit_selected_button")		
+	exit_edit_mode_button = get_node("../edit_mode_exit_button")
+	edit_selected_button = get_node("../edit_selected_button")
 	
 	if not edit_selected_button.pressed.is_connected(edit_selected):
 		edit_selected_button.pressed.connect(edit_selected)
@@ -40,11 +40,11 @@ func _ready():
 	
 	if not exit_edit_mode_button.pressed.is_connected(exit_edit_mode_button_pressed):
 		exit_edit_mode_button.pressed.connect(exit_edit_mode_button_pressed)
-	if not exit_edit_mode_button.pressed.is_connected(exit_edit_mode_button.hide):	
+	if not exit_edit_mode_button.pressed.is_connected(exit_edit_mode_button.hide):
 		exit_edit_mode_button.pressed.connect(exit_edit_mode_button.hide)
 
-func init_edit_mode_options(all_mterrain):	
-	var button_template =  Button.new()
+func init_edit_mode_options(all_mterrain):
+	var button_template = Button.new()
 	button_template.mouse_filter = Control.MOUSE_FILTER_PASS
 	button_template.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var biggest_button_size = 0
@@ -58,7 +58,7 @@ func init_edit_mode_options(all_mterrain):
 			button.text = "Sculpt " + terrain.name
 			item_container.add_child(button)
 			biggest_button_size = max(biggest_button_size, button.size.x)
-			button.pressed.connect(edit_selected.bind(terrain))		
+			button.pressed.connect(edit_selected.bind(terrain))
 			
 			button = button_template.duplicate()
 			button.text = "Paint " + terrain.name
@@ -67,7 +67,7 @@ func init_edit_mode_options(all_mterrain):
 			button.pressed.connect(edit_selected.bind(terrain, &"paint"))
 	var all_grass = MGrass.get_all_grass_nodes()
 	for child in all_grass:
-		var button:Button = button_template.duplicate()
+		var button: Button = button_template.duplicate()
 		button.text = "Paint " + child.name
 		button.icon = grass_icon
 		item_container.add_child(button)
@@ -98,9 +98,9 @@ func init_edit_mode_options(all_mterrain):
 		biggest_button_size = max(biggest_button_size, button.size.x)
 		button.pressed.connect(edit_selected.bind(child))
 	button_template.queue_free()
-	get_child(0).size. x = biggest_button_size + 12	
+	get_child(0).size.x = biggest_button_size + 12
 	
-func change_active_object(object):	
+func change_active_object(object):
 	#In future, make it auto-switch to the same edit mode, just for different object
 	if not object == active_object:
 		exit_edit_mode()
@@ -112,10 +112,10 @@ func change_active_object(object):
 		edit_selected_button.text = "Click to Sculpt " + object.name
 	elif object is MGrass or object is MNavigationRegion3D:
 		active_object = object
-		edit_selected_button.text = "Click to Paint " + object.name			
+		edit_selected_button.text = "Click to Paint " + object.name
 	elif object is MPath or object is MCurveMesh:
 		active_object = object
-		edit_selected_button.text = "Click to Edit " + object.name		
+		edit_selected_button.text = "Click to Edit " + object.name
 	else:
 		edit_selected_button.visible = false
 		
@@ -123,7 +123,7 @@ func change_active_object(object):
 	theme_type_variation
 	icon = more_options_icon
 	
-func exit_edit_mode_button_pressed():	
+func exit_edit_mode_button_pressed():
 	clear_last_edit_mode_setting.emit(active_object)
 	exit_edit_mode()
 	
@@ -133,21 +133,20 @@ func exit_edit_mode():
 	change_active_object(active_object)
 	
 
-
-func edit_selected(object = active_object, override_mode=null):
+func edit_selected(object = active_object, override_mode = null):
 	if object is MTerrain:
-		if override_mode and override_mode==&"paint":
+		if override_mode and override_mode == &"paint":
 			text = "Paint " + object.name
 			theme_type_variation = ""
 			icon = null
-			edit_mode_changed.emit(object, &"paint")		
+			edit_mode_changed.emit(object, &"paint")
 		else:
 			text = "Sculpt " + object.name
 			theme_type_variation = ""
 			icon = null
-			edit_mode_changed.emit(object, &"sculpt")		
-		edit_selected_button.visible = false			
-		exit_edit_mode_button.show()		
+			edit_mode_changed.emit(object, &"sculpt")
+		edit_selected_button.visible = false
+		exit_edit_mode_button.show()
 		active_object = object
 	elif object is MGrass or object is MNavigationRegion3D:
 		text = "Paint " + object.name
@@ -156,14 +155,14 @@ func edit_selected(object = active_object, override_mode=null):
 		edit_mode_changed.emit(object, &"paint")
 		edit_selected_button.visible = false
 		exit_edit_mode_button.visible = true
-		active_object = object				
+		active_object = object
 	elif object is MPath:
 		text = "Edit " + object.name
 		theme_type_variation = ""
 		icon = null
 		edit_mode_changed.emit(object, &"mpath")
 		edit_selected_button.visible = false
-		exit_edit_mode_button.show()		
+		exit_edit_mode_button.show()
 		active_object = object
 	elif object is MCurveMesh:
 		text = "Edit " + object.name
@@ -171,5 +170,5 @@ func edit_selected(object = active_object, override_mode=null):
 		icon = null
 		edit_mode_changed.emit(object, &"mcurve_mesh")
 		edit_selected_button.visible = false
-		exit_edit_mode_button.show()		
+		exit_edit_mode_button.show()
 		active_object = object

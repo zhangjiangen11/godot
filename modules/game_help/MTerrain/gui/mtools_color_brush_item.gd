@@ -2,9 +2,9 @@ extends Control
 
 var no_image = preload("res://addons/m_terrain/icons/no_images.png")
 
-var index:int
-var uniform:String
-var brush_name:String
+var index: int
+var uniform: String
+var brush_name: String
 
 #func create(brush_name="", icon=no_image):
 	#if brush_name.is_empty():

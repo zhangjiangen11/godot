@@ -3,9 +3,9 @@ extends Control
 
 signal text_changed
 
-@onready var search_box:LineEdit = find_child("search_box")
-@onready var search_button:Button = find_child("search_button")
-@onready var clear_button:Button = find_child("clear_button")
+@onready var search_box: LineEdit = find_child("search_box")
+@onready var search_button: Button = find_child("search_button")
+@onready var clear_button: Button = find_child("clear_button")
 @export var align_right = false
 func _ready():
 	if align_right:
@@ -24,7 +24,7 @@ func _ready():
 		search_box.grab_focus()
 		search_box.focus_exited.connect(search_focus_ended)
 		text_changed.emit(search_box.text)
-	)	
+	)
 	search_box.text_changed.connect(func(text):
 		text_changed.emit(text)
 		if text == "":
@@ -40,5 +40,5 @@ func search_focus_ended():
 	clear_button.visible = false
 	search_box.visible = false
 	search_button.visible = true
-	if search_box.focus_exited.is_connected(search_focus_ended):	
+	if search_box.focus_exited.is_connected(search_focus_ended):
 		search_box.focus_exited.disconnect(search_focus_ended)

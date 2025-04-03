@@ -1350,7 +1350,7 @@ float MCurve::_get_conn_distance_ratios(const float *baked_dis, const float dist
 	if LENGTH_POINT_SAMPLE_COUNT = N
 	a.pos --------------------------- b.pos
 			0...1...2...3...,...,.....N-1
-	There is not baked distnace at a.pos as it is always zero distance
+	There is not baked distance at a.pos as it is always zero distance
 
 */
 _FORCE_INLINE_ float *MCurve::_bake_conn_distance(int64_t conn_id) {
@@ -1387,7 +1387,7 @@ _FORCE_INLINE_ float *MCurve::_bake_conn_distance(int64_t conn_id) {
 	return conn_distances[conn_id].dis;
 }
 /*
-	bellow rename_ ... methods has only internal use and should not be called
+	below rename_ ... methods has only internal use and should not be called
 	for now it used for swaping two point
 */
 void MCurve::toggle_conn_type(int32_t point, int64_t conn_id) {

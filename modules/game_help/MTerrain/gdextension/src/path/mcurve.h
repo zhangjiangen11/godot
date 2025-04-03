@@ -31,7 +31,7 @@ class MPath;
 	Each point has int32_t id
 	Each has an array of next conn in conn!
 	-------------- conn ----------------------
-	Each conection can be interpolated in various ways
+	Each connection can be interpolated in various ways
 	In each bezier line interpolation between two point we use two position of Point A and B
 	Then inside struct point A if in conn the B id is negated we use vector3 in in this interpolation!
 	And if the B id is positive we use Vector3 out for this conn interpolation
@@ -40,7 +40,7 @@ class MPath;
 	Each conn will have unique ID which is define in Conn Union
 	The way this Union defined it will generate one unique ID for each conn
 	Each unique ID is defined as int64_t to also be consistate with Variant integer
-	//////////////////////  INVALIDE ID INDEX RULE ///////////////////////////////////
+	//////////////////////  INVALID ID INDEX RULE ///////////////////////////////////
 	Due to nature of using negetive number we can not use point with id of 0
 	So we use the point with id of 0 to be invalide point index
 	In total id of 0 are not usable and they be left empty in points_buffer
@@ -224,7 +224,7 @@ public:
 	void commit_conn_update(int64_t conn_id);
 
 public:
-	/// Function bellow should be thread safe in case is called from another thread
+	/// Function below should be thread safe in case is called from another thread
 	Vector3 get_conn_position(int64_t conn_id, float t);
 	AABB get_conn_aabb(int64_t conn_id);
 	AABB get_conns_aabb(const PackedInt64Array &conn_ids);
@@ -246,7 +246,7 @@ private:
 	_FORCE_INLINE_ float *_bake_conn_distance(int64_t conn_id);
 	// End of thread safe
 public:
-	int32_t ray_active_point_collision(const Vector3 &org, Vector3 dir, float threshold); // Maybe later optmize this
+	int32_t ray_active_point_collision(const Vector3 &org, Vector3 dir, float threshold); // Maybe later optimize this
 	void _set_data(const PackedByteArray &input);
 	PackedByteArray _get_data();
 

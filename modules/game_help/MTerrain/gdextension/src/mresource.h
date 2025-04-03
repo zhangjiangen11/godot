@@ -140,7 +140,7 @@ private:
 		_FORCE_INLINE_ uint32_t get_block_head_size();
 		uint32_t get_optimal_non_divide_size(); // This will also determine data encoding
 		//Bellow will call above method so data encoding will be determined
-		//Also bellow will determine if we should divide or not
+		//Also below will determine if we should divide or not
 		uint32_t get_optimal_size();
 
 	private:
@@ -167,7 +167,7 @@ private:
 		void decode_data_only_hole();
 	};
 	Dictionary compressed_data;
-	//As if we want to grab these bellow from compress data we should copy them entire compress data
+	//As if we want to grab these below from compress data we should copy them entire compress data
 	//Into packedByteArray we cache them for better performance
 	//In case in future there will possible to get data compressed_data[key] without coppy we can remove them
 	HashMap<StringName, uint8_t> format_cache;

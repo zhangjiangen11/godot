@@ -844,18 +844,18 @@ Ref<ArrayMesh> MHlod::get_joined_mesh(bool for_triangle_mesh, bool best_mesh_qua
 		return out;
 	}
 	// No for triangle mesh
-	PackedVector3Array verticies;
+	PackedVector3Array vertices;
 	PackedInt32Array indices;
 	for (int i = 0; i < meshes.size(); i++) {
 		Ref<MMesh> mmesh = meshes[i];
 		Transform3D t = _transforms[i];
 		for (int s = 0; s < mmesh->get_surface_count(); s++) {
 			Array sinfo = mmesh->surface_get_arrays(s);
-			int32_t index_offset = verticies.size();
+			int32_t index_offset = vertices.size();
 			PackedVector3Array svert = sinfo[Mesh::ARRAY_VERTEX];
 			PackedInt32Array sind = sinfo[Mesh::ARRAY_INDEX];
 			for (const Vector3 &v : svert) {
-				verticies.push_back(t.xform(v));
+				vertices.push_back(t.xform(v));
 			}
 			for (const int32_t index : sind) {
 				indices.push_back(index + index_offset);
@@ -864,7 +864,7 @@ Ref<ArrayMesh> MHlod::get_joined_mesh(bool for_triangle_mesh, bool best_mesh_qua
 	}
 	Array sinfo;
 	sinfo.resize(Mesh::ARRAY_MAX);
-	sinfo[Mesh::ARRAY_VERTEX] = verticies;
+	sinfo[Mesh::ARRAY_VERTEX] = vertices;
 	sinfo[Mesh::ARRAY_INDEX] = indices;
 	out.instantiate();
 	out->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, sinfo);

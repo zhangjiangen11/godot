@@ -1,19 +1,19 @@
 @tool
 extends BoxContainer
 
-@onready var active_btn:=$active
-@onready var segment_select_option:=$segment_select
-@onready var socket_select_option:=$socket_select
-var selection:EditorSelection
+@onready var active_btn := $active
+@onready var segment_select_option := $segment_select
+@onready var socket_select_option := $socket_select
+var selection: EditorSelection
 
-var obj:MCurveMesh
+var obj: MCurveMesh
 
-var instance_rid:RID
-var scenario:RID
+var instance_rid: RID
+var scenario: RID
 
-var active_root_scene:Node
-var sockets_gizmos:Array
-var selected_socket:int = -1
+var active_root_scene: Node
+var sockets_gizmos: Array
+var selected_socket: int = -1
 
 
 func _init():
@@ -29,7 +29,7 @@ func _exit_tree():
 	if instance_rid.is_valid():
 		RenderingServer.free_rid(instance_rid)
 
-func set_curve_mesh(input:MCurveMesh):
+func set_curve_mesh(input: MCurveMesh):
 	if not input and is_active():
 		return
 	obj = input
@@ -44,9 +44,9 @@ func set_curve_mesh(input:MCurveMesh):
 	visible = true
 	set_process(true)
 	active_root_scene = get_root_scene()
-	for i in range(0,obj.intersections.size()):
-		var seg:MIntersection = obj.intersections[i]
-		segment_select_option.add_item("Seg "+str(i),i)
+	for i in range(0, obj.intersections.size()):
+		var seg: MIntersection = obj.intersections[i]
+		segment_select_option.add_item("Seg " + str(i), i)
 	if obj.intersections.size() >= 1:
 		_on_segment_select_item_selected(0)
 		segment_select_option.select(0)
@@ -58,11 +58,11 @@ func _on_segment_select_item_selected(index):
 	socket_select_option.clear()
 	update_mesh()
 	if index >= obj.intersections.size(): return
-	var seg:MIntersection = obj.intersections[index]
+	var seg: MIntersection = obj.intersections[index]
 	if not seg: return
 	var socket = seg.sockets
-	for i in range(0,socket.size()):
-		socket_select_option.add_item("Socket "+str(i))
+	for i in range(0, socket.size()):
+		socket_select_option.add_item("Socket " + str(i))
 	if socket.size() > 0:
 		socket_select_option.select(0)
 		_on_socket_select_item_selected(0)
@@ -83,34 +83,34 @@ func _on_active_toggled(button_pressed):
 		selection.add_node(obj)
 
 func update_mesh():
-	RenderingServer.instance_set_base(instance_rid,RID())
+	RenderingServer.instance_set_base(instance_rid, RID())
 	if not obj: return
-	var seg_index:int = segment_select_option.selected
+	var seg_index: int = segment_select_option.selected
 	if seg_index >= obj.intersections.size() or seg_index < 0: return
-	var seg:MIntersection = obj.intersections[seg_index]
+	var seg: MIntersection = obj.intersections[seg_index]
 	if not seg: return
-	var mesh_lod:MMeshLod = seg.mesh
+	var mesh_lod: MMeshLod = seg.mesh
 	if not mesh_lod: return
-	var mesh:Mesh = null
+	var mesh: Mesh = null
 	for m in mesh_lod.meshes:
 		if m:
 			mesh = m
 			break
 	if not mesh: return
-	RenderingServer.instance_set_base(instance_rid,mesh.get_rid())
+	RenderingServer.instance_set_base(instance_rid, mesh.get_rid())
 
-func get_root_scene()->Node:
+func get_root_scene() -> Node:
 	var ed = EditorScript.new()
 	var scene = ed.get_scene()
 	return scene
 
 func update_scenario():
 	var scene = get_root_scene()
-	if not scene:return
+	if not scene: return
 	if scene is Node3D:
 		var w3d = scene.get_world_3d()
 		if w3d:
-			RenderingServer.instance_set_scenario(instance_rid,w3d.scenario)
+			RenderingServer.instance_set_scenario(instance_rid, w3d.scenario)
 
 func udpate_sockets_gizmos():
 	for s in sockets_gizmos:
@@ -118,13 +118,13 @@ func udpate_sockets_gizmos():
 	sockets_gizmos.clear()
 	if not active_btn.button_pressed: return
 	if not obj: return
-	var seg_index:int = segment_select_option.selected
+	var seg_index: int = segment_select_option.selected
 	if seg_index >= obj.intersections.size(): return
-	var seg:MIntersection = obj.intersections[seg_index]
+	var seg: MIntersection = obj.intersections[seg_index]
 	if not seg: return
 	var ed = EditorScript.new()
 	var scene = ed.get_scene()
-	if not scene:return
+	if not scene: return
 	for socket in seg.sockets:
 		var marker = Marker3D.new()
 		scene.add_child(marker)
@@ -165,5 +165,5 @@ func _process(delta):
 	var socket_index = socket_select_option.get_selected_id()
 	if socket_index < 0 or socket_index >= sockets_gizmos.size(): return
 	var marker = sockets_gizmos[socket_index]
-	var t:Transform3D = marker.global_transform
+	var t: Transform3D = marker.global_transform
 	obj.intersections[seg_index].sockets[socket_index] = t

@@ -12,11 +12,11 @@ func _ready():
 func update_value(new_value):
 	var changed = false
 	new_value = clamp(float(new_value), slider.min_value, slider.max_value)
-	if slider.value != float(new_value): 		
-		textbox.text = str(new_value) #to ensure that it is clamped
+	if slider.value != float(new_value):
+		textbox.text = str(new_value) # to ensure that it is clamped
 		slider.value = new_value
 		changed = true
-	if textbox.text != str(new_value): 
+	if textbox.text != str(new_value):
 		textbox.text = str(new_value)
 		changed = true
 	if changed:

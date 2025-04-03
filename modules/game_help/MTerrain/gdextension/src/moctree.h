@@ -28,7 +28,7 @@ protected:
 
 private:
 	/*
-	Octant number according to coordinate bellow (y is toward screen)
+	Octant number according to coordinate below (y is toward screen)
 	->x
 	|z
 	V
@@ -188,7 +188,7 @@ public:
 	uint32_t get_capacity(int p_count);
 	//Insert point and id is point index
 	void insert_points(const PackedVector3Array &points, const PackedInt32Array ids, int oct_id);
-	// bellow insert a single point and update it lod
+	// below insert a single point and update it lod
 	// good for adding point after initilazation
 	bool insert_point(const Vector3 &pos, const int32_t id, int oct_id);
 	void change_point_id(int16_t oct_id, const Vector3 &point_pos, int32_t old_id, int32_t new_id);

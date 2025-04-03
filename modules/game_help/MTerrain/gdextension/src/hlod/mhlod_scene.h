@@ -137,7 +137,7 @@ private:
 		_FORCE_INLINE_ void add_item(MHlod::Item *item, const int item_id, const bool immediate = false); // can be called in non-game loop thread as it generate apply info which will be affected in main game-loop
 		_FORCE_INLINE_ void remove_item(MHlod::Item *item, const int item_id, const bool immediate = false, const bool is_destruction = false); // should clear creation_info afer calling this
 		_FORCE_INLINE_ Transform3D get_item_transform(const int32_t transform_index) const;
-		// use bellow rather than upper
+		// use below rather than upper
 		_FORCE_INLINE_ Transform3D get_item_transform(const MHlod::Item *item) const;
 		void update_item_transform(const int32_t transform_index, const Transform3D &new_transform); // Must be protect with packed_scene_mutex if Item is_bound = true
 		void update_all_transform();
@@ -167,7 +167,7 @@ private:
 			}
 			return PermanentItemID(proc_id, item_id);
 		}
-		// All function bellow should be protected by packed_scene_mutex
+		// All function below should be protected by packed_scene_mutex
 		_FORCE_INLINE_ void bind_item_clear(const GlobalItemID bound_id);
 		_FORCE_INLINE_ Transform3D bind_item_get_transform(const GlobalItemID bound_id) const;
 		_FORCE_INLINE_ void bind_item_modify_transform(const GlobalItemID bound_id, const Transform3D &new_transform);

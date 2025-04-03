@@ -106,7 +106,7 @@ public:
 private:
 	//Each region right and bottom edge pixel is copied from other region
 	//All correct edges methods should be called in the same thread, After load
-	//Top-Left and Bottom pixel will not correctet by bellow
+	//Top-Left and Bottom pixel will not correctet by below
 	//Those pixel will be corrected in corner pixel correcting
 	void correct_left_edge();
 	void correct_right_edge();

@@ -3,41 +3,41 @@ extends EditorScenePostImport
 
 var verbose = true
 var all_extras = false
-func _post_import(scene: Node) -> Object:	
-	_merge_extras(scene)	
+func _post_import(scene: Node) -> Object:
+	_merge_extras(scene)
 	for node in scene.get_children():
 		if node.has_meta("extras"):
 			var extras = node.get_meta("extras")
-			if extras.keys().has("instance_name"):				
-				var new_name = extras["instance_name"]								
-				var new_path = find_file("res://import/", new_name)				
-				if FileAccess.file_exists(new_path):	
+			if extras.keys().has("instance_name"):
+				var new_name = extras["instance_name"]
+				var new_path = find_file("res://import/", new_name)
+				if FileAccess.file_exists(new_path):
 					#print(new_path)									
-					var new_scene = load(new_path).instantiate()				
+					var new_scene = load(new_path).instantiate()
 					node.add_sibling(new_scene)
 					new_scene.transform = node.transform
-					new_scene.owner = node.owner							
+					new_scene.owner = node.owner
 					node.get_parent().remove_child(node)
-					node.free()					
+					node.free()
 					new_scene.name = new_name
-				else:													
+				else:
 					node.queue_free()
-			else:										
-				node.queue_free()	
-		else:										
-			node.queue_free()													
+			else:
+				node.queue_free()
+		else:
+			node.queue_free()
 	return scene
 
-func _merge_extras(scene : Node) -> void:	
+func _merge_extras(scene: Node) -> void:
 	var verbose_output = []
-	var nodes : Array[Node] = scene.find_children("*" + "_meta", "Node")
+	var nodes: Array[Node] = scene.find_children("*" + "_meta", "Node")
 	#var all_nodes = scene.find_children("*", "Node")
 	#for node in all_nodes:
 		#if not node in nodes:
 			#node.queue_free()
-	verbose_output.append_array(["Metadata nodes:",  nodes])
+	verbose_output.append_array(["Metadata nodes:", nodes])
 	for node in nodes:
-		var extras = node.get_meta("extras")		
+		var extras = node.get_meta("extras")
 		if !extras:
 			verbose_output.append("Node %s contains no 'extras' metadata" % node)
 			continue
@@ -50,23 +50,23 @@ func _merge_extras(scene : Node) -> void:
 			verbose_output.append("Original node index %s is out of bounds. Parent child count: %s" % [idx_original, parent.get_child_count()])
 			continue
 		var original = node.get_parent().get_child(idx_original)
-		if original:			
+		if original:
 			verbose_output.append("Setting extras metadata for %s" % original)
-			if all_extras:				
+			if all_extras:
 				original.set_meta("extras", extras)
-			if extras.keys().has("instance_name"):								
+			if extras.keys().has("instance_name"):
 				var new_name = extras["instance_name"]
-				var new_path = find_file("res://import/", new_name)				
-				if FileAccess.file_exists(new_path):										
-					var new_scene = load(new_path).instantiate()				
+				var new_path = find_file("res://import/", new_name)
+				if FileAccess.file_exists(new_path):
+					var new_scene = load(new_path).instantiate()
 					original.add_sibling(new_scene)
 					new_scene.transform = original.transform
-					new_scene.owner = original.owner		
+					new_scene.owner = original.owner
 					new_scene.name = new_name
 					original.get_parent().remove_child(node)
 					original.free()
 					continue
-				else:					
+				else:
 					original.queue_free()
 					node.queue_free()
 					continue
@@ -89,11 +89,10 @@ func _merge_extras(scene : Node) -> void:
 			print(item)
 
 func find_file(path, new_name):
-	for file in DirAccess.get_files_at(path):	
+	for file in DirAccess.get_files_at(path):
 		if file.contains(new_name + ".glb"):
-			return path + new_name + ".glb"		
+			return path + new_name + ".glb"
 	for dir in DirAccess.get_directories_at(path):
 		var result = find_file(str(path, dir), new_name)
 		if result:
-			return "" || result 
-		
+			return "" || result

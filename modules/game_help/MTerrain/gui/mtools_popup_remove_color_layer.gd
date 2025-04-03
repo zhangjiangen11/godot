@@ -9,10 +9,10 @@ func _ready():
 	find_child("cancel_button").pressed.connect(queue_free)
 	close_requested.connect(queue_free)
 
-func set_shared_uniform_label(list:Array):
-	if list == []:		
+func set_shared_uniform_label(list: Array):
+	if list == []:
 		find_child("shared_uniform_label").visible = false
-	else:		
+	else:
 		var names = ""
 		for i in list:
 			names += str(i, ", ")

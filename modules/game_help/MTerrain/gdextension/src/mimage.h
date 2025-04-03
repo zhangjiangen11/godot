@@ -80,7 +80,7 @@ struct MImage {
 	void remove_layer(bool is_visible);
 	void layer_visible(bool input);
 	void create(uint32_t _size, Image::Format _format);
-	// This create bellow should not be used for terrain, It is for other stuff
+	// This create below should not be used for terrain, It is for other stuff
 	void create(uint32_t _width, uint32_t _height, Image::Format _format);
 	// get data with custom scale
 	void get_data(PackedByteArray *out, int scale);

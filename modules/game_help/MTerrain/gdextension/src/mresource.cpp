@@ -1162,7 +1162,7 @@ PackedByteArray MResource::get_heightmap_rf(bool two_plus_one) {
 		decompress_index += FLATTEN_HEADER_SIZE;
 		ERR_FAIL_COND_V(devision_log2 == 0 || devision_log2 > 15, out);
 		devision = 1 << devision_log2;
-		// Size bellow does not contain FLATTEN_HEADER_SIZE
+		// Size below does not contain FLATTEN_HEADER_SIZE
 		uint32_t flatten_header_size = (devision * devision * FLATTEN_SECTION_HEADER_SIZE);
 		flatten_section_header.resize(flatten_header_size / FLATTEN_SECTION_HEADER_SIZE);
 		memcpy((uint8_t *)flatten_section_header.ptrw(), comp_data.ptr() + decompress_index, flatten_header_size);

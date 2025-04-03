@@ -414,7 +414,7 @@ void MAssetMesh::compute_joined_aabb() {
 }
 
 bool MAssetMesh::has_collsion() const {
-	for (const InstanceData & _data : instance_data) {
+	for (const InstanceData &_data : instance_data) {
 		if (_data.collission_data.collision_shapes.size() != 0) {
 			return true;
 		}
@@ -507,7 +507,7 @@ RenderingServer::ShadowCastingSetting MAssetMesh::get_shadow_setting() const {
 
 void MAssetMesh::set_gi_mode(MHlod::GIMode input) {
 	gi_mode = input;
-	for (InstanceData & _data : instance_data) {
+	for (InstanceData &_data : instance_data) {
 		if (_data.instance_rid.is_valid()) {
 			set_instance_gi_mode(_data.instance_rid, gi_mode);
 		}
@@ -763,7 +763,7 @@ Ref<TriangleMesh> MAssetMesh::get_joined_triangle_mesh() {
 void MAssetMesh::generate_joined_triangle_mesh() {
 	joined_triangle_mesh.unref();
 	// we need only vertices and indices for triangle mesh!
-	PackedVector3Array verticies;
+	PackedVector3Array vertices;
 	PackedInt32Array indicies;
 	int index_offset = 0;
 	for (const InstanceData &_data : instance_data) {
@@ -783,9 +783,9 @@ void MAssetMesh::generate_joined_triangle_mesh() {
 			for (int k = 0; k < surface_indicies.size(); k++) {
 				surface_indicies.set(k, surface_indicies[k] + index_offset);
 			}
-			verticies.append_array(surface_vertices);
+			vertices.append_array(surface_vertices);
 			indicies.append_array(surface_indicies);
-			index_offset = verticies.size();
+			index_offset = vertices.size();
 		}
 	}
 	if (indicies.size() == 0) {
@@ -793,7 +793,7 @@ void MAssetMesh::generate_joined_triangle_mesh() {
 	}
 	Array mdata;
 	mdata.resize(Mesh::ARRAY_MAX);
-	mdata[Mesh::ARRAY_VERTEX] = verticies;
+	mdata[Mesh::ARRAY_VERTEX] = vertices;
 	mdata[Mesh::ARRAY_INDEX] = indicies;
 
 	Ref<ArrayMesh> arr_mesh;

@@ -35,16 +35,16 @@ var mterrain_for_snap = null
 var gizmo:
 	set(value):
 		gizmo = value
-		gizmo.lock_mode_changed.connect(update_axis_lock)		
+		gizmo.lock_mode_changed.connect(update_axis_lock)
 		gizmo.active_point_position_updated.connect(update_active_point_label)
 		
 		if is_instance_valid(x_lock):
-			connect_lock_mode_signals()		
+			connect_lock_mode_signals()
 		
 func connect_lock_mode_signals():
-		x_lock.pressed.connect(func(): gizmo.update_lock_mode(x_lock.button_pressed, y_lock.button_pressed,z_lock.button_pressed))
-		y_lock.pressed.connect(func(): gizmo.update_lock_mode(x_lock.button_pressed, y_lock.button_pressed,z_lock.button_pressed))
-		z_lock.pressed.connect(func(): gizmo.update_lock_mode(x_lock.button_pressed, y_lock.button_pressed,z_lock.button_pressed))
+		x_lock.pressed.connect(func(): gizmo.update_lock_mode(x_lock.button_pressed, y_lock.button_pressed, z_lock.button_pressed))
+		y_lock.pressed.connect(func(): gizmo.update_lock_mode(x_lock.button_pressed, y_lock.button_pressed, z_lock.button_pressed))
+		z_lock.pressed.connect(func(): gizmo.update_lock_mode(x_lock.button_pressed, y_lock.button_pressed, z_lock.button_pressed))
 
 
 enum MODE {
@@ -54,20 +54,20 @@ enum MODE {
 func update_active_point_label(new_text):
 	active_point_label.text = new_text
 	
-func is_mirror()->bool:
+func is_mirror() -> bool:
 	return mirror_checkbox.button_pressed
 
-func is_mirror_lenght()->bool:
+func is_mirror_lenght() -> bool:
 	return mirror_lenght_checkbox.button_pressed
 
-func is_xz_handle_lock()->bool:
+func is_xz_handle_lock() -> bool:
 	return y_lock.button_pressed
 
 func get_terrain_for_snap():
 	if mterrain_for_snap and snap_checkbox.button_pressed:
 		return mterrain_for_snap
 	else:
-		return null	
+		return null
 
 func get_mode():
 	return mode_option.selected
@@ -75,12 +75,12 @@ func get_mode():
 
 func _input(event):
 	if not visible:
-		return		
-	if Input.is_action_just_pressed( "mpath_toggle_mode" ):
+		return
+	if Input.is_action_just_pressed("mpath_toggle_mode"):
 		toggle_mode()
-	if Input.is_action_just_pressed( "mpath_toggle_mirror" ):
+	if Input.is_action_just_pressed("mpath_toggle_mirror"):
 		mirror_checkbox.button_pressed = not mirror_checkbox.button_pressed
-	if Input.is_action_just_pressed( "mpath_toggle_mirror_length" ):
+	if Input.is_action_just_pressed("mpath_toggle_mirror_length"):
 		mirror_lenght_checkbox.button_pressed = not mirror_lenght_checkbox.button_pressed
 
 func _ready():
@@ -92,10 +92,10 @@ func _ready():
 	scale_num.set_tooltip_text("Change Tilt\nHotkey: E")
 	settings_panel.visible = false
 	
-func update_axis_lock(lock_mode):		
-	x_lock.button_pressed = true if lock_mode in [1,4,5,7] else false #x, xz, xy, xyz
-	y_lock.button_pressed = true if lock_mode in [2,5,6,7] else false #y, xy, zy, xyz
-	z_lock.button_pressed = true if lock_mode in [3,4,6,7] else false #z, xz, zy, xyz
+func update_axis_lock(lock_mode):
+	x_lock.button_pressed = true if lock_mode in [1, 4, 5, 7] else false # x, xz, xy, xyz
+	y_lock.button_pressed = true if lock_mode in [2, 5, 6, 7] else false # y, xy, zy, xyz
+	z_lock.button_pressed = true if lock_mode in [3, 4, 6, 7] else false # z, xz, zy, xyz
 
 func toggle_mode():
 	if mode_option.selected == 0:
@@ -103,24 +103,24 @@ func toggle_mode():
 	else:
 		mode_option.selected = 0
 
-func is_select_lock()->bool:
+func is_select_lock() -> bool:
 	return select_lock.button_pressed
 
-func is_debug_col()->bool:
+func is_debug_col() -> bool:
 	return debug_col.button_pressed
 
 func _on_show_rest_toggled(toggle_on):
 	settings_panel.visible = toggle_on
-	settings_panel.position.x = -settings_panel.size.x + show_rest_btn.size.x 
-	settings_panel.position.y = -settings_panel.size.y # - show_rest_btn.size.y
+	settings_panel.position.x = - settings_panel.size.x + show_rest_btn.size.x
+	settings_panel.position.y = - settings_panel.size.y # - show_rest_btn.size.y
 	
 func set_terrain_snap(mterrain):
 	if mterrain == null:
 		snap_checkbox.button_pressed = false
 		snap_checkbox.visible = false
 		mterrain_for_snap = null
-	else:	
-		mterrain_for_snap = mterrain		
+	else:
+		mterrain_for_snap = mterrain
 		snap_checkbox.button_pressed = true
 		snap_checkbox.visible = true
 

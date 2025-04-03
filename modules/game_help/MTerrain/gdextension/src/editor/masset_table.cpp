@@ -842,7 +842,7 @@ int MAssetTable::physics_id_get_add(const String &physics_name) {
 int MAssetTable::collection_create(const String &_name, int32_t item_id, MAssetTable::ItemType type, int32_t glb_id) {
 	ERR_FAIL_COND_V(_name.length() == 0, -1);
 	int index = -1;
-	if (type != ItemType::MESH) { // for mesh bellow should not happen, it has a seperated system of importing
+	if (type != ItemType::MESH) { // for mesh below should not happen, it has a seperated system of importing
 		index = collection_find_with_item_type_item_id(type, item_id);
 	}
 	if (index == -1) {
