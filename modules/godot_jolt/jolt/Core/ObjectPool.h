@@ -24,7 +24,7 @@ public:
 	T* top() const {
 		if (empty()) {
 			// throw std::out_of_range("Stack is empty");
-			return;
+			return nullptr;
 		}
 		return data.back();
 	}
