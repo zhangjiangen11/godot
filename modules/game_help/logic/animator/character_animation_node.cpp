@@ -1,7 +1,6 @@
 
 #include "core/io/json.h"
 
-#include "../../unity/unity_animation_import.h"
 #include "../data_table_manager.h"
 #include "body_animator.h"
 

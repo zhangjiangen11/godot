@@ -16,7 +16,6 @@
 #include "unity_link_server_editor_plugin.h"
 #include "../logic/body_main.h"
 #include "../logic/data_table_manager.h"
-#include "../unity/unity_animation_import.h"
 
 
 
