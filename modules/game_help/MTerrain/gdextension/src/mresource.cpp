@@ -101,7 +101,7 @@ uint32_t MResource::QuadTreeRF::get_only_hole_head_size() {
 }
 
 uint32_t MResource::QuadTreeRF::get_flat_head_size() {
-	uint32_t size = 1; // one for block specifcation
+	uint32_t size = 1; // one for block specification
 	// Size for min and max height
 	if (h_encoding == H_ENCODE_U4) {
 		size += 1;
@@ -118,7 +118,7 @@ uint32_t MResource::QuadTreeRF::get_flat_head_size() {
 }
 
 uint32_t MResource::QuadTreeRF::get_block_head_size() {
-	uint32_t size = 1; // one for block specifcation
+	uint32_t size = 1; // one for block specification
 	// Size for min and max height
 	if (h_encoding == H_ENCODE_U4) {
 		size += 1;
@@ -196,7 +196,7 @@ uint32_t MResource::QuadTreeRF::get_optimal_size() {
 			return divid_size;
 		}
 	}
-	//So we should not divde and we should remove children
+	//So we should not divide and we should remove children
 	if (nw) {
 		memdelete(ne);
 		memdelete(nw);
@@ -220,7 +220,7 @@ void MResource::QuadTreeRF::encode_min_max_height(PackedByteArray &save_data, ui
 	if (h_encoding == H_ENCODE_U4) {
 		uint8_t minh_u4 = 0;
 		uint8_t maxh_u4 = 0;
-		if (dh_main > 0.0000001) { // We should handle dh_main zero only here as that will not happen to othe H_ENCODING
+		if (dh_main > 0.0000001) { // We should handle dh_main zero only here as that will not happen to other H_ENCODING
 			double h_step_main = dh_main / U4_MAX;
 			float fmin = (min_height - main_min_height) / h_step_main;
 			float fmax = (max_height - main_min_height) / h_step_main;
@@ -335,7 +335,7 @@ void MResource::QuadTreeRF::decode_min_max_height(const PackedByteArray &compres
 		decompress_index += 4;
 		return;
 	}
-	ERR_FAIL_MSG("Unknow H encoding in uncompress " + itos(h_encoding));
+	ERR_FAIL_MSG("Unknown H encoding in uncompress " + itos(h_encoding));
 }
 
 void MResource::QuadTreeRF::save_quad_tree_data(PackedByteArray &save_data, uint32_t &save_index) {
@@ -389,7 +389,7 @@ void MResource::QuadTreeRF::save_quad_tree_data(PackedByteArray &save_data, uint
 		encode_data_u16(save_data, save_index);
 		return;
 	}
-	ERR_FAIL_MSG("Unknow Data Encoding " + itos(data_encoding));
+	ERR_FAIL_MSG("Unknown Data Encoding " + itos(data_encoding));
 }
 
 void MResource::QuadTreeRF::load_quad_tree_data(const PackedByteArray &compress_data, uint32_t &decompress_index) {
@@ -882,7 +882,7 @@ void MResource::insert_data(const PackedByteArray &data, const StringName &_name
 	{
 		new_compressed_data.write[0] = MMAGIC_NUM;
 		new_compressed_data.write[1] = CURRENT_MRESOURCE_VERSION;
-		// FALGS WILL BE ADDED AT THE END
+		// FLAGS WILL BE ADDED AT THE END
 		new_compressed_data.write[4] = (uint8_t)format;
 		encode_uint16(width, new_compressed_data.ptrw() + 6);
 	}
@@ -1040,7 +1040,7 @@ void MResource::insert_heightmap_rf(const PackedByteArray &data, float accuracy,
 	{
 		new_compressed_data.write[0] = MMAGIC_NUM;
 		new_compressed_data.write[1] = CURRENT_MRESOURCE_VERSION;
-		// FALGS WILL BE ADDED AT THE END
+		// FLAGS WILL BE ADDED AT THE END
 		new_compressed_data.write[4] = (uint8_t)format;
 		encode_uint16(width, new_compressed_data.ptrw() + 6);
 	}
@@ -1289,8 +1289,8 @@ sum_i x[i],         sum_i y[i],         n
 // sumx2=sumy2
 // sumx=sumy
 // sumxy=sumyx
-Vector<uint32_t> MResource::flatten_ols(float *data, uint32_t witdth, uint16_t devision) {
-	uint32_t section_width = witdth / devision;
+Vector<uint32_t> MResource::flatten_ols(float *data, uint32_t width, uint16_t devision) {
+	uint32_t section_width = width / devision;
 	Basis matrix_a_invers;
 	//As matrix A is same among all sections we calculate that here for better performance
 	{
@@ -1310,16 +1310,16 @@ Vector<uint32_t> MResource::flatten_ols(float *data, uint32_t witdth, uint16_t d
 			px_reg.right = ((dx + 1) * section_width) - 1;
 			px_reg.top = dy * section_width;
 			px_reg.bottom = ((dy + 1) * section_width) - 1;
-			uint32_t p = flatten_section_ols(data, px_reg, witdth, matrix_a_invers);
+			uint32_t p = flatten_section_ols(data, px_reg, width, matrix_a_invers);
 			planes.push_back(p);
 		}
 	}
 	return planes;
 }
 
-void MResource::unflatten_ols(float *data, uint32_t witdth, uint16_t devision, const Vector<uint32_t> &headers) {
+void MResource::unflatten_ols(float *data, uint32_t width, uint16_t devision, const Vector<uint32_t> &headers) {
 	ERR_FAIL_COND(headers.size() != devision * devision);
-	uint32_t section_width = witdth / devision;
+	uint32_t section_width = width / devision;
 	uint32_t header_index = 0;
 	for (uint32_t dy = 0; dy < devision; dy++) {
 		for (uint32_t dx = 0; dx < devision; dx++) {
@@ -1328,7 +1328,7 @@ void MResource::unflatten_ols(float *data, uint32_t witdth, uint16_t devision, c
 			px_reg.right = ((dx + 1) * section_width) - 1;
 			px_reg.top = dy * section_width;
 			px_reg.bottom = ((dy + 1) * section_width) - 1;
-			unflatten_section_ols(data, px_reg, witdth, headers[header_index]);
+			unflatten_section_ols(data, px_reg, width, headers[header_index]);
 			header_index++;
 		}
 	}
@@ -1379,7 +1379,7 @@ uint32_t MResource::flatten_section_ols(float *data, MPixelRegion px_region, uin
 	}
 	// Creating C Matrix
 	Vector3 matrix_c(sumxz, sumyz, sumz);
-	// Claculating Matrix B
+	// Calculating Matrix B
 	Vector3 matrix_b = matrix_a_invers.xform(matrix_c);
 
 	uint16_t b1_half = float_to_half(matrix_b.x);

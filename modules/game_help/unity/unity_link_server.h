@@ -28,8 +28,7 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef EDITOR_FILE_SERVER_H
-#define EDITOR_FILE_SERVER_H
+#pragma once
 
 #include "core/io/packet_peer.h"
 #include "core/io/tcp_server.h"
@@ -91,5 +90,3 @@ public:
 	UnityLinkServer();
 	~UnityLinkServer();
 };
-
-#endif // EDITOR_FILE_SERVER_H

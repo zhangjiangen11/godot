@@ -1106,22 +1106,22 @@ Transform3D MCurve::get_point_order_transform(int32_t point_a, int32_t point_b, 
 		}
 	}
 	// See if is straight perpendiculare line which is not handled by _get_bezier_transform
-	Transform3D ptrasform;
+	Transform3D ptransform;
 	if (a->position.is_equal_approx(a_control) && b->position.is_equal_approx(b_control) && Math::is_equal_approx(a->position.x, b->position.x) && Math::is_equal_approx(a->position.z, b->position.z)) {
-		ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
+		ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
 	}
-	ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
+	ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
 	// Applying tilt
 	if (tilt) {
 		float current_tilt = Math::lerp(a->tilt, b->tilt, t);
-		ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
+		ptransform.basis.rotate(ptransform.basis[0], current_tilt);
 	}
 	// Applying scale
 	if (scale) {
 		float current_scale = Math::lerp(a->scale, b->scale, t);
-		ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+		ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
 	}
-	return ptrasform;
+	return ptransform;
 }
 
 Transform3D MCurve::get_conn_transform(int64_t conn_id, float t, bool apply_tilt, bool apply_scale) {
@@ -1140,20 +1140,20 @@ Transform3D MCurve::get_conn_transform(int64_t conn_id, float t, bool apply_tilt
 		}
 	}
 	// See if is straight perpendiculare line which is not handled by _get_bezier_transform
-	Transform3D ptrasform;
+	Transform3D ptransform;
 	if (a->position.is_equal_approx(a_control) && b->position.is_equal_approx(b_control) && Math::is_equal_approx(a->position.x, b->position.x) && Math::is_equal_approx(a->position.z, b->position.z)) {
-		ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
+		ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
 	}
-	ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
+	ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
 	if (apply_tilt) {
 		float current_tilt = Math::lerp(a->tilt, b->tilt, t);
-		ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
+		ptransform.basis.rotate(ptransform.basis[0], current_tilt);
 	}
 	if (apply_scale) {
 		float current_scale = Math::lerp(a->scale, b->scale, t);
-		ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+		ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
 	}
-	return ptrasform;
+	return ptransform;
 }
 
 void MCurve::get_conn_transforms(int64_t conn_id, const Vector<float> &t, Vector<Transform3D> &transforms, bool apply_tilt, bool apply_scale) {
@@ -1175,26 +1175,26 @@ void MCurve::get_conn_transforms(int64_t conn_id, const Vector<float> &t, Vector
 	// See if is straight perpendiculare line which is not handled by _get_bezier_transform
 	if (a->position.is_equal_approx(a_control) && b->position.is_equal_approx(b_control) && Math::is_equal_approx(a->position.x, b->position.x) && Math::is_equal_approx(a->position.z, b->position.z)) {
 		for (int i = 0; i < t.size(); i++) {
-			Transform3D ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t[i]);
+			Transform3D ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t[i]);
 			float current_tilt = Math::lerp(a->tilt, b->tilt, t[i]);
 			float current_scale = Math::lerp(a->scale, b->scale, t[i]);
-			ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
-			ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
-			transforms.set(i, ptrasform);
+			ptransform.basis.rotate(ptransform.basis[0], current_tilt);
+			ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+			transforms.set(i, ptransform);
 		}
 		return;
 	}
 	for (int i = 0; i < t.size(); i++) {
-		Transform3D ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t[i]);
+		Transform3D ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t[i]);
 		if (apply_tilt) {
 			float current_tilt = Math::lerp(a->tilt, b->tilt, t[i]);
-			ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
+			ptransform.basis.rotate(ptransform.basis[0], current_tilt);
 		}
 		if (apply_scale) {
 			float current_scale = Math::lerp(a->scale, b->scale, t[i]);
-			ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+			ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
 		}
-		transforms.set(i, ptrasform);
+		transforms.set(i, ptransform);
 	}
 }
 

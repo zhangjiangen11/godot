@@ -25,7 +25,7 @@ private:
 	struct MaterialSet {
 		int type = 0;
 		int user_count = 0;
-		// Material Sets seperated with ";" For less memory use it is converted to assci(PackedByteArray)
+		// Material Sets separated with ";" For less memory use it is converted to assci(PackedByteArray)
 		PackedByteArray surface_materials_paths;
 		// in case user_count > 0 we have a cache
 		Vector<Ref<Material>> materials_cache;
@@ -54,7 +54,7 @@ private:
 		void add_user();
 		void remove_user();
 	};
-	// Surface names seperated by ;
+	// Surface names separated by ;
 	PackedByteArray surfaces_names;
 	Vector<MaterialSet> materials_set;
 

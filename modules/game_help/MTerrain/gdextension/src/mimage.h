@@ -58,7 +58,7 @@ struct MImage {
 	bool is_save = false;
 	MGridPos grid_pos;
 	std::mutex update_mutex;
-	std::recursive_mutex load_mutex; //Any method which read/write the data or layer data exept for pixel modification as that would be expensive, for pixel modifcation we should do some higher level lock
+	std::recursive_mutex load_mutex; //Any method which read/write the data or layer data exept for pixel modification as that would be expensive, for pixel modification we should do some higher level lock
 	bool active_undo = false;
 	int current_undo_id;
 	// Key is undo redo id

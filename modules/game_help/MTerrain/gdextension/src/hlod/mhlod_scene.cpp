@@ -288,7 +288,7 @@ void MHlodScene::Proc::add_item(MHlod::Item *item, const int item_id, const bool
 	}
 }
 
-// should clear creation_info afer calling this
+// should clear creation_info after calling this
 void MHlodScene::Proc::remove_item(MHlod::Item *item, const int item_id, const bool immediate, const bool is_destruction) {
 	if (!items_creation_info.has(item->transform_index)) {
 		return;
@@ -343,7 +343,7 @@ void MHlodScene::Proc::remove_item(MHlod::Item *item, const int item_id, const b
 				if (is_destruction) {
 					c_info.root_node->proc = nullptr;
 				}
-				c_info.root_node->hlod_remove_me = true; // realy important otherwise you will see the most wierd bug in your life
+				c_info.root_node->hlod_remove_me = true; // realy important otherwise you will see the most weird bug in your life
 				c_info.root_node->call_deferred("_notify_before_remove");
 				c_info.root_node->call_deferred("queue_free");
 			}
@@ -439,7 +439,7 @@ void MHlodScene::Proc::update_lod(int8_t c_lod, const bool immediate) {
 	}
 	if (c_lod < 0 || c_lod >= hlod->lods.size() || hlod->lods[c_lod].size() == 0) {
 		remove_all_items(immediate);
-		return; // we don't consider this dirty as there is nothing to be appllied later
+		return; // we don't consider this dirty as there is nothing to be applied later
 	}
 	const VSet<int32_t> *lod_table = hlod->lods.ptr() + c_lod;
 	VSet<int32_t> exist_transform_index;
@@ -460,14 +460,14 @@ void MHlodScene::Proc::update_lod(int8_t c_lod, const bool immediate) {
 		// nothing to do just update lod and go out
 		return;
 	}
-	Vector<int32_t> removed_trasform_indices;
+	Vector<int32_t> removed_transform_indices;
 	for (HashMap<int32_t, CreationInfo>::Iterator it = items_creation_info.begin(); it != items_creation_info.end(); ++it) {
 		if (!exist_transform_index.has(it->key)) {
 			remove_item(hlod->item_list.ptrw() + it->value.item_id, it->value.item_id, immediate, false);
-			removed_trasform_indices.push_back(it->key);
+			removed_transform_indices.push_back(it->key);
 		}
 	}
-	for (int32_t rm_t : removed_trasform_indices) {
+	for (int32_t rm_t : removed_transform_indices) {
 		items_creation_info.erase(rm_t);
 	}
 }
@@ -554,7 +554,7 @@ bool MHlodScene::is_my_octree(MOctree *input) {
 bool MHlodScene::set_octree(MOctree *input) {
 	ERR_FAIL_COND_V(input == nullptr, false);
 	if (octree) {
-		WARN_PRINT("octree " + octree->get_name() + " is already assigned to hlod! Only one octree can be assing to update MOctMesh!");
+		WARN_PRINT("octree " + octree->get_name() + " is already assigned to hlod! Only one octree can be assign to update MOctMesh!");
 		return false;
 	}
 	octree = input;
@@ -570,7 +570,7 @@ MOctree *MHlodScene::get_octree() {
 uint16_t MHlodScene::get_oct_id() {
 	return oct_id;
 }
-// oct_point_id last avialable oct_point_id! if there was not oct_point_id you should pass -1
+// oct_point_id last available oct_point_id! if there was not oct_point_id you should pass -1
 // in case the oct_point_id you are sending is aviable that will set this oct_point_id for you!
 // otherwise it will set a new oct_point_id for you
 // ther return oct_point_id is valid and final oct_point_id
@@ -618,7 +618,7 @@ void MHlodScene::insert_points() {
 
 void MHlodScene::first_octree_update(Vector<MOctree::PointUpdate> *update_info) {
 	// more close to root proc has smaller ID!
-	// if not sorted some proc can create items and diable later in same update which is a waste
+	// if not sorted some proc can create items and disable later in same update which is a waste
 	update_info->sort();
 	for (int i = 0; i < update_info->size(); i++) {
 		MOctree::PointUpdate p = update_info->get(i);
@@ -647,7 +647,7 @@ void MHlodScene::octree_thread_update(void *input) {
 	}
 	Vector<MOctree::PointUpdate> *update_info = (Vector<MOctree::PointUpdate> *)input;
 	// more close to root proc has smaller ID!
-	// if not sorted some proc can create items and diable later in same update which is a waste
+	// if not sorted some proc can create items and disable later in same update which is a waste
 	update_info->sort();
 	for (int i = 0; i < update_info->size(); i++) {
 		MOctree::PointUpdate p = update_info->get(i);

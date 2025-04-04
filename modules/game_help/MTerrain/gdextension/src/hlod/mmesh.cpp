@@ -132,7 +132,7 @@ void MMesh::MaterialSet::set_material_no_error(int surface_index, Ref<Material> 
 }
 
 // This function should be called only in main loop
-// Usally used for editor stuff
+// Usually used for editor stuff
 Ref<Material> MMesh::MaterialSet::get_material_no_user(int surface_index) const {
 	std::lock_guard<std::mutex> lock(MHlodScene::update_mutex);
 	if (has_cache()) {

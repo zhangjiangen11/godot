@@ -299,7 +299,7 @@ bool MOctree::Octant::divide() {
 	octs[5].start = Vector3(middle.x, middle.y, start.z);
 	octs[6].start = Vector3(start.x, middle.y, middle.z);
 	octs[7].start = middle;
-	// Seting size
+	// Setting size
 	octs[0].end = middle;
 	octs[1].end = Vector3(end.x, middle.y, middle.z);
 	octs[2].end = Vector3(middle.x, middle.y, end.z);
@@ -571,7 +571,7 @@ void MOctree::Octant::get_oct_id_points_count(uint16_t oct_id, int &count) {
 MOctree::Octant *MOctree::Octant::get_mergeable(int capacity) {
 	int count = 0;
 	get_points_count(count);
-	//UtilityFunctions::print("Check mergable ",count," --- ", capacity, " res ",count < capacity);
+	//UtilityFunctions::print("Check mergeable ",count," --- ", capacity, " res ",count < capacity);
 	if (count < capacity) { // it is undividable and it is parent also may be undevidable
 		if (parent == nullptr) { // Arrived at root
 			return this;
@@ -701,7 +701,7 @@ bool MOctree::remove_point(int32_t id, const Vector3 &pos, uint16_t oct_id) {
 }
 /*
 	I you pass the octant pointer and you call root.clear or merge octs
-	this  will crash, this cause to intiale octant pointer will be removed!
+	this  will crash, this cause to initial octant pointer will be removed!
 */
 bool MOctree::check_for_mergeable(Octant *start_point) {
 	if (start_point->parent == nullptr) {
@@ -881,7 +881,7 @@ void MOctree::insert_points(const PackedVector3Array &points, const PackedInt32A
 	}
 	*/
 }
-// Insert a point and claculate its LOD and return that! in case of error it will return -1
+// Insert a point and calculate its LOD and return that! in case of error it will return -1
 bool MOctree::insert_point(const Vector3 &pos, const int32_t id, int oct_id) {
 	std::lock_guard<std::mutex> lock(oct_mutex);
 	if (disable_octree) {
@@ -946,7 +946,7 @@ void MOctree::change_point_id(int16_t oct_id, const Vector3 &point_pos, int32_t 
 	if (poct == nullptr) {
 		poct = root.find_octant_by_point_classic(old_id, oct_id, point_index);
 		ERR_FAIL_COND(poct == nullptr);
-		WARN_PRINT("Used Classic method to find octant of move point! Maybe you not provide the excat oct_tree position for move");
+		WARN_PRINT("Used Classic method to find octant of move point! Maybe you not provide the exact oct_tree position for move");
 	}
 	poct->points.ptrw()[point_index].id = new_id;
 }
@@ -960,7 +960,7 @@ void MOctree::move_point(const PointMoveReq &mp, int8_t updated_lod, uint8_t _up
 	if (poct == nullptr) {
 		poct = root.find_octant_by_point_classic(mp.p_id, mp.oct_id, point_index);
 		if (poct != nullptr && mp.p_id == 1238) {
-			WARN_PRINT("Used Classic method to find octant of move point! Maybe you not provide the excat oct_tree position for move, also make sure to send make move request after inserting points.");
+			WARN_PRINT("Used Classic method to find octant of move point! Maybe you not provide the exact oct_tree position for move, also make sure to send make move request after inserting points.");
 		}
 	}
 	ERR_FAIL_COND_MSG(poct == nullptr, "can not find octant of moved point!");
@@ -1305,7 +1305,7 @@ void MOctree::_notification(int p_what) {
 			update_scenario();
 			is_ready = true;
 			if (!get_parent()->is_class("Window")) {
-				ERR_FAIL_EDMSG("MOctree should be added as singlton with active tool mode! Create a gdscript which inherit from MOctree with active tool mode and add that as singlton in project setting");
+				ERR_FAIL_EDMSG("MOctree should be added as singleton with active tool mode! Create a gdscript which inherit from MOctree with active tool mode and add that as singleton in project setting");
 			}
 			if (!MTool::is_editor_plugin_active() && Engine::get_singleton()->is_editor_hint()) {
 				ERR_FAIL_EDMSG("Make sure to activate MTerrain plugin otherwise gizmo selction will not work!");

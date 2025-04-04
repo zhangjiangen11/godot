@@ -364,7 +364,7 @@ void MTerrainMaterial::load_images(Array images_names, Ref<MResource> first_res)
 	/*
 		terrain_textures_names come from shader uniform which has mterrain_ prefix
 		images_names come from data directory
-		if an image exist only in images_names not in terrain_textures_names, that image is flaged as RAM image which
+		if an image exist only in images_names not in terrain_textures_names, that image is flagged as RAM image which
 		exist only in RAM side not VRAM side
 	*/
 	ERR_FAIL_COND(!grid);

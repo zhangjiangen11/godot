@@ -209,7 +209,7 @@ bool MMeshJoiner::insert_mesh_data(Array meshes, Array transforms, Array materia
 	for (int i = 0; i < meshes.size(); i++) {
 		Ref<Mesh> mesh = meshes[i];
 		Ref<Material> material = materials_override[i];
-		Transform3D trasform = transforms[i];
+		Transform3D transform = transforms[i];
 		int surface_count = mesh->get_surface_count();
 		for (int s = 0; s < surface_count; s++) {
 			MeshData mdata;
@@ -225,8 +225,8 @@ bool MMeshJoiner::insert_mesh_data(Array meshes, Array transforms, Array materia
 				mdata.colors = mesh_arr[Mesh::ARRAY_COLOR];
 				mdata.uv = mesh_arr[Mesh::ARRAY_TEX_UV];
 				mdata.uv2 = mesh_arr[Mesh::ARRAY_TEX_UV2];
-				mdata.transform = trasform;
-				mdata.normal_transform = trasform.basis.inverse().transposed();
+				mdata.transform = transform;
+				mdata.normal_transform = transform.basis.inverse().transposed();
 				vcount = mdata.vertices.size();
 				if (vcount == 0) {
 					WARN_PRINT("Vertex count is zero skiping this mesh surface");
@@ -262,7 +262,7 @@ bool MMeshJoiner::insert_mmesh_data(Array meshes, Array transforms, PackedInt32A
 	clear();
 	for (int i = 0; i < meshes.size(); i++) {
 		Ref<MMesh> mesh = meshes[i];
-		Transform3D trasform = transforms[i];
+		Transform3D transform = transforms[i];
 		int surface_count = mesh->get_surface_count();
 		PackedStringArray surface_materials_path = mesh->material_set_get(materials_set_ids[i]);
 		for (int s = 0; s < surface_count; s++) {
@@ -279,8 +279,8 @@ bool MMeshJoiner::insert_mmesh_data(Array meshes, Array transforms, PackedInt32A
 				mdata.colors = mesh_arr[Mesh::ARRAY_COLOR];
 				mdata.uv = mesh_arr[Mesh::ARRAY_TEX_UV];
 				mdata.uv2 = mesh_arr[Mesh::ARRAY_TEX_UV2];
-				mdata.transform = trasform;
-				mdata.normal_transform = trasform.basis.inverse().transposed();
+				mdata.transform = transform;
+				mdata.normal_transform = transform.basis.inverse().transposed();
 				vcount = mdata.vertices.size();
 				if (vcount == 0) {
 					WARN_PRINT("Vertex count is zero skiping this mesh surface");
@@ -323,7 +323,7 @@ Ref<ArrayMesh> MMeshJoiner::join_meshes() {
 Ref<Mesh> MMeshJoiner::get_collission_mesh(Array meshes, Array transforms) {
 	ERR_FAIL_COND_V(meshes.size() != transforms.size(), nullptr);
 	PackedVector3Array vertices;
-	PackedInt32Array indicies;
+	PackedInt32Array indices;
 	int index_offset = 0;
 	for (int i = 0; i < meshes.size(); i++) {
 		Ref<Mesh> mesh = meshes[i];
@@ -345,14 +345,14 @@ Ref<Mesh> MMeshJoiner::get_collission_mesh(Array meshes, Array transforms) {
 					surface_indices.ptrw()[k] += index_offset;
 				}
 			}
-			indicies.append_array(surface_indices);
+			indices.append_array(surface_indices);
 			index_offset = vertices.size();
 		}
 	}
 	Array final_data;
 	final_data.resize(Mesh::ARRAY_MAX);
 	final_data[Mesh::ARRAY_VERTEX] = vertices;
-	final_data[Mesh::ARRAY_INDEX] = indicies;
+	final_data[Mesh::ARRAY_INDEX] = indices;
 	Ref<ArrayMesh> arr_mesh;
 	arr_mesh.instantiate();
 	arr_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, final_data);

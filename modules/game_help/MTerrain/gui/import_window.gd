@@ -621,7 +621,7 @@ func export_data(dname: String, eformat: String):
 			var img := Image.create_from_data(width, width, false, img_format, data)
 			ResourceSaver.save(img, final_epath)
 		else:
-			print_export_err("Unknow export format")
+			print_export_err("Unknown export format")
 			return
 		x += 1
 

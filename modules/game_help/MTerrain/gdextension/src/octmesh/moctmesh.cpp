@@ -69,7 +69,7 @@ uint16_t MOctMesh::get_oct_id() {
 bool MOctMesh::set_octree(MOctree *input) {
 	ERR_FAIL_COND_V(input == nullptr, false);
 	if (octree) {
-		WARN_PRINT("octree " + octree->get_name() + " is already assigned! Only one octree can be assing to update MOctMesh!");
+		WARN_PRINT("octree " + octree->get_name() + " is already assigned! Only one octree can be assign to update MOctMesh!");
 		return false;
 	}
 	octree = input;

@@ -15,7 +15,7 @@ protected:
 private:
 	static MLRUCache<int64_t, Variant> state_data;
 	bool is_inside_hlod_scene = false;
-	bool hlod_remove_me = false; // should be set when removed by HLODSCENE, realy important otherwise you will see the most wierd bug in your life
+	bool hlod_remove_me = false; // should be set when removed by HLODSCENE, realy important otherwise you will see the most weird bug in your life
 	int8_t lod = -1;
 	int32_t args[M_PACKED_SCENE_ARG_COUNT] = { 0 };
 	MHlodScene::GlobalItemID bind_items[M_PACKED_SCENE_BIND_COUNT];

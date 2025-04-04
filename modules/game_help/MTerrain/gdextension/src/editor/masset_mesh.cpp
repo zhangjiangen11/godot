@@ -764,7 +764,7 @@ void MAssetMesh::generate_joined_triangle_mesh() {
 	joined_triangle_mesh.unref();
 	// we need only vertices and indices for triangle mesh!
 	PackedVector3Array vertices;
-	PackedInt32Array indicies;
+	PackedInt32Array indices;
 	int index_offset = 0;
 	for (const InstanceData &_data : instance_data) {
 		Ref<MMesh> current_mesh = _data.get_last_valid_mesh();
@@ -784,17 +784,17 @@ void MAssetMesh::generate_joined_triangle_mesh() {
 				surface_indicies.set(k, surface_indicies[k] + index_offset);
 			}
 			vertices.append_array(surface_vertices);
-			indicies.append_array(surface_indicies);
+			indices.append_array(surface_indicies);
 			index_offset = vertices.size();
 		}
 	}
-	if (indicies.size() == 0) {
+	if (indices.size() == 0) {
 		return;
 	}
 	Array mdata;
 	mdata.resize(Mesh::ARRAY_MAX);
 	mdata[Mesh::ARRAY_VERTEX] = vertices;
-	mdata[Mesh::ARRAY_INDEX] = indicies;
+	mdata[Mesh::ARRAY_INDEX] = indices;
 
 	Ref<ArrayMesh> arr_mesh;
 	arr_mesh.instantiate();

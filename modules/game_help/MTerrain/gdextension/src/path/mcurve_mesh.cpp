@@ -587,7 +587,7 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 
 	// Creating the mesh
 	ERR_FAIL_COND(transforms.size() != mesh_count * mesh_sliced->slice_count());
-	// Setting Vertex Poistions
+	// Setting Vertex Positions
 	int vertex_count = mesh_sliced->vertex.size();
 	for (int mesh_index = 0; mesh_index < mesh_count; mesh_index++) {
 		for (int j = 0; j < mesh_sliced->slice_count(); j++) {

@@ -1,7 +1,7 @@
 #pragma once
 
 #define MIN_OCTANT_EDGE_LENGTH 0.2
-#define EXTRA_BOUND_MARGIN 200U //This should be alway some number bigger than zero, otherwise cause some points to not be inserted
+#define EXTRA_BOUND_MARGIN 200U //This should be always some number bigger than zero, otherwise cause some points to not be inserted
 #define MAX_CAPACITY 10000U
 #define MIN_CAPACITY 10U
 #define INVALID_OCT_POINT_ID -1

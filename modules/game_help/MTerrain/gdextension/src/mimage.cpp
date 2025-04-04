@@ -131,7 +131,7 @@ void MImage::set_active_layer(int l) {
 	active_layer = l;
 }
 
-// This must called alway after loading background image
+// This must called always after loading background image
 void MImage::add_layer(String lname) {
 	if (name != HEIGHTMAP_NAME) {
 		return;
@@ -240,7 +240,7 @@ void MImage::merge_layer() {
 			mres->insert_heightmap_rf(tmp_data, region->grid->save_config.accuracy, region->grid->save_config.heightmap_compress_qtq, region->grid->save_config.heightmap_file_compress);
 			Error err = ResourceSaver::save(mres, file_path);
 			layer_names.remove_at(active_layer);
-			ERR_FAIL_COND_MSG(err != Error::OK, "Can not save merged layer " + path + " with godot save error " + itos(err) + " Layer data is preseve for this region you can get it back by adding the same layer name");
+			ERR_FAIL_COND_MSG(err != Error::OK, "Can not save merged layer " + path + " with godot save error " + itos(err) + " Layer data is preserve for this region you can get it back by adding the same layer name");
 			DirAccess::remove_absolute(path);
 			return;
 		}
@@ -324,7 +324,7 @@ void MImage::layer_visible(bool input) {
 	if (image_layers[active_layer]->size() == 0) {
 		return;
 	}
-	// There is no control if the layer is currently visibile or not
+	// There is no control if the layer is currently visible or not
 	// These checks must be done in Grid Level
 	// We save before hiding the layer to not complicating the save system for now
 	// So we are sure in the save method we should do nothing
@@ -497,7 +497,7 @@ void MImage::set_pixel_RF(const uint32_t x, const uint32_t y, const real_t value
 		return;
 	}
 	check_undo();
-	// not visibile layers should not be modified but as this called many times
+	// not visible layers should not be modified but as this called many times
 	// it is better to check that in upper level
 	uint32_t ofs = (x + y * width);
 #ifdef M_IMAGE_LAYER_ON
@@ -512,7 +512,7 @@ void MImage::set_pixel_RF(const uint32_t x, const uint32_t y, const real_t value
 	// Check if we the layer is empty we resize that
 	if (image_layers[active_layer]->size() != data.size()) {
 		image_layers[active_layer]->resize(data.size());
-		if (active_layer == holes_layer) { // Initialzation in case it is a holes layer
+		if (active_layer == holes_layer) { // Initialization in case it is a holes layer
 			float *ptrw = (float *)image_layers[active_layer]->ptrw();
 			for (uint32_t i = 0; i < total_pixel_amount; i++) {
 				ptrw[i] = std::numeric_limits<float>::quiet_NaN();
@@ -627,7 +627,7 @@ bool MImage::save(Ref<MResource> mres, bool force_save) {
 			}
 			//Ref<Image> img = Image::create_from_data(width,height,false,format,background_data);
 			//Error err = ResourceSaver::save(img,file_path);
-			//ERR_FAIL_COND_MSG(err,"Can not save background image, image class erro: "+itos(err));
+			//ERR_FAIL_COND_MSG(err,"Can not save background image, image class error: "+itos(err));
 			float accq = region->grid->save_config.accuracy;
 			bool cmp_qtq = region->grid->save_config.heightmap_compress_qtq;
 			MResource::FileCompress fcmp = region->grid->save_config.heightmap_file_compress;
@@ -691,7 +691,7 @@ void MImage::remove_undo_data_in_layer(int layer_index) {
 
 bool MImage::go_to_undo(int ur_id) {
 	if (!undo_data.has(ur_id)) {
-		return false; // noting to do here we don't have any data change corrispond to this undo redo
+		return false; // noting to do here we don't have any data change correspond to this undo redo
 	}
 	MImageUndoData ur = undo_data[ur_id];
 	if (ur.layer != active_layer) {

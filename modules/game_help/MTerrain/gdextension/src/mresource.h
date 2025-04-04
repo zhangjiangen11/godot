@@ -215,8 +215,8 @@ private:
 	void compress_qtq_rf(PackedByteArray &uncompress_data, PackedByteArray &compress_data, uint32_t window_width, uint32_t &save_index, float accuracy);
 	void decompress_qtq_rf(const PackedByteArray &compress_data, PackedByteArray &uncompress_data, uint32_t window_width, uint32_t decompress_index);
 	// Will add and remove Linear Regression with least square method
-	Vector<uint32_t> flatten_ols(float *data, uint32_t witdth, uint16_t devision); // Will ignore holes
-	void unflatten_ols(float *data, uint32_t witdth, uint16_t devision, const Vector<uint32_t> &headers);
+	Vector<uint32_t> flatten_ols(float *data, uint32_t width, uint16_t devision); // Will ignore holes
+	void unflatten_ols(float *data, uint32_t width, uint16_t devision, const Vector<uint32_t> &headers);
 	uint32_t flatten_section_ols(float *data, MPixelRegion px_region, uint32_t window_width, Basis matrix_a_invers);
 	void unflatten_section_ols(float *data, MPixelRegion px_region, uint32_t window_width, uint32_t header);
 	_FORCE_INLINE_ uint64_t get_sumx(uint64_t n);
