@@ -118,7 +118,9 @@ void Ivy::grow() {
 		Vector3 newPos = root->nodes.back().pos + growVector + gravityVector;
 
 		//combine alive state with result of the collision detection, e.g. let the ivy die in case of a collision detection problem
-		root->alive = root->alive & computeCollision(root->nodes.back().pos, newPos, climbing);
+		if (computeCollision(root->nodes.back().pos, newPos, climbing)) {
+			root->alive = true；
+		}
 
 		//update grow vector due to a changed newPos
 		growVector = newPos - root->nodes.back().pos - gravityVector;
@@ -228,7 +230,7 @@ Vector3 Ivy::computeAdhesion(const Vector3 &pos) {
 
 	//float minDistance = local_maxAdhesionDistance;
 	float last_distance = maxAdhesionDistance * 2;
-	bool is_insde = false;
+	//bool is_insde = false;
 	for (uint32_t m = 0; m < meshList.size(); m++) {
 		Vector3 normal;
 		Vector4 point = meshList[m]->get_closest_point_to(pos, maxAdhesionDistance, normal);
@@ -237,7 +239,7 @@ Vector3 Ivy::computeAdhesion(const Vector3 &pos) {
 			if (dis < last_distance) {
 				adhesionVector = Vector3(point.x, point.y, point.z);
 				last_distance = adhesionVector.distance_to(pos);
-				is_insde = true;
+				//is_insde = true;
 			}
 		}
 	}
@@ -386,7 +388,7 @@ void Ivy::birth() {
 			continue;
 		}
 
-		for (int node_index = 0; node_index < root->nodes.size() - 1; ++node_index) {
+		for (size_t node_index = 0; node_index < root->nodes.size() - 1; ++node_index) {
 			float alignmentWeight = root->nodes[node_index].adhesionLength;
 			//srand(i + (root - roots.begin()) * 10);
 			IvyNode *node = &root->nodes[node_index];

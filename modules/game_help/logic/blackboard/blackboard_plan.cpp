@@ -13,7 +13,6 @@
 #include "bb_param/bb_param.h"
 
 bool BlackboardPlan::_set(const StringName &p_name, const Variant &p_value) {
-
 	// * Editor
 	if (var_map.has(p_name)) {
 		BBVariable &var = var_map[p_name];
@@ -30,9 +29,9 @@ bool BlackboardPlan::_set(const StringName &p_name, const Variant &p_value) {
 	if (name_str.begins_with("var/")) {
 		Vector<String> parts = name_str.split("/");
 		String var_name_str = "";
-		for(int i = 1; i < parts.size() - 1; i++) {
+		for (int i = 1; i < parts.size() - 1; i++) {
 			var_name_str += parts[i];
-			if(i != parts.size() - 2) {
+			if (i != parts.size() - 2) {
 				var_name_str += "/";
 			}
 		}
@@ -62,7 +61,6 @@ bool BlackboardPlan::_set(const StringName &p_name, const Variant &p_value) {
 }
 
 bool BlackboardPlan::_get(const StringName &p_name, Variant &r_ret) const {
-
 	// * Editor
 	if (var_map.has(p_name)) {
 		r_ret = var_map[p_name].get_value();
@@ -76,14 +74,14 @@ bool BlackboardPlan::_get(const StringName &p_name, Variant &r_ret) const {
 	}
 	Vector<String> parts = name_str.split("/");
 	String var_name_str = "";
-	for(int i = 1; i < parts.size() - 1; i++) {
+	for (int i = 1; i < parts.size() - 1; i++) {
 		var_name_str += parts[i];
-		if(i != parts.size() - 2) {
+		if (i != parts.size() - 2) {
 			var_name_str += "/";
 		}
 	}
 	String what = parts[parts.size() - 1];
-		StringName var_name = var_name_str;
+	StringName var_name = var_name_str;
 	//StringName var_name = name_str.get_slicec('/', 1);
 	//String what = name_str.get_slicec('/', 2);
 	ERR_FAIL_COND_V(!var_map.has(var_name), false);
@@ -208,8 +206,7 @@ void BlackboardPlan::remove_var(const StringName &p_name) {
 	notify_property_list_changed();
 	emit_changed();
 }
-void BlackboardPlan::set_var(const StringName &p_name, const Variant &p_var)
-{
+void BlackboardPlan::set_var(const StringName &p_name, const Variant &p_var) {
 	ERR_FAIL_COND(!var_map.has(p_name));
 	var_map[p_name].set_value(p_var);
 	notify_property_list_changed();
@@ -398,8 +395,7 @@ Ref<Blackboard> BlackboardPlan::create_blackboard(Node *p_node, const Ref<Blackb
 	populate_blackboard(bb, true, p_node);
 	return bb;
 }
-Ref<Blackboard> BlackboardPlan::get_editor_blackboard()
-{
+Ref<Blackboard> BlackboardPlan::get_editor_blackboard() {
 	if (editor_blackboard.is_null()) {
 		Ref<BlackboardEditorVirtual> bb = memnew(BlackboardEditorVirtual);
 		bb->init(this);
@@ -429,18 +425,16 @@ void BlackboardPlan::populate_blackboard(const Ref<Blackboard> &p_blackboard, bo
 		if (has_mapping) {
 			StringName target_var = parent_scope_mapping[p.first];
 			if (target_var != StringName()) {
-				ERR_CONTINUE_MSG(p_blackboard->get_parent() == nullptr, vformat("BlackboardPlan: Cannot link variable %s to parent scope because the parent scope is not set.", BBParam::decorate_var(p.first)));
+				ERR_CONTINUE_MSG(p_blackboard->get_parent().is_null(), vformat("BlackboardPlan: Cannot link variable %s to parent scope because the parent scope is not set.", BBParam::decorate_var(p.first)));
 				p_blackboard->link_var(p.first, p_blackboard->get_parent(), target_var);
 			}
 		}
 	}
 }
 
-void BlackboardPlan::get_property_names_by_type(Variant::Type p_type,Array p_result)
-{
+void BlackboardPlan::get_property_names_by_type(Variant::Type p_type, Array p_result) {
 	for (const Pair<StringName, BBVariable> &p : var_list) {
-		if(p.second.get_type() == p_type)
-		{
+		if (p.second.get_type() == p_type) {
 			//rs.app
 			p_result.push_back(p.first);
 		}

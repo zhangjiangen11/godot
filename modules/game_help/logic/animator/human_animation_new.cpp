@@ -256,13 +256,13 @@ void HumanBonePostRotation::apply_root_motion(Vector3 &p_position, Quaternion &p
 
 static Vector3 compute_lookat_position_add(Ref<Animation> p_animation, int track_index, double time_start, double time_end) {
 	Vector3 loc, loc2;
-	Error err = p_animation->try_position_track_interpolate(track_index, time_start, &loc);
+	p_animation->try_position_track_interpolate(track_index, time_start, &loc);
 	err = p_animation->try_position_track_interpolate(track_index, time_end, &loc2);
 	return loc2 - loc;
 }
 static Quaternion compute_lookat_rotation_add(Ref<Animation> p_animation, int track_index, double time_start, double time_end) {
 	Quaternion rot, rot2;
-	Error err = p_animation->try_rotation_track_interpolate(track_index, time_start, &rot);
+	p_animation->try_rotation_track_interpolate(track_index, time_start, &rot);
 	err = p_animation->try_rotation_track_interpolate(track_index, time_end, &rot2);
 	return rot.inverse() * rot2;
 }

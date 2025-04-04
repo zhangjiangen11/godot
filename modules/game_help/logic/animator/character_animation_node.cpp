@@ -357,7 +357,7 @@ void CharacterAnimatorNodeBase::Blend2dDataConstant::precompute_freeform(BlendTy
 				if (magSum > 0) {
 					constantChildPairAvgMagInv[pairIndex] = 2.0f / magSum;
 				} else {
-					constantChildPairAvgMagInv[pairIndex] = 2.0f / magSum;
+					constantChildPairAvgMagInv[pairIndex] = 0.0f;
 				}
 
 				// Calc mag of vector and divide by avg magnitude
