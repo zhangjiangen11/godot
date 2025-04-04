@@ -119,7 +119,7 @@ void Ivy::grow() {
 
 		//combine alive state with result of the collision detection, e.g. let the ivy die in case of a collision detection problem
 		if (computeCollision(root->nodes.back().pos, newPos, climbing)) {
-			root->alive = true；
+			root->alive = true;
 		}
 
 		//update grow vector due to a changed newPos
