@@ -85,7 +85,7 @@ class Ref {
 
 	//virtual RefCounted * get_reference() const { return reference; }
 public:
-	_FORCE_INLINE_ static StringName get_class_static() {
+	static _FORCE_INLINE_ String get_class_static() {
 		return T::get_class_static();
 	}
 
@@ -158,7 +158,6 @@ public:
 
 		ref_pointer<false>(Object::cast_to<T>(object));
 	}
-
 
 	template <typename T_Other>
 	void reference_ptr(T_Other *p_ptr) {
