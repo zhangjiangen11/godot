@@ -122,7 +122,7 @@ private:
 		MPixelRegion px_region;
 		float *data = nullptr; // Point always to uncompress data
 		uint32_t window_width = 0;
-		uint8_t depth = 0 = 0;
+		uint8_t depth = 0;
 		uint8_t h_encoding = 0;
 		uint8_t data_encoding = 255;
 		float accuracy = -1;
