@@ -69,703 +69,703 @@
 RenIK::RenIK() {}
 
 void RenIK::_bind_methods() {
-// 	ClassDB::bind_method(D_METHOD("set_live_preview", "p_enable"),
-// 			&RenIK::set_live_preview);
-// 	ClassDB::bind_method(D_METHOD("get_live_preview"), &RenIK::get_live_preview);
+	// 	ClassDB::bind_method(D_METHOD("set_live_preview", "p_enable"),
+	// 			&RenIK::set_live_preview);
+	// 	ClassDB::bind_method(D_METHOD("get_live_preview"), &RenIK::get_live_preview);
 
-// 	ClassDB::bind_method(D_METHOD("enable_solve_ik_every_frame", "p_enable"),
-// 			&RenIK::enable_solve_ik_every_frame);
-// 	ClassDB::bind_method(D_METHOD("enable_hip_placement", "p_enable"),
-// 			&RenIK::enable_hip_placement);
-// 	ClassDB::bind_method(D_METHOD("enable_foot_placement", "p_enable"),
-// 			&RenIK::enable_foot_placement);
+	// 	ClassDB::bind_method(D_METHOD("enable_solve_ik_every_frame", "p_enable"),
+	// 			&RenIK::enable_solve_ik_every_frame);
+	// 	ClassDB::bind_method(D_METHOD("enable_hip_placement", "p_enable"),
+	// 			&RenIK::enable_hip_placement);
+	// 	ClassDB::bind_method(D_METHOD("enable_foot_placement", "p_enable"),
+	// 			&RenIK::enable_foot_placement);
 
-// 	// ClassDB::bind_method(D_METHOD("set_skeleton_path", "p_path"),
-// 	// 		&RenIK::set_skeleton_path);
-// 	// ClassDB::bind_method(D_METHOD("set_skeleton_", "p_node"),
-// 	// 		&RenIK::set_skeleton);
-// 	// ClassDB::bind_method(D_METHOD("get_skeleton_path"),
-// 	// 		&RenIK::get_skeleton_path);
+	// 	// ClassDB::bind_method(D_METHOD("set_skeleton_path", "p_path"),
+	// 	// 		&RenIK::set_skeleton_path);
+	// 	// ClassDB::bind_method(D_METHOD("set_skeleton_", "p_node"),
+	// 	// 		&RenIK::set_skeleton);
+	// 	// ClassDB::bind_method(D_METHOD("get_skeleton_path"),
+	// 	// 		&RenIK::get_skeleton_path);
 
-// 	ClassDB::bind_method(D_METHOD("set_head_bone_by_name", "p_bone"),
-// 			&RenIK::set_head_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("set_head_bone_by_name", "p_bone"),
+	// 			&RenIK::set_head_bone_by_name);
 
-// 	ClassDB::bind_method(D_METHOD("get_head_bone_name"),
-// 			&RenIK::get_head_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("get_head_bone_name"),
+	// 			&RenIK::get_head_bone_name);
 
-// 	ClassDB::bind_method(D_METHOD("set_hand_left_bone_by_name", "p_bone"),
-// 			&RenIK::set_hand_left_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_hand_left_bone_name"),
-// 			&RenIK::get_hand_left_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_upper_arm_left_bone_by_name", "p_bone"),
-// 			&RenIK::set_upper_arm_left_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_upper_arm_left_bone_name"),
-// 			&RenIK::get_upper_arm_left_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_lower_arm_left_bone_by_name", "p_bone"),
-// 			&RenIK::set_lower_arm_left_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_lower_arm_left_bone_name"),
-// 			&RenIK::get_lower_arm_left_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_hand_left_bone_by_name", "p_bone"),
+	// 			&RenIK::set_hand_left_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_hand_left_bone_name"),
+	// 			&RenIK::get_hand_left_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_arm_left_bone_by_name", "p_bone"),
+	// 			&RenIK::set_upper_arm_left_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_arm_left_bone_name"),
+	// 			&RenIK::get_upper_arm_left_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_arm_left_bone_by_name", "p_bone"),
+	// 			&RenIK::set_lower_arm_left_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_arm_left_bone_name"),
+	// 			&RenIK::get_lower_arm_left_bone_name);
 
-// 	ClassDB::bind_method(D_METHOD("set_hand_right_bone_by_name", "p_bone"),
-// 			&RenIK::set_hand_right_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_hand_right_bone_name"),
-// 			&RenIK::get_hand_right_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_upper_arm_right_bone_by_name", "p_bone"),
-// 			&RenIK::set_upper_arm_right_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_upper_arm_right_bone_name"),
-// 			&RenIK::get_upper_arm_right_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_lower_arm_right_bone_by_name", "p_bone"),
-// 			&RenIK::set_lower_arm_right_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_lower_arm_right_bone_name"),
-// 			&RenIK::get_lower_arm_right_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_hand_right_bone_by_name", "p_bone"),
+	// 			&RenIK::set_hand_right_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_hand_right_bone_name"),
+	// 			&RenIK::get_hand_right_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_arm_right_bone_by_name", "p_bone"),
+	// 			&RenIK::set_upper_arm_right_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_arm_right_bone_name"),
+	// 			&RenIK::get_upper_arm_right_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_arm_right_bone_by_name", "p_bone"),
+	// 			&RenIK::set_lower_arm_right_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_arm_right_bone_name"),
+	// 			&RenIK::get_lower_arm_right_bone_name);
 
-// 	ClassDB::bind_method(D_METHOD("set_hip_bone_by_name", "p_bone"),
-// 			&RenIK::set_hip_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_hip_bone_name"),
-// 			&RenIK::get_hip_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_hip_bone_by_name", "p_bone"),
+	// 			&RenIK::set_hip_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_hip_bone_name"),
+	// 			&RenIK::get_hip_bone_name);
 
-// 	ClassDB::bind_method(D_METHOD("set_foot_left_bone_by_name", "p_bone"),
-// 			&RenIK::set_foot_left_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_foot_left_bone_name"),
-// 			&RenIK::get_foot_left_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_upper_leg_left_bone_by_name", "p_bone"),
-// 			&RenIK::set_upper_leg_left_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_upper_leg_left_bone_name"),
-// 			&RenIK::get_upper_leg_left_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_lower_leg_left_bone_by_name", "p_bone"),
-// 			&RenIK::set_lower_leg_left_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_lower_leg_left_bone_name"),
-// 			&RenIK::get_lower_leg_left_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_foot_left_bone_by_name", "p_bone"),
+	// 			&RenIK::set_foot_left_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_foot_left_bone_name"),
+	// 			&RenIK::get_foot_left_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_leg_left_bone_by_name", "p_bone"),
+	// 			&RenIK::set_upper_leg_left_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_leg_left_bone_name"),
+	// 			&RenIK::get_upper_leg_left_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_leg_left_bone_by_name", "p_bone"),
+	// 			&RenIK::set_lower_leg_left_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_leg_left_bone_name"),
+	// 			&RenIK::get_lower_leg_left_bone_name);
 
-// 	ClassDB::bind_method(D_METHOD("set_foot_right_bone_by_name", "p_bone"),
-// 			&RenIK::set_foot_right_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_foot_right_bone_name"),
-// 			&RenIK::get_foot_right_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_upper_leg_right_bone_by_name", "p_bone"),
-// 			&RenIK::set_upper_leg_right_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_upper_leg_right_bone_name"),
-// 			&RenIK::get_upper_leg_right_bone_name);
-// 	ClassDB::bind_method(D_METHOD("set_lower_leg_right_bone_by_name", "p_bone"),
-// 			&RenIK::set_lower_leg_right_bone_by_name);
-// 	ClassDB::bind_method(D_METHOD("get_lower_leg_right_bone_name"),
-// 			&RenIK::get_lower_leg_right_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_foot_right_bone_by_name", "p_bone"),
+	// 			&RenIK::set_foot_right_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_foot_right_bone_name"),
+	// 			&RenIK::get_foot_right_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_leg_right_bone_by_name", "p_bone"),
+	// 			&RenIK::set_upper_leg_right_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_leg_right_bone_name"),
+	// 			&RenIK::get_upper_leg_right_bone_name);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_leg_right_bone_by_name", "p_bone"),
+	// 			&RenIK::set_lower_leg_right_bone_by_name);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_leg_right_bone_name"),
+	// 			&RenIK::get_lower_leg_right_bone_name);
 
-// 	ClassDB::bind_method(D_METHOD("set_head_bone", "p_bone"),
-// 			&RenIK::set_head_bone);
-// 	ClassDB::bind_method(D_METHOD("get_head_bone"), &RenIK::get_head_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_head_bone", "p_bone"),
+	// 			&RenIK::set_head_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_head_bone"), &RenIK::get_head_bone);
 
-// 	ClassDB::bind_method(D_METHOD("set_hand_left_bone", "p_bone"),
-// 			&RenIK::set_hand_left_bone);
-// 	ClassDB::bind_method(D_METHOD("get_hand_left_bone"),
-// 			&RenIK::get_hand_left_bone);
-// 	ClassDB::bind_method(D_METHOD("set_upper_arm_left_bone", "p_bone"),
-// 			&RenIK::set_upper_arm_left_bone);
-// 	ClassDB::bind_method(D_METHOD("get_upper_arm_left_bone"),
-// 			&RenIK::get_upper_arm_left_bone);
-// 	ClassDB::bind_method(D_METHOD("set_lower_arm_left_bone", "p_bone"),
-// 			&RenIK::set_lower_arm_left_bone);
-// 	ClassDB::bind_method(D_METHOD("get_lower_arm_left_bone"),
-// 			&RenIK::get_lower_arm_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_hand_left_bone", "p_bone"),
+	// 			&RenIK::set_hand_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_hand_left_bone"),
+	// 			&RenIK::get_hand_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_arm_left_bone", "p_bone"),
+	// 			&RenIK::set_upper_arm_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_arm_left_bone"),
+	// 			&RenIK::get_upper_arm_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_arm_left_bone", "p_bone"),
+	// 			&RenIK::set_lower_arm_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_arm_left_bone"),
+	// 			&RenIK::get_lower_arm_left_bone);
 
-// 	ClassDB::bind_method(D_METHOD("set_hand_right_bone", "p_bone"),
-// 			&RenIK::set_hand_right_bone);
-// 	ClassDB::bind_method(D_METHOD("get_hand_right_bone"),
-// 			&RenIK::get_hand_right_bone);
-// 	ClassDB::bind_method(D_METHOD("set_upper_arm_right_bone", "p_bone"),
-// 			&RenIK::set_upper_arm_right_bone);
-// 	ClassDB::bind_method(D_METHOD("get_upper_arm_right_bone"),
-// 			&RenIK::get_upper_arm_right_bone);
-// 	ClassDB::bind_method(D_METHOD("set_lower_arm_right_bone", "p_bone"),
-// 			&RenIK::set_lower_arm_right_bone);
-// 	ClassDB::bind_method(D_METHOD("get_lower_arm_right_bone"),
-// 			&RenIK::get_lower_arm_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_hand_right_bone", "p_bone"),
+	// 			&RenIK::set_hand_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_hand_right_bone"),
+	// 			&RenIK::get_hand_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_arm_right_bone", "p_bone"),
+	// 			&RenIK::set_upper_arm_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_arm_right_bone"),
+	// 			&RenIK::get_upper_arm_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_arm_right_bone", "p_bone"),
+	// 			&RenIK::set_lower_arm_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_arm_right_bone"),
+	// 			&RenIK::get_lower_arm_right_bone);
 
-// 	ClassDB::bind_method(D_METHOD("set_hip_bone", "p_bone"),
-// 			&RenIK::set_hip_bone);
-// 	ClassDB::bind_method(D_METHOD("get_hip_bone"), &RenIK::get_hip_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_hip_bone", "p_bone"),
+	// 			&RenIK::set_hip_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_hip_bone"), &RenIK::get_hip_bone);
 
-// 	ClassDB::bind_method(D_METHOD("set_foot_left_bone", "p_bone"),
-// 			&RenIK::set_foot_left_bone);
-// 	ClassDB::bind_method(D_METHOD("get_foot_left_bone"),
-// 			&RenIK::get_foot_left_bone);
-// 	ClassDB::bind_method(D_METHOD("set_upper_leg_left_bone", "p_bone"),
-// 			&RenIK::set_upper_leg_left_bone);
-// 	ClassDB::bind_method(D_METHOD("get_upper_leg_left_bone"),
-// 			&RenIK::get_upper_leg_left_bone);
-// 	ClassDB::bind_method(D_METHOD("set_lower_leg_left_bone", "p_bone"),
-// 			&RenIK::set_lower_leg_left_bone);
-// 	ClassDB::bind_method(D_METHOD("get_lower_leg_left_bone"),
-// 			&RenIK::get_lower_leg_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_foot_left_bone", "p_bone"),
+	// 			&RenIK::set_foot_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_foot_left_bone"),
+	// 			&RenIK::get_foot_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_leg_left_bone", "p_bone"),
+	// 			&RenIK::set_upper_leg_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_leg_left_bone"),
+	// 			&RenIK::get_upper_leg_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_leg_left_bone", "p_bone"),
+	// 			&RenIK::set_lower_leg_left_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_leg_left_bone"),
+	// 			&RenIK::get_lower_leg_left_bone);
 
-// 	ClassDB::bind_method(D_METHOD("set_foot_right_bone", "p_bone"),
-// 			&RenIK::set_foot_right_bone);
-// 	ClassDB::bind_method(D_METHOD("get_foot_right_bone"),
-// 			&RenIK::get_foot_right_bone);
-// 	ClassDB::bind_method(D_METHOD("set_upper_leg_right_bone", "p_bone"),
-// 			&RenIK::set_upper_leg_right_bone);
-// 	ClassDB::bind_method(D_METHOD("get_upper_leg_right_bone"),
-// 			&RenIK::get_upper_leg_right_bone);
-// 	ClassDB::bind_method(D_METHOD("set_lower_leg_right_bone", "p_bone"),
-// 			&RenIK::set_lower_leg_right_bone);
-// 	ClassDB::bind_method(D_METHOD("get_lower_leg_right_bone"),
-// 			&RenIK::get_lower_leg_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_foot_right_bone", "p_bone"),
+	// 			&RenIK::set_foot_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_foot_right_bone"),
+	// 			&RenIK::get_foot_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_leg_right_bone", "p_bone"),
+	// 			&RenIK::set_upper_leg_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_leg_right_bone"),
+	// 			&RenIK::get_upper_leg_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_leg_right_bone", "p_bone"),
+	// 			&RenIK::set_lower_leg_right_bone);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_leg_right_bone"),
+	// 			&RenIK::get_lower_leg_right_bone);
 
-// 	ClassDB::bind_method(D_METHOD("set_head_target_path", "p_path"),
-// 			&RenIK::set_head_target_path);
-// 	ClassDB::bind_method(D_METHOD("set_hand_left_target_path", "p_path"),
-// 			&RenIK::set_hand_left_target_path);
-// 	ClassDB::bind_method(D_METHOD("set_hand_right_target_path", "p_path"),
-// 			&RenIK::set_hand_right_target_path);
-// 	ClassDB::bind_method(D_METHOD("set_hip_target_path", "p_path"),
-// 			&RenIK::set_hip_target_path);
-// 	ClassDB::bind_method(D_METHOD("set_foot_left_target_path", "p_path"),
-// 			&RenIK::set_foot_left_target_path);
-// 	ClassDB::bind_method(D_METHOD("set_foot_right_target_path", "p_path"),
-// 			&RenIK::set_foot_right_target_path);
+	// 	ClassDB::bind_method(D_METHOD("set_head_target_path", "p_path"),
+	// 			&RenIK::set_head_target_path);
+	// 	ClassDB::bind_method(D_METHOD("set_hand_left_target_path", "p_path"),
+	// 			&RenIK::set_hand_left_target_path);
+	// 	ClassDB::bind_method(D_METHOD("set_hand_right_target_path", "p_path"),
+	// 			&RenIK::set_hand_right_target_path);
+	// 	ClassDB::bind_method(D_METHOD("set_hip_target_path", "p_path"),
+	// 			&RenIK::set_hip_target_path);
+	// 	ClassDB::bind_method(D_METHOD("set_foot_left_target_path", "p_path"),
+	// 			&RenIK::set_foot_left_target_path);
+	// 	ClassDB::bind_method(D_METHOD("set_foot_right_target_path", "p_path"),
+	// 			&RenIK::set_foot_right_target_path);
 
-// 	ClassDB::bind_method(D_METHOD("get_arm_upper_twist_offset"),
-// 			&RenIK::get_arm_upper_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("set_arm_upper_twist_offset", "degrees"),
-// 			&RenIK::set_arm_upper_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("get_arm_lower_twist_offset"),
-// 			&RenIK::get_arm_lower_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("set_arm_lower_twist_offset", "degrees"),
-// 			&RenIK::set_arm_lower_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("get_arm_roll_offset"),
-// 			&RenIK::get_arm_roll_offset);
-// 	ClassDB::bind_method(D_METHOD("set_arm_roll_offset", "degrees"),
-// 			&RenIK::set_arm_roll_offset);
-// 	ClassDB::bind_method(D_METHOD("get_arm_upper_limb_twist"),
-// 			&RenIK::get_arm_upper_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("set_arm_upper_limb_twist", "ratio"),
-// 			&RenIK::set_arm_upper_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("get_arm_lower_limb_twist"),
-// 			&RenIK::get_arm_lower_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("set_arm_lower_limb_twist", "ratio"),
-// 			&RenIK::set_arm_lower_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("get_arm_twist_inflection_point_offset"),
-// 			&RenIK::get_arm_twist_inflection_point_offset);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_arm_twist_inflection_point_offset", "degrees"),
-// 			&RenIK::set_arm_twist_inflection_point_offset);
-// 	ClassDB::bind_method(D_METHOD("get_arm_twist_overflow"),
-// 			&RenIK::get_arm_twist_overflow);
-// 	ClassDB::bind_method(D_METHOD("set_arm_twist_overflow", "degrees"),
-// 			&RenIK::set_arm_twist_overflow);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_upper_twist_offset"),
+	// 			&RenIK::get_arm_upper_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_upper_twist_offset", "degrees"),
+	// 			&RenIK::set_arm_upper_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_lower_twist_offset"),
+	// 			&RenIK::get_arm_lower_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_lower_twist_offset", "degrees"),
+	// 			&RenIK::set_arm_lower_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_roll_offset"),
+	// 			&RenIK::get_arm_roll_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_roll_offset", "degrees"),
+	// 			&RenIK::set_arm_roll_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_upper_limb_twist"),
+	// 			&RenIK::get_arm_upper_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_upper_limb_twist", "ratio"),
+	// 			&RenIK::set_arm_upper_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_lower_limb_twist"),
+	// 			&RenIK::get_arm_lower_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_lower_limb_twist", "ratio"),
+	// 			&RenIK::set_arm_lower_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_twist_inflection_point_offset"),
+	// 			&RenIK::get_arm_twist_inflection_point_offset);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_arm_twist_inflection_point_offset", "degrees"),
+	// 			&RenIK::set_arm_twist_inflection_point_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_twist_overflow"),
+	// 			&RenIK::get_arm_twist_overflow);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_twist_overflow", "degrees"),
+	// 			&RenIK::set_arm_twist_overflow);
 
-// 	ClassDB::bind_method(D_METHOD("get_arm_pole_offset"),
-// 			&RenIK::get_arm_pole_offset);
-// 	ClassDB::bind_method(D_METHOD("set_arm_pole_offset", "euler"),
-// 			&RenIK::set_arm_pole_offset);
-// 	ClassDB::bind_method(D_METHOD("get_arm_target_position_influence"),
-// 			&RenIK::get_arm_target_position_influence);
-// 	ClassDB::bind_method(D_METHOD("set_arm_target_position_influence", "xyz"),
-// 			&RenIK::set_arm_target_position_influence);
-// 	ClassDB::bind_method(D_METHOD("get_arm_target_rotation_influence"),
-// 			&RenIK::get_arm_target_rotation_influence);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_arm_target_rotation_influence", "influence"),
-// 			&RenIK::set_arm_target_rotation_influence);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_pole_offset"),
+	// 			&RenIK::get_arm_pole_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_pole_offset", "euler"),
+	// 			&RenIK::set_arm_pole_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_target_position_influence"),
+	// 			&RenIK::get_arm_target_position_influence);
+	// 	ClassDB::bind_method(D_METHOD("set_arm_target_position_influence", "xyz"),
+	// 			&RenIK::set_arm_target_position_influence);
+	// 	ClassDB::bind_method(D_METHOD("get_arm_target_rotation_influence"),
+	// 			&RenIK::get_arm_target_rotation_influence);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_arm_target_rotation_influence", "influence"),
+	// 			&RenIK::set_arm_target_rotation_influence);
 
-// 	ClassDB::bind_method(D_METHOD("get_leg_upper_twist_offset"),
-// 			&RenIK::get_leg_upper_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("set_leg_upper_twist_offset", "degrees"),
-// 			&RenIK::set_leg_upper_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("get_leg_lower_twist_offset"),
-// 			&RenIK::get_leg_lower_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("set_leg_lower_twist_offset", "degrees"),
-// 			&RenIK::set_leg_lower_twist_offset);
-// 	ClassDB::bind_method(D_METHOD("get_leg_roll_offset"),
-// 			&RenIK::get_leg_roll_offset);
-// 	ClassDB::bind_method(D_METHOD("set_leg_roll_offset", "degrees"),
-// 			&RenIK::set_leg_roll_offset);
-// 	ClassDB::bind_method(D_METHOD("get_leg_upper_limb_twist"),
-// 			&RenIK::get_leg_upper_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("set_leg_upper_limb_twist", "ratio"),
-// 			&RenIK::set_leg_upper_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("get_leg_lower_limb_twist"),
-// 			&RenIK::get_leg_lower_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("set_leg_lower_limb_twist", "ratio"),
-// 			&RenIK::set_leg_lower_limb_twist);
-// 	ClassDB::bind_method(D_METHOD("get_leg_twist_inflection_point_offset"),
-// 			&RenIK::get_leg_twist_inflection_point_offset);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_leg_twist_inflection_point_offset", "degrees"),
-// 			&RenIK::set_leg_twist_inflection_point_offset);
-// 	ClassDB::bind_method(D_METHOD("get_leg_twist_overflow"),
-// 			&RenIK::get_leg_twist_overflow);
-// 	ClassDB::bind_method(D_METHOD("set_leg_twist_overflow", "degrees"),
-// 			&RenIK::set_leg_twist_overflow);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_upper_twist_offset"),
+	// 			&RenIK::get_leg_upper_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_upper_twist_offset", "degrees"),
+	// 			&RenIK::set_leg_upper_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_lower_twist_offset"),
+	// 			&RenIK::get_leg_lower_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_lower_twist_offset", "degrees"),
+	// 			&RenIK::set_leg_lower_twist_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_roll_offset"),
+	// 			&RenIK::get_leg_roll_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_roll_offset", "degrees"),
+	// 			&RenIK::set_leg_roll_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_upper_limb_twist"),
+	// 			&RenIK::get_leg_upper_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_upper_limb_twist", "ratio"),
+	// 			&RenIK::set_leg_upper_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_lower_limb_twist"),
+	// 			&RenIK::get_leg_lower_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_lower_limb_twist", "ratio"),
+	// 			&RenIK::set_leg_lower_limb_twist);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_twist_inflection_point_offset"),
+	// 			&RenIK::get_leg_twist_inflection_point_offset);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_leg_twist_inflection_point_offset", "degrees"),
+	// 			&RenIK::set_leg_twist_inflection_point_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_twist_overflow"),
+	// 			&RenIK::get_leg_twist_overflow);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_twist_overflow", "degrees"),
+	// 			&RenIK::set_leg_twist_overflow);
 
-// 	ClassDB::bind_method(D_METHOD("get_leg_pole_offset"),
-// 			&RenIK::get_leg_pole_offset);
-// 	ClassDB::bind_method(D_METHOD("set_leg_pole_offset", "euler"),
-// 			&RenIK::set_leg_pole_offset);
-// 	ClassDB::bind_method(D_METHOD("get_leg_target_position_influence"),
-// 			&RenIK::get_leg_target_position_influence);
-// 	ClassDB::bind_method(D_METHOD("set_leg_target_position_influence", "xyz"),
-// 			&RenIK::set_leg_target_position_influence);
-// 	ClassDB::bind_method(D_METHOD("get_leg_target_rotation_influence"),
-// 			&RenIK::get_leg_target_rotation_influence);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_leg_target_rotation_influence", "influence"),
-// 			&RenIK::set_leg_target_rotation_influence);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_pole_offset"),
+	// 			&RenIK::get_leg_pole_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_pole_offset", "euler"),
+	// 			&RenIK::set_leg_pole_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_target_position_influence"),
+	// 			&RenIK::get_leg_target_position_influence);
+	// 	ClassDB::bind_method(D_METHOD("set_leg_target_position_influence", "xyz"),
+	// 			&RenIK::set_leg_target_position_influence);
+	// 	ClassDB::bind_method(D_METHOD("get_leg_target_rotation_influence"),
+	// 			&RenIK::get_leg_target_rotation_influence);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_leg_target_rotation_influence", "influence"),
+	// 			&RenIK::set_leg_target_rotation_influence);
 
-// 	ClassDB::bind_method(D_METHOD("get_spine_curve"), &RenIK::get_spine_curve);
-// 	ClassDB::bind_method(D_METHOD("set_spine_curve", "direction"),
-// 			&RenIK::set_spine_curve);
-// 	ClassDB::bind_method(D_METHOD("get_upper_spine_stiffness"),
-// 			&RenIK::get_upper_spine_stiffness);
-// 	ClassDB::bind_method(D_METHOD("set_upper_spine_stiffness", "influence"),
-// 			&RenIK::set_upper_spine_stiffness);
-// 	ClassDB::bind_method(D_METHOD("get_lower_spine_stiffness"),
-// 			&RenIK::get_lower_spine_stiffness);
-// 	ClassDB::bind_method(D_METHOD("set_lower_spine_stiffness", "influence"),
-// 			&RenIK::set_lower_spine_stiffness);
-// 	ClassDB::bind_method(D_METHOD("get_spine_twist"), &RenIK::get_spine_twist);
-// 	ClassDB::bind_method(D_METHOD("set_spine_twist", "influence"),
-// 			&RenIK::set_spine_twist);
-// 	ClassDB::bind_method(D_METHOD("get_spine_twist_start"),
-// 			&RenIK::get_spine_twist_start);
-// 	ClassDB::bind_method(D_METHOD("set_spine_twist_start", "influence"),
-// 			&RenIK::set_spine_twist_start);
-// 	ClassDB::bind_method(D_METHOD("get_shoulder_influence"),
-// 			&RenIK::get_shoulder_influence);
-// 	ClassDB::bind_method(D_METHOD("set_shoulder_influence", "influence"),
-// 			&RenIK::set_shoulder_influence);
-// 	ClassDB::bind_method(D_METHOD("get_shoulder_offset"),
-// 			&RenIK::get_shoulder_offset);
-// 	ClassDB::bind_method(D_METHOD("set_shoulder_offset", "euler"),
-// 			&RenIK::set_shoulder_offset);
-// 	ClassDB::bind_method(D_METHOD("get_shoulder_pole_offset"),
-// 			&RenIK::get_shoulder_pole_offset);
-// 	ClassDB::bind_method(D_METHOD("set_shoulder_pole_offset", "euler"),
-// 			&RenIK::set_shoulder_pole_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_spine_curve"), &RenIK::get_spine_curve);
+	// 	ClassDB::bind_method(D_METHOD("set_spine_curve", "direction"),
+	// 			&RenIK::set_spine_curve);
+	// 	ClassDB::bind_method(D_METHOD("get_upper_spine_stiffness"),
+	// 			&RenIK::get_upper_spine_stiffness);
+	// 	ClassDB::bind_method(D_METHOD("set_upper_spine_stiffness", "influence"),
+	// 			&RenIK::set_upper_spine_stiffness);
+	// 	ClassDB::bind_method(D_METHOD("get_lower_spine_stiffness"),
+	// 			&RenIK::get_lower_spine_stiffness);
+	// 	ClassDB::bind_method(D_METHOD("set_lower_spine_stiffness", "influence"),
+	// 			&RenIK::set_lower_spine_stiffness);
+	// 	ClassDB::bind_method(D_METHOD("get_spine_twist"), &RenIK::get_spine_twist);
+	// 	ClassDB::bind_method(D_METHOD("set_spine_twist", "influence"),
+	// 			&RenIK::set_spine_twist);
+	// 	ClassDB::bind_method(D_METHOD("get_spine_twist_start"),
+	// 			&RenIK::get_spine_twist_start);
+	// 	ClassDB::bind_method(D_METHOD("set_spine_twist_start", "influence"),
+	// 			&RenIK::set_spine_twist_start);
+	// 	ClassDB::bind_method(D_METHOD("get_shoulder_influence"),
+	// 			&RenIK::get_shoulder_influence);
+	// 	ClassDB::bind_method(D_METHOD("set_shoulder_influence", "influence"),
+	// 			&RenIK::set_shoulder_influence);
+	// 	ClassDB::bind_method(D_METHOD("get_shoulder_offset"),
+	// 			&RenIK::get_shoulder_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_shoulder_offset", "euler"),
+	// 			&RenIK::set_shoulder_offset);
+	// 	ClassDB::bind_method(D_METHOD("get_shoulder_pole_offset"),
+	// 			&RenIK::get_shoulder_pole_offset);
+	// 	ClassDB::bind_method(D_METHOD("set_shoulder_pole_offset", "euler"),
+	// 			&RenIK::set_shoulder_pole_offset);
 
-// 	ClassDB::bind_method(D_METHOD("set_collide_with_areas", "enable"),
-// 			&RenIK::set_collide_with_areas);
-// 	ClassDB::bind_method(D_METHOD("is_collide_with_areas_enabled"),
-// 			&RenIK::is_collide_with_areas_enabled);
+	// 	ClassDB::bind_method(D_METHOD("set_collide_with_areas", "enable"),
+	// 			&RenIK::set_collide_with_areas);
+	// 	ClassDB::bind_method(D_METHOD("is_collide_with_areas_enabled"),
+	// 			&RenIK::is_collide_with_areas_enabled);
 
-// 	ClassDB::bind_method(D_METHOD("set_collide_with_bodies", "enable"),
-// 			&RenIK::set_collide_with_bodies);
-// 	ClassDB::bind_method(D_METHOD("is_collide_with_bodies_enabled"),
-// 			&RenIK::is_collide_with_bodies_enabled);
+	// 	ClassDB::bind_method(D_METHOD("set_collide_with_bodies", "enable"),
+	// 			&RenIK::set_collide_with_bodies);
+	// 	ClassDB::bind_method(D_METHOD("is_collide_with_bodies_enabled"),
+	// 			&RenIK::is_collide_with_bodies_enabled);
 
-// 	ClassDB::bind_method(D_METHOD("set_collision_mask", "mask"),
-// 			&RenIK::set_collision_mask);
-// 	ClassDB::bind_method(D_METHOD("get_collision_mask"),
-// 			&RenIK::get_collision_mask);
+	// 	ClassDB::bind_method(D_METHOD("set_collision_mask", "mask"),
+	// 			&RenIK::set_collision_mask);
+	// 	ClassDB::bind_method(D_METHOD("get_collision_mask"),
+	// 			&RenIK::get_collision_mask);
 
-// 	ClassDB::bind_method(D_METHOD("set_collision_mask_bit", "bit", "value"),
-// 			&RenIK::set_collision_mask_bit);
-// 	ClassDB::bind_method(D_METHOD("get_collision_mask_bit", "bit"),
-// 			&RenIK::get_collision_mask_bit);
+	// 	ClassDB::bind_method(D_METHOD("set_collision_mask_bit", "bit", "value"),
+	// 			&RenIK::set_collision_mask_bit);
+	// 	ClassDB::bind_method(D_METHOD("get_collision_mask_bit", "bit"),
+	// 			&RenIK::get_collision_mask_bit);
 
-// 	ClassDB::bind_method(D_METHOD("get_forward_speed_scalar_min"),
-// 			&RenIK::get_forward_speed_scalar_min);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_speed_scalar_min", "speed_scalar_min"),
-// 			&RenIK::set_forward_speed_scalar_min);
-// 	ClassDB::bind_method(D_METHOD("get_forward_speed_scalar_max"),
-// 			&RenIK::get_forward_speed_scalar_max);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_speed_scalar_max", "speed_scalar_max"),
-// 			&RenIK::set_forward_speed_scalar_max);
-// 	ClassDB::bind_method(D_METHOD("get_forward_ground_time"),
-// 			&RenIK::get_forward_ground_time);
-// 	ClassDB::bind_method(D_METHOD("set_forward_ground_time", "ground_time"),
-// 			&RenIK::set_forward_ground_time);
-// 	ClassDB::bind_method(D_METHOD("get_forward_lift_time_base"),
-// 			&RenIK::get_forward_lift_time_base);
-// 	ClassDB::bind_method(D_METHOD("set_forward_lift_time_base", "lift_time_base"),
-// 			&RenIK::set_forward_lift_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_forward_lift_time_scalar"),
-// 			&RenIK::get_forward_lift_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_lift_time_scalar", "lift_time_scalar"),
-// 			&RenIK::set_forward_lift_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_apex_in_time_base"),
-// 			&RenIK::get_forward_apex_in_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_apex_in_time_base", "apex_in_time_base"),
-// 			&RenIK::set_forward_apex_in_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_forward_apex_in_time_scalar"),
-// 			&RenIK::get_forward_apex_in_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_apex_in_time_scalar", "apex_in_time_scalar"),
-// 			&RenIK::set_forward_apex_in_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_apex_out_time_base"),
-// 			&RenIK::get_forward_apex_out_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_apex_out_time_base", "apex_out_time_base"),
-// 			&RenIK::set_forward_apex_out_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_forward_apex_out_time_scalar"),
-// 			&RenIK::get_forward_apex_out_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_apex_out_time_scalar", "apex_out_time_scalar"),
-// 			&RenIK::set_forward_apex_out_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_drop_time_base"),
-// 			&RenIK::get_forward_drop_time_base);
-// 	ClassDB::bind_method(D_METHOD("set_forward_drop_time_base", "drop_time_base"),
-// 			&RenIK::set_forward_drop_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_forward_drop_time_scalar"),
-// 			&RenIK::get_forward_drop_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_drop_time_scalar", "drop_time_scalar"),
-// 			&RenIK::set_forward_drop_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_tip_toe_distance_scalar"),
-// 			&RenIK::get_forward_tip_toe_distance_scalar);
-// 	ClassDB::bind_method(D_METHOD("set_forward_tip_toe_distance_scalar",
-// 								 "tip_toe_distance_scalar"),
-// 			&RenIK::set_forward_tip_toe_distance_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_tip_toe_speed_scalar"),
-// 			&RenIK::get_forward_tip_toe_speed_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_tip_toe_speed_scalar", "tip_toe_speed_scalar"),
-// 			&RenIK::set_forward_tip_toe_speed_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_tip_toe_angle_max"),
-// 			&RenIK::get_forward_tip_toe_angle_max);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_tip_toe_angle_max", "tip_toe_angle_max"),
-// 			&RenIK::set_forward_tip_toe_angle_max);
-// 	ClassDB::bind_method(D_METHOD("get_forward_lift_vertical"),
-// 			&RenIK::get_forward_lift_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_forward_lift_vertical", "lift_vertical"),
-// 			&RenIK::set_forward_lift_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_forward_lift_vertical_scalar"),
-// 			&RenIK::get_forward_lift_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_lift_vertical_scalar", "lift_vertical_scalar"),
-// 			&RenIK::set_forward_lift_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_lift_horizontal_scalar"),
-// 			&RenIK::get_forward_lift_horizontal_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_lift_horizontal_scalar", "lift_horizontal_scalar"),
-// 			&RenIK::set_forward_lift_horizontal_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_lift_angle"),
-// 			&RenIK::get_forward_lift_angle);
-// 	ClassDB::bind_method(D_METHOD("set_forward_lift_angle", "lift_angle"),
-// 			&RenIK::set_forward_lift_angle);
-// 	ClassDB::bind_method(D_METHOD("get_forward_apex_vertical"),
-// 			&RenIK::get_forward_apex_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_forward_apex_vertical", "apex_vertical"),
-// 			&RenIK::set_forward_apex_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_forward_apex_vertical_scalar"),
-// 			&RenIK::get_forward_apex_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_apex_vertical_scalar", "apex_vertical_scalar"),
-// 			&RenIK::set_forward_apex_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_apex_angle"),
-// 			&RenIK::get_forward_apex_angle);
-// 	ClassDB::bind_method(D_METHOD("set_forward_apex_angle", "apex_angle"),
-// 			&RenIK::set_forward_apex_angle);
-// 	ClassDB::bind_method(D_METHOD("get_forward_drop_vertical"),
-// 			&RenIK::get_forward_drop_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_forward_drop_vertical", "drop_vertical"),
-// 			&RenIK::set_forward_drop_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_forward_drop_vertical_scalar"),
-// 			&RenIK::get_forward_drop_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_drop_vertical_scalar", "drop_vertical_scalar"),
-// 			&RenIK::set_forward_drop_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_drop_horizontal_scalar"),
-// 			&RenIK::get_forward_drop_horizontal_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_drop_horizontal_scalar", "drop_horizontal_scalar"),
-// 			&RenIK::set_forward_drop_horizontal_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_drop_angle"),
-// 			&RenIK::get_forward_drop_angle);
-// 	ClassDB::bind_method(D_METHOD("set_forward_drop_angle", "drop_angle"),
-// 			&RenIK::set_forward_drop_angle);
-// 	ClassDB::bind_method(D_METHOD("get_forward_contact_point_ease"),
-// 			&RenIK::get_forward_contact_point_ease);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_forward_contact_point_ease", "contact_point_ease"),
-// 			&RenIK::set_forward_contact_point_ease);
-// 	ClassDB::bind_method(D_METHOD("get_forward_contact_point_ease_scalar"),
-// 			&RenIK::get_forward_contact_point_ease_scalar);
-// 	ClassDB::bind_method(D_METHOD("set_forward_contact_point_ease_scalar",
-// 								 "contact_point_ease_scalar"),
-// 			&RenIK::set_forward_contact_point_ease_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_forward_scaling_ease"),
-// 			&RenIK::get_forward_scaling_ease);
-// 	ClassDB::bind_method(D_METHOD("set_forward_scaling_ease", "scaling_ease"),
-// 			&RenIK::set_forward_scaling_ease);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_speed_scalar_min"),
+	// 			&RenIK::get_forward_speed_scalar_min);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_speed_scalar_min", "speed_scalar_min"),
+	// 			&RenIK::set_forward_speed_scalar_min);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_speed_scalar_max"),
+	// 			&RenIK::get_forward_speed_scalar_max);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_speed_scalar_max", "speed_scalar_max"),
+	// 			&RenIK::set_forward_speed_scalar_max);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_ground_time"),
+	// 			&RenIK::get_forward_ground_time);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_ground_time", "ground_time"),
+	// 			&RenIK::set_forward_ground_time);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_lift_time_base"),
+	// 			&RenIK::get_forward_lift_time_base);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_lift_time_base", "lift_time_base"),
+	// 			&RenIK::set_forward_lift_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_lift_time_scalar"),
+	// 			&RenIK::get_forward_lift_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_lift_time_scalar", "lift_time_scalar"),
+	// 			&RenIK::set_forward_lift_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_apex_in_time_base"),
+	// 			&RenIK::get_forward_apex_in_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_apex_in_time_base", "apex_in_time_base"),
+	// 			&RenIK::set_forward_apex_in_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_apex_in_time_scalar"),
+	// 			&RenIK::get_forward_apex_in_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_apex_in_time_scalar", "apex_in_time_scalar"),
+	// 			&RenIK::set_forward_apex_in_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_apex_out_time_base"),
+	// 			&RenIK::get_forward_apex_out_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_apex_out_time_base", "apex_out_time_base"),
+	// 			&RenIK::set_forward_apex_out_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_apex_out_time_scalar"),
+	// 			&RenIK::get_forward_apex_out_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_apex_out_time_scalar", "apex_out_time_scalar"),
+	// 			&RenIK::set_forward_apex_out_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_drop_time_base"),
+	// 			&RenIK::get_forward_drop_time_base);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_drop_time_base", "drop_time_base"),
+	// 			&RenIK::set_forward_drop_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_drop_time_scalar"),
+	// 			&RenIK::get_forward_drop_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_drop_time_scalar", "drop_time_scalar"),
+	// 			&RenIK::set_forward_drop_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_tip_toe_distance_scalar"),
+	// 			&RenIK::get_forward_tip_toe_distance_scalar);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_tip_toe_distance_scalar",
+	// 								 "tip_toe_distance_scalar"),
+	// 			&RenIK::set_forward_tip_toe_distance_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_tip_toe_speed_scalar"),
+	// 			&RenIK::get_forward_tip_toe_speed_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_tip_toe_speed_scalar", "tip_toe_speed_scalar"),
+	// 			&RenIK::set_forward_tip_toe_speed_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_tip_toe_angle_max"),
+	// 			&RenIK::get_forward_tip_toe_angle_max);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_tip_toe_angle_max", "tip_toe_angle_max"),
+	// 			&RenIK::set_forward_tip_toe_angle_max);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_lift_vertical"),
+	// 			&RenIK::get_forward_lift_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_lift_vertical", "lift_vertical"),
+	// 			&RenIK::set_forward_lift_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_lift_vertical_scalar"),
+	// 			&RenIK::get_forward_lift_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_lift_vertical_scalar", "lift_vertical_scalar"),
+	// 			&RenIK::set_forward_lift_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_lift_horizontal_scalar"),
+	// 			&RenIK::get_forward_lift_horizontal_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_lift_horizontal_scalar", "lift_horizontal_scalar"),
+	// 			&RenIK::set_forward_lift_horizontal_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_lift_angle"),
+	// 			&RenIK::get_forward_lift_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_lift_angle", "lift_angle"),
+	// 			&RenIK::set_forward_lift_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_apex_vertical"),
+	// 			&RenIK::get_forward_apex_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_apex_vertical", "apex_vertical"),
+	// 			&RenIK::set_forward_apex_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_apex_vertical_scalar"),
+	// 			&RenIK::get_forward_apex_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_apex_vertical_scalar", "apex_vertical_scalar"),
+	// 			&RenIK::set_forward_apex_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_apex_angle"),
+	// 			&RenIK::get_forward_apex_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_apex_angle", "apex_angle"),
+	// 			&RenIK::set_forward_apex_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_drop_vertical"),
+	// 			&RenIK::get_forward_drop_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_drop_vertical", "drop_vertical"),
+	// 			&RenIK::set_forward_drop_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_drop_vertical_scalar"),
+	// 			&RenIK::get_forward_drop_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_drop_vertical_scalar", "drop_vertical_scalar"),
+	// 			&RenIK::set_forward_drop_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_drop_horizontal_scalar"),
+	// 			&RenIK::get_forward_drop_horizontal_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_drop_horizontal_scalar", "drop_horizontal_scalar"),
+	// 			&RenIK::set_forward_drop_horizontal_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_drop_angle"),
+	// 			&RenIK::get_forward_drop_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_drop_angle", "drop_angle"),
+	// 			&RenIK::set_forward_drop_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_contact_point_ease"),
+	// 			&RenIK::get_forward_contact_point_ease);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_forward_contact_point_ease", "contact_point_ease"),
+	// 			&RenIK::set_forward_contact_point_ease);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_contact_point_ease_scalar"),
+	// 			&RenIK::get_forward_contact_point_ease_scalar);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_contact_point_ease_scalar",
+	// 								 "contact_point_ease_scalar"),
+	// 			&RenIK::set_forward_contact_point_ease_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_forward_scaling_ease"),
+	// 			&RenIK::get_forward_scaling_ease);
+	// 	ClassDB::bind_method(D_METHOD("set_forward_scaling_ease", "scaling_ease"),
+	// 			&RenIK::set_forward_scaling_ease);
 
-// 	ClassDB::bind_method(D_METHOD("get_backward_speed_scalar_min"),
-// 			&RenIK::get_backward_speed_scalar_min);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_speed_scalar_min", "speed_scalar_min"),
-// 			&RenIK::set_backward_speed_scalar_min);
-// 	ClassDB::bind_method(D_METHOD("get_backward_speed_scalar_max"),
-// 			&RenIK::get_backward_speed_scalar_max);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_speed_scalar_max", "speed_scalar_max"),
-// 			&RenIK::set_backward_speed_scalar_max);
-// 	ClassDB::bind_method(D_METHOD("get_backward_ground_time"),
-// 			&RenIK::get_backward_ground_time);
-// 	ClassDB::bind_method(D_METHOD("set_backward_ground_time", "ground_time"),
-// 			&RenIK::set_backward_ground_time);
-// 	ClassDB::bind_method(D_METHOD("get_backward_lift_time_base"),
-// 			&RenIK::get_backward_lift_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_lift_time_base", "lift_time_base"),
-// 			&RenIK::set_backward_lift_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_backward_lift_time_scalar"),
-// 			&RenIK::get_backward_lift_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_lift_time_scalar", "lift_time_scalar"),
-// 			&RenIK::set_backward_lift_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_apex_in_time_base"),
-// 			&RenIK::get_backward_apex_in_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_apex_in_time_base", "apex_in_time_base"),
-// 			&RenIK::set_backward_apex_in_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_backward_apex_in_time_scalar"),
-// 			&RenIK::get_backward_apex_in_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_apex_in_time_scalar", "apex_in_time_scalar"),
-// 			&RenIK::set_backward_apex_in_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_apex_out_time_base"),
-// 			&RenIK::get_backward_apex_out_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_apex_out_time_base", "apex_out_time_base"),
-// 			&RenIK::set_backward_apex_out_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_backward_apex_out_time_scalar"),
-// 			&RenIK::get_backward_apex_out_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_apex_out_time_scalar", "apex_out_time_scalar"),
-// 			&RenIK::set_backward_apex_out_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_drop_time_base"),
-// 			&RenIK::get_backward_drop_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_drop_time_base", "drop_time_base"),
-// 			&RenIK::set_backward_drop_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_backward_drop_time_scalar"),
-// 			&RenIK::get_backward_drop_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_drop_time_scalar", "drop_time_scalar"),
-// 			&RenIK::set_backward_drop_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_tip_toe_distance_scalar"),
-// 			&RenIK::get_backward_tip_toe_distance_scalar);
-// 	ClassDB::bind_method(D_METHOD("set_backward_tip_toe_distance_scalar",
-// 								 "tip_toe_distance_scalar"),
-// 			&RenIK::set_backward_tip_toe_distance_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_tip_toe_speed_scalar"),
-// 			&RenIK::get_backward_tip_toe_speed_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_tip_toe_speed_scalar", "tip_toe_speed_scalar"),
-// 			&RenIK::set_backward_tip_toe_speed_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_tip_toe_angle_max"),
-// 			&RenIK::get_backward_tip_toe_angle_max);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_tip_toe_angle_max", "tip_toe_angle_max"),
-// 			&RenIK::set_backward_tip_toe_angle_max);
-// 	ClassDB::bind_method(D_METHOD("get_backward_lift_vertical"),
-// 			&RenIK::get_backward_lift_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_backward_lift_vertical", "lift_vertical"),
-// 			&RenIK::set_backward_lift_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_backward_lift_vertical_scalar"),
-// 			&RenIK::get_backward_lift_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_lift_vertical_scalar", "lift_vertical_scalar"),
-// 			&RenIK::set_backward_lift_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_lift_horizontal_scalar"),
-// 			&RenIK::get_backward_lift_horizontal_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_lift_horizontal_scalar", "lift_horizontal_scalar"),
-// 			&RenIK::set_backward_lift_horizontal_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_lift_angle"),
-// 			&RenIK::get_backward_lift_angle);
-// 	ClassDB::bind_method(D_METHOD("set_backward_lift_angle", "lift_angle"),
-// 			&RenIK::set_backward_lift_angle);
-// 	ClassDB::bind_method(D_METHOD("get_backward_apex_vertical"),
-// 			&RenIK::get_backward_apex_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_backward_apex_vertical", "apex_vertical"),
-// 			&RenIK::set_backward_apex_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_backward_apex_vertical_scalar"),
-// 			&RenIK::get_backward_apex_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_apex_vertical_scalar", "apex_vertical_scalar"),
-// 			&RenIK::set_backward_apex_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_apex_angle"),
-// 			&RenIK::get_backward_apex_angle);
-// 	ClassDB::bind_method(D_METHOD("set_backward_apex_angle", "apex_angle"),
-// 			&RenIK::set_backward_apex_angle);
-// 	ClassDB::bind_method(D_METHOD("get_backward_drop_vertical"),
-// 			&RenIK::get_backward_drop_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_backward_drop_vertical", "drop_vertical"),
-// 			&RenIK::set_backward_drop_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_backward_drop_vertical_scalar"),
-// 			&RenIK::get_backward_drop_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_drop_vertical_scalar", "drop_vertical_scalar"),
-// 			&RenIK::set_backward_drop_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_drop_horizontal_scalar"),
-// 			&RenIK::get_backward_drop_horizontal_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_drop_horizontal_scalar", "drop_horizontal_scalar"),
-// 			&RenIK::set_backward_drop_horizontal_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_drop_angle"),
-// 			&RenIK::get_backward_drop_angle);
-// 	ClassDB::bind_method(D_METHOD("set_backward_drop_angle", "drop_angle"),
-// 			&RenIK::set_backward_drop_angle);
-// 	ClassDB::bind_method(D_METHOD("get_backward_contact_point_ease"),
-// 			&RenIK::get_backward_contact_point_ease);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_backward_contact_point_ease", "contact_point_ease"),
-// 			&RenIK::set_backward_contact_point_ease);
-// 	ClassDB::bind_method(D_METHOD("get_backward_contact_point_ease_scalar"),
-// 			&RenIK::get_backward_contact_point_ease_scalar);
-// 	ClassDB::bind_method(D_METHOD("set_backward_contact_point_ease_scalar",
-// 								 "contact_point_ease_scalar"),
-// 			&RenIK::set_backward_contact_point_ease_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_backward_scaling_ease"),
-// 			&RenIK::get_backward_scaling_ease);
-// 	ClassDB::bind_method(D_METHOD("set_backward_scaling_ease", "scaling_ease"),
-// 			&RenIK::set_backward_scaling_ease);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_speed_scalar_min"),
+	// 			&RenIK::get_backward_speed_scalar_min);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_speed_scalar_min", "speed_scalar_min"),
+	// 			&RenIK::set_backward_speed_scalar_min);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_speed_scalar_max"),
+	// 			&RenIK::get_backward_speed_scalar_max);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_speed_scalar_max", "speed_scalar_max"),
+	// 			&RenIK::set_backward_speed_scalar_max);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_ground_time"),
+	// 			&RenIK::get_backward_ground_time);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_ground_time", "ground_time"),
+	// 			&RenIK::set_backward_ground_time);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_lift_time_base"),
+	// 			&RenIK::get_backward_lift_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_lift_time_base", "lift_time_base"),
+	// 			&RenIK::set_backward_lift_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_lift_time_scalar"),
+	// 			&RenIK::get_backward_lift_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_lift_time_scalar", "lift_time_scalar"),
+	// 			&RenIK::set_backward_lift_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_apex_in_time_base"),
+	// 			&RenIK::get_backward_apex_in_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_apex_in_time_base", "apex_in_time_base"),
+	// 			&RenIK::set_backward_apex_in_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_apex_in_time_scalar"),
+	// 			&RenIK::get_backward_apex_in_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_apex_in_time_scalar", "apex_in_time_scalar"),
+	// 			&RenIK::set_backward_apex_in_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_apex_out_time_base"),
+	// 			&RenIK::get_backward_apex_out_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_apex_out_time_base", "apex_out_time_base"),
+	// 			&RenIK::set_backward_apex_out_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_apex_out_time_scalar"),
+	// 			&RenIK::get_backward_apex_out_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_apex_out_time_scalar", "apex_out_time_scalar"),
+	// 			&RenIK::set_backward_apex_out_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_drop_time_base"),
+	// 			&RenIK::get_backward_drop_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_drop_time_base", "drop_time_base"),
+	// 			&RenIK::set_backward_drop_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_drop_time_scalar"),
+	// 			&RenIK::get_backward_drop_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_drop_time_scalar", "drop_time_scalar"),
+	// 			&RenIK::set_backward_drop_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_tip_toe_distance_scalar"),
+	// 			&RenIK::get_backward_tip_toe_distance_scalar);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_tip_toe_distance_scalar",
+	// 								 "tip_toe_distance_scalar"),
+	// 			&RenIK::set_backward_tip_toe_distance_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_tip_toe_speed_scalar"),
+	// 			&RenIK::get_backward_tip_toe_speed_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_tip_toe_speed_scalar", "tip_toe_speed_scalar"),
+	// 			&RenIK::set_backward_tip_toe_speed_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_tip_toe_angle_max"),
+	// 			&RenIK::get_backward_tip_toe_angle_max);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_tip_toe_angle_max", "tip_toe_angle_max"),
+	// 			&RenIK::set_backward_tip_toe_angle_max);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_lift_vertical"),
+	// 			&RenIK::get_backward_lift_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_lift_vertical", "lift_vertical"),
+	// 			&RenIK::set_backward_lift_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_lift_vertical_scalar"),
+	// 			&RenIK::get_backward_lift_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_lift_vertical_scalar", "lift_vertical_scalar"),
+	// 			&RenIK::set_backward_lift_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_lift_horizontal_scalar"),
+	// 			&RenIK::get_backward_lift_horizontal_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_lift_horizontal_scalar", "lift_horizontal_scalar"),
+	// 			&RenIK::set_backward_lift_horizontal_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_lift_angle"),
+	// 			&RenIK::get_backward_lift_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_lift_angle", "lift_angle"),
+	// 			&RenIK::set_backward_lift_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_apex_vertical"),
+	// 			&RenIK::get_backward_apex_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_apex_vertical", "apex_vertical"),
+	// 			&RenIK::set_backward_apex_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_apex_vertical_scalar"),
+	// 			&RenIK::get_backward_apex_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_apex_vertical_scalar", "apex_vertical_scalar"),
+	// 			&RenIK::set_backward_apex_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_apex_angle"),
+	// 			&RenIK::get_backward_apex_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_apex_angle", "apex_angle"),
+	// 			&RenIK::set_backward_apex_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_drop_vertical"),
+	// 			&RenIK::get_backward_drop_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_drop_vertical", "drop_vertical"),
+	// 			&RenIK::set_backward_drop_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_drop_vertical_scalar"),
+	// 			&RenIK::get_backward_drop_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_drop_vertical_scalar", "drop_vertical_scalar"),
+	// 			&RenIK::set_backward_drop_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_drop_horizontal_scalar"),
+	// 			&RenIK::get_backward_drop_horizontal_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_drop_horizontal_scalar", "drop_horizontal_scalar"),
+	// 			&RenIK::set_backward_drop_horizontal_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_drop_angle"),
+	// 			&RenIK::get_backward_drop_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_drop_angle", "drop_angle"),
+	// 			&RenIK::set_backward_drop_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_contact_point_ease"),
+	// 			&RenIK::get_backward_contact_point_ease);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_backward_contact_point_ease", "contact_point_ease"),
+	// 			&RenIK::set_backward_contact_point_ease);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_contact_point_ease_scalar"),
+	// 			&RenIK::get_backward_contact_point_ease_scalar);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_contact_point_ease_scalar",
+	// 								 "contact_point_ease_scalar"),
+	// 			&RenIK::set_backward_contact_point_ease_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_backward_scaling_ease"),
+	// 			&RenIK::get_backward_scaling_ease);
+	// 	ClassDB::bind_method(D_METHOD("set_backward_scaling_ease", "scaling_ease"),
+	// 			&RenIK::set_backward_scaling_ease);
 
-// 	ClassDB::bind_method(D_METHOD("get_sideways_speed_scalar_min"),
-// 			&RenIK::get_sideways_speed_scalar_min);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_speed_scalar_min", "speed_scalar_min"),
-// 			&RenIK::set_sideways_speed_scalar_min);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_speed_scalar_max"),
-// 			&RenIK::get_sideways_speed_scalar_max);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_speed_scalar_max", "speed_scalar_max"),
-// 			&RenIK::set_sideways_speed_scalar_max);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_ground_time"),
-// 			&RenIK::get_sideways_ground_time);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_ground_time", "ground_time"),
-// 			&RenIK::set_sideways_ground_time);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_time_base"),
-// 			&RenIK::get_sideways_lift_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_lift_time_base", "lift_time_base"),
-// 			&RenIK::set_sideways_lift_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_time_scalar"),
-// 			&RenIK::get_sideways_lift_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_lift_time_scalar", "lift_time_scalar"),
-// 			&RenIK::set_sideways_lift_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_in_time_base"),
-// 			&RenIK::get_sideways_apex_in_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_apex_in_time_base", "apex_in_time_base"),
-// 			&RenIK::set_sideways_apex_in_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_in_time_scalar"),
-// 			&RenIK::get_sideways_apex_in_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_apex_in_time_scalar", "apex_in_time_scalar"),
-// 			&RenIK::set_sideways_apex_in_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_out_time_base"),
-// 			&RenIK::get_sideways_apex_out_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_apex_out_time_base", "apex_out_time_base"),
-// 			&RenIK::set_sideways_apex_out_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_out_time_scalar"),
-// 			&RenIK::get_sideways_apex_out_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_apex_out_time_scalar", "apex_out_time_scalar"),
-// 			&RenIK::set_sideways_apex_out_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_time_base"),
-// 			&RenIK::get_sideways_drop_time_base);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_drop_time_base", "drop_time_base"),
-// 			&RenIK::set_sideways_drop_time_base);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_time_scalar"),
-// 			&RenIK::get_sideways_drop_time_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_drop_time_scalar", "drop_time_scalar"),
-// 			&RenIK::set_sideways_drop_time_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_tip_toe_distance_scalar"),
-// 			&RenIK::get_sideways_tip_toe_distance_scalar);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_tip_toe_distance_scalar",
-// 								 "tip_toe_distance_scalar"),
-// 			&RenIK::set_sideways_tip_toe_distance_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_tip_toe_speed_scalar"),
-// 			&RenIK::get_sideways_tip_toe_speed_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_tip_toe_speed_scalar", "tip_toe_speed_scalar"),
-// 			&RenIK::set_sideways_tip_toe_speed_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_tip_toe_angle_max"),
-// 			&RenIK::get_sideways_tip_toe_angle_max);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_tip_toe_angle_max", "tip_toe_angle_max"),
-// 			&RenIK::set_sideways_tip_toe_angle_max);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_vertical"),
-// 			&RenIK::get_sideways_lift_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_lift_vertical", "lift_vertical"),
-// 			&RenIK::set_sideways_lift_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_vertical_scalar"),
-// 			&RenIK::get_sideways_lift_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_lift_vertical_scalar", "lift_vertical_scalar"),
-// 			&RenIK::set_sideways_lift_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_horizontal_scalar"),
-// 			&RenIK::get_sideways_lift_horizontal_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_lift_horizontal_scalar", "lift_horizontal_scalar"),
-// 			&RenIK::set_sideways_lift_horizontal_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_angle"),
-// 			&RenIK::get_sideways_lift_angle);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_lift_angle", "lift_angle"),
-// 			&RenIK::set_sideways_lift_angle);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_vertical"),
-// 			&RenIK::get_sideways_apex_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_apex_vertical", "apex_vertical"),
-// 			&RenIK::set_sideways_apex_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_vertical_scalar"),
-// 			&RenIK::get_sideways_apex_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_apex_vertical_scalar", "apex_vertical_scalar"),
-// 			&RenIK::set_sideways_apex_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_angle"),
-// 			&RenIK::get_sideways_apex_angle);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_apex_angle", "apex_angle"),
-// 			&RenIK::set_sideways_apex_angle);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_vertical"),
-// 			&RenIK::get_sideways_drop_vertical);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_drop_vertical", "drop_vertical"),
-// 			&RenIK::set_sideways_drop_vertical);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_vertical_scalar"),
-// 			&RenIK::get_sideways_drop_vertical_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_drop_vertical_scalar", "drop_vertical_scalar"),
-// 			&RenIK::set_sideways_drop_vertical_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_horizontal_scalar"),
-// 			&RenIK::get_sideways_drop_horizontal_scalar);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_drop_horizontal_scalar", "drop_horizontal_scalar"),
-// 			&RenIK::set_sideways_drop_horizontal_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_angle"),
-// 			&RenIK::get_sideways_drop_angle);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_drop_angle", "drop_angle"),
-// 			&RenIK::set_sideways_drop_angle);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_contact_point_ease"),
-// 			&RenIK::get_sideways_contact_point_ease);
-// 	ClassDB::bind_method(
-// 			D_METHOD("set_sideways_contact_point_ease", "contact_point_ease"),
-// 			&RenIK::set_sideways_contact_point_ease);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_contact_point_ease_scalar"),
-// 			&RenIK::get_sideways_contact_point_ease_scalar);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_contact_point_ease_scalar",
-// 								 "contact_point_ease_scalar"),
-// 			&RenIK::set_sideways_contact_point_ease_scalar);
-// 	ClassDB::bind_method(D_METHOD("get_sideways_scaling_ease"),
-// 			&RenIK::get_sideways_scaling_ease);
-// 	ClassDB::bind_method(D_METHOD("set_sideways_scaling_ease", "scaling_ease"),
-// 			&RenIK::set_sideways_scaling_ease);
-// 	ClassDB::bind_method(D_METHOD("setup_humanoid_bones"),
-// 			&RenIK::setup_humanoid_bones);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_speed_scalar_min"),
+	// 			&RenIK::get_sideways_speed_scalar_min);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_speed_scalar_min", "speed_scalar_min"),
+	// 			&RenIK::set_sideways_speed_scalar_min);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_speed_scalar_max"),
+	// 			&RenIK::get_sideways_speed_scalar_max);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_speed_scalar_max", "speed_scalar_max"),
+	// 			&RenIK::set_sideways_speed_scalar_max);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_ground_time"),
+	// 			&RenIK::get_sideways_ground_time);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_ground_time", "ground_time"),
+	// 			&RenIK::set_sideways_ground_time);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_time_base"),
+	// 			&RenIK::get_sideways_lift_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_lift_time_base", "lift_time_base"),
+	// 			&RenIK::set_sideways_lift_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_time_scalar"),
+	// 			&RenIK::get_sideways_lift_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_lift_time_scalar", "lift_time_scalar"),
+	// 			&RenIK::set_sideways_lift_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_in_time_base"),
+	// 			&RenIK::get_sideways_apex_in_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_apex_in_time_base", "apex_in_time_base"),
+	// 			&RenIK::set_sideways_apex_in_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_in_time_scalar"),
+	// 			&RenIK::get_sideways_apex_in_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_apex_in_time_scalar", "apex_in_time_scalar"),
+	// 			&RenIK::set_sideways_apex_in_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_out_time_base"),
+	// 			&RenIK::get_sideways_apex_out_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_apex_out_time_base", "apex_out_time_base"),
+	// 			&RenIK::set_sideways_apex_out_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_out_time_scalar"),
+	// 			&RenIK::get_sideways_apex_out_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_apex_out_time_scalar", "apex_out_time_scalar"),
+	// 			&RenIK::set_sideways_apex_out_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_time_base"),
+	// 			&RenIK::get_sideways_drop_time_base);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_drop_time_base", "drop_time_base"),
+	// 			&RenIK::set_sideways_drop_time_base);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_time_scalar"),
+	// 			&RenIK::get_sideways_drop_time_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_drop_time_scalar", "drop_time_scalar"),
+	// 			&RenIK::set_sideways_drop_time_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_tip_toe_distance_scalar"),
+	// 			&RenIK::get_sideways_tip_toe_distance_scalar);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_tip_toe_distance_scalar",
+	// 								 "tip_toe_distance_scalar"),
+	// 			&RenIK::set_sideways_tip_toe_distance_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_tip_toe_speed_scalar"),
+	// 			&RenIK::get_sideways_tip_toe_speed_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_tip_toe_speed_scalar", "tip_toe_speed_scalar"),
+	// 			&RenIK::set_sideways_tip_toe_speed_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_tip_toe_angle_max"),
+	// 			&RenIK::get_sideways_tip_toe_angle_max);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_tip_toe_angle_max", "tip_toe_angle_max"),
+	// 			&RenIK::set_sideways_tip_toe_angle_max);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_vertical"),
+	// 			&RenIK::get_sideways_lift_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_lift_vertical", "lift_vertical"),
+	// 			&RenIK::set_sideways_lift_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_vertical_scalar"),
+	// 			&RenIK::get_sideways_lift_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_lift_vertical_scalar", "lift_vertical_scalar"),
+	// 			&RenIK::set_sideways_lift_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_horizontal_scalar"),
+	// 			&RenIK::get_sideways_lift_horizontal_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_lift_horizontal_scalar", "lift_horizontal_scalar"),
+	// 			&RenIK::set_sideways_lift_horizontal_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_lift_angle"),
+	// 			&RenIK::get_sideways_lift_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_lift_angle", "lift_angle"),
+	// 			&RenIK::set_sideways_lift_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_vertical"),
+	// 			&RenIK::get_sideways_apex_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_apex_vertical", "apex_vertical"),
+	// 			&RenIK::set_sideways_apex_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_vertical_scalar"),
+	// 			&RenIK::get_sideways_apex_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_apex_vertical_scalar", "apex_vertical_scalar"),
+	// 			&RenIK::set_sideways_apex_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_apex_angle"),
+	// 			&RenIK::get_sideways_apex_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_apex_angle", "apex_angle"),
+	// 			&RenIK::set_sideways_apex_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_vertical"),
+	// 			&RenIK::get_sideways_drop_vertical);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_drop_vertical", "drop_vertical"),
+	// 			&RenIK::set_sideways_drop_vertical);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_vertical_scalar"),
+	// 			&RenIK::get_sideways_drop_vertical_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_drop_vertical_scalar", "drop_vertical_scalar"),
+	// 			&RenIK::set_sideways_drop_vertical_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_horizontal_scalar"),
+	// 			&RenIK::get_sideways_drop_horizontal_scalar);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_drop_horizontal_scalar", "drop_horizontal_scalar"),
+	// 			&RenIK::set_sideways_drop_horizontal_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_drop_angle"),
+	// 			&RenIK::get_sideways_drop_angle);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_drop_angle", "drop_angle"),
+	// 			&RenIK::set_sideways_drop_angle);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_contact_point_ease"),
+	// 			&RenIK::get_sideways_contact_point_ease);
+	// 	ClassDB::bind_method(
+	// 			D_METHOD("set_sideways_contact_point_ease", "contact_point_ease"),
+	// 			&RenIK::set_sideways_contact_point_ease);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_contact_point_ease_scalar"),
+	// 			&RenIK::get_sideways_contact_point_ease_scalar);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_contact_point_ease_scalar",
+	// 								 "contact_point_ease_scalar"),
+	// 			&RenIK::set_sideways_contact_point_ease_scalar);
+	// 	ClassDB::bind_method(D_METHOD("get_sideways_scaling_ease"),
+	// 			&RenIK::get_sideways_scaling_ease);
+	// 	ClassDB::bind_method(D_METHOD("set_sideways_scaling_ease", "scaling_ease"),
+	// 			&RenIK::set_sideways_scaling_ease);
+	// 	ClassDB::bind_method(D_METHOD("setup_humanoid_bones"),
+	// 			&RenIK::setup_humanoid_bones);
 
-// 	ClassDB::bind_method(D_METHOD("set_setup_humanoid_bones", "set_targets"), &RenIK::set_setup_humanoid_bones);
-// 	ClassDB::bind_method(D_METHOD("get_setup_humanoid_bones"), &RenIK::get_setup_humanoid_bones);
+	// 	ClassDB::bind_method(D_METHOD("set_setup_humanoid_bones", "set_targets"), &RenIK::set_setup_humanoid_bones);
+	// 	ClassDB::bind_method(D_METHOD("get_setup_humanoid_bones"), &RenIK::get_setup_humanoid_bones);
 
-// 	ClassDB::bind_method(D_METHOD("update_ik"), &RenIK::update_ik);
-// 	ClassDB::bind_method(D_METHOD("update_placement", "delta"), &RenIK::update_placement);
+	// 	ClassDB::bind_method(D_METHOD("update_ik"), &RenIK::update_ik);
+	// 	ClassDB::bind_method(D_METHOD("update_placement", "delta"), &RenIK::update_placement);
 }
 
 void RenIK::_validate_property(PropertyInfo &property) const {
