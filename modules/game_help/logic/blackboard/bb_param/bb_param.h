@@ -16,8 +16,6 @@
 #include "core/io/resource.h"
 #include "core/object/script_language.h"
 
-
-
 #define ADD_STYLEBOX_OVERRIDE(m_control, m_name, m_stylebox) (m_control->add_theme_style_override(m_name, m_stylebox))
 class BBParam : public Resource {
 	GDCLASS(BBParam, Resource);
@@ -33,7 +31,8 @@ public:
 	static Variant VARIANT_DEFAULT(Variant::Type p_type);
 	static PackedInt32Array get_property_hints_allowed_for_type(Variant::Type p_type);
 	static String get_property_hint_text(PropertyHint p_hint);
-	static Ref<Texture2D> get_task_icon(String p_class_or_script_path) ;
+	static Ref<Texture2D> get_task_icon(String p_class_or_script_path);
+
 private:
 	ValueSource value_source;
 	Variant saved_value;

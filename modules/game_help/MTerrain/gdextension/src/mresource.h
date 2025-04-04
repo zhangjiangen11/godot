@@ -121,13 +121,13 @@ private:
 		bool has_hole = false;
 		MPixelRegion px_region;
 		float *data = nullptr; // Point always to uncompress data
-		uint32_t window_width;
-		uint8_t depth = 0;
-		uint8_t h_encoding;
+		uint32_t window_width = 0;
+		uint8_t depth = 0 = 0;
+		uint8_t h_encoding = 0;
 		uint8_t data_encoding = 255;
 		float accuracy = -1;
-		float min_height;
-		float max_height;
+		float min_height = 0.0f;
+		float max_height = 0.0f;
 		QuadTreeRF *root = nullptr;
 		QuadTreeRF(MPixelRegion _px_region, float *_data, uint32_t _window_width, float _accuracy, MResource::QuadTreeRF *_root = nullptr, uint8_t _depth = 0, uint8_t _h_encoding = 255);
 		//Below constructor is used for decompression

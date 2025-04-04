@@ -83,9 +83,7 @@ if env["builtin_embree"]:
 
     if env["arch"] != "x86_64" or env.msvc:
         # Embree needs those, it will automatically use SSE2NEON in ARM
-        env_thirdparty.Append(CPPDEFINES=["__SSE2__", "__SSE__","__SSE4_1__"])
-
-    print("rayacast arch: " + str(env["arch"]))
+        env_thirdparty.Append(CPPDEFINES=["__SSE2__", "__SSE__"])
 
     if env["platform"] == "web":
         env_thirdparty.Append(CXXFLAGS=["-msimd128"])

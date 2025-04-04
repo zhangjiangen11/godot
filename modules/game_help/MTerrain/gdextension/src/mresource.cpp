@@ -1637,6 +1637,8 @@ int MResource::get_supported_qoi_format_channel_count(Image::Format p_format) {
 			return 3;
 		case Image::FORMAT_RGBA8:
 			return 4;
+		default:
+			break;
 	}
 	return 0;
 }

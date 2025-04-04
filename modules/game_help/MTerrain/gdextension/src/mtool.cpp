@@ -2,11 +2,13 @@
 #include "core/io/marshalls.h"
 #include "core/variant/variant.h"
 #include "core/variant/variant_utility.h"
-#include "editor/editor_script.h"
 #include "scene/3d/camera_3d.h"
 #include "scene/main/viewport.h"
 
+#if TOOLS_ENABLED
 #include "editor/editor_interface.h"
+#include "editor/editor_script.h"
+#endif
 
 bool MTool::editor_plugin_active = false;
 Node3D *MTool::cached_editor_camera = nullptr;
@@ -132,6 +134,7 @@ Node3D *MTool::find_editor_camera(bool changed_camera) {
 	if (cached_editor_camera != nullptr) {
 		return cached_editor_camera;
 	}
+#if TOOLS_ENABLED
 	if (Engine::get_singleton()->is_editor_hint()) {
 		Ref<EditorScript> script;
 		script.instantiate();
@@ -142,6 +145,7 @@ Node3D *MTool::find_editor_camera(bool changed_camera) {
 		cached_editor_camera = sub_viewport->get_camera_3d();
 		return cached_editor_camera;
 	}
+#endif
 	return nullptr;
 }
 

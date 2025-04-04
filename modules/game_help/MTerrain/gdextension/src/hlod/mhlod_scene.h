@@ -64,16 +64,14 @@ private:
 		int16_t body_id = -1; // in case need this space for other type just put this in union
 		int32_t item_id = -1;
 		union {
-			int64_t rid;
+			uint64_t rid;
 			MHlodNode3D *root_node;
 		};
 		_FORCE_INLINE_ void set_rid(const RID input) {
 			rid = input.get_id();
 		}
 		_FORCE_INLINE_ RID get_rid() const {
-			RID out;
-			memcpy(&out, &rid, sizeof(RID));
-			return out;
+			return RID::from_uint64(rid);
 		}
 		CreationInfo() = default;
 	};
