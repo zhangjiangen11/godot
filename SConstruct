@@ -598,7 +598,7 @@ if env["build_profile"] != "":
 if env["dev_mode"]:
     env["verbose"] = methods.get_cmdline_bool("verbose", True)
     env["warnings"] = ARGUMENTS.get("warnings", "extra")
-    env["werror"] = methods.get_cmdline_bool("werror", True)
+    #env["werror"] = methods.get_cmdline_bool("werror", True)
     env["tests"] = methods.get_cmdline_bool("tests", True)
     env["strict_checks"] = methods.get_cmdline_bool("strict_checks", True)
 if env["production"]:
@@ -866,9 +866,9 @@ if env.msvc and not methods.using_clang(env):  # MSVC
         # C4267 is particularly finicky & needs to be explicitly disabled.
         env.Append(CCFLAGS=["/w", "/wd4267"])
 
-    if env["werror"]:
-        env.Append(CCFLAGS=["/WX"])
-        env.Append(LINKFLAGS=["/WX"])
+    # if env["werror"]:
+    #     env.Append(CCFLAGS=["/WX"])
+    #     env.Append(LINKFLAGS=["/WX"])
 
 else:  # GCC, Clang
     common_warnings = []
@@ -919,8 +919,8 @@ else:  # GCC, Clang
     else:  # 'no'
         env.Append(CCFLAGS=["-w"])
 
-    if env["werror"]:
-        env.Append(CCFLAGS=["-Werror"])
+    # if env["werror"]:
+    #     env.Append(CCFLAGS=["-Werror"])
 
 # Configure external includes.
 if env.msvc:

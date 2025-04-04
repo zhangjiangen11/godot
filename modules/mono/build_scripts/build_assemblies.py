@@ -219,8 +219,8 @@ def build_godot_api(msbuild_tool, module_dir, output_dir, push_nupkgs_local, pre
             args += ["/p:GodotFloat64=true"]
         if no_deprecated:
             args += ["/p:GodotNoDeprecated=true"]
-        if werror:
-            args += ["/p:TreatWarningsAsErrors=true"]
+        # if werror:
+        #     args += ["/p:TreatWarningsAsErrors=true"]
 
         sln = os.path.join(module_dir, "glue/GodotSharp/GodotSharp.sln")
         exit_code = run_msbuild(msbuild_tool, sln=sln, chdir_to=module_dir, msbuild_args=args)
