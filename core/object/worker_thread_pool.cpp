@@ -915,8 +915,8 @@ bool TaskJobHandle::is_completed() {
 
 // 等待所有依赖信号完成
 void TaskJobHandle::wait_depend_completion() {
+	depend_mutex.lock();
 	if (dependJob.size() > 0) {
-		depend_mutex.lock();
 		for (uint32_t i = 0; i < dependJob.size(); ++i) {
 			dependJob[i]->wait_completion();
 		}
@@ -1158,8 +1158,8 @@ Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle>
 			String err_str = "combined_job_handle job is not TaskJobHandle" + itos(i) + "\n";
 			//PRINT_STACK_TRACE(err_str);
 			continue;
-			hand->dependJob[i] = job;
 		}
+		hand->dependJob[i] = job;
 	}
 	return hand;
 }

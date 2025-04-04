@@ -67,6 +67,7 @@ SafeNumeric<uint64_t> Memory::max_usage;
 SafeNumeric<uint64_t> Memory::alloc_count;
 #define SAMLL_MEMORY_MANAGER 0
 
+#if SAMLL_MEMORY_MANAGER
 template <int SIZE_COUNT>
 struct SmallMemoryBuffer {
 	uint64_t size_or_next = 0;
@@ -230,6 +231,7 @@ static _FORCE_INLINE_ SmallMemoryManager &get_small_memory_manager() {
 	static SmallMemoryManager *s_manager = new (malloc(sizeof(SmallMemoryManager))) SmallMemoryManager();
 	return *s_manager;
 }
+#endif
 
 void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
 #if SAMLL_MEMORY_MANAGER

@@ -147,7 +147,7 @@ class SystemMutex {
 
 public:
 	SystemMutex() {}
-	~SystemMutex() {】 }
+	~SystemMutex() {}
 
 private:
 	SystemMutex(const SystemMutex &other) = delete; // do not implement

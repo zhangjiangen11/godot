@@ -49,8 +49,6 @@ struct StackFrame {
 	}
 };
 
-static void initialize();
-
 static void getStackTrace(LocalVector<StackFrame> &stackTrace);
 
 #if defined(WINDOWS_ENABLED)
@@ -58,10 +56,6 @@ static void getStackTrace(LocalVector<StackFrame> &stackTrace);
 #include <windows.h>
 // 调试
 #include <dbghelp.h>
-
-//static void initialize() {
-
-//}
 
 static void getStackTrace(LocalVector<StackFrame> &stackTrace) {
 	HANDLE process = GetCurrentProcess();
@@ -173,47 +167,8 @@ static void getStackTrace(LocalVector<StackFrame> &stackTrace) {
 	return;
 }
 
-#elif defined(UNIX_ENABLED) || defined(X11_ENABLED)
-
-#if __has_include(<execinfo.h>)
-
-#include <cxxabi.h>
-#include <dlfcn.h>
-#include <execinfo.h>
-#include <stdlib.h>
-
-//static void initialize() {
-
-//}
-
-static void getStackTrace(LocalVector<StackFrame> &stackFrame) {
-	void *bt_buffer[256];
-	const size_t count = backtrace(bt_buffer, 256);
-
-	Dl_info info;
-	for (size_t i = 0; i < count; i += 1) {
-		dladdr(addresses[i], &info);
-
-		auto fileName = info.dli_fname != nullptr ? info.dli_fname : "file??";
-		auto demangledName = "??";
-		if (info.dli_sname != nullptr) {
-			demangledName = abi::__cxa_demangle(info.dli_sname, nullptr, nullptr, &status);
-		}
-
-		result.push_back(StackFrame{ std::move(fileName), demangledName, 0 });
-		if (info.dli_sname != nullptr) {
-			free(demangledName);
-		}
-	}
-
-	return;
-}
-
-#endif
-
 #else
 
-static void initialize() {}
 static void getStackTrace(LocalVector<StackFrame> &stackFrame) {
 	stackFrame.push_back({ "??", "Stacktrace collecting not available!", 0 });
 }

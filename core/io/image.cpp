@@ -3414,7 +3414,6 @@ Color Image::sample_pixel(float p_u, float p_v) const {
 	Color c1 = c01.lerp(c11, dx);
 
 	return c0.lerp(c1, dy);
-
 }
 
 void Image::set_pixelv(const Point2i &p_point, const Color &p_color) {
@@ -4458,13 +4457,10 @@ Dictionary Image::compute_image_metrics(const Ref<Image> p_compared_image, bool 
 	return result;
 }
 
-Vector3 Image::get_height_map_normal(int x, int z,float p_scale_height, float stepX, float stepZ) const {
-	
-	Vector3 p0(x * stepX, get_pixel(x,z).r * p_scale_height, z * stepZ);
+Vector3 Image::get_height_map_normal(int x, int z, float p_scale_height, float stepX, float stepZ) const {
+	Vector3 p0(x * stepX, get_pixel(x, z).r * p_scale_height, z * stepZ);
 	Vector3 sumNormal(0, 0, 0);
-	Vector3 normals = Vector3(0,0,0);
 	int validTriangleCount = 0;
-
 
 	// 左上三角形
 	if (x > 0 && z > 0) {
@@ -4508,8 +4504,7 @@ Vector3 Image::get_height_map_normal(int x, int z,float p_scale_height, float st
 
 	if (validTriangleCount > 0) {
 		sumNormal.normalize();
-	}
-	else {
+	} else {
 		sumNormal = Vector3(0, 1, 0);
 	}
 	return sumNormal;
