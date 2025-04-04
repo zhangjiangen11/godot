@@ -35,14 +35,11 @@
 #include "scene/resources/3d/skin.h"
 
 typedef int BoneId;
-namespace human_anim
-{
-	namespace human
-	{
-		struct Human;
-	}
+namespace human_anim {
+namespace human {
+struct Human;
 }
-
+} //namespace human_anim
 
 struct BonePose {
 	int bone_index;
@@ -56,37 +53,34 @@ struct BonePose {
 
 	void set_bone_forward();
 
-	void load(Dictionary& aDict);
-	void save(Dictionary& aDict);
+	void load(Dictionary &aDict);
+	void save(Dictionary &aDict);
 	void clear();
-public:
-	static Vector4 get_root_lookat(const Basis& rest_rotation,const Basis& curr_rotation,const Vector3& forward,const Vector3& right);
-	// xyz 是世界位置,,我是自身轴旋转角度
-	Vector4 get_look_at_and_roll(const Transform3D& p_parent_trans, Basis& p_curr_basis, Transform3D& p_curr_global_trans);
-	// 重定向骨骼
-	void retarget(const Transform3D& parent_trans, const Vector4& lookat, Transform3D& out_global_trans, Basis& local_rotation);
 
+public:
+	static Vector4 get_root_lookat(const Basis &rest_rotation, const Basis &curr_rotation, const Vector3 &forward, const Vector3 &right);
+	// xyz 是世界位置,,我是自身轴旋转角度
+	Vector4 get_look_at_and_roll(const Transform3D &p_parent_trans, Basis &p_curr_basis, Transform3D &p_curr_global_trans);
+	// 重定向骨骼
+	void retarget(const Transform3D &parent_trans, const Vector4 &lookat, Transform3D &out_global_trans, Basis &local_rotation);
 };
 
 class HumanBoneConfig : public Resource {
 	GDCLASS(HumanBoneConfig, Resource);
 
 	static void _bind_methods() {
-
 		ClassDB::bind_method(D_METHOD("set_data", "data"), &HumanBoneConfig::set_data);
 		ClassDB::bind_method(D_METHOD("get_data"), &HumanBoneConfig::get_data);
 
 		ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_data", "get_data");
-
 	}
 
 public:
-
-	void load(Dictionary& aDict) {
+	void load(Dictionary &aDict) {
 		clear();
 		Dictionary pose = aDict["virtual_pose"];
 		auto keys = pose.keys();
-		for (auto& it : keys) {
+		for (auto &it : keys) {
 			Dictionary dict = pose.get(it, Dictionary());
 			virtual_pose[it].load(dict);
 		}
@@ -95,12 +89,11 @@ public:
 		for (int i = 0; i < root.size(); i++) {
 			root_bone.push_back(StringName(root[i]));
 		}
-
 	}
 
-	void save(Dictionary& aDict) {
+	void save(Dictionary &aDict) {
 		Dictionary pose;
-		for (auto& it : virtual_pose) {
+		for (auto &it : virtual_pose) {
 			Dictionary dict;
 			it.value.save(dict);
 			pose[it.key] = dict;
@@ -126,12 +119,12 @@ public:
 		save(dict);
 		return dict;
 	}
+
 public:
 	// 虚拟姿勢
 	HashMap<StringName, BonePose> virtual_pose;
 
 	Vector<StringName> root_bone;
-
 };
 
 class Skeleton3D;
@@ -177,6 +170,7 @@ public:
 	enum ModifierCallbackModeProcess {
 		MODIFIER_CALLBACK_MODE_PROCESS_PHYSICS,
 		MODIFIER_CALLBACK_MODE_PROCESS_IDLE,
+		MODIFIER_CALLBACK_MODE_PROCESS_MANUAL,
 	};
 
 private:
@@ -191,6 +185,7 @@ private:
 	void _update_deferred(UpdateFlag p_update_flag = UPDATE_FLAG_POSE);
 	uint8_t update_flags = UPDATE_FLAG_NONE;
 	bool updating = false; // Is updating now?
+	double update_delta = 0.0;
 
 	struct Bone {
 		String name;
@@ -266,6 +261,7 @@ private:
 
 	mutable StringName concatenated_bone_names;
 	void _update_bone_names() const;
+
 public:
 	void _make_dirty();
 	mutable bool dirty = false;
@@ -348,10 +344,9 @@ public:
 
 	Vector<int> get_bone_children(int p_bone) const;
 	Vector<int> get_parentless_bones() const;
-	
+
 	Vector<int> get_root_bones() const;
 
-	
 	Dictionary get_human_bone_mapping();
 	void set_human_bone_mapping(const Dictionary &p_human_bone_mapping);
 
@@ -389,11 +384,11 @@ public:
 	void set_bone_pose_position(int p_bone, const Vector3 &p_position);
 	void set_bone_pose_rotation(int p_bone, const Quaternion &p_rotation);
 	void set_bone_pose_scale(int p_bone, const Vector3 &p_scale);
-	void set_human_bone(int p_bone, bool p_is_human_bone) ;
+	void set_human_bone(int p_bone, bool p_is_human_bone);
 
 	Transform3D get_bone_global_pose(int p_bone) const;
 	void set_bone_global_pose(int p_bone, const Transform3D &p_pose);
-	void change_to_human_bone(int p_bone) ;
+	void change_to_human_bone(int p_bone);
 
 	void reset_bone_pose(int p_bone);
 	void reset_bone_poses();
@@ -418,6 +413,7 @@ public:
 	void set_human_config(const Ref<HumanBoneConfig> &p_human_config);
 	Ref<HumanBoneConfig> get_human_config() const;
 
+	void advance(double p_delta);
 
 #ifndef DISABLE_DEPRECATED
 	Transform3D get_bone_global_pose_no_override(int p_bone) const;

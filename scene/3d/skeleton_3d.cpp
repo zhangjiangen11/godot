@@ -41,24 +41,22 @@ void BonePose::set_bone_forward() {
 	Vector3::Axis min_axis = right.min_axis_index();
 
 	Vector3 up = Vector3(0, 1, 0);
-	switch (min_axis)
-	{
-	case Vector3::AXIS_X:
-		up = Vector3(1, 0, 0);
-		break;
-	case Vector3::AXIS_Y:
-		up = Vector3(0, 1, 0);
-		break;
-	case Vector3::AXIS_Z:
-		up = Vector3(0, 0, 1);
-		break;
+	switch (min_axis) {
+		case Vector3::AXIS_X:
+			up = Vector3(1, 0, 0);
+			break;
+		case Vector3::AXIS_Y:
+			up = Vector3(0, 1, 0);
+			break;
+		case Vector3::AXIS_Z:
+			up = Vector3(0, 0, 1);
+			break;
 	}
 	right = up.cross(position);
 	right.normalize();
-
 }
 
-void BonePose::load(Dictionary& aDict) {
+void BonePose::load(Dictionary &aDict) {
 	clear();
 	bone_index = aDict["bone_index"];
 	position = aDict["position"];
@@ -70,8 +68,7 @@ void BonePose::load(Dictionary& aDict) {
 		child_bones.push_back(StringName(child[i]));
 	}
 }
-void BonePose::save(Dictionary& aDict) {
-
+void BonePose::save(Dictionary &aDict) {
 	aDict["bone_index"] = bone_index;
 	aDict["position"] = position;
 	aDict["rotation"] = rotation;
@@ -89,35 +86,27 @@ void BonePose::clear() {
 	rotation = Quaternion();
 	right = Vector3();
 }
-Vector4 BonePose::get_root_lookat(const Basis& rest_rotation,const Basis& curr_rotation,const Vector3& forward,const Vector3& right) {
-
-
+Vector4 BonePose::get_root_lookat(const Basis &rest_rotation, const Basis &curr_rotation, const Vector3 &forward, const Vector3 &right) {
 	Vector4 lookat;
 	Basis diff_rotation = rest_rotation.inverse() * curr_rotation;
 	Vector3 new_forward = diff_rotation.xform(forward);
 
-
-
 	// 计算沿着自身轴的旋转角度
 	{
-		Basis new_basis; 
+		Basis new_basis;
 		new_basis.rotate_to_align(forward, new_forward);
-		// 
+		//
 		Vector3 org_rest_right = new_basis.xform(right);
-		
-		Vector3 new_right = diff_rotation.xform(right);
 
+		Vector3 new_right = diff_rotation.xform(right);
 
 		Plane plane = Plane(new_forward, 0.0);
 		Vector3 intersect;
-		plane.intersects_ray(new_right - new_forward,-new_forward, &intersect);
+		plane.intersects_ray(new_right - new_forward, -new_forward, &intersect);
 
-		
-		if(intersect.x + intersect.y + intersect.z == 0)
-		{
+		if (intersect.x + intersect.y + intersect.z == 0) {
 			lookat.w = 0;
-		}
-		else {
+		} else {
 			float angle = org_rest_right.signed_angle_to(intersect.normalized(), new_forward);
 			lookat.w = angle;
 		}
@@ -126,12 +115,9 @@ Vector4 BonePose::get_root_lookat(const Basis& rest_rotation,const Basis& curr_r
 	lookat.y = new_forward.y;
 	lookat.z = new_forward.z;
 	return lookat;
-
-	
 }
 // xyz 是世界位置,,我是自身轴旋转角度
-Vector4 BonePose::get_look_at_and_roll(const Transform3D& p_parent_trans, Basis& p_curr_basis, Transform3D& p_curr_global_trans) {
-
+Vector4 BonePose::get_look_at_and_roll(const Transform3D &p_parent_trans, Basis &p_curr_basis, Transform3D &p_curr_global_trans) {
 	p_curr_global_trans = p_parent_trans * Transform3D(p_curr_basis, position);
 	// 计算出观察方向
 	//Vector3 lookat = p_curr_global_trans.xform(forward);
@@ -147,13 +133,11 @@ Vector4 BonePose::get_look_at_and_roll(const Transform3D& p_parent_trans, Basis&
 	//	// 计算原始动画姿势计算后的右方向朝向
 	//	Vector3 new_right = p_curr_global_trans.basis.xform(right);
 
-
 	//	Plane plane = Plane(lookat - p_curr_global_trans.origin, 0.0);
 	//	Vector3 intersect;
 	//	plane.intersects_ray(new_right - plane.normal,-plane.normal, &intersect);
 
-
-	//	// 计算自身轴的旋转角度		
+	//	// 计算自身轴的旋转角度
 	//	if(intersect.x + intersect.y + intersect.z == 0)
 	//	{
 	//		ret.w = 0;
@@ -162,7 +146,7 @@ Vector4 BonePose::get_look_at_and_roll(const Transform3D& p_parent_trans, Basis&
 	//		float angle = org_rest_right.signed_angle_to(intersect.normalized(), org_rest_right);
 	//		ret.w = angle;
 	//	}
-	//	
+	//
 	//}
 	//ret.x = lookat.x;
 	//ret.y = lookat.y;
@@ -170,8 +154,7 @@ Vector4 BonePose::get_look_at_and_roll(const Transform3D& p_parent_trans, Basis&
 	return ret;
 }
 // 重定向骨骼
-void BonePose::retarget(const Transform3D& parent_trans, const Vector4& lookat, Transform3D& out_global_trans, Basis& local_rotation) {
-
+void BonePose::retarget(const Transform3D &parent_trans, const Vector4 &lookat, Transform3D &out_global_trans, Basis &local_rotation) {
 	// 重定向骨骼的世界坐标
 	//out_global_trans = parent_trans * local_pose;
 	//if (forward.dot(forward) == 0)
@@ -192,7 +175,6 @@ void BonePose::retarget(const Transform3D& parent_trans, const Vector4& lookat, 
 	//local_rotation = parent_trans.basis.inverse() * out_global_trans.basis;
 }
 /**********************************************************************************************************************/
-
 
 void SkinReference::_skin_changed() {
 	if (skeleton_node) {
@@ -330,7 +312,7 @@ bool Skeleton3D::_get(const StringName &p_path, Variant &r_ret) const {
 		r_ret = get_bone_pose_rotation(which);
 	} else if (what == "scale") {
 		r_ret = get_bone_pose_scale(which);
-	}  else if (what == "is_human_bone") {
+	} else if (what == "is_human_bone") {
 		r_ret = is_human_bone(which);
 	} else if (what == "bone_meta") {
 		r_ret = get_bone_meta(which, path.get_slicec('/', 3));
@@ -520,7 +502,9 @@ void Skeleton3D::_notification(int p_what) {
 				// Store dirty flags for global bone poses.
 				bone_global_pose_dirty_backup = bone_global_pose_dirty;
 
-				_process_modifiers();
+				if (update_flags & UPDATE_FLAG_MODIFIER) {
+					_process_modifiers();
+				}
 			}
 
 			// Abort if pose is not changed.
@@ -601,13 +585,20 @@ void Skeleton3D::_notification(int p_what) {
 			updating = false;
 			update_flags = UPDATE_FLAG_NONE;
 		} break;
-		case NOTIFICATION_INTERNAL_PROCESS:
-		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
-			_find_modifiers();
-			if (!modifiers.is_empty()) {
-				_update_deferred(UPDATE_FLAG_MODIFIER);
-			}
+		case NOTIFICATION_INTERNAL_PROCESS: {
+			advance(get_process_delta_time());
 		} break;
+		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
+			advance(get_physics_process_delta_time());
+		} break;
+	}
+}
+
+void Skeleton3D::advance(double p_delta) {
+	_find_modifiers();
+	if (!modifiers.is_empty()) {
+		update_delta += p_delta; // Accumulate delta for manual advance as it needs to process in deferred update.
+		_update_deferred(UPDATE_FLAG_MODIFIER);
 	}
 }
 
@@ -636,6 +627,9 @@ void Skeleton3D::_process_changed() {
 	} else if (modifier_callback_mode_process == MODIFIER_CALLBACK_MODE_PROCESS_PHYSICS) {
 		set_process_internal(false);
 		set_physics_process_internal(true);
+	} else {
+		set_process_internal(false);
+		set_physics_process_internal(false);
 	}
 }
 
@@ -952,8 +946,7 @@ Vector<int> Skeleton3D::get_parentless_bones() const {
 	}
 	return parentless_bones;
 }
-Vector<int> Skeleton3D::get_root_bones() const
-{
+Vector<int> Skeleton3D::get_root_bones() const {
 	Vector<int> rs;
 	for (uint32_t i = 0; i < bones.size(); i++) {
 		if (bones[i].parent < 0) {
@@ -1255,7 +1248,7 @@ void Skeleton3D::force_update_all_dirty_bones(bool p_notify) {
 	_force_update_all_dirty_bones();
 }
 
-void Skeleton3D::_force_update_all_dirty_bones(bool p_notify ) const {
+void Skeleton3D::_force_update_all_dirty_bones(bool p_notify) const {
 	if (!dirty) {
 		return;
 	}
@@ -1266,7 +1259,7 @@ void Skeleton3D::force_update_all_bone_transforms(bool p_notify) {
 	_force_update_all_bone_transforms();
 }
 
-void Skeleton3D::_force_update_all_bone_transforms(bool p_notify ) const {
+void Skeleton3D::_force_update_all_bone_transforms(bool p_notify) const {
 	_update_process_order();
 	for (int i = 0; i < parentless_bones.size(); i++) {
 		_force_update_bone_children_transforms(parentless_bones[i]);
@@ -1281,9 +1274,8 @@ void Skeleton3D::_force_update_all_bone_transforms(bool p_notify ) const {
 	if (updating) {
 		return;
 	}
-	if(p_notify && _notification_bone_pose)
-	{
-		const_cast<Skeleton3D*>(this)->emit_signal(SceneStringName(pose_updated));
+	if (p_notify && _notification_bone_pose) {
+		const_cast<Skeleton3D *>(this)->emit_signal(SceneStringName(pose_updated));
 	}
 }
 
@@ -1391,7 +1383,7 @@ void Skeleton3D::_process_modifiers() {
 			for (int i = 0; i < get_bone_count(); i++) {
 				old_poses.push_back(get_bone_pose(i));
 			}
-			mod->process_modification();
+			mod->process_modification(update_delta);
 			LocalVector<Transform3D> new_poses;
 			for (int i = 0; i < get_bone_count(); i++) {
 				new_poses.push_back(get_bone_pose(i));
@@ -1403,10 +1395,11 @@ void Skeleton3D::_process_modifiers() {
 				set_bone_pose(i, old_poses[i].interpolate_with(new_poses[i], influence));
 			}
 		} else {
-			mod->process_modification();
+			mod->process_modification(update_delta);
 		}
 		force_update_all_dirty_bones();
 	}
+	update_delta = 0; // Reset accumulated delta.
 }
 
 void Skeleton3D::add_child_notify(Node *p_child) {
@@ -1453,9 +1446,9 @@ void Skeleton3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_parentless_bones"), &Skeleton3D::get_parentless_bones);
 
 	ClassDB::bind_method(D_METHOD("get_root_bones"), &Skeleton3D::get_root_bones);
-	
+
 	ClassDB::bind_method(D_METHOD("get_human_bone_mapping"), &Skeleton3D::get_human_bone_mapping);
-	
+
 	ClassDB::bind_method(D_METHOD("set_human_bone_mapping", "mapping"), &Skeleton3D::set_human_bone_mapping);
 
 	ClassDB::bind_method(D_METHOD("get_bone_rest", "bone_idx"), &Skeleton3D::get_bone_rest);
@@ -1502,6 +1495,7 @@ void Skeleton3D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_human_config", "config"), &Skeleton3D::set_human_config);
 	ClassDB::bind_method(D_METHOD("get_human_config"), &Skeleton3D::get_human_config);
+	ClassDB::bind_method(D_METHOD("advance", "delta"), &Skeleton3D::advance);
 
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "motion_scale", PROPERTY_HINT_RANGE, "0.001,10,0.001,or_greater"), "set_motion_scale", "get_motion_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "show_rest_only"), "set_show_rest_only", "is_show_rest_only");
@@ -1509,7 +1503,7 @@ void Skeleton3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "human_config", PROPERTY_HINT_RESOURCE_TYPE, "HumanBoneConfig"), "set_human_config", "get_human_config");
 
 	ADD_GROUP("Modifier", "modifier_");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "modifier_callback_mode_process", PROPERTY_HINT_ENUM, "Physics,Idle"), "set_modifier_callback_mode_process", "get_modifier_callback_mode_process");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "modifier_callback_mode_process", PROPERTY_HINT_ENUM, "Physics,Idle,Manual"), "set_modifier_callback_mode_process", "get_modifier_callback_mode_process");
 
 	ADD_SIGNAL(MethodInfo("rest_updated"));
 	ADD_SIGNAL(MethodInfo("pose_updated"));
@@ -1521,6 +1515,7 @@ void Skeleton3D::_bind_methods() {
 	BIND_CONSTANT(NOTIFICATION_UPDATE_SKELETON);
 	BIND_ENUM_CONSTANT(MODIFIER_CALLBACK_MODE_PROCESS_PHYSICS);
 	BIND_ENUM_CONSTANT(MODIFIER_CALLBACK_MODE_PROCESS_IDLE);
+	BIND_ENUM_CONSTANT(MODIFIER_CALLBACK_MODE_PROCESS_MANUAL);
 
 #ifndef DISABLE_DEPRECATED
 	ClassDB::bind_method(D_METHOD("clear_bones_global_pose_override"), &Skeleton3D::clear_bones_global_pose_override);
@@ -1675,7 +1670,7 @@ static BoneSegregation guess_bone_segregation(const String &p_bone_name) {
 	return BONE_SEGREGATION_NONE;
 }
 
-static int search_bone_by_name(Skeleton3D *p_skeleton, const Vector<String> &p_picklist,bool p_using_segregation, BoneSegregation p_segregation = BONE_SEGREGATION_NONE, int p_parent = -1, int p_child = -1, int p_children_count = -1) {
+static int search_bone_by_name(Skeleton3D *p_skeleton, const Vector<String> &p_picklist, bool p_using_segregation, BoneSegregation p_segregation = BONE_SEGREGATION_NONE, int p_parent = -1, int p_child = -1, int p_children_count = -1) {
 	// There may be multiple candidates hit by existing the subsidiary bone.
 	// The one with the shortest name is probably the original.
 	LocalVector<String> hit_list;
@@ -1811,8 +1806,6 @@ static int search_bone_by_name(Skeleton3D *p_skeleton, const Vector<String> &p_p
 "                                 └─ RightLittleDistal\n"
  **/
 static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
-	
-
 	int bone_idx = -1;
 	Vector<String> picklist; // Use Vector<String> because match words have priority.
 	Vector<int> search_path;
@@ -1823,7 +1816,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("waist");
 	picklist.push_back("torso");
 	picklist.push_back("spine");
-	int hips = search_bone_by_name(skeleton, picklist,false);
+	int hips = search_bone_by_name(skeleton, picklist, false);
 	if (hips == -1) {
 		Vector<int> root = skeleton->get_root_bones();
 		if (root.size() == 1) {
@@ -1882,13 +1875,13 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	// 3. Guess Foots
 	picklist.push_back("foot");
 	picklist.push_back("ankle");
-	int left_foot = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, hips);
+	int left_foot = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, hips);
 	if (left_foot == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess LeftFoot.");
 	} else {
 		p_bone_map["LeftFoot"] = StringName(skeleton->get_bone_name(left_foot)); // LeftFoot is always first skeleton->get_bone_name(left_foot));
 	}
-	int right_foot = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, hips);
+	int right_foot = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, hips);
 	if (right_foot == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess RightFoot.");
 	} else {
@@ -1904,7 +1897,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("leg");
 	int left_lower_leg = -1;
 	if (left_foot != -1) {
-		left_lower_leg = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, hips, left_foot);
+		left_lower_leg = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, hips, left_foot);
 	}
 	if (left_lower_leg == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess LeftLowerLeg.");
@@ -1913,7 +1906,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	}
 	int right_lower_leg = -1;
 	if (right_foot != -1) {
-		right_lower_leg = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, hips, right_foot);
+		right_lower_leg = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, hips, right_foot);
 	}
 	if (right_lower_leg == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess RightLowerLeg.");
@@ -1927,7 +1920,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("thigh");
 	picklist.push_back("leg");
 	if (left_lower_leg != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, hips, left_lower_leg);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, hips, left_lower_leg);
 	}
 	if (bone_idx == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess LeftUpperLeg.");
@@ -1936,7 +1929,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	}
 	bone_idx = -1;
 	if (right_lower_leg != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, hips, right_lower_leg);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, hips, right_lower_leg);
 	}
 	if (bone_idx == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess RightUpperLeg.");
@@ -1950,7 +1943,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("toe");
 	picklist.push_back("ball");
 	if (left_foot != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, left_foot);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, left_foot);
 		if (bone_idx == -1) {
 			search_path = skeleton->get_bone_children(left_foot);
 			if (search_path.size() == 1) {
@@ -1966,7 +1959,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	}
 	bone_idx = -1;
 	if (right_foot != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, right_foot);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, right_foot);
 		if (bone_idx == -1) {
 			search_path = skeleton->get_bone_children(right_foot);
 			if (search_path.size() == 1) {
@@ -1988,14 +1981,14 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("wrist");
 	picklist.push_back("palm");
 	picklist.push_back("fingers");
-	int left_hand_or_palm = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, hips, -1, 5);
+	int left_hand_or_palm = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, hips, -1, 5);
 	if (left_hand_or_palm == -1) {
 		// Ambiguous, but try again for fewer finger models.
-		left_hand_or_palm = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, hips);
+		left_hand_or_palm = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, hips);
 	}
 	int left_hand = left_hand_or_palm; // Check for the presence of a wrist, since bones with five children may be palmar.
 	while (left_hand != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, hips, left_hand);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, hips, left_hand);
 		if (bone_idx == -1) {
 			break;
 		}
@@ -2007,14 +2000,14 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 		p_bone_map["LeftHand"] = StringName(skeleton->get_bone_name(left_hand)); // LeftHand is always skeleton->get_bone_name(left_hand));
 	}
 	bone_idx = -1;
-	int right_hand_or_palm = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, hips, -1, 5);
+	int right_hand_or_palm = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, hips, -1, 5);
 	if (right_hand_or_palm == -1) {
 		// Ambiguous, but try again for fewer finger models.
-		right_hand_or_palm = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, hips);
+		right_hand_or_palm = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, hips);
 	}
 	int right_hand = right_hand_or_palm;
 	while (right_hand != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, hips, right_hand);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, hips, right_hand);
 		if (bone_idx == -1) {
 			break;
 		}
@@ -2056,7 +2049,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 		left_fingers_map[4].push_back("LeftLittleDistal");
 		for (int i = 0; i < 5; i++) {
 			picklist.push_back(fingers[i]);
-			int finger = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, left_hand_or_palm, -1, 0);
+			int finger = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, left_hand_or_palm, -1, 0);
 			if (finger != -1) {
 				while (finger != left_hand_or_palm && finger >= 0) {
 					search_path.push_back(finger);
@@ -2101,7 +2094,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 					break;
 				}
 				int finger_root = skeleton->find_bone(finger_names[i]);
-				int finger = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, finger_root, -1, 0);
+				int finger = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, finger_root, -1, 0);
 				if (finger != -1) {
 					while (finger != finger_root && finger >= 0) {
 						search_path.push_back(finger);
@@ -2147,7 +2140,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 		right_fingers_map[4].push_back("RightLittleDistal");
 		for (int i = 0; i < 5; i++) {
 			picklist.push_back(fingers[i]);
-			int finger = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, right_hand_or_palm, -1, 0);
+			int finger = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, right_hand_or_palm, -1, 0);
 			if (finger != -1) {
 				while (finger != right_hand_or_palm && finger >= 0) {
 					search_path.push_back(finger);
@@ -2192,7 +2185,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 					break;
 				}
 				int finger_root = skeleton->find_bone(finger_names[i]);
-				int finger = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, finger_root, -1, 0);
+				int finger = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, finger_root, -1, 0);
 				if (finger != -1) {
 					while (finger != finger_root && finger >= 0) {
 						search_path.push_back(finger);
@@ -2222,13 +2215,13 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("shoulder");
 	picklist.push_back("clavicle");
 	picklist.push_back("collar");
-	int left_shoulder = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, hips);
+	int left_shoulder = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, hips);
 	if (left_shoulder == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess LeftShoulder.");
 	} else {
 		p_bone_map["LeftShoulder"] = StringName(skeleton->get_bone_name(left_shoulder)); // p_bone_map->_set_skeleton_bone_name("LeftShoulder", skeleton->get_bone_name(left_shoulder));
 	}
-	int right_shoulder = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, hips);
+	int right_shoulder = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, hips);
 	if (right_shoulder == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess RightShoulder.");
 	} else {
@@ -2242,7 +2235,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("arm");
 	int left_lower_arm = -1;
 	if (left_shoulder != -1 && left_hand_or_palm != -1) {
-		left_lower_arm = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, left_shoulder, left_hand_or_palm);
+		left_lower_arm = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, left_shoulder, left_hand_or_palm);
 	}
 	if (left_lower_arm == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess LeftLowerArm.");
@@ -2251,7 +2244,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	}
 	int right_lower_arm = -1;
 	if (right_shoulder != -1 && right_hand_or_palm != -1) {
-		right_lower_arm = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, right_shoulder, right_hand_or_palm);
+		right_lower_arm = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, right_shoulder, right_hand_or_palm);
 	}
 	if (right_lower_arm == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess RightLowerArm.");
@@ -2264,7 +2257,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("up.*arm");
 	picklist.push_back("arm");
 	if (left_shoulder != -1 && left_lower_arm != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, left_shoulder, left_lower_arm);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, left_shoulder, left_lower_arm);
 	}
 	if (bone_idx == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess LeftUpperArm.");
@@ -2273,7 +2266,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	}
 	bone_idx = -1;
 	if (right_shoulder != -1 && right_lower_arm != -1) {
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, right_shoulder, right_lower_arm);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, right_shoulder, right_lower_arm);
 	}
 	if (bone_idx == -1) {
 		WARN_PRINT("Auto Mapping couldn't guess RightUpperArm.");
@@ -2287,7 +2280,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	picklist.push_back("neck");
 	picklist.push_back("head"); // For no neck model.
 	picklist.push_back("face"); // Same above.
-	int neck = search_bone_by_name(skeleton, picklist,false, BONE_SEGREGATION_NONE, hips);
+	int neck = search_bone_by_name(skeleton, picklist, false, BONE_SEGREGATION_NONE, hips);
 	picklist.clear();
 	if (neck == -1) {
 		// If it can't expect by name, search child spine of where the right and left shoulders (or hands) cross.
@@ -2323,14 +2316,13 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	// 7. Guess Head
 	picklist.push_back("head");
 	picklist.push_back("face");
-	int head = search_bone_by_name(skeleton, picklist,false, BONE_SEGREGATION_NONE, neck);
+	int head = search_bone_by_name(skeleton, picklist, false, BONE_SEGREGATION_NONE, neck);
 	if (head == -1) {
 		if (neck != -1) {
 			search_path = skeleton->get_bone_children(neck);
 			if (search_path.size() == 1) {
 				head = search_path[0]; // Maybe only one child of the Neck is Head.
 			}
-
 		}
 	}
 	if (head == -1) {
@@ -2352,14 +2344,14 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 	if (neck_or_head != -1) {
 		// 7-1. Guess Eyes
 		picklist.push_back("eye(?!.*(brow|lash|lid))");
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_LEFT, neck_or_head);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_LEFT, neck_or_head);
 		if (bone_idx == -1) {
 			//WARN_PRINT("Auto Mapping couldn't guess LeftEye.");
 		} else {
 			p_bone_map[("LeftEye")] = StringName(skeleton->get_bone_name(bone_idx)); // p_bone_map->_set_skeleton_bone_name("LeftEye", skeleton->get_bone_name(bone_idx));
 		}
 
-		bone_idx = search_bone_by_name(skeleton, picklist,true, BONE_SEGREGATION_RIGHT, neck_or_head);
+		bone_idx = search_bone_by_name(skeleton, picklist, true, BONE_SEGREGATION_RIGHT, neck_or_head);
 		if (bone_idx == -1) {
 			//WARN_PRINT("Auto Mapping couldn't guess RightEye.");
 		} else {
@@ -2369,7 +2361,7 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 
 		// 7-2. Guess Jaw
 		picklist.push_back("jaw");
-		bone_idx = search_bone_by_name(skeleton, picklist,false, BONE_SEGREGATION_NONE, neck_or_head);
+		bone_idx = search_bone_by_name(skeleton, picklist, false, BONE_SEGREGATION_NONE, neck_or_head);
 		if (bone_idx == -1) {
 			//WARN_PRINT("Auto Mapping couldn't guess Jaw.");
 		} else {
@@ -2449,8 +2441,8 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 
 	// 检测是否骨骼翻转
 	{
-		Vector<String> right_bones ;	
-		
+		Vector<String> right_bones;
+
 		right_bones.push_back("RightThumbMetacarpal");
 		right_bones.push_back("RightThumbProximal");
 		right_bones.push_back("RightThumbDistal");
@@ -2512,61 +2504,58 @@ static void auto_mapping_process(Skeleton3D *skeleton, Dictionary &p_bone_map) {
 		bone_idx = skeleton->get_bone_parent(p_bone_map[("Spine")]);
 		Vector3 center = skeleton->get_bone_global_pose(chest_or_upper_chest).origin;
 		for (int i = 0; i < right_bones.size(); i++) {
-			int left_bone_idx = -1,right_bones_idx = -1;
+			int left_bone_idx = -1, right_bones_idx = -1;
 			String left_bone_name, right_bone_name;
 
-			if(p_bone_map.has(right_bones[i])) {
+			if (p_bone_map.has(right_bones[i])) {
 				right_bone_name = p_bone_map[right_bones[i]];
 				right_bones_idx = skeleton->find_bone(right_bone_name);
 			}
-			if(p_bone_map.has(left_bones[i])) {
+			if (p_bone_map.has(left_bones[i])) {
 				left_bone_name = p_bone_map[left_bones[i]];
 				left_bone_idx = skeleton->find_bone(left_bone_name);
 			}
 			Vector3 right_bone;
 			Vector3 left_bone;
-			if(right_bones_idx != -1) {
+			if (right_bones_idx != -1) {
 				right_bone = skeleton->get_bone_global_pose(right_bones_idx).origin - center;
-				if(right_bone.x > 0) {
-					if(left_bone_idx != -1) {
+				if (right_bone.x > 0) {
+					if (left_bone_idx != -1) {
 					}
-				}		
+				}
 			}
-			if(left_bone_idx != -1) {
+			if (left_bone_idx != -1) {
 				left_bone = skeleton->get_bone_global_pose(left_bone_idx).origin - center;
 			}
 			if (left_bone.x < 0 || right_bone.x > 0) {
 				if (left_bone_idx != -1) {
 					p_bone_map[right_bones[i]] = left_bone_name;
-				}
-				else {
+				} else {
 					p_bone_map.erase(right_bones[i]);
 				}
 
 				if (right_bones_idx != -1) {
 					p_bone_map[left_bones[i]] = right_bone_name;
-				}
-				else {
+				} else {
 					p_bone_map.erase(left_bones[i]);
 				}
 			}
 		}
-
 	}
 
 	//WARN_PRINT("Finish auto mapping.");
 }
 
-void Skeleton3D::change_to_human_bone(int p_bone) {	
-	while(p_bone != -1) {
+void Skeleton3D::change_to_human_bone(int p_bone) {
+	while (p_bone != -1) {
 		bones[p_bone].is_human_bone = true;
 		p_bone = bones[p_bone].parent;
 	}
 }
-const HashSet<String>& get_human_bones() {
+const HashSet<String> &get_human_bones() {
 	static HashSet<String> human_bones;
 	static bool is_init = false;
-	if(!is_init) {
+	if (!is_init) {
 		is_init = true;
 		human_bones.insert("LeftThumbMetacarpal");
 		human_bones.insert("LeftThumbProximal");
@@ -2626,8 +2615,7 @@ const HashSet<String>& get_human_bones() {
 	}
 	return human_bones;
 }
-Dictionary Skeleton3D::get_human_bone_mapping()
-{
+Dictionary Skeleton3D::get_human_bone_mapping() {
 	Dictionary human_bone_mapping;
 	auto_mapping_process(this, human_bone_mapping);
 	Dictionary rs;
@@ -2640,26 +2628,23 @@ Dictionary Skeleton3D::get_human_bone_mapping()
 	return rs;
 }
 
-void Skeleton3D::set_human_bone_mapping(const Dictionary &p_human_bone_mapping)
-{
+void Skeleton3D::set_human_bone_mapping(const Dictionary &p_human_bone_mapping) {
 	List<Variant> keys;
 	p_human_bone_mapping.get_key_list(&keys);
-	const HashSet<String>& human_bones = get_human_bones();
+	const HashSet<String> &human_bones = get_human_bones();
 	for (const Variant &E : keys) {
 		int bone_index = this->find_bone(E);
-		auto& bone = p_human_bone_mapping[E];
+		auto &bone = p_human_bone_mapping[E];
 		this->set_bone_name(bone_index, bone);
-		if(human_bones.has(bone)) {
+		if (human_bones.has(bone)) {
 			change_to_human_bone(bone_index);
 		}
 	}
 }
-Vector<String> Skeleton3D::get_bone_names() const
-{
+Vector<String> Skeleton3D::get_bone_names() const {
 	Vector<String> bone_names;
 	for (uint32_t i = 0; i < bones.size(); i++) {
 		bone_names.push_back(get_bone_name(i));
 	}
 	return bone_names;
 }
-

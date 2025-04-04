@@ -87,7 +87,7 @@ class Ref {
 
 	//virtual RefCounted * get_reference() const { return reference; }
 public:
-	_FORCE_INLINE_ static StringName get_class_static() {
+	static _FORCE_INLINE_ String get_class_static() {
 		return T::get_class_static();
 	}
 
