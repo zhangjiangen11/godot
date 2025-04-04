@@ -42,6 +42,26 @@
 #endif
 
 #ifdef THREADS_ENABLED
+/*! system mutex */
+class SystemMutex {
+	friend struct ConditionImplementation;
+
+public:
+	SystemMutex();
+	~SystemMutex();
+
+private:
+	SystemMutex(const SystemMutex &other) = delete; // do not implement
+	SystemMutex &operator=(const SystemMutex &other) = delete; // do not implement
+
+public:
+	void lock();
+	bool try_lock();
+	void unlock();
+
+protected:
+	void *mutex;
+};
 
 template <typename MutexT>
 class MutexLock;
@@ -120,6 +140,23 @@ public:
 
 	void temp_relock() const {}
 	void temp_unlock() const {}
+};
+/*! system mutex */
+class SystemMutex {
+	friend struct ConditionImplementation;
+
+public:
+	SystemMutex() {}
+	~SystemMutex() {】 }
+
+private:
+	SystemMutex(const SystemMutex &other) = delete; // do not implement
+	SystemMutex &operator=(const SystemMutex &other) = delete; // do not implement
+
+public:
+	void lock() {}
+	bool try_lock() { return true; }
+	void unlock() {}
 };
 
 using Mutex = MutexImpl;

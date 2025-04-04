@@ -33,17 +33,8 @@
 
 #include "core/templates/safe_refcount.h"
 
-#include "thirdparty/embree/common/sys/mutex.h"
 #include <stdlib.h>
-// #include "thirdparty/embree/common/sys/platform.h"
-// #include "thirdparty/embree/common/simd/simd.h"
-// #include "thirdparty/embree/common/math/vec2.h"
-// #include "thirdparty/embree/common/math/vec3.h"
-// #include "thirdparty/embree/common/math/vec4.h"
-// #include "thirdparty/embree/common/math/vec2fa.h"
-// #include "thirdparty/embree/common/math/vec3fa.h"
 
-using MutexSys = embree::MutexSys;
 #include <string.h>
 
 void *operator new(size_t p_size, const char *p_description) {
@@ -123,7 +114,7 @@ struct SmallMemory {
 		mutex.unlock();
 	}
 
-	MutexSys mutex;
+	SystemMutex mutex;
 	SmallMemoryBuffer<SIZE_COUNT> *buffers = nullptr;
 	SafeNumeric<uint64_t> free_count;
 };

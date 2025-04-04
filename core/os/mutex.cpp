@@ -42,6 +42,65 @@ void _global_unlock() {
 
 #ifdef THREADS_ENABLED
 
+#if defined(__WIN32__) && !defined(PTHREADS_WIN32)
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+SystemMutex::SystemMutex() {
+	mutex = new CRITICAL_SECTION;
+	InitializeCriticalSection((CRITICAL_SECTION *)mutex);
+}
+SystemMutex::~SystemMutex() {
+	DeleteCriticalSection((CRITICAL_SECTION *)mutex);
+	delete (CRITICAL_SECTION *)mutex;
+}
+void SystemMutex::lock() {
+	EnterCriticalSection((CRITICAL_SECTION *)mutex);
+}
+bool SystemMutex::try_lock() {
+	return TryEnterCriticalSection((CRITICAL_SECTION *)mutex) != 0;
+}
+void SystemMutex::unlock() {
+	LeaveCriticalSection((CRITICAL_SECTION *)mutex);
+}
+#endif
+
+#if defined(__UNIX__) || defined(PTHREADS_WIN32)
+#include <pthread.h>
+/*! system mutex using pthreads */
+SystemMutex::SystemMutex() {
+	mutex = new pthread_mutex_t;
+	if (pthread_mutex_init((pthread_mutex_t *)mutex, nullptr) != 0) {
+		THROW_RUNTIME_ERROR("pthread_mutex_init failed");
+	}
+}
+
+SystemMutex::~SystemMutex() {
+	MAYBE_UNUSED bool ok = pthread_mutex_destroy((pthread_mutex_t *)mutex) == 0;
+	assert(ok);
+	delete (pthread_mutex_t *)mutex;
+	mutex = nullptr;
+}
+
+void SystemMutex::lock() {
+	if (pthread_mutex_lock((pthread_mutex_t *)mutex) != 0) {
+		THROW_RUNTIME_ERROR("pthread_mutex_lock failed");
+	}
+}
+
+bool SystemMutex::try_lock() {
+	return pthread_mutex_trylock((pthread_mutex_t *)mutex) == 0;
+}
+
+void SystemMutex::unlock() {
+	if (pthread_mutex_unlock((pthread_mutex_t *)mutex) != 0) {
+		THROW_RUNTIME_ERROR("pthread_mutex_unlock failed");
+	}
+}
+
+#endif
+
 template class MutexImpl<THREADING_NAMESPACE::recursive_mutex>;
 template class MutexImpl<THREADING_NAMESPACE::mutex>;
 template class MutexLock<MutexImpl<THREADING_NAMESPACE::recursive_mutex>>;
