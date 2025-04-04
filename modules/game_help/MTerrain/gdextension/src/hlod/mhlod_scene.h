@@ -128,7 +128,7 @@ private:
 		void init_sub_proc(int32_t _sub_proc_index, uint64_t _sub_proc_size, int32_t _proc_id);
 		void change_transform(const Transform3D &new_transform);
 		// difference between init deinit and enable and disable is that the latter one will not remove sub procs
-		// or in another word enable and disable will only turn off and not remove the the sturcture of procs and subprocs
+		// or in another word enable and disable will only turn off and not remove the the structure of procs and subprocs
 		// enable and disable will remove themself from octree
 		void enable(const bool recursive = true);
 		void disable(const bool recursive = true, const bool immediate = false, const bool is_destruction = false);
@@ -199,7 +199,7 @@ private:
 	static Vector<MHlod::Item *> removing_users;
 	static VSet<MHlodNode3D *> removed_packed_scenes;
 	// key is global ID if Item, should be access with protection of packed_scene_mutex
-	// Bellow has only Creation info of bound items (none bound Item are not here)
+	// Below has only Creation info of bound items (none bound Item are not here)
 	static HashMap<int64_t, CreationInfo> bound_items_creation_info;
 	static HashMap<int64_t, Transform3D> bound_items_modified_transforms;
 	static HashSet<int64_t> bound_items_disabled;
@@ -251,7 +251,7 @@ public:
 	void _notification(int p_what);
 	void _update_visibility();
 
-	// usefull for joining the mesh
+	// useful for joining the mesh
 	Array get_last_lod_mesh_ids_transforms();
 
 // Works only in editor

@@ -205,7 +205,7 @@ Vector3 MGrid::get_world_pos(const MGridPos &pos) {
 	return Vector3(pos.x, pos.y, pos.z) * _chunks->base_size_meter + offset;
 }
 
-// Get point id non offset world posiotion usefull for grass for now
+// Get point id non offset world posiotion useful for grass for now
 // in a flat x z plane
 int MGrid::get_point_id_by_non_offs_ws(const Vector2 &input) {
 	int x = ((int)(input.x)) / _chunks->base_size_meter;

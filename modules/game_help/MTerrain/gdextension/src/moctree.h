@@ -103,9 +103,9 @@ private:
 
 		void get_ids(const Pair<Vector3, Vector3> &bound, PackedInt32Array &_ids, uint16_t oct_id);
 		void get_ids_exclude(const Pair<Vector3, Vector3> &bound, const Pair<Vector3, Vector3> &exclude_bound, PackedInt32Array &_ids, uint16_t oct_id);
-		//Bellow only for lod zero which has no exclude
+		//Below only for lod zero which has no exclude
 		void update_lod_zero(const OctUpdateInfo &update_info, HashMap<uint16_t, Vector<PointUpdate>> &u_info);
-		//Bellow function must be called by LOD order from One to max lod number
+		//Below function must be called by LOD order from One to max lod number
 		void update_lod(const OctUpdateInfo &update_info, HashMap<uint16_t, Vector<PointUpdate>> &u_info);
 		void get_all_bounds(Vector<Pair<Vector3, Vector3>> &bounds);
 		void get_all_data(Vector<OctPoint> &data);

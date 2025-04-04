@@ -32,7 +32,7 @@
 // DATA amount for FLATTEN section (devision*devision)*FLATTEN_SECTION_HEADER_SIZE + FLATTEN_HEADER_SIZE
 
 #define COMPRESSION_QTQ_HEADER_SIZE 9
-// COMPRESSION_QTQ header start from 4th-byte position (As always aplly first)
+// COMPRESSION_QTQ header start from 4th-byte position (As always apply first)
 // float min_height -> 4 byte
 // float max_height -> 4 byte
 // uint8_t h_encoding -> show how min and max height in each block is encoded
@@ -130,7 +130,7 @@ private:
 		float max_height;
 		QuadTreeRF *root = nullptr;
 		QuadTreeRF(MPixelRegion _px_region, float *_data, uint32_t _window_width, float _accuracy, MResource::QuadTreeRF *_root = nullptr, uint8_t _depth = 0, uint8_t _h_encoding = 255);
-		//Bellow constructor is used for decompression
+		//Below constructor is used for decompression
 		QuadTreeRF(MPixelRegion _px_region, float *_data, uint32_t _window_width, uint8_t _h_encoding, uint8_t _depth = 0, MResource::QuadTreeRF *_root = nullptr);
 		~QuadTreeRF();
 		void update_min_max_height(); // If min max height remian NAN after this the entire section is hole
@@ -139,7 +139,7 @@ private:
 		_FORCE_INLINE_ uint32_t get_flat_head_size();
 		_FORCE_INLINE_ uint32_t get_block_head_size();
 		uint32_t get_optimal_non_divide_size(); // This will also determine data encoding
-		//Bellow will call above method so data encoding will be determined
+		//Below will call above method so data encoding will be determined
 		//Also below will determine if we should divide or not
 		uint32_t get_optimal_size();
 
@@ -211,7 +211,7 @@ public:
 private:
 	//Will add on empty pixels rows and coulums to right and bottom
 	PackedByteArray add_empty_pixels_to_right_bottom(const PackedByteArray &data, uint8_t pixel_size, uint32_t width);
-	// Compresion base on
+	// Compression base on
 	void compress_qtq_rf(PackedByteArray &uncompress_data, PackedByteArray &compress_data, uint32_t window_width, uint32_t &save_index, float accuracy);
 	void decompress_qtq_rf(const PackedByteArray &compress_data, PackedByteArray &uncompress_data, uint32_t window_width, uint32_t decompress_index);
 	// Will add and remove Linear Regression with least square method

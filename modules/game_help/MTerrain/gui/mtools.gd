@@ -381,7 +381,7 @@ func forward_3d_gui_input(viewport_camera, event):
 		if process_input_terrain_walk(viewport_camera, event):
 			return true
 	
-	### we don't need this any more as we grab editor camera in gdextension automaticly
+	### we don't need this any more as we grab editor camera in gdextension automatically
 	#for terrain in get_all_mterrain():
 	#	terrain.set_editor_camera(viewport_camera)
 	######################## HANDLE CURVE GIZMO ##############################

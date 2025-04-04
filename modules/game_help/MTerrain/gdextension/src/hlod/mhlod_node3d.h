@@ -40,7 +40,7 @@ public:
 	bool bind_item_get_disabled(int idx) const;
 	void bind_item_set_disabled(int idx, bool disabled);
 
-	// Sate Data
+	// State Data
 	static int64_t state_data_get_cache_size();
 	static String state_data_get_prop_name();
 	void state_data_set(const Variant &data);

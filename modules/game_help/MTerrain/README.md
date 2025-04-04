@@ -40,4 +40,4 @@ First clone this repo on your local machine, so you need godot-cpp to exist in G
 ```
 git submodule update --init --recursive
 ```
-This will automaticly pull godot-cpp into GDextension folder, After that go inside GDExtension folder and use scons to build this project
+This will automatically pull godot-cpp into GDextension folder, After that go inside GDExtension folder and use scons to build this project

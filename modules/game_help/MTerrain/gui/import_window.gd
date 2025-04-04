@@ -563,7 +563,7 @@ func export_data(dname: String, eformat: String):
 		print_export_err("Export path is empty")
 		return
 	if not export_path.is_absolute_path():
-		print_export_err("Export path is not a valid absoulute path")
+		print_export_err("Export path is not a valid absolute path")
 		return
 	var mres_load
 	var mres: MResource

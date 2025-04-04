@@ -47,7 +47,7 @@ func _on_source_line_text_changed(new_text: String):
 	hcontainer.visible = false
 	dcontainer.visible = false
 	if not new_text.is_absolute_path():
-		perr("Is not an absoulute path")
+		perr("Is not an absolute path")
 		return
 	if not DirAccess.dir_exists_absolute(new_text):
 		perr("Dir does not exist")

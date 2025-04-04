@@ -880,7 +880,7 @@ static const char *language_list[][2] = {
 	{ "ss", "Swati" },
 	{ "ssy", "Saho" },
 	{ "st", "Southern Sotho" },
-	{ "stq", "Saterland Frisian" },
+	{ "stq", "Staterland Frisian" },
 	{ "su", "Sundanese" },
 	{ "suk", "Sukuma" },
 	{ "sus", "Susu" },

@@ -229,7 +229,7 @@ bool MMeshJoiner::insert_mesh_data(Array meshes, Array transforms, Array materia
 				mdata.normal_transform = transform.basis.inverse().transposed();
 				vcount = mdata.vertices.size();
 				if (vcount == 0) {
-					WARN_PRINT("Vertex count is zero skiping this mesh surface");
+					WARN_PRINT("Vertex count is zero skipping this mesh surface");
 					continue;
 				}
 			}
@@ -283,7 +283,7 @@ bool MMeshJoiner::insert_mmesh_data(Array meshes, Array transforms, PackedInt32A
 				mdata.normal_transform = transform.basis.inverse().transposed();
 				vcount = mdata.vertices.size();
 				if (vcount == 0) {
-					WARN_PRINT("Vertex count is zero skiping this mesh surface");
+					WARN_PRINT("Vertex count is zero skipping this mesh surface");
 					continue;
 				}
 			}

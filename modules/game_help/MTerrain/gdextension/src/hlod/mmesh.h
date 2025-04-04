@@ -7,7 +7,7 @@
 
 /*
 	If mesh come with only one material set then
-	the material will be applied on top of the mesh automaticly
+	the material will be applied on top of the mesh automatically
 */
 
 class MMesh : public Resource {
@@ -18,7 +18,7 @@ protected:
 
 	RID mesh;
 	AABB aabb;
-	// An array of materials ovverides
+	// An array of materials overrides
 
 private:
 	void _create_if_not_exist();

@@ -648,7 +648,7 @@ void MTerrain::set_dataDir(String input) {
 	ERR_FAIL_COND_MSG(grid->is_created(), "Can not change dataDir after terrain is created!");
 	dataDir = input;
 	if (Engine::get_singleton()->is_editor_hint() && !dataDir.is_empty() && dataDir != String("res://") && dataDir.is_absolute_path() && layersDataDir.is_empty() && is_inside_tree()) {
-		// Setting automaticly layer data directory
+		// Setting automatically layer data directory
 		layersDataDir = dataDir.path_join("layers");
 	}
 }
