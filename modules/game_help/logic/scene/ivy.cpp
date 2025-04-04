@@ -205,22 +205,22 @@ void Ivy::grow() {
 	}
 }
 
-static inline bool getBarycentricCoordinates(const Vector3 &vector1, const Vector3 &vector2, const Vector3 &vector3, const Vector3 &position, float &alpha, float &beta, float &gamma) {
-	float area = 0.5f * ((vector2 - vector1).cross(vector3 - vector1)).length();
+// static inline bool getBarycentricCoordinates(const Vector3 &vector1, const Vector3 &vector2, const Vector3 &vector3, const Vector3 &position, float &alpha, float &beta, float &gamma) {
+// 	float area = 0.5f * ((vector2 - vector1).cross(vector3 - vector1)).length();
 
-	alpha = 0.5f * ((vector2 - position).cross(vector3 - position)).length() / area;
+// 	alpha = 0.5f * ((vector2 - position).cross(vector3 - position)).length() / area;
 
-	beta = 0.5f * ((vector1 - position).cross(vector3 - position)).length() / area;
+// 	beta = 0.5f * ((vector1 - position).cross(vector3 - position)).length() / area;
 
-	gamma = 0.5f * ((vector1 - position).cross(vector2 - position)).length() / area;
+// 	gamma = 0.5f * ((vector1 - position).cross(vector2 - position)).length() / area;
 
-	//if (abs( 1.0f - alpha - beta - gamma ) > std::numeric_limits<float>::epsilon()) return false;
-	if (abs(1.0f - alpha - beta - gamma) > 0.00001f) {
-		return false;
-	}
+// 	//if (abs( 1.0f - alpha - beta - gamma ) > std::numeric_limits<float>::epsilon()) return false;
+// 	if (abs(1.0f - alpha - beta - gamma) > 0.00001f) {
+// 		return false;
+// 	}
 
-	return true;
-}
+// 	return true;
+// }
 Vector3 Ivy::computeAdhesion(const Vector3 &pos) {
 	//the resulting adhesion vector
 	Vector3 adhesionVector;

@@ -285,7 +285,7 @@ public:
 	void add_multmesh_instance_block(const String &res_path, const Ref<Foliage::SceneInstanceBlock> &t);
 	void remove_multmesh_instance_block(const String &res_path, const Ref<Foliage::SceneInstanceBlock> &t);
 
-	virtual void process(double p_delta);
+	virtual void process(double p_delta) override;
 
 	int get_free_id() {
 		int id = 0;
@@ -294,8 +294,9 @@ public:
 			unuse_id_list.pop_front();
 		} else {
 			id = curr_id;
+			curr_id++;
 		}
-		return curr_id++;
+		return id;
 	}
 
 	struct MeshInstanceInfo {

@@ -705,7 +705,7 @@ void PathMesh3D::_rebuild_mesh() {
 
 		Mesh::PrimitiveType primitives = Mesh::PRIMITIVE_TRIANGLES;
 		Ref<ArrayMesh> arr_mesh = cast_to<ArrayMesh>(source_mesh.ptr());
-		if (arr_mesh != nullptr) {
+		if (arr_mesh.is_valid()) {
 			primitives = arr_mesh->surface_get_primitive_type(idx_surf);
 		}
 

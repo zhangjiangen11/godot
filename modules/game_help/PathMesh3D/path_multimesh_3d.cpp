@@ -230,7 +230,7 @@ void PathMultiMesh3D::_on_curve_changed() {
 }
 
 void PathMultiMesh3D::_rebuild_mesh() {
-	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || multi_mesh == nullptr || !dirty) {
+	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || multi_mesh.is_null() || !dirty) {
 		return;
 	}
 
