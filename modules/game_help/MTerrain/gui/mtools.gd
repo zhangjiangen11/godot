@@ -106,7 +106,7 @@ var edit_human_position := false
 
 var walking_terrain = false
 var editor_camera: Camera3D = null # this is set by forward_gui_input
-var walk_speed = 5 # in meters per seccond
+var walk_speed = 5 # in meters per second
 
 var is_initial_size_set := false
 var last_edit_mode := {}

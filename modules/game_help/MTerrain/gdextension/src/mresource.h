@@ -1,6 +1,6 @@
 #pragma once
 
-#define CURRENT_MRESOURCE_VERSION 0 // Unless change which cause compatiblity break this will no change
+#define CURRENT_MRESOURCE_VERSION 0 // Unless change which cause compatibility break this will no change
 
 #define MRESOURCE_HEADER_SIZE 12
 #define MMAGIC_NUM 77
@@ -88,7 +88,7 @@
 #define MIN_BLOCK_SIZE_IN_QUADTREERF 4
 
 // If more compression will be added in future
-// All compression must be be lossless except COMPRESSION_QTQ or any comression which is in first order
+// All compression must be be lossless except COMPRESSION_QTQ or any compression which is in first order
 #define FLAG_IS_HEIGHT_MAP 1 // QuadTreeRF Quantazation compression
 #define FLAG_FLATTEN_OLS 2 // QuadTreeRF Quantazation compression
 #define FLAG_COMPRESSION_QTQ 4 // QuadTreeRF Quantazation compression
@@ -133,7 +133,7 @@ private:
 		//Below constructor is used for decompression
 		QuadTreeRF(MPixelRegion _px_region, float *_data, uint32_t _window_width, uint8_t _h_encoding, uint8_t _depth = 0, MResource::QuadTreeRF *_root = nullptr);
 		~QuadTreeRF();
-		void update_min_max_height(); // If min max height remian NAN after this the entire section is hole
+		void update_min_max_height(); // If min max height remain NAN after this the entire section is hole
 		void divide_upto_leaf();
 		_FORCE_INLINE_ uint32_t get_only_hole_head_size();
 		_FORCE_INLINE_ uint32_t get_flat_head_size();

@@ -116,7 +116,7 @@ void MGrid::create(const int32_t width, const int32_t height, MChunks *chunks) {
 	rp = (region_size_meter / _chunks->h_scale);
 	region_pixel_size = rp + 1;
 	/// Checking if region pixel size is correct
-	/// Also grabing the images name from the first terrain resource
+	/// Also grabbing the images name from the first terrain resource
 	String first_res_path = dataDir.path_join("x0_y0.res");
 	Array images_names;
 	Ref<MResource> first_res;
@@ -170,7 +170,7 @@ void MGrid::create(const int32_t width, const int32_t height, MChunks *chunks) {
 	}
 	_all_image_list = _terrain_material->all_images;
 	_all_heightmap_image_list = _terrain_material->all_heightmap_images;
-	//Initilazing Heightmap layers visibilty
+	//Initilazing Heightmap layers visibility
 	heightmap_layers_visibility.clear();
 	heightmap_layers_visibility.resize(heightmap_layers.size());
 	for (int i = 0; i < heightmap_layers.size(); i++) {
@@ -444,7 +444,7 @@ void MGrid::merge_chunks() {
 // OR on lod level up otherwise return false
 // Also if All condition are correct then we can merge to bigger size
 // So this will set the size of all points except the first one to -1
-// Also Here we should detrmine the edge of each mesh
+// Also Here we should determine the edge of each mesh
 bool MGrid::check_bigger_size(const int8_t lod, const int8_t size, const int32_t region_id, const MBound &bound) {
 	for (int32_t z = bound.top; z <= bound.bottom; z++) {
 		for (int32_t x = bound.left; x <= bound.right; x++) {
@@ -1060,7 +1060,7 @@ void MGrid::generate_normals(MPixelRegion pxr) {
 		for (uint32_t x = pxr.left; x <= pxr.right; x++) {
 			Vector2i px(x, y);
 			real_t h = get_height_by_pixel(x, y);
-			// Caculating face normals around point
+			// Calculating face normals around point
 			// and average them
 			// In total there are 8 face around each point
 			float heightL = _has_pixel(x - 1, y) ? get_height_by_pixel(x - 1, y) : h;
@@ -1109,7 +1109,7 @@ Vector3 MGrid::get_normal_accurate_by_pixel(uint32_t x, uint32_t y) {
 	Vector3 normal_vec;
 	Vector2i px(x, y);
 	real_t h = get_height_by_pixel(x, y);
-	// Caculating face normals around point
+	// Calculating face normals around point
 	// and average them
 	// In total there are 8 face around each point
 	for (int i = 0; i < nvec8.size() - 1; i++) {

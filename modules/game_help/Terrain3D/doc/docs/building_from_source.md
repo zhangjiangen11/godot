@@ -48,7 +48,7 @@ This hash number is important for the next section.
 
 The checked out version of the godot-cpp submodule needs to match the version of your Godot engine build. e.g. Godot Engine 4.0.2 official build with godot-cpp checked out to a 4.0.2 branch. The early days of Godot 4.x were very strict and required the exact same major, minor, and patch versions. Since then, the requirements have loosened. For instance we've matched godot-cpp 4.1.3 with Godot engine 4.1.3 through 4.2.1 without issue.
 
-In the repository, we leave godot-cpp linked to an older version for broad compatiblity. For your individual needs, you may chose to keep the version we have currently linked, or update it to the version of the engine build you are using.
+In the repository, we leave godot-cpp linked to an older version for broad compatibility. For your individual needs, you may chose to keep the version we have currently linked, or update it to the version of the engine build you are using.
 
 **What is important is that you are aware of which version of godot-cpp you have, which you wish to use, and know how to change it.**
 

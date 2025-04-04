@@ -34,7 +34,7 @@ class MColorBrush;
 
 // size -1 means it has been merged
 // lod -1 means it is out of range
-// lod -2 means it should be droped and never been drawn
+// lod -2 means it should be dropped and never been drawn
 struct MPoint {
 	RID instance = RID();
 	RID mesh = RID();

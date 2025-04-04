@@ -10,7 +10,7 @@ MTerrain is an optimized terrain system/editor for Godot Engine.
 * Navigation integration with Godot's navigation system
 * Grass system with collision for things like trees, grass, rocks, etc
 * Path system based on bezier curves with mesh deformation for roads, rivers, etc.
-* Octree system for optimized control of LOD allowing for large number of objects in the world 
+* OCtree system for optimized control of LOD allowing for large number of objects in the world
 * Editor tools for Terrain sculpting, Grass painting, Navigation painting, Path editing, and importing/exporting heightmaps and splatmaps
   
 ![Screenshot_20230719_144752](https://github.com/mohsenph69/Godot-MTerrain-plugin/assets/52196206/704c51a8-7554-4345-907b-efc635a67dd0)
@@ -18,7 +18,7 @@ MTerrain is an optimized terrain system/editor for Godot Engine.
 # Getting Started
 
 To use this plugin you will need to learn some concepts - this terrain plugin will not work out of the box.
-Please read the [wiki](https://github.com/mohsenph69/Godot-MTerrain-plugin/wiki/)  
+Please read the [wiki](https://github.com/mohsenph69/Godot-MTerrain-plugin/wiki/)
 
 Or watch this video will be helpful:
 https://www.youtube.com/watch?v=PcAkWClET4U

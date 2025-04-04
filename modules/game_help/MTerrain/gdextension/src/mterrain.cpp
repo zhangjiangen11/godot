@@ -565,7 +565,7 @@ void MTerrain::set_save_config(Ref<ConfigFile> conf) {
 			if (conf->has_section_key(section, "accuracy")) {
 				grid->save_config.accuracy = conf->get_value(section, "accuracy");
 			} else {
-				WARN_PRINT("Can not find accuraccy in save config file");
+				WARN_PRINT("Can not find accuracy in save config file");
 			}
 			if (conf->has_section_key(section, "file_compress")) {
 				grid->save_config.heightmap_file_compress = (MResource::FileCompress)((int)conf->get_value(section, "file_compress"));
@@ -1037,7 +1037,7 @@ bool MTerrain::_set(const StringName &_name, const Variant &p_value) {
 		brush_layers[index] = p_value;
 		return true;
 	}
-	/// Compatibilty stuff
+	/// Compatibility stuff
 	if (p_name == String("max_range")) {
 		set_max_range(p_value);
 		return true;

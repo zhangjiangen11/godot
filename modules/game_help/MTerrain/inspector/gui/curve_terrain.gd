@@ -244,7 +244,7 @@ func upate_grass_meta():
 	print(active_grass.name, " update offset ", g_setting["offset"])
 
 func set_grass_items_visibilty(input: bool):
-	## change the visibilty of nodes not container
+	## change the visibility of nodes not container
 	## to not collaps with the main terrain visbilty
 	var childer: Array = $g_container.get_children()
 	for c in childer:
