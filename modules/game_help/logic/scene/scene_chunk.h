@@ -139,7 +139,7 @@ protected:
 	String editor_source_scene_path;
 	String block_name;
 
-	LocalVector<Pair<Ref<SceneDataCompoent>, int>> compoents;
+	LocalVector<Pair<Ref<SceneDataCompoent>, int>> components;
 };
 class SceneBlock : public Resource {
 	GDCLASS(SceneBlock, Resource);

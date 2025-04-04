@@ -37,9 +37,9 @@ void SceneDataCompoent::show(int p_show_level, const Transform3D &p_parent, Scen
 void SceneDataCompoentBlock::show(int p_show_level, const Transform3D &p_parent, SceneChunkGroupInstance *instance) {
 	SceneDataCompoent::show(p_show_level, p_parent, instance);
 	Transform3D world = p_parent * transform;
-	for (uint32_t i = 0; i < compoents.size(); i++) {
-		if (p_show_level >= compoents[i].second) {
-			compoents[i].first->show(p_show_level, world, instance);
+	for (uint32_t i = 0; i < components.size(); i++) {
+		if (p_show_level >= components[i].second) {
+			components[i].first->show(p_show_level, world, instance);
 		}
 	}
 }
