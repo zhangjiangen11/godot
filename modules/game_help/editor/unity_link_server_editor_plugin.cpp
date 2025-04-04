@@ -1,62 +1,54 @@
 
-#include "../unity/unity_link_server.h"
-#include "core/io/json.h"
-#include "scene/resources/texture.h"
-#include "scene/gui/option_button.h"
-#include "scene/gui/margin_container.h"
-#include "scene/gui/box_container.h"
-#include "scene/gui/line_edit.h"
-#include "scene/gui/check_button.h"
-#include "scene/gui/slider.h"
-#include "scene/gui/check_box.h"
-#include "scene/gui/separator.h"
-#include "scene/resources/texture.h"
-#include "scene/gui/label.h"
-#include "scene/gui/flow_container.h"
 #include "unity_link_server_editor_plugin.h"
 #include "../logic/body_main.h"
 #include "../logic/data_table_manager.h"
+#include "../unity/unity_link_server.h"
+#include "core/io/json.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/check_box.h"
+#include "scene/gui/check_button.h"
+#include "scene/gui/flow_container.h"
+#include "scene/gui/label.h"
+#include "scene/gui/line_edit.h"
+#include "scene/gui/margin_container.h"
+#include "scene/gui/option_button.h"
+#include "scene/gui/separator.h"
+#include "scene/gui/slider.h"
+#include "scene/resources/texture.h"
 
-
-
-#include "condition_editor.h"
 #include "blackboard_set_editor.h"
+#include "condition_editor.h"
 
 #if TOOLS_ENABLED
+#include "editor/dependency_editor.h"
+#include "editor/editor_file_system.h"
+#include "editor/editor_log.h"
 #include "editor/editor_node.h"
 #include "editor/editor_properties.h"
 #include "editor/editor_properties_array_dict.h"
-#include "editor/editor_log.h"
-#include "editor/editor_node.h"
 #include "editor/editor_settings.h"
-#include "editor/dependency_editor.h"
-#include "editor/editor_file_system.h"
 
-#include "editor/plugins/editor_plugin.h"
 #include "editor/editor_inspector.h"
+#include "editor/plugins/editor_plugin.h"
 #include "editor/plugins/skeleton_3d_editor_plugin.h"
 
 #include "../unity/unity_link_server.h"
+#include "animator_node_editor.h"
 #include "beehave_graph_editor.h"
+#include "blackboard_plan_editor.h"
 #include "body_main_editor.h"
 #include "character_prefab.h"
-#include "animator_node_editor.h"
 #include "editor_property_bb_param.h"
 #include "editor_property_variable_name.h"
-#include "blackboard_plan_editor.h"
 #include "resource_editor/resource_editor_tool.h"
 #endif
-class CharacterBodyMainLable : public HBoxContainer
-{
+class CharacterBodyMainLable : public HBoxContainer {
 	GDCLASS(CharacterBodyMainLable, HBoxContainer);
 	static void _bind_methods() {
-		
 	}
+
 public:
-
-	CharacterBodyMainLable()
-	{
-
+	CharacterBodyMainLable() {
 		label = memnew(Label);
 		label->set_h_size_flags(SIZE_EXPAND_FILL);
 		label->set_text(L"角色编辑面板");
@@ -68,116 +60,92 @@ public:
 		run_ai_button->set_tooltip_text(L"运行AI,如果调试行为树,必须关闭此选项");
 		run_ai_button->connect("toggled", callable_mp(this, &CharacterBodyMainLable::on_run_ai_toggled));
 		add_child(run_ai_button);
-
 	}
-	void _notification(int p_what)
-	{
+	void _notification(int p_what) {
 		switch (p_what) {
 			case NOTIFICATION_ENTER_TREE: {
-				if(body_main != nullptr)
-				{
+				if (body_main != nullptr) {
 					CharacterBodyMain::get_curr_editor_player() = body_main->get_instance_id();
 				}
 			} break;
 			case NOTIFICATION_EXIT_TREE: {
 				// 解除绑定黑板设置回调
-				if(body_main != nullptr)
-				{
-					if(CharacterBodyMain::get_curr_editor_player() == body_main->get_instance_id())
-					{
+				if (body_main != nullptr) {
+					if (CharacterBodyMain::get_curr_editor_player() == body_main->get_instance_id()) {
 						CharacterBodyMain::get_curr_editor_player() = ObjectID();
 					}
 				}
 			} break;
 		}
 	}
-	void set_body_main(CharacterBodyMain* p_body_main)
-	{
+	void set_body_main(CharacterBodyMain *p_body_main) {
 		body_main = p_body_main;
 	}
-	void on_run_ai_toggled(bool p_toggled)
-	{
+	void on_run_ai_toggled(bool p_toggled) {
 		body_main->set_editor_run_ai(p_toggled);
 	}
-protected:
-	CharacterBodyMain* body_main = nullptr;
-	Label* label = nullptr;
-	CheckButton* run_ai_button = nullptr;
-};
 
+protected:
+	CharacterBodyMain *body_main = nullptr;
+	Label *label = nullptr;
+	CheckButton *run_ai_button = nullptr;
+};
 
 #ifdef TOOLS_ENABLED
 // 逻辑的根节点分段
-class AnimationLogicRootNodeProperty : public EditorPropertyArray
-{
+class AnimationLogicRootNodeProperty : public EditorPropertyArray {
 	GDCLASS(AnimationLogicRootNodeProperty, EditorPropertyArray);
+
 public:
-	void on_reorder_button_gui_input(const Ref<InputEvent> &p_event)
-	{
+	void on_reorder_button_gui_input(const Ref<InputEvent> &p_event) {
 		_reorder_button_gui_input(p_event);
 	}
-	void on_reorder_button_up()
-	{
+	void on_reorder_button_up() {
 		_reorder_button_up();
 	}
-	void on_reorder_button_down(int p_idx)
-	{
+	void on_reorder_button_down(int p_idx) {
 		_reorder_button_down(p_idx);
 	}
-	void on_change_type(Object *p_button, int p_slot_index)
-	{
-		_change_type(p_button,p_slot_index);
+	void on_change_type(Object *p_button, int p_slot_index) {
+		_change_type(p_button, p_slot_index);
 	}
-	void on_remove_pressed(int p_idx)
-	{
+	void on_remove_pressed(int p_idx) {
 		_remove_pressed(p_idx);
 	}
-	void on_update_state()
-	{
-		for(uint32_t i=0;i<slots.size();i++)
-		{
-			EditorPropertyArray::Slot & slot = slots[i];
-			if(slot.state_button == nullptr)
-			{
+	void on_update_state() {
+		for (uint32_t i = 0; i < slots.size(); i++) {
+			EditorPropertyArray::Slot &slot = slots[i];
+			if (slot.state_button == nullptr) {
 				continue;
 			}
 			Ref<CharacterAnimationLogicNode> node = node_object->get_node(slots[i].index);
-			if(node.is_null())
-			{
+			if (node.is_null()) {
 				continue;
 			}
 			bool rs = node->get_editor_state();
-			if(rs)
-			{
+			if (rs) {
 				slot.state_button->set_pressed(true);
 				slot.state_button->set_modulate(Color(0, 0.92549, 0.164706, 1));
-			}
-			else
-			{
+			} else {
 				slot.state_button->set_pressed(false);
 				slot.state_button->set_modulate(Color(1, 0.255238, 0.196011, 1));
 			}
 		}
 	}
-	virtual void _on_clear_slots()
-	{
-		for(uint32_t i=0;i<slots.size();i++)
-		{
-			EditorPropertyArray::Slot & slot = slots[i];
-			if(slot.state_button == nullptr)
-			{
+	virtual void _on_clear_slots() {
+		for (uint32_t i = 0; i < slots.size(); i++) {
+			EditorPropertyArray::Slot &slot = slots[i];
+			if (slot.state_button == nullptr) {
 				continue;
 			}
 			Ref<CharacterAnimationLogicNode> node = node_object->get_node(slots[i].index);
-			if(node.is_null())
-			{
+			if (node.is_null()) {
 				continue;
 			}
 			node->editor_state_change = Callable();
 		}
 	}
-	virtual void _create_new_property_slot() override
-	{
+	virtual void _create_new_property_slot() override {
 		int idx = slots.size();
 		HBoxContainer *hbox = memnew(HBoxContainer);
 
@@ -200,12 +168,10 @@ public:
 		state_button->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 		state_button->set_disabled(true);
 		state_button->set_focus_mode(FOCUS_NONE);
-		if(rs)
-		{
+		if (rs) {
 			state_button->set_pressed(true);
 			state_button->set_modulate(Color(0, 0.92549, 0.164706, 1));
-		}
-		else{
+		} else {
 			state_button->set_pressed(false);
 			state_button->set_modulate(Color(1, 0.255238, 0.196011, 1));
 		}
@@ -238,305 +204,239 @@ public:
 		slot.set_index(idx + page_index * page_length);
 		slots.push_back(slot);
 	}
+
 public:
 	Ref<CharacterAnimationLogicRoot> node_object;
 };
 
-
 #include "../logic/beehave/composites/parallel.h"
 
-
-class ConditionList_ED 
-{
-
+class ConditionList_ED {
 public:
-	static bool _parse_condition_property(EditorInspectorPlugin *p_plugin,const Ref<CharacterAnimatorCondition>& object, Variant::Type type, const String& name, PropertyHint hint_type, const String& hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide)
-	{
-		if(name == "include_condition")
-		{
-			ConditionSection* section = memnew(ConditionSection);
-			section->setup(object,true);
+	static bool _parse_condition_property(EditorInspectorPlugin *p_plugin, const Ref<CharacterAnimatorCondition> &object, Variant::Type type, const String &name, PropertyHint hint_type, const String &hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide) {
+		if (name == "include_condition") {
+			ConditionSection *section = memnew(ConditionSection);
+			section->setup(object, true);
 			section->set_category_name("Include Condition");
-			TypedArray<Ref<AnimatorAIStateConditionBase>>  condition = object->get_include_condition();
-			for(int32_t i = 0; i < condition.size(); ++i)
-			{
-				Condition_ED* bt = memnew(Condition_ED);
-				if(i & 1)
-				{
+			TypedArray<Ref<AnimatorAIStateConditionBase>> condition = object->get_include_condition();
+			for (int32_t i = 0; i < condition.size(); ++i) {
+				Condition_ED *bt = memnew(Condition_ED);
+				if (i & 1) {
 					bt->set_modulate(Color(0.814023, 0.741614, 1, 1));
 				}
-				bt->setup(section,object,condition[i],true);
-				section->add_condition( bt);
+				bt->setup(section, object, condition[i], true);
+				section->add_condition(bt);
 			}
-			ConditionListButton_ED* bt = memnew(ConditionListButton_ED);
-			bt->setup(object,true);
-			section->add_condition( bt);
-			p_plugin->add_custom_control( section);
+			ConditionListButton_ED *bt = memnew(ConditionListButton_ED);
+			bt->setup(object, true);
+			section->add_condition(bt);
+			p_plugin->add_custom_control(section);
 			return true;
 		}
-		if(name == "exclude_condition")
-		{
-			
-			ConditionSection* section = memnew(ConditionSection);
-			section->setup(object,false);
+		if (name == "exclude_condition") {
+			ConditionSection *section = memnew(ConditionSection);
+			section->setup(object, false);
 			section->set_category_name("Exclude Condition");
-			TypedArray<Ref<AnimatorAIStateConditionBase>>  condition = object->get_exclude_condition();
-			for(int32_t i = 0; i < condition.size(); ++i)
-			{
-				Condition_ED* bt = memnew(Condition_ED);
-				if(i & 1)
-				{
+			TypedArray<Ref<AnimatorAIStateConditionBase>> condition = object->get_exclude_condition();
+			for (int32_t i = 0; i < condition.size(); ++i) {
+				Condition_ED *bt = memnew(Condition_ED);
+				if (i & 1) {
 					bt->set_modulate(Color(0.814023, 0.741614, 1, 1));
 				}
-				bt->setup(section,object,condition[i],false);
-				section->add_condition( bt);
+				bt->setup(section, object, condition[i], false);
+				section->add_condition(bt);
 			}
-			ConditionListButton_ED* bt = memnew(ConditionListButton_ED);
-			bt->setup(object,false);
-			section->add_condition( bt);
-			p_plugin->add_custom_control( section);
+			ConditionListButton_ED *bt = memnew(ConditionListButton_ED);
+			bt->setup(object, false);
+			section->add_condition(bt);
+			p_plugin->add_custom_control(section);
 			return true;
-
 		}
 		return false;
 	}
 
-	static bool _parse_blackboard_property(EditorInspectorPlugin *p_plugin,const Ref<AnimatorBlackboardSet>& object, Variant::Type type, const String& name, PropertyHint hint_type, const String& hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide)
-	{
-		if(name == "change_list")
-		{
-			BlackbordSetSection* section = memnew(BlackbordSetSection);
+	static bool _parse_blackboard_property(EditorInspectorPlugin *p_plugin, const Ref<AnimatorBlackboardSet> &object, Variant::Type type, const String &name, PropertyHint hint_type, const String &hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide) {
+		if (name == "change_list") {
+			BlackbordSetSection *section = memnew(BlackbordSetSection);
 			section->setup(object);
 			section->set_category_name("Change List");
-			TypedArray<Ref<AnimatorBlackboardSetItemBase>>  condition = object->get_change_list();
-			for(int32_t i = 0; i < condition.size(); ++i)
-			{
-				BlackbordSet_ED* bt = memnew(BlackbordSet_ED);
-				if(i & 1)
-				{
+			TypedArray<Ref<AnimatorBlackboardSetItemBase>> condition = object->get_change_list();
+			for (int32_t i = 0; i < condition.size(); ++i) {
+				BlackbordSet_ED *bt = memnew(BlackbordSet_ED);
+				if (i & 1) {
 					bt->set_modulate(Color(0.814023, 0.741614, 1, 1));
 				}
-				bt->setup(object,condition[i]);
-				section->add_condition( bt);
+				bt->setup(object, condition[i]);
+				section->add_condition(bt);
 			}
-			BlackbordSetButtonList_ED* bt = memnew(BlackbordSetButtonList_ED);
+			BlackbordSetButtonList_ED *bt = memnew(BlackbordSetButtonList_ED);
 			bt->setup(object);
-			section->add_condition( bt);
-			p_plugin->add_custom_control( section);
+			section->add_condition(bt);
+			p_plugin->add_custom_control(section);
 			return true;
 		}
 		return false;
 	}
-	static bool _parse_node_root_property(EditorInspectorPlugin *p_plugin,const Ref<CharacterAnimationLogicRoot>& object, Variant::Type type, const String& name, PropertyHint hint_type, const String& hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide)
-	{
-		if(name == "node_list")
-		{
-			AnimationLogicRootNodeProperty* section = memnew(AnimationLogicRootNodeProperty);
-			section->setup(Variant::OBJECT,hint_string);
+	static bool _parse_node_root_property(EditorInspectorPlugin *p_plugin, const Ref<CharacterAnimationLogicRoot> &object, Variant::Type type, const String &name, PropertyHint hint_type, const String &hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide) {
+		if (name == "node_list") {
+			AnimationLogicRootNodeProperty *section = memnew(AnimationLogicRootNodeProperty);
+			section->setup(Variant::OBJECT, hint_string);
 			section->node_object = object;
-			p_plugin->add_custom_control( section);
+			p_plugin->add_custom_control(section);
 			return true;
-
 		}
 		return false;
-
 	}
-	static bool _parse_beehave_tree_property(EditorInspectorPlugin *p_plugin,const Ref<BeehaveTree>& object, Variant::Type type, const String& name, PropertyHint hint_type, const String& hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide)
-	{
-		if(name == "root_node")
-		{
-			VBoxContainer* p_select_node_property_vbox = memnew( VBoxContainer);	
-			
-			BeehaveGraphProperty* section = memnew(BeehaveGraphProperty);
+	static bool _parse_beehave_tree_property(EditorInspectorPlugin *p_plugin, const Ref<BeehaveTree> &object, Variant::Type type, const String &name, PropertyHint hint_type, const String &hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide) {
+		if (name == "root_node") {
+			VBoxContainer *p_select_node_property_vbox = memnew(VBoxContainer);
+
+			BeehaveGraphProperty *section = memnew(BeehaveGraphProperty);
 			// 初始化
-			if(object->get_root_node().is_null())
-			{
+			if (object->get_root_node().is_null()) {
 				object->set_root_node(memnew(BeehaveCompositeParallel));
 			}
 			section->setup(object, p_select_node_property_vbox);
-			p_plugin->add_custom_control( section);
-			p_plugin->add_custom_control( p_select_node_property_vbox);
+			p_plugin->add_custom_control(section);
+			p_plugin->add_custom_control(p_select_node_property_vbox);
 
 			return true;
-
 		}
 		return false;
-
 	}
-	static bool _parse_charater_ai_property(EditorInspectorPlugin *p_plugin,CharacterBodyMain* object, Variant::Type type, const String& name, PropertyHint hint_type, const String& hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide)
-	{
-		
-		if(name == "blackboard_plan")
-		{
-			CharacterBodyMainLable* lable = memnew(CharacterBodyMainLable);
+	static bool _parse_charater_ai_property(EditorInspectorPlugin *p_plugin, CharacterBodyMain *object, Variant::Type type, const String &name, PropertyHint hint_type, const String &hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide) {
+		if (name == "blackboard_plan") {
+			CharacterBodyMainLable *lable = memnew(CharacterBodyMainLable);
 			lable->set_body_main(object);
-			p_plugin->add_custom_control( lable);
-			Skeleton3D* skeleton = object->get_skeleton();
-			if(skeleton != nullptr)
-			{				
-				Skeleton3DEditor* skel_editor = memnew(Skeleton3DEditor(nullptr, skeleton));
-				p_plugin->add_custom_control( skel_editor);
+			p_plugin->add_custom_control(lable);
+			Skeleton3D *skeleton = object->get_skeleton();
+			if (skeleton != nullptr) {
+				Skeleton3DEditor *skel_editor = memnew(Skeleton3DEditor(nullptr, skeleton));
+				p_plugin->add_custom_control(skel_editor);
 			}
 			return false;
-		}
-		else if(name == "character_ai")
-		{
-			CharacterAISection* ai_setion = memnew( CharacterAISection);
+		} else if (name == "character_ai") {
+			CharacterAISection *ai_setion = memnew(CharacterAISection);
 			ai_setion->init();
 			ai_setion->setup(object);
-			p_plugin->add_custom_control( ai_setion);
+			p_plugin->add_custom_control(ai_setion);
 
 			return true;
-
 		}
 		return false;
-
 	}
-	static bool _parse_charater_prefab_property(EditorInspectorPlugin *p_plugin, CharacterBodyPrefab* object, Variant::Type type, const String& name, PropertyHint hint_type, const String& hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide)
-	{
-		
-		if(name == "parts")
-		{
-			CharacterPrefabSection* prefab = memnew(CharacterPrefabSection);
+	static bool _parse_charater_prefab_property(EditorInspectorPlugin *p_plugin, CharacterBodyPrefab *object, Variant::Type type, const String &name, PropertyHint hint_type, const String &hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide) {
+		if (name == "parts") {
+			CharacterPrefabSection *prefab = memnew(CharacterPrefabSection);
 			prefab->init();
 			prefab->setup(object);
-			p_plugin->add_custom_control( prefab);
+			p_plugin->add_custom_control(prefab);
 			return true;
 		}
 		return false;
-
 	}
-	static bool _parse_charater_animator_node_property(EditorInspectorPlugin *p_plugin, Ref<CharacterAnimatorNodeBase> object, Variant::Type type, const String& name, PropertyHint hint_type, const String& hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide)
-	{
-		
-		if(name == "animation_arrays")
-		{
+	static bool _parse_charater_animator_node_property(EditorInspectorPlugin *p_plugin, Ref<CharacterAnimatorNodeBase> object, Variant::Type type, const String &name, PropertyHint hint_type, const String &hint_string, BitField<PropertyUsageFlags> usage_flags, bool wide) {
+		if (name == "animation_arrays") {
 			Ref<CharacterAnimatorNode1D> node_1d = Object::cast_to<CharacterAnimatorNode1D>(object.ptr());
-			if(node_1d.is_valid())
-			{
-				AnimationNode1D* section = memnew(AnimationNode1D);
+			if (node_1d.is_valid()) {
+				AnimationNode1D *section = memnew(AnimationNode1D);
 				section->init();
 				section->setup(node_1d.ptr());
-				p_plugin->add_custom_control( section);
+				p_plugin->add_custom_control(section);
 				return true;
 			}
 
 			Ref<CharacterAnimatorNode2D> node_2d = Object::cast_to<CharacterAnimatorNode2D>(object.ptr());
-			if(node_2d.is_valid())
-			{
-				AnimationNode2D* section = memnew(AnimationNode2D);
+			if (node_2d.is_valid()) {
+				AnimationNode2D *section = memnew(AnimationNode2D);
 				section->init();
 				section->setup(node_2d.ptr());
-				p_plugin->add_custom_control( section);
+				p_plugin->add_custom_control(section);
 				return true;
 			}
 
-			AnimationNodeSectionBase* section = memnew(AnimationNodeSectionBase);
+			AnimationNodeSectionBase *section = memnew(AnimationNodeSectionBase);
 			section->init();
 			section->setup(object.ptr());
-			p_plugin->add_custom_control( section);
+			p_plugin->add_custom_control(section);
 
 			return true;
 		}
 		return false;
-
 	}
-
 };
 
-
 // 一些自定义的Inspector插件
-class GameHelpInspectorPlugin : public EditorInspectorPlugin
-{
+class GameHelpInspectorPlugin : public EditorInspectorPlugin {
 	GDCLASS(GameHelpInspectorPlugin, EditorInspectorPlugin);
-	static void _bind_methods()
-	{
-
+	static void _bind_methods() {
 	}
-	public:
-	virtual bool can_handle(Object* p_object) override
-	{
-		if( Object::cast_to<CharacterAnimatorCondition>(p_object) != nullptr)
-		{
+
+public:
+	virtual bool can_handle(Object *p_object) override {
+		if (Object::cast_to<CharacterAnimatorCondition>(p_object) != nullptr) {
 			EditorNode::get_log()->add_message(String("GameHelpInspectorPlugin.can_handle") + " :" + p_object->get_class());
 			return true;
 		}
-		if( Object::cast_to<AnimatorBlackboardSet>(p_object) != nullptr)
-		{
+		if (Object::cast_to<AnimatorBlackboardSet>(p_object) != nullptr) {
 			EditorNode::get_log()->add_message(String("GameHelpInspectorPlugin.can_handle") + " :" + p_object->get_class());
 			return true;
 		}
-		if( Object::cast_to<CharacterAnimationLogicRoot>(p_object) != nullptr)
-		{
+		if (Object::cast_to<CharacterAnimationLogicRoot>(p_object) != nullptr) {
 			EditorNode::get_log()->add_message(String("GameHelpInspectorPlugin.can_handle") + " :" + p_object->get_class());
 			return true;
 		}
 
-		if( Object::cast_to<BeehaveTree>(p_object) != nullptr)
-		{
+		if (Object::cast_to<BeehaveTree>(p_object) != nullptr) {
 			return true;
 		}
-		if(Object::cast_to<CharacterBodyMain>(p_object) != nullptr)
-		{
-			CharacterBodyMain* body_main = Object::cast_to<CharacterBodyMain>(p_object);
+		if (Object::cast_to<CharacterBodyMain>(p_object) != nullptr) {
+			CharacterBodyMain *body_main = Object::cast_to<CharacterBodyMain>(p_object);
 			body_main->set_editor_run_ai(false);
 			body_main->init();
 			return true;
 		}
-		if(Object::cast_to<CharacterBodyPrefab>(p_object) != nullptr)
-		{
+		if (Object::cast_to<CharacterBodyPrefab>(p_object) != nullptr) {
 			return true;
 		}
-		if (Object::cast_to<CharacterAnimatorNodeBase>(p_object) != nullptr)
-		{
+		if (Object::cast_to<CharacterAnimatorNodeBase>(p_object) != nullptr) {
 			return true;
 		}
 
 		return false;
 	}
-	bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide)override {
-	
-		Ref<CharacterAnimatorCondition> object = Object::cast_to< CharacterAnimatorCondition> (p_object);
-		if(object.is_valid())
-		{
-			return ConditionList_ED::_parse_condition_property(this,object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+	bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide) override {
+		Ref<CharacterAnimatorCondition> object = Object::cast_to<CharacterAnimatorCondition>(p_object);
+		if (object.is_valid()) {
+			return ConditionList_ED::_parse_condition_property(this, object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		}
-		Ref<AnimatorBlackboardSet> set_object = Object::cast_to<AnimatorBlackboardSet> (p_object);
-		if (/* condition */set_object.is_valid())
-		{
-			return ConditionList_ED::_parse_blackboard_property(this,set_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+		Ref<AnimatorBlackboardSet> set_object = Object::cast_to<AnimatorBlackboardSet>(p_object);
+		if (/* condition */ set_object.is_valid()) {
+			return ConditionList_ED::_parse_blackboard_property(this, set_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		}
-		Ref<CharacterAnimationLogicRoot> root_object = Object::cast_to<CharacterAnimationLogicRoot> (p_object);
-		if (/* condition */root_object.is_valid())
-		{
-			return ConditionList_ED::_parse_node_root_property(this,root_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+		Ref<CharacterAnimationLogicRoot> root_object = Object::cast_to<CharacterAnimationLogicRoot>(p_object);
+		if (/* condition */ root_object.is_valid()) {
+			return ConditionList_ED::_parse_node_root_property(this, root_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		}
 		Ref<BeehaveTree> tree_object = Object::cast_to<BeehaveTree>(p_object);
-		if (/* condition */tree_object.is_valid())
-		{
-			return ConditionList_ED::_parse_beehave_tree_property(this,tree_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+		if (/* condition */ tree_object.is_valid()) {
+			return ConditionList_ED::_parse_beehave_tree_property(this, tree_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		}
-		CharacterBodyMain* body_main = Object::cast_to<CharacterBodyMain>(p_object);
-		if(body_main != nullptr)
-		{
-			
-			return ConditionList_ED::_parse_charater_ai_property(this,body_main, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+		CharacterBodyMain *body_main = Object::cast_to<CharacterBodyMain>(p_object);
+		if (body_main != nullptr) {
+			return ConditionList_ED::_parse_charater_ai_property(this, body_main, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		}
-		CharacterBodyPrefab* prefab = Object::cast_to<CharacterBodyPrefab>(p_object);
-		if(prefab != nullptr)
-		{
-			
-			return ConditionList_ED::_parse_charater_prefab_property(this,prefab, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+		CharacterBodyPrefab *prefab = Object::cast_to<CharacterBodyPrefab>(p_object);
+		if (prefab != nullptr) {
+			return ConditionList_ED::_parse_charater_prefab_property(this, prefab, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		}
 
 		Ref<CharacterAnimatorNodeBase> animator_node = Object::cast_to<CharacterAnimatorNodeBase>(p_object);
-		if(animator_node != nullptr)
-		{
-			return ConditionList_ED::_parse_charater_animator_node_property(this,animator_node, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+		if (animator_node != nullptr) {
+			return ConditionList_ED::_parse_charater_animator_node_property(this, animator_node, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
 		}
 		return false;
 	}
-
 };
 class UnityLinkServerEditorPlugin : public EditorPlugin {
 	GDCLASS(UnityLinkServerEditorPlugin, EditorPlugin);
@@ -552,27 +452,23 @@ public:
 	UnityLinkServerEditorPlugin();
 	void start();
 	void stop();
-	
 };
-void UnityLinkServerEditorPluginRegister::initialize()
-{
+void UnityLinkServerEditorPluginRegister::initialize() {
 	EditorPlugins::add_by_type<UnityLinkServerEditorPlugin>();
 }
 
 UnityLinkServerEditorPlugin::UnityLinkServerEditorPlugin() {
-    
 	Ref<GameHelpInspectorPlugin> plugin;
 	plugin.instantiate();
-	
-	EditorInspector::add_inspector_plugin(plugin);
 
+	EditorInspector::add_inspector_plugin(plugin);
 
 	add_inspector_plugin(memnew(EditorInspectorPluginBBPlan));
 	EditorInspectorPluginVariableName *var_plugin = memnew(EditorInspectorPluginVariableName);
 	EditorInspectorPluginBBParam *param_plugin = memnew(EditorInspectorPluginBBParam);
 	add_inspector_plugin(param_plugin);
 	add_inspector_plugin(var_plugin);
-	add_control_to_bottom_panel(memnew(ResourceEditorTool),L"资源编辑器");
+	add_control_to_bottom_panel(memnew(ResourceEditorTool), L"资源编辑器");
 
 	EditorNode::get_log()->add_message("register:GameHelpInspectorPlugin");
 }
@@ -590,7 +486,7 @@ void UnityLinkServerEditorPlugin::_notification(int p_what) {
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			// The main loop can be run again during request processing, which modifies internal state of the protocol.
 			// Thus, "polling" is needed to prevent it from parsing other requests while the current one isn't finished.
-			if (started ) {
+			if (started) {
 				server.poll();
 			}
 		} break;
@@ -601,14 +497,12 @@ void UnityLinkServerEditorPlugin::_notification(int p_what) {
 }
 
 void UnityLinkServerEditorPlugin::start() {
-	server.start() ;
+	server.start();
 	{
 		EditorNode::get_log()->add_message("--- unity link server started port 9010---", EditorLog::MSG_TYPE_EDITOR);
 		set_process_internal(true);
 		started = true;
 	}
-	
-	
 }
 
 void UnityLinkServerEditorPlugin::stop() {

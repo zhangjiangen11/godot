@@ -27,7 +27,7 @@ LineEdit *BlackboardPlanEditor::_get_name_edit(int p_row_index) const {
 }
 
 void BlackboardPlanEditor::_add_var() {
-	ERR_FAIL_NULL(plan);
+	ERR_FAIL_NULL(plan.ptr());
 
 	int suffix = 1;
 	StringName var_name = default_var_name == StringName() ? "var" : default_var_name;
@@ -504,7 +504,7 @@ void EditorInspectorPluginBBPlan::parse_begin(Object *p_object) {
 		edit_btn->set_text(TTR("Manage..."));
 		edit_btn->set_h_size_flags(Control::SIZE_SHRINK_CENTER);
 		edit_btn->set_custom_minimum_size(Size2(150.0, 0.0) * EDSCALE);
-		edit_btn->set_button_icon( EditorInterface::get_singleton()->get_editor_theme()->get_icon(SNAME("EditAddRemove"), SNAME("EditorIcons")));
+		edit_btn->set_button_icon(EditorInterface::get_singleton()->get_editor_theme()->get_icon(SNAME("EditAddRemove"), SNAME("EditorIcons")));
 		edit_btn->connect(SNAME("pressed"), callable_mp(this, &EditorInspectorPluginBBPlan::_edit_plan).bind(plan));
 	}
 
