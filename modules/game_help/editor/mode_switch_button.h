@@ -14,7 +14,6 @@
 #ifndef MODE_SWITCH_BUTTON
 #define MODE_SWITCH_BUTTON
 
-
 #include "core/typedefs.h"
 #include "scene/gui/button.h"
 #include "scene/resources/texture.h"
@@ -49,7 +48,7 @@ public:
 	void add_mode(int p_id, const Ref<Texture2D> &p_icon, const String &p_tooltip = "");
 	int get_mode() const { return modes.size() > 0 ? modes[current_mode_index].id : -1; }
 	void set_mode(int p_id, bool p_no_signal = false);
-	_FORCE_INLINE_ void next_mode() { set_mode((current_mode_index + 1) % modes.size()); };
+	_FORCE_INLINE_ void next_mode() { set_mode((current_mode_index + 1) % modes.size()); }
 	void clear();
 
 	ModeSwitchButton();

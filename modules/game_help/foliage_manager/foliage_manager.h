@@ -6,27 +6,24 @@
 #include "scene/3d/camera_3d.h"
 #include "scene/3d/node_3d.h"
 
+namespace Foliage {
+class FoliageManager : public Node3D {
+	GDCLASS(FoliageManager, Node3D);
+	static void _bind_methods() {
+	}
 
-namespace Foliage
-{
-    class FoliageManager : public Node3D
-    {
-        GDCLASS(FoliageManager, Node3D);
-        static void _bind_methods()
-        {
+public:
+	FoliageManager();
+	~FoliageManager();
+	void load(String file_name);
+	void init(Ref<FoliageMapConfig> map_config);
+	void clear();
+	void set_camera(Camera3D *p_camera);
+	void _notification(int p_what);
+	void update();
 
-        }
-    public:
-        FoliageManager();
-        ~FoliageManager();
-        void load(String file_name);
-        void init(Ref<FoliageMapConfig> map_config);
-        void clear();
-        void set_camera(Camera3D* p_camera);
-        void _notification(int p_what);
-        void update();
-    private:
-    };
-}
+private:
+};
+} //namespace Foliage
 
 #endif

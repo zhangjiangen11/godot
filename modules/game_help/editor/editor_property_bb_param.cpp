@@ -11,7 +11,6 @@
 
 #ifdef TOOLS_ENABLED
 
-
 #include "editor_property_bb_param.h"
 
 #include "../logic/blackboard/bb_param/bb_param.h"
@@ -386,6 +385,5 @@ bool EditorInspectorPluginBBParam::parse_property(Object *p_object, const Varian
 	}
 	return false;
 }
-
 
 #endif // ! TOOLS_ENABLED

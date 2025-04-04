@@ -3,7 +3,6 @@
 #include "../data_table_manager.h"
 #include "core/io/json.h"
 
-
 void CharacterAnimationLibraryItem::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_path", "path"), &CharacterAnimationLibraryItem::set_path);
 	ClassDB::bind_method(D_METHOD("get_path"), &CharacterAnimationLibraryItem::get_path);

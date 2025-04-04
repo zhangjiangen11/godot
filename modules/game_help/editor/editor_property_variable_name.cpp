@@ -80,10 +80,10 @@ void EditorPropertyVariableName::_update_status() {
 		status_btn->set_tooltip_text(TTR("Variable name not specified.\nClick to open the blackboard plan."));
 	} else if (plan->has_var(var_name)) {
 		if (expected_type == Variant::NIL || plan->get_var(var_name).get_type() == expected_type) {
-			status_btn->set_button_icon( theme_cache.var_exists_icon);
+			status_btn->set_button_icon(theme_cache.var_exists_icon);
 			status_btn->set_tooltip_text(TTR("This variable is present in the blackboard plan.\nClick to open the blackboard plan."));
 		} else {
-			status_btn->set_button_icon( theme_cache.var_error_icon);
+			status_btn->set_button_icon(theme_cache.var_error_icon);
 			status_btn->set_tooltip_text(TTR(vformat(
 					"The %s variable in the blackboard plan should be of type %s.\nClick to open the blackboard plan.",
 					BBParam::decorate_var(var_name),
@@ -93,7 +93,7 @@ void EditorPropertyVariableName::_update_status() {
 		status_btn->set_button_icon(theme_cache.var_private_icon);
 		status_btn->set_tooltip_text(TTR("This variable is private and is not included in the blackboard plan.\nClick to open the blackboard plan."));
 	} else {
-		status_btn->set_button_icon( theme_cache.var_not_found_icon);
+		status_btn->set_button_icon(theme_cache.var_not_found_icon);
 		status_btn->set_tooltip_text(TTR("No matching variable found in the blackboard plan!\nClick to open the blackboard plan."));
 	}
 }
@@ -112,7 +112,7 @@ void EditorPropertyVariableName::_status_pressed() {
 void EditorPropertyVariableName::_status_mouse_entered() {
 	ERR_FAIL_NULL(plan);
 	if (!plan->has_var(name_edit->get_text())) {
-		status_btn->set_button_icon( theme_cache.var_add_icon);
+		status_btn->set_button_icon(theme_cache.var_add_icon);
 	}
 }
 

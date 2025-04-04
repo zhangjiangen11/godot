@@ -14,7 +14,6 @@
 #ifndef EDITOR_PROPERTY_BB_PARAM_H
 #define EDITOR_PROPERTY_BB_PARAM_H
 
-
 #include "editor/editor_inspector.h"
 
 #include "../logic/blackboard/bb_param/bb_param.h"
@@ -77,7 +76,6 @@ public:
 
 	void set_plan_getter(const Callable &p_getter) { plan_getter = p_getter; }
 };
-
 
 #endif // ! EDITOR_PROPERTY_BB_PARAM_H
 

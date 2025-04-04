@@ -14,8 +14,8 @@
 
 #ifdef TOOLS_ENABLED
 
-#include "../logic/blackboard/blackboard_plan.h"
 #include "../logic/blackboard/bb_param/bb_param.h"
+#include "../logic/blackboard/blackboard_plan.h"
 
 #include "editor/editor_inspector.h"
 #include "scene/gui/check_box.h"

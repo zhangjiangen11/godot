@@ -1,19 +1,18 @@
 #pragma once
-#include "scene/gui/box_container.h"
-#include "scene/gui/separator.h"
-#include "editor/editor_node.h"
 #include "../logic/animator/body_animator.h"
 #include "../logic/character_ai/body_animator_logic.h"
+#include "editor/editor_node.h"
 #include "modules/game_help/logic/character_ai/animator_condition.h"
-#include "modules/game_help/logic/character_ai/condition/animator_condition_bool.h"
-#include "modules/game_help/logic/character_ai/condition/animator_condition_float.h"
-#include "modules/game_help/logic/character_ai/condition/animator_condition_int.h"
-#include "modules/game_help/logic/character_ai/condition/animator_condition_string.h"
 #include "modules/game_help/logic/character_ai/blackboard_set_item/animator_blackboard_item_bool.h"
 #include "modules/game_help/logic/character_ai/blackboard_set_item/animator_blackboard_item_float.h"
 #include "modules/game_help/logic/character_ai/blackboard_set_item/animator_blackboard_item_int.h"
 #include "modules/game_help/logic/character_ai/blackboard_set_item/animator_blackboard_item_string.h"
-
+#include "modules/game_help/logic/character_ai/condition/animator_condition_bool.h"
+#include "modules/game_help/logic/character_ai/condition/animator_condition_float.h"
+#include "modules/game_help/logic/character_ai/condition/animator_condition_int.h"
+#include "modules/game_help/logic/character_ai/condition/animator_condition_string.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/separator.h"
 
 class ConditionSection : public VBoxContainer {
 	GDCLASS(ConditionSection, VBoxContainer);
@@ -41,18 +40,14 @@ protected:
 	virtual void _do_update_theme_item_cache();
 
 public:
-	void setup(Ref<CharacterAnimatorCondition> p_object, bool is_include)
-	{
-
+	void setup(Ref<CharacterAnimatorCondition> p_object, bool is_include) {
 		object = p_object;
 		is_include_condition = is_include;
-		if(is_include_condition)
-		{
+		if (is_include_condition) {
 #ifdef TOOLS_ENABLED
 			set_collapsed(!object->editor_is_section_unfolded("Include Conditions"));
 #endif
-		}else
-		{
+		} else {
 #ifdef TOOLS_ENABLED
 			set_collapsed(!object->editor_is_section_unfolded("Exclude Conditions"));
 #endif
@@ -60,7 +55,7 @@ public:
 		update_state();
 	}
 	void set_filter(String p_filter);
-	void add_condition(Control* p_task_button);
+	void add_condition(Control *p_task_button);
 
 	void set_collapsed(bool p_collapsed);
 	bool is_collapsed() const;
@@ -73,16 +68,13 @@ public:
 	~ConditionSection();
 };
 
-class Condition_ED  : public HBoxContainer
-{
+class Condition_ED : public HBoxContainer {
 	GDCLASS(Condition_ED, HBoxContainer);
 	static void _bind_methods() {
-		
 	}
 
 public:
-	Condition_ED(){}
-	
+	Condition_ED() {}
 
 	void _notification(int p_what) {
 		switch (p_what) {
@@ -94,22 +86,19 @@ public:
 			} break;
 		}
 	}
-	Ref<Texture2D> get_type_icon(const StringName& p_type)
-	{
-		#ifdef TOOLS_ENABLED
+	Ref<Texture2D> get_type_icon(const StringName &p_type) {
+#ifdef TOOLS_ENABLED
 		return EditorNode::get_singleton()->get_editor_theme()->get_icon(p_type, "EditorIcons");
-		#else
+#else
 		return get_theme()->get_icon(p_type, "EditorIcons");
-		#endif
+#endif
 	}
-	void setup(ConditionSection* p_section ,Ref<CharacterAnimatorCondition> p_object,Ref<AnimatorAIStateConditionBase> p_condition,bool is_include)
-	{
+	void setup(ConditionSection *p_section, Ref<CharacterAnimatorCondition> p_object, Ref<AnimatorAIStateConditionBase> p_condition, bool is_include) {
 		parent_section = p_section;
 		object = p_object;
 		condition = p_condition;
 		is_include_condition = is_include;
 		this->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
-
 
 		HSeparator *sep = memnew(HSeparator);
 		sep->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
@@ -130,14 +119,13 @@ public:
 		type_lable = memnew(Button);
 		type_lable->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 		type_lable->set_custom_minimum_size(Size2(60, 10));
-		type_lable->set_v_size_flags(SIZE_FILL);		
+		type_lable->set_v_size_flags(SIZE_FILL);
 		type_lable->set_button_icon(get_type_icon(Variant::get_type_name(Variant::INT)));
 		type_lable->set_disabled(true);
 		type_lable->set_focus_mode(FOCUS_NONE);
 		type_lable->set_text("Int");
-		
-		add_child(type_lable);
 
+		add_child(type_lable);
 
 		sep = memnew(HSeparator);
 		sep->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
@@ -161,7 +149,6 @@ public:
 			property_name_list->set_auto_translate_mode(AUTO_TRANSLATE_MODE_ALWAYS);
 			property_name_list->connect("id_pressed", callable_mp(this, &Condition_ED::_on_property_name_list_id_pressed));
 			property_name_bt->add_child(property_name_list);
-
 		}
 
 		// Comparation
@@ -200,8 +187,8 @@ public:
 				value_property_bt->set_name("ValueProperty");
 				value_property_bt->set_visible(false);
 				value_property_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
-				value_property_bt->set_v_size_flags(SIZE_EXPAND_FILL);	
-				value_property_bt->connect("pressed", callable_mp(this, &Condition_ED::_on_value_property_pressed));	
+				value_property_bt->set_v_size_flags(SIZE_EXPAND_FILL);
+				value_property_bt->connect("pressed", callable_mp(this, &Condition_ED::_on_value_property_pressed));
 				value_parent->add_child(value_property_bt);
 
 				value_property_list = memnew(PopupMenu);
@@ -209,7 +196,6 @@ public:
 				value_property_list->set_auto_translate_mode(AUTO_TRANSLATE_MODE_ALWAYS);
 				value_property_list->connect("id_pressed", callable_mp(this, &Condition_ED::_on_value_property_list_id_pressed));
 				value_property_bt->add_child(value_property_list);
-
 			}
 
 			value_num = memnew(LineEdit);
@@ -239,8 +225,6 @@ public:
 			value_range->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 			value_range->set_v_size_flags(SIZE_FILL);
 			value_parent->add_child(value_range);
-
-
 		}
 
 		is_value_property = memnew(CheckBox);
@@ -251,11 +235,10 @@ public:
 		is_value_property->connect("toggled", callable_mp(this, &Condition_ED::_on_value_is_property_toggled));
 		add_child(is_value_property);
 
-		
 		remove_bt = memnew(Button);
 		remove_bt->set_name("Remove");
 		remove_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
-		remove_bt->set_h_size_flags(SIZE_SHRINK_END|SIZE_EXPAND);
+		remove_bt->set_h_size_flags(SIZE_SHRINK_END | SIZE_EXPAND);
 		remove_bt->set_stretch_ratio(0);
 		remove_bt->set_text(" X ");
 		remove_bt->connect("pressed", callable_mp(this, &Condition_ED::_on_remove_bt_pressed));
@@ -266,29 +249,24 @@ public:
 		sep->set_custom_minimum_size(Size2(20, 10));
 		add_child(sep);
 
-
 		initialize();
 	}
 
 	void initialize() {
 		property_name_list->clear();
 		Array blackbord_propertys = condition->get_blackbord_propertys();
-		for(int i=0;i<blackbord_propertys.size();i++)
-		{
+		for (int i = 0; i < blackbord_propertys.size(); i++) {
 			property_name_list->add_item(String(blackbord_propertys[i]));
 		}
 		property_name_bt->set_text(String(condition->get_property_name()));
-		
-
 
 		comparison_list->clear();
 		Array compare_value = condition->get_compare_value();
-		for(int i=0;i<compare_value.size();i++)
-		{
+		for (int i = 0; i < compare_value.size(); i++) {
 			comparison_list->add_item(String(compare_value[i]));
 		}
 		comparison_bt->set_text(String(condition->get_compare_type_name()));
-		
+
 		update_state();
 
 		{
@@ -296,34 +274,25 @@ public:
 			Ref<AnimatorAIStateFloatCondition> float_condition = condition;
 			Ref<AnimatorAIStateBoolCondition> bool_condition = condition;
 			Ref<AnimatorAIStateStringNameCondition> string_condition = condition;
-			if(int_condition.is_valid())
-			{
+			if (int_condition.is_valid()) {
 				type_lable->set_button_icon(get_type_icon(Variant::get_type_name(Variant::INT)));
 				type_lable->set_text("Int");
-			}
-			else if(float_condition.is_valid())
-			{
+			} else if (float_condition.is_valid()) {
 				type_lable->set_button_icon(get_type_icon(Variant::get_type_name(Variant::FLOAT)));
 				type_lable->set_text("Float");
-			}
-			else if(bool_condition.is_valid())
-			{
+			} else if (bool_condition.is_valid()) {
 				type_lable->set_button_icon(get_type_icon(Variant::get_type_name(Variant::BOOL)));
 				type_lable->set_text("Bool");
-			}
-			else if(string_condition.is_valid())
-			{
+			} else if (string_condition.is_valid()) {
 				type_lable->set_button_icon(get_type_icon(Variant::get_type_name(Variant::STRING)));
 				type_lable->set_text("String");
 			}
 
 			bool is_property = condition->get_is_value_by_property();
 			is_value_property->set_pressed(is_property);
-			if(is_property)
-			{
+			if (is_property) {
 				value_property_list->clear();
-				for(int i=0;i<blackbord_propertys.size();i++)
-				{
+				for (int i = 0; i < blackbord_propertys.size(); i++) {
 					value_property_list->add_item(String(blackbord_propertys[i]));
 				}
 				value_property_bt->set_visible(true);
@@ -331,48 +300,40 @@ public:
 				return;
 			}
 
-			if(int_condition.is_valid())
-			{
+			if (int_condition.is_valid()) {
 				value_num->set_text(String::num_int64(int_condition->get_value()));
 				value_num->set_visible(true);
 				return;
 			}
 
-
-			if(float_condition.is_valid())
-			{
+			if (float_condition.is_valid()) {
 				value_num->set_text(String::num(float_condition->get_value()));
 				value_num->set_visible(true);
 				return;
 			}
-			
-			if(bool_condition.is_valid())
-			{
+
+			if (bool_condition.is_valid()) {
 				value_bool->set_visible(true);
 				value_bool->set_pressed(bool_condition->get_value());
-				if(bool_condition->get_value())
-				{
+				if (bool_condition->get_value()) {
 					value_bool->set_modulate(Color(0, 0.92549, 0.164706, 1));
-				}else
-				{
+				} else {
 					value_bool->set_modulate(Color(1, 0.255238, 0.196011, 1));
 				}
 				return;
 			}
-			
 
-			if(string_condition.is_valid())
-			{
+			if (string_condition.is_valid()) {
 				value_string->set_text(string_condition->get_value());
 				value_string->set_visible(true);
 				return;
 			}
-				
 		}
 	}
+
 protected:
 	void _on_property_name_pressed() {
-		popup_on_target(property_name_list,property_name_bt);		
+		popup_on_target(property_name_list, property_name_bt);
 	}
 
 	void _on_property_name_list_id_pressed(int p_id) {
@@ -382,7 +343,7 @@ protected:
 	}
 
 	void _on_comparison_pressed() {
-		popup_on_target(comparison_list,comparison_bt);
+		popup_on_target(comparison_list, comparison_bt);
 	}
 
 	void _on_comparison_list_id_pressed(int p_id) {
@@ -392,7 +353,7 @@ protected:
 	}
 
 	void _on_value_property_pressed() {
-		popup_on_target(value_property_list,value_property_bt);
+		popup_on_target(value_property_list, value_property_bt);
 	}
 
 	void _on_value_property_list_id_pressed(int p_id) {
@@ -401,18 +362,16 @@ protected:
 		update_state();
 	}
 
-	void _on_value_num_text_changed(const String& p_string) {
+	void _on_value_num_text_changed(const String &p_string) {
 		Ref<AnimatorAIStateIntCondition> int_condition = condition;
-		if(int_condition.is_valid())
-		{
+		if (int_condition.is_valid()) {
 			int_condition->set_value(p_string.to_int());
 			value_num->set_text(String::num_int64(int_condition->get_value()));
 			update_state();
 			return;
 		}
 		Ref<AnimatorAIStateFloatCondition> float_condition = condition;
-		if(float_condition.is_valid())
-		{
+		if (float_condition.is_valid()) {
 			float_condition->set_value(p_string.to_float());
 			value_num->set_text(String::num(float_condition->get_value()));
 			update_state();
@@ -422,16 +381,13 @@ protected:
 
 	void _on_value_bool_toggled(bool p_pressed) {
 		Ref<AnimatorAIStateBoolCondition> bool_condition = condition;
-		if(bool_condition.is_valid())
-		{
+		if (bool_condition.is_valid()) {
 			bool_condition->set_value(p_pressed);
 			value_bool->set_pressed(bool_condition->get_value());
-			
-			if(p_pressed)
-			{
+
+			if (p_pressed) {
 				value_bool->set_modulate(Color(0, 0.92549, 0.164706, 1));
-			}else
-			{
+			} else {
 				value_bool->set_modulate(Color(1, 0.255238, 0.196011, 1));
 			}
 			update_state();
@@ -439,10 +395,9 @@ protected:
 		}
 	}
 
-	void _on_value_string_text_changed(const String& p_string) {
+	void _on_value_string_text_changed(const String &p_string) {
 		Ref<AnimatorAIStateStringNameCondition> string_condition = condition;
-		if(string_condition.is_valid())
-		{
+		if (string_condition.is_valid()) {
 			string_condition->set_value(p_string);
 			value_string->set_text(string_condition->get_value());
 			update_state();
@@ -455,56 +410,45 @@ protected:
 		object->notify_property_list_changed();
 	}
 	void _on_remove_bt_pressed() {
-		if(is_include_condition)
-		{
+		if (is_include_condition) {
 			object->remove_include_condition(condition);
-		}else
-		{
+		} else {
 			object->remove_exclude_condition(condition);
 		}
 		object->notify_property_list_changed();
 	}
-	void update_state()
-	{
-		bool rs = condition->is_enable(object->blackboard_plan,is_include_condition);
-		if(rs)
-		{
+	void update_state() {
+		bool rs = condition->is_enable(object->blackboard_plan, is_include_condition);
+		if (rs) {
 			state_button->set_pressed(true);
 			state_button->set_modulate(Color(0, 0.92549, 0.164706, 1));
-		}else
-		{
+		} else {
 			state_button->set_pressed(false);
 			state_button->set_modulate(Color(1, 0.255238, 0.196011, 1));
 		}
-		if(parent_section)
-		{
+		if (parent_section) {
 			parent_section->update_state();
 		}
 	}
-protected:
-	void popup_on_target(PopupMenu *p_menu,Control* p_target) {
-		p_menu->reset_size();
-		Rect2i usable_rect =  Rect2i(Point2i(0,0), DisplayServer::get_singleton()->window_get_size_with_decorations());
-		Rect2i cp_rect = Rect2i(Point2i(0,0), p_target->get_size());
 
-		for(int i = 0; i < 4; i++) {
-			if(i > 1)
-			{
+protected:
+	void popup_on_target(PopupMenu *p_menu, Control *p_target) {
+		p_menu->reset_size();
+		Rect2i usable_rect = Rect2i(Point2i(0, 0), DisplayServer::get_singleton()->window_get_size_with_decorations());
+		Rect2i cp_rect = Rect2i(Point2i(0, 0), p_target->get_size());
+
+		for (int i = 0; i < 4; i++) {
+			if (i > 1) {
 				cp_rect.position.y = p_target->get_global_position().x - p_target->get_size().y;
-			}
-			else
-			{
+			} else {
 				cp_rect.position.y = p_target->get_global_position().y + p_target->get_size().y;
 			}
-			if(i & 1) {
-				cp_rect.position.x = p_target->get_global_position().x ;
+			if (i & 1) {
+				cp_rect.position.x = p_target->get_global_position().x;
+			} else {
+				cp_rect.position.x = p_target->get_global_position().x - MAX(0, cp_rect.size.x - p_target->get_size().x);
 			}
-			else
-			{
-				cp_rect.position.x = p_target->get_global_position().x - MAX(0,cp_rect.size.x - p_target->get_size().x);
-			}
-			if(usable_rect.encloses(cp_rect))
-			{
+			if (usable_rect.encloses(cp_rect)) {
 				break;
 			}
 		}
@@ -512,53 +456,45 @@ protected:
 		Point2i popup_position = main_window_position + Point2i(cp_rect.position);
 		p_menu->set_position(popup_position);
 		p_menu->popup();
-		
 	}
 
-	CheckButton* state_button = nullptr;
-	Button* type_lable = nullptr;
+	CheckButton *state_button = nullptr;
+	Button *type_lable = nullptr;
 
+	Button *property_name_bt = nullptr;
+	PopupMenu *property_name_list = nullptr;
 
-	Button* property_name_bt = nullptr;
-	PopupMenu* property_name_list = nullptr;
+	Button *comparison_bt = nullptr;
+	PopupMenu *comparison_list = nullptr;
 
+	MarginContainer *value_parent = nullptr;
 
-	Button* comparison_bt = nullptr;
-	PopupMenu* comparison_list = nullptr;
+	Button *value_property_bt = nullptr;
+	PopupMenu *value_property_list = nullptr;
 
-	MarginContainer* value_parent = nullptr;
-	
-	Button* value_property_bt = nullptr;
-	PopupMenu* value_property_list = nullptr;
+	LineEdit *value_num = nullptr;
+	LineEdit *value_string = nullptr;
+	CheckButton *value_bool = nullptr;
+	HSlider *value_range = nullptr;
 
-	LineEdit* value_num = nullptr;
-	LineEdit* value_string = nullptr;
-	CheckButton* value_bool = nullptr;
-	HSlider* value_range = nullptr;
+	CheckBox *is_value_property = nullptr;
+	Button *remove_bt = nullptr;
 
-
-	CheckBox* is_value_property = nullptr;
-	Button* remove_bt = nullptr;
-
-	Ref<AnimatorAIStateConditionBase> condition ;
-	Ref<CharacterAnimatorCondition> object ;
-	ConditionSection* parent_section = nullptr;
+	Ref<AnimatorAIStateConditionBase> condition;
+	Ref<CharacterAnimatorCondition> object;
+	ConditionSection *parent_section = nullptr;
 	bool is_include_condition = false;
 };
 
-class ConditionListButton_ED : public HBoxContainer
-{
+class ConditionListButton_ED : public HBoxContainer {
 	GDCLASS(ConditionListButton_ED, HBoxContainer);
-	static void _bind_methods()
-	{
-
+	static void _bind_methods() {
 	}
-public:
-	ConditionListButton_ED(){}
-	
-	void setup(Ref<CharacterAnimatorCondition> p_object,bool is_include)
-	{
 
+public:
+	ConditionListButton_ED() {}
+
+	void setup(Ref<CharacterAnimatorCondition> p_object, bool is_include) {
 		object = p_object;
 		is_include_condition = is_include;
 		set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
@@ -576,14 +512,12 @@ public:
 		add_int_bt->set_modulate(Color(0.875804, 0.881502, 0.103496, 1));
 		add_child(add_int_bt);
 
-
 		add_float_bt = memnew(Button);
 		add_float_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 		add_float_bt->set_h_size_flags(SIZE_EXPAND_FILL);
 		add_float_bt->set_text("Add Float");
 		add_float_bt->connect("pressed", callable_mp(this, &ConditionListButton_ED::_on_add_float_bt_pressed));
 		add_child(add_float_bt);
-
 
 		add_string_bt = memnew(Button);
 		add_string_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
@@ -592,7 +526,6 @@ public:
 		add_string_bt->connect("pressed", callable_mp(this, &ConditionListButton_ED::_on_add_string_bt_pressed));
 		add_string_bt->set_modulate(Color(0.875804, 0.881502, 0.103496, 1));
 		add_child(add_string_bt);
-
 
 		add_bool_bt = memnew(Button);
 		add_bool_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
@@ -607,62 +540,49 @@ public:
 		add_child(sep);
 	}
 
-	void _on_add_int_bt_pressed()
-	{
+	void _on_add_int_bt_pressed() {
 		Ref<AnimatorAIStateConditionBase> condition = memnew(AnimatorAIStateIntCondition);
-		if(is_include_condition)
-		{
+		if (is_include_condition) {
 			object->add_include_condition(condition);
-		}else
-		{
+		} else {
 			object->add_exclude_condition(condition);
 		}
 		object->notify_property_list_changed();
 	}
-	void _on_add_float_bt_pressed()
-	{
+	void _on_add_float_bt_pressed() {
 		Ref<AnimatorAIStateConditionBase> condition = memnew(AnimatorAIStateFloatCondition);
-		if(is_include_condition)
-		{
+		if (is_include_condition) {
 			object->add_include_condition(condition);
-		}else
-		{
+		} else {
 			object->add_exclude_condition(condition);
 		}
 		object->notify_property_list_changed();
 	}
 
-	void _on_add_string_bt_pressed()
-	{
+	void _on_add_string_bt_pressed() {
 		Ref<AnimatorAIStateConditionBase> condition = memnew(AnimatorAIStateStringNameCondition);
-		if(is_include_condition)
-		{
+		if (is_include_condition) {
 			object->add_include_condition(condition);
-		}else
-		{
+		} else {
 			object->add_exclude_condition(condition);
 		}
 		object->notify_property_list_changed();
 	}
 
-	void _on_add_bool_bt_pressed()
-	{
+	void _on_add_bool_bt_pressed() {
 		Ref<AnimatorAIStateConditionBase> condition = memnew(AnimatorAIStateBoolCondition);
-		if(is_include_condition)
-		{
+		if (is_include_condition) {
 			object->add_include_condition(condition);
-		}else
-		{
+		} else {
 			object->add_exclude_condition(condition);
 		}
 		object->notify_property_list_changed();
 	}
 
-
-	Button* add_int_bt = nullptr;
-	Button* add_float_bt = nullptr;
-	Button* add_string_bt = nullptr;
-	Button* add_bool_bt = nullptr;
+	Button *add_int_bt = nullptr;
+	Button *add_float_bt = nullptr;
+	Button *add_string_bt = nullptr;
+	Button *add_bool_bt = nullptr;
 	Ref<CharacterAnimatorCondition> object = nullptr;
 	bool is_include_condition = false;
 };
@@ -672,22 +592,19 @@ void ConditionSection::_on_header_pressed() {
 }
 
 void ConditionSection::set_filter(String p_filter_text) {
-
 }
 
-void ConditionSection::add_condition(Control* p_task_button) {
+void ConditionSection::add_condition(Control *p_task_button) {
 	tasks_container->add_child(p_task_button);
 }
 
 void ConditionSection::set_collapsed(bool p_collapsed) {
 	tasks_container->set_visible(!p_collapsed);
-	if(is_include_condition)
-	{
+	if (is_include_condition) {
 #ifdef TOOLS_ENABLED
 		object->editor_set_section_unfold("Include Conditions", !p_collapsed);
 #endif
-	}else
-	{
+	} else {
 #ifdef TOOLS_ENABLED
 		object->editor_set_section_unfold("Exclude Conditions", !p_collapsed);
 #endif
@@ -718,47 +635,34 @@ void ConditionSection::_notification(int p_what) {
 }
 void ConditionSection::update_state() {
 	bool rs = true;
-	if(is_include_condition)
-	{
-		TypedArray<Ref<AnimatorAIStateConditionBase>>  conditions = object->get_include_condition();
-		for(int32_t i = 0; i < conditions.size(); ++i)
-		{
-			Ref<AnimatorAIStateConditionBase> condition =conditions[i];
-			if(condition.is_valid())
-			{
-				
-                if (!condition->is_enable(object->blackboard_plan,is_include_condition))
-                {
-                    rs =  false;
-					break;
-                }
-			}
-		}
-
-	}
-	else
-	{
-		TypedArray<Ref<AnimatorAIStateConditionBase>>  conditions = object->get_exclude_condition();
-		for(int32_t i = 0; i < conditions.size(); ++i)
-		{
-			Ref<AnimatorAIStateConditionBase> condition =conditions[i];
-			if(condition.is_valid())
-			{
-				if (condition->is_enable(object->blackboard_plan,is_include_condition))
-				{
-					rs =  false;
+	if (is_include_condition) {
+		TypedArray<Ref<AnimatorAIStateConditionBase>> conditions = object->get_include_condition();
+		for (int32_t i = 0; i < conditions.size(); ++i) {
+			Ref<AnimatorAIStateConditionBase> condition = conditions[i];
+			if (condition.is_valid()) {
+				if (!condition->is_enable(object->blackboard_plan, is_include_condition)) {
+					rs = false;
 					break;
 				}
 			}
 		}
 
+	} else {
+		TypedArray<Ref<AnimatorAIStateConditionBase>> conditions = object->get_exclude_condition();
+		for (int32_t i = 0; i < conditions.size(); ++i) {
+			Ref<AnimatorAIStateConditionBase> condition = conditions[i];
+			if (condition.is_valid()) {
+				if (condition->is_enable(object->blackboard_plan, is_include_condition)) {
+					rs = false;
+					break;
+				}
+			}
+		}
 	}
-	if(rs)
-	{
+	if (rs) {
 		state_button->set_pressed(true);
 		state_button->set_modulate(Color(0, 0.92549, 0.164706, 1));
-	}else
-	{
+	} else {
 		state_button->set_pressed(false);
 		state_button->set_modulate(Color(1, 0.255238, 0.196011, 1));
 	}
@@ -770,18 +674,16 @@ void ConditionSection::_bind_methods() {
 }
 
 ConditionSection::ConditionSection() {
-
 	HBoxContainer *hb = memnew(HBoxContainer);
 	hb->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 	add_child(hb);
-
 
 	section_header = memnew(Button);
 	section_header->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 	section_header->set_h_size_flags(SIZE_EXPAND_FILL);
 	section_header->set_v_size_flags(SIZE_EXPAND_FILL);
 	hb->add_child(section_header);
-	
+
 	state_button = memnew(CheckButton);
 	state_button->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 	state_button->set_disabled(true);
@@ -797,21 +699,15 @@ ConditionSection::ConditionSection() {
 ConditionSection::~ConditionSection() {
 }
 
-
-
-class BlackbordSetButtonList_ED : public HBoxContainer
-{
+class BlackbordSetButtonList_ED : public HBoxContainer {
 	GDCLASS(BlackbordSetButtonList_ED, HBoxContainer);
-	static void _bind_methods()
-	{
-
+	static void _bind_methods() {
 	}
-public:
-	BlackbordSetButtonList_ED(){}
-	
-	void setup(Ref<AnimatorBlackboardSet> p_object)
-	{
 
+public:
+	BlackbordSetButtonList_ED() {}
+
+	void setup(Ref<AnimatorBlackboardSet> p_object) {
 		object = p_object;
 		set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 
@@ -828,14 +724,12 @@ public:
 		add_int_bt->set_modulate(Color(0.875804, 0.881502, 0.103496, 1));
 		add_child(add_int_bt);
 
-
 		add_float_bt = memnew(Button);
 		add_float_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
 		add_float_bt->set_h_size_flags(SIZE_EXPAND_FILL);
 		add_float_bt->set_text("Add Float");
 		add_float_bt->connect("pressed", callable_mp(this, &BlackbordSetButtonList_ED::_on_add_float_bt_pressed));
 		add_child(add_float_bt);
-
 
 		add_string_bt = memnew(Button);
 		add_string_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
@@ -844,7 +738,6 @@ public:
 		add_string_bt->connect("pressed", callable_mp(this, &BlackbordSetButtonList_ED::_on_add_string_bt_pressed));
 		add_string_bt->set_modulate(Color(0.875804, 0.881502, 0.103496, 1));
 		add_child(add_string_bt);
-
 
 		add_bool_bt = memnew(Button);
 		add_bool_bt->set_layout_mode(LayoutMode::LAYOUT_MODE_CONTAINER);
@@ -859,38 +752,32 @@ public:
 		add_child(sep);
 	}
 
-	void _on_add_int_bt_pressed()
-	{
+	void _on_add_int_bt_pressed() {
 		Ref<AnimatorBlackboardSetItemInt> condition = memnew(AnimatorBlackboardSetItemInt);
 		object->add_item(condition);
 		object->notify_property_list_changed();
 	}
-	void _on_add_float_bt_pressed()
-	{
+	void _on_add_float_bt_pressed() {
 		Ref<AnimatorBlackboardSetItemFloat> condition = memnew(AnimatorBlackboardSetItemFloat);
 		object->add_item(condition);
 		object->notify_property_list_changed();
 	}
 
-	void _on_add_string_bt_pressed()
-	{
+	void _on_add_string_bt_pressed() {
 		Ref<AnimatorBlackboardSetItemString> condition = memnew(AnimatorBlackboardSetItemString);
 		object->add_item(condition);
 		object->notify_property_list_changed();
 	}
 
-	void _on_add_bool_bt_pressed()
-	{
+	void _on_add_bool_bt_pressed() {
 		Ref<AnimatorBlackboardSetItemBool> condition = memnew(AnimatorBlackboardSetItemBool);
 		object->add_item(condition);
 		object->notify_property_list_changed();
 	}
 
-
-	Button* add_int_bt = nullptr;
-	Button* add_float_bt = nullptr;
-	Button* add_string_bt = nullptr;
-	Button* add_bool_bt = nullptr;
+	Button *add_int_bt = nullptr;
+	Button *add_float_bt = nullptr;
+	Button *add_string_bt = nullptr;
+	Button *add_bool_bt = nullptr;
 	Ref<AnimatorBlackboardSet> object = nullptr;
 };
-

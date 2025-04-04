@@ -1,14 +1,9 @@
 #include "foliage_render.h"
 
-namespace Foliage
-{
+namespace Foliage {
 
-    FiliageRender::FiliageRender()
-    {
-
-    }
-    FiliageRender::~FiliageRender()
-    {
-        
-    }
+FiliageRender::FiliageRender() {
 }
+FiliageRender::~FiliageRender() {
+}
+} //namespace Foliage

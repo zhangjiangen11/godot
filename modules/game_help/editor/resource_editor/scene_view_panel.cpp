@@ -1,9 +1,8 @@
 #include "scene_view_panel.h"
 
-
-#include "scene/resources/packed_scene.h"
 #include "core/config/project_settings.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/resources/packed_scene.h"
 
 void SceneViewPanel::gui_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
@@ -41,24 +40,21 @@ void SceneViewPanel::_update_rotation() {
 	rotation->set_transform(t);
 }
 
-void SceneViewPanel::update_aabb(AABB& aabb,Node3D* p_mesh) {
-
-    MeshInstance3D* mi = Object::cast_to<MeshInstance3D>(p_mesh);
-    if (mi) {
+void SceneViewPanel::update_aabb(AABB &aabb, Node3D *p_mesh) {
+	MeshInstance3D *mi = Object::cast_to<MeshInstance3D>(p_mesh);
+	if (mi) {
 		aabb = aabb.merge(mi->get_aabb());
-    }
+	}
 
-    for(int i=0;i<p_mesh->get_child_count();i++)
-    {
-        Node3D* c = Object::cast_to<Node3D>(p_mesh->get_child(i)) ;
-        update_aabb(aabb,c);
-    }
-    
+	for (int i = 0; i < p_mesh->get_child_count(); i++) {
+		Node3D *c = Object::cast_to<Node3D>(p_mesh->get_child(i));
+		update_aabb(aabb, c);
+	}
 }
-void SceneViewPanel::edit(Node3D* p_mesh) {
-    if(p_mesh == nullptr) {
-        return;
-    }
+void SceneViewPanel::edit(Node3D *p_mesh) {
+	if (p_mesh == nullptr) {
+		return;
+	}
 	mesh_instance = p_mesh;
 
 	rot_x = Math::deg_to_rad(-15.0);
@@ -66,7 +62,7 @@ void SceneViewPanel::edit(Node3D* p_mesh) {
 	_update_rotation();
 
 	AABB aabb;
-    update_aabb(aabb,mesh_instance);
+	update_aabb(aabb, mesh_instance);
 	Vector3 ofs = aabb.get_center();
 	float m = aabb.get_longest_axis_size();
 	if (m != 0) {
@@ -78,12 +74,12 @@ void SceneViewPanel::edit(Node3D* p_mesh) {
 		//xform.origin.z -= aabb.get_longest_axis_size() * 2;
 		mesh_instance->set_transform(xform);
 	}
-    while( rotation->get_child_count() > 0 ) {
-        Node3D* c = Object::cast_to<Node3D>(rotation->get_child(0)) ;
-        rotation->remove_child(c);
-        c->queue_free();
-    }
-    rotation->add_child(mesh_instance);
+	while (rotation->get_child_count() > 0) {
+		Node3D *c = Object::cast_to<Node3D>(rotation->get_child(0));
+		rotation->remove_child(c);
+		c->queue_free();
+	}
+	rotation->add_child(mesh_instance);
 }
 
 void SceneViewPanel::_on_light_1_switch_pressed() {
@@ -125,7 +121,7 @@ SceneViewPanel::SceneViewPanel() {
 	rotation = memnew(Node3D);
 	viewport->add_child(rotation);
 
-	set_custom_minimum_size(Size2(1, 150) );
+	set_custom_minimum_size(Size2(1, 150));
 
 	HBoxContainer *hb = memnew(HBoxContainer);
 	add_child(hb);
@@ -154,17 +150,15 @@ SceneViewPanel::SceneViewPanel() {
 	rot_y = 0;
 }
 
-void SceneViewPanel::set_scene_path(const String& p_scene_path) {
-
+void SceneViewPanel::set_scene_path(const String &p_scene_path) {
 	Ref<PackedScene> scene = ResourceLoader::load(p_scene_path);
-	if (scene.is_null())
-	{
+	if (scene.is_null()) {
 		print_line(L"SceneViewPanel: 路径不存在 :" + p_scene_path);
-        return;
+		return;
 	}
-	Node* p_node = scene->instantiate(PackedScene::GEN_EDIT_STATE_DISABLED);
-    Node3D* p_mesh = Object::cast_to<Node3D>(p_node);
-    if (p_mesh) {
-        edit(p_mesh);
-    }
+	Node *p_node = scene->instantiate(PackedScene::GEN_EDIT_STATE_DISABLED);
+	Node3D *p_mesh = Object::cast_to<Node3D>(p_node);
+	if (p_mesh) {
+		edit(p_mesh);
+	}
 }

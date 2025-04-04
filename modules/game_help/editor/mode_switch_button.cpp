@@ -13,7 +13,6 @@
 
 #include "mode_switch_button.h"
 
-
 #include "core/error/error_macros.h"
 #include "core/object/object.h"
 #include "core/variant/variant.h"
