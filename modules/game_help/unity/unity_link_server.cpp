@@ -295,8 +295,8 @@ static bool poll_client(StreamPeerConstBuffer &msg_buffer) {
 		}
 
 		Ref<CharacterBodyPrefab> prefab;
-		prefab->set_name("prefab_" + name);
 		prefab.instantiate();
+		prefab->set_name("prefab_" + name);
 		prefab->skeleton_path = skeleton_path;
 
 		int mesh_count = msg_buffer.get_32();

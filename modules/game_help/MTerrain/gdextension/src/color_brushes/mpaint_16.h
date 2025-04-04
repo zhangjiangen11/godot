@@ -2,7 +2,7 @@
 #include "../mcolor_brush.h"
 
 class MPaint16 : public MColorBrush {
-	uint8_t paint_layer;
+	uint8_t paint_layer = 0;
 	String _get_name();
 	void _set_property(String prop_name, Variant value);
 	bool is_two_point_brush();

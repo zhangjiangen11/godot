@@ -369,7 +369,7 @@ public:
 			set_modulate(Color(0.5, 0.8, 0.9, 1));
 		}
 	}
-	void _ready();
+	void _ready() override;
 
 	virtual void draw_port(int p_slot_index, Point2i p_pos, bool p_left, const Color &p_color) override {
 		if (horizontal) {
@@ -508,7 +508,7 @@ public:
 		on_beehave_node_change();
 	}
 	void _on_debug_break();
-	virtual void on_selected(bool p_selected);
+	virtual void on_selected(bool p_selected) override;
 	virtual void on_beehave_node_change();
 };
 

@@ -8,7 +8,7 @@ public:
 	float hardness = 0.5;
 	float offset = 0.0;
 	int mode = 1;
-	float start_height;
+	float start_height = 0.0f;
 	MToHeight();
 	~MToHeight();
 	String _get_name();

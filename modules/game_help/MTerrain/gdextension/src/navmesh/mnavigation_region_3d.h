@@ -59,9 +59,9 @@ class MNavigationRegion3D : public NavigationRegion3D {
 	Ref<ArrayMesh> paint_mesh;
 	Ref<StandardMaterial3D> paint_material;
 	uint32_t region_grid_width;
-	uint32_t width;
-	uint32_t height;
-	float h_scale;
+	uint32_t width = 0;
+	uint32_t height = 0;
+	float h_scale = 1.0f;
 	bool is_npoints_visible = false;
 	int max_shown_lod = 2;
 	static VSet<MObstacle *> obstacles;

@@ -37,10 +37,10 @@
 class MHlod;
 
 struct MHLodItemMesh {
-	uint8_t shadow_setting;
-	uint8_t gi_mode;
-	int8_t material_id;
-	int32_t render_layers;
+	uint8_t shadow_setting = 0;
+	uint8_t gi_mode = 0;
+	int8_t material_id = 0;
+	int32_t render_layers = 0;
 	int32_t mesh_id = -1;
 	Ref<MMesh> mesh;
 	//Vector<Material> surface_material;

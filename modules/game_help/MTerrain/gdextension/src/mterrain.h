@@ -24,7 +24,7 @@ class MTerrain : public Node3D {
 	GDCLASS(MTerrain, Node3D);
 
 private:
-	MChunks *_chunks;
+	MChunks *_chunks = nullptr;
 	std::future<void> update_thread_chunks;
 	bool finish_updating = true;
 	bool chunks_update_loop_enabled = true;
@@ -54,8 +54,8 @@ private:
 	int max_size_index = 7;
 	int min_h_scale_index = 2;
 	int max_h_scale_index = 7;
-	int8_t max_lod;
-	int8_t max_size;
+	int8_t max_lod = 0;
+	int8_t max_size = 0;
 	int32_t size_list[9] = M_SIZE_LIST;
 	real_t h_scale_list[8] = M_H_SCALE_LIST;
 	Array size_info;

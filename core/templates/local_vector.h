@@ -73,7 +73,7 @@ public:
 		}
 	}
 
-	_FORCE_INLINE_ T& push_empty() {
+	_FORCE_INLINE_ T &push_empty() {
 		T V;
 		push_back(V);
 		return data[count - 1];
@@ -111,7 +111,7 @@ public:
 		}
 		return false;
 	}
-	_FORCE_INLINE_ void swap(const U& p_index,const U& p_new_index) {
+	_FORCE_INLINE_ void swap(const U &p_index, const U &p_new_index) {
 		ERR_FAIL_INDEX(p_index, count);
 		ERR_FAIL_INDEX(p_new_index, count);
 		T var = data[p_index];
@@ -190,13 +190,27 @@ public:
 			count = p_size;
 		}
 	}
-	_FORCE_INLINE_ const T &operator[](const U& p_index) const {
+	_FORCE_INLINE_ const T &operator[](const U &p_index) const {
 		CRASH_BAD_UNSIGNED_INDEX(p_index, count);
 		return data[p_index];
 	}
-	_FORCE_INLINE_ T &operator[](const U& p_index) {
+	_FORCE_INLINE_ T &operator[](const U &p_index) {
 		CRASH_BAD_UNSIGNED_INDEX(p_index, count);
 		return data[p_index];
+	}
+
+	_FORCE_INLINE_ const T &front() const {
+		return operator[](0);
+	}
+	_FORCE_INLINE_ T &front() {
+		return operator[](0);
+	}
+
+	_FORCE_INLINE_ const T &back() const {
+		return operator[](size() - 1);
+	}
+	_FORCE_INLINE_ T &back() {
+		return operator[](size() - 1);
 	}
 
 	struct Iterator {
@@ -263,7 +277,7 @@ public:
 		return ConstIterator(ptr() + size());
 	}
 
-	void insert(const U& p_pos, const T& p_val) {
+	void insert(const U &p_pos, const T &p_val) {
 		ERR_FAIL_UNSIGNED_INDEX(p_pos, count + 1);
 		if (p_pos == count) {
 			push_back(std::move(p_val));
@@ -305,7 +319,7 @@ public:
 		sort_custom<Comparator<T>>();
 	}
 
-	void ordered_insert(const T& p_val) {
+	void ordered_insert(const T &p_val) {
 		U i;
 		for (i = 0; i < count; i++) {
 			if (p_val < data[i]) {
@@ -314,35 +328,33 @@ public:
 		}
 		insert(i, p_val);
 	}
-	template<typename TPredicate>
-	_FORCE_INLINE_ void ordered_insert(const T& p_val, TPredicate&& p_pred) {
+	template <typename TPredicate>
+	_FORCE_INLINE_ void ordered_insert(const T &p_val, TPredicate &&p_pred) {
 		U i;
 		for (i = 0; i < count; i++) {
-			if (p_pred(p_val , data[i])) {
+			if (p_pred(p_val, data[i])) {
 				break;
 			}
 		}
 		insert(i, p_val);
 	}
-	template<typename TPredicate>
-	_FORCE_INLINE_ int32_t erase_if(TPredicate&& p_pred) {
+	template <typename TPredicate>
+	_FORCE_INLINE_ int32_t erase_if(TPredicate &&p_pred) {
 		int32_t ret;
 		U i;
 		for (i = 0; i < count;) {
 			if (p_pred(data[i])) {
 				remove_at(i);
 				++count;
-			}
-			else
-			{
+			} else {
 				i++;
 			}
 		}
 
 		return ret;
 	}
-		template<typename TPredicate>
-	_FORCE_INLINE_ int32_t find_if(TPredicate&& p_pred, const int32_t& p_from = 0) const {
+	template <typename TPredicate>
+	_FORCE_INLINE_ int32_t find_if(TPredicate &&p_pred, const int32_t &p_from = 0) const {
 		U i;
 		for (i = p_from; i < count; i++) {
 			if (p_pred(data[i])) {
@@ -380,7 +392,7 @@ public:
 	}
 
 	_FORCE_INLINE_ LocalVector() {}
-	_FORCE_INLINE_ LocalVector(const std::initializer_list<T>& p_init) {
+	_FORCE_INLINE_ LocalVector(const std::initializer_list<T> &p_init) {
 		reserve(p_init.size());
 		for (const T &element : p_init) {
 			push_back(element);

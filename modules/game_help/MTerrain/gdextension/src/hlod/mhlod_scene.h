@@ -77,8 +77,8 @@ private:
 	};
 
 	struct ApplyInfo {
-		MHlod::Type type;
-		bool remove;
+		MHlod::Type type = MHlod::MESH;
+		bool remove = false;
 		union {
 			int64_t instance;
 		};

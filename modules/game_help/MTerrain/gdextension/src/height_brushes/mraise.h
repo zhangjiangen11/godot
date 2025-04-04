@@ -7,7 +7,7 @@ public:
 	float hardness = 0.5;
 	float amount = 0.2;
 	float revers = false;
-	float final_amount;
+	float final_amount = 0.0f;
 	MRaise();
 	~MRaise();
 	String _get_name();

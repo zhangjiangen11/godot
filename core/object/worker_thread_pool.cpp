@@ -1153,13 +1153,11 @@ Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle>
 	hand->init();
 	hand->dependJob.resize(_handles.size());
 	for (int i = 0; i < _handles.size(); ++i) {
-		if (_handles[i] != nullptr) {
-			Ref<TaskJobHandle> job = _handles[i];
-			if (job == nullptr) {
-				String err_str = "combined_job_handle job is not TaskJobHandle" + itos(i) + "\n";
-				//PRINT_STACK_TRACE(err_str);
-				continue;
-			}
+		Ref<TaskJobHandle> job = _handles[i];
+		if (job == nullptr) {
+			String err_str = "combined_job_handle job is not TaskJobHandle" + itos(i) + "\n";
+			//PRINT_STACK_TRACE(err_str);
+			continue;
 			hand->dependJob[i] = job;
 		}
 	}

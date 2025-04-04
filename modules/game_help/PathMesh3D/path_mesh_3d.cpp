@@ -6,8 +6,8 @@
 
 //using namespace godot;
 
-#define CHECK_SURFACE_IDX(m_idx) ERR_FAIL_COND(m_idx < 0 || int64_t(m_idx) >= surfaces.size())
-#define CHECK_SURFACE_IDX_V(m_idx, m_ret) ERR_FAIL_COND_V(m_idx < 0 || m_idx >= (uint64_t)surfaces.size(), m_ret)
+#define CHECK_SURFACE_IDX(m_idx) ERR_FAIL_COND(int64_t(m_idx) >= surfaces.size())
+#define CHECK_SURFACE_IDX_V(m_idx, m_ret) ERR_FAIL_COND_V(m_idx >= (uint64_t)surfaces.size(), m_ret)
 
 void PathMesh3D::set_tile_rotation(uint64_t p_surface_idx, Vector3 p_rotation) {
 	CHECK_SURFACE_IDX(p_surface_idx);
@@ -502,7 +502,7 @@ void PathMesh3D::_rebuild_mesh() {
 		return;
 	}
 
-	for (uint64_t idx_surf = 0; idx_surf < source_mesh->get_surface_count(); ++idx_surf) {
+	for (int32_t idx_surf = 0; idx_surf < source_mesh->get_surface_count(); ++idx_surf) {
 		SurfaceData &surf = surfaces.write[idx_surf];
 		if (!surf.dirty) {
 			continue;
@@ -740,7 +740,7 @@ double PathMesh3D::_get_mesh_length() const {
 	if (source_mesh.is_valid()) {
 		double min_z = 0;
 		double max_z = 0;
-		for (uint64_t idx_surf = 0; idx_surf < source_mesh->get_surface_count(); ++idx_surf) {
+		for (int32_t idx_surf = 0; idx_surf < source_mesh->get_surface_count(); ++idx_surf) {
 			SurfaceData surf = surfaces[idx_surf];
 
 			Array mesh_array = source_mesh->surface_get_arrays(idx_surf);

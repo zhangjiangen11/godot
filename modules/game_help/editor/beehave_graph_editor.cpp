@@ -219,8 +219,10 @@ void BeehaveGraphProperty::update_creted_beehave_node_state() {
 	if (Object::cast_to<BeehaveLeaf>(beehave_node.ptr())) {
 		show = false;
 	}
-	child_list->setup(beehave_node, "children", Variant::OBJECT, MAKE_RESOURCE_TYPE_HINT("BeehaveNode"));
-	child_list->update_property();
+	if (show) {
+		child_list->setup(beehave_node, "children", Variant::OBJECT, MAKE_RESOURCE_TYPE_HINT("BeehaveNode"));
+		child_list->update_property();
+	}
 }
 
 /*****************************************************************************************************************************/

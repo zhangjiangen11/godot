@@ -363,7 +363,7 @@ public:
 	}
 	void on_update_state() {
 	}
-	virtual void _on_clear_slots() {
+	virtual void _on_clear_slots() override {
 	}
 	virtual void _create_new_property_slot() override {
 		EditorBottomPanel *p_control = EditorNode::get_bottom_panel();

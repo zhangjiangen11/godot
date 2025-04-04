@@ -76,7 +76,7 @@ void Ivy::grow() {
 	//normalize weights of influence
 
 	//lets grow
-	for (std::vector<IvyRoot>::iterator root = roots.begin(); root != roots.end(); ++root) {
+	for (auto root = roots.begin(); root != roots.end(); ++root) {
 		//process only roots that are alive
 		if (!root->alive) {
 			continue;
@@ -148,7 +148,7 @@ void Ivy::grow() {
 	}
 
 	// Loop through all roots to check if a new root is generated
-	for (std::vector<IvyRoot>::iterator root = roots.begin(); root != roots.end(); ++root) {
+	for (auto root = roots.begin(); root != roots.end(); ++root) {
 		//process only roots that are alive
 		if (!root->alive) {
 			continue;
@@ -164,7 +164,7 @@ void Ivy::grow() {
 		}
 
 		//add child ivys on existing ivy nodes
-		for (std::vector<IvyNode>::iterator node = root->nodes.begin(); node != root->nodes.end(); ++node) {
+		for (auto node = root->nodes.begin(); node != root->nodes.end(); ++node) {
 			//weight depending on ratio of node length to total length
 			float weight = 1.0f - (cos(2.0f * Math_PI * node->length / root->nodes.back().length) * 0.5f + 0.5f);
 
@@ -319,10 +319,10 @@ void Ivy::birth() {
 
 	float gaussian[11] = { 1.0f, 2.0f, 4.0f, 7.0f, 9.0f, 10.0f, 9.0f, 7.0f, 4.0f, 2.0f, 1.0f };
 
-	for (unsigned int r = 0; r < roots.size(); r++) {
+	for (int32_t r = 0; r < int32_t(roots.size()); r++) {
 		for (int g = 0; g < 5; ++g) {
 			IvyRoot root = roots[r];
-			for (unsigned int n = 0; n < root.nodes.size(); n++) {
+			for (int32_t n = 0; n < int32_t(root.nodes.size()); n++) {
 				Vector3 e;
 
 				for (int i = -5; i <= 5; ++i) {
@@ -382,7 +382,7 @@ void Ivy::birth() {
 	materials.push_back(tmpMaterial);
 
 	//create leafs
-	for (std::vector<IvyRoot>::iterator root = roots.begin(); root != roots.end(); ++root) {
+	for (auto root = roots.begin(); root != roots.end(); ++root) {
 		//simple multiplier, just to make it a more dense
 		if (root->nodes.size() < 2) {
 			continue;
@@ -500,7 +500,7 @@ void Ivy::birth() {
 	}
 
 	//branches
-	for (std::vector<IvyRoot>::iterator root = roots.begin(); root != roots.end(); ++root) {
+	for (auto root = roots.begin(); root != roots.end(); ++root) {
 		//process only roots with more than one node
 		if (root->nodes.size() <= 1) {
 			continue;
@@ -509,7 +509,7 @@ void Ivy::birth() {
 		//branch diameter depends on number of parents
 		float local_ivyBranchDiameter = 1.0f / (float)(root->parents + 1) + 1.0f;
 
-		for (std::vector<IvyNode>::iterator node = root->nodes.begin(); node != root->nodes.end() - 1; ++node) {
+		for (auto node = root->nodes.begin(); node != root->nodes.end() - 1; ++node) {
 			//weight depending on ratio of node length to total length
 			float weight = node->length / root->nodes.back().length;
 

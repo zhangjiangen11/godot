@@ -23,7 +23,7 @@ float can have hint="range" and hint_string=slider_step
 
 class MHeightBrush {
 protected:
-	MGrid *grid;
+	MGrid *grid = nullptr;
 
 public:
 	void set_grid(MGrid *_grid) { grid = _grid; }

@@ -13,14 +13,14 @@
 #include "scene/resources/mesh.h"
 
 struct MLod {
-	real_t h_scale;
-	int8_t lod;
+	real_t h_scale = 1.0f;
+	int8_t lod = 0;
 	Vector<RID> meshes;
 };
 
 struct MSize {
-	int8_t size;
-	int32_t size_meter;
+	int8_t size = 0;
+	int32_t size_meter = 0;
 	Vector<MLod> lods;
 };
 
@@ -41,10 +41,10 @@ public:
 #ifdef M_DEBUG
 	Vector<Ref<Material>> debug_material;
 #endif
-	real_t h_scale;
-	int32_t base_size_meter;
-	int8_t max_lod;
-	int8_t max_size;
+	real_t h_scale = 1.0f;
+	int32_t base_size_meter = 0;
+	int8_t max_lod = 1;
+	int8_t max_size = 0;
 	Vector<MSize> sizes;
 	MChunks();
 	~MChunks();

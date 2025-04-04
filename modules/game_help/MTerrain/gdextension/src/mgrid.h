@@ -62,17 +62,17 @@ struct MPoint {
 
 struct MGridUpdateInfo {
 	RID terrain_instance;
-	int region_id;
+	int region_id = 0;
 	Vector3 region_world_pos;
 	Vector2 region_offset_ratio;
-	int lod;
-	int chunk_size;
-	int distance;
+	int lod = 0;
+	int chunk_size = 0;
+	int distance = 0;
 };
 
 struct InstanceDistance {
-	int64_t id;
-	int distance;
+	int64_t id = 0;
+	int distance = 0;
 	friend bool operator<(const InstanceDistance &c1, const InstanceDistance &c2) {
 		return c1.distance < c2.distance;
 	}
@@ -198,11 +198,11 @@ public:
 	bool brush_mask_active = false;
 	Ref<Image> brush_mask;
 	Vector2i brush_mask_px_pos;
-	uint32_t brush_px_pos_x;
-	uint32_t brush_px_pos_y;
-	uint32_t brush_px_radius;
+	uint32_t brush_px_pos_x = 0;
+	uint32_t brush_px_pos_y = 0;
+	uint32_t brush_px_radius = 0;
 	MPixelRegion draw_pixel_region;
-	real_t brush_radius;
+	real_t brush_radius = 0.0f;
 	Vector3 brush_world_pos;
 	Vector3 brush_world_pos_start;
 	Vector3 brush_radius_start;

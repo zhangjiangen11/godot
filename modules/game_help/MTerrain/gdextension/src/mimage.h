@@ -36,12 +36,12 @@ struct MImage {
 	StringName name;
 	String uniform_name;
 	int compression = -1;
-	uint32_t width;
-	uint32_t height;
-	uint32_t current_size;
+	uint32_t width = 0;
+	uint32_t height = 0;
+	uint32_t current_size = 0;
 	int32_t current_scale = 1;
-	uint32_t pixel_size;
-	uint32_t total_pixel_amount;
+	uint32_t pixel_size = 0;
+	uint32_t total_pixel_amount = 0;
 	Image::Format format = Image::Format::FORMAT_MAX; //Setting an invalid format so in case it is not set we can generate error
 	PackedByteArray data;
 #ifdef M_IMAGE_LAYER_ON
@@ -60,7 +60,7 @@ struct MImage {
 	std::mutex update_mutex;
 	std::recursive_mutex load_mutex; //Any method which read/write the data or layer data exept for pixel modification as that would be expensive, for pixel modification we should do some higher level lock
 	bool active_undo = false;
-	int current_undo_id;
+	int current_undo_id = 0;
 	// Key is undo redo id
 	HashMap<int, MImageUndoData> undo_data;
 	bool is_init = false;

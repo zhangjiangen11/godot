@@ -55,7 +55,7 @@ public:
 	Vector<MImage *> images;
 	float min_height = 100000;
 	float max_height = -100000;
-	MGrid *grid;
+	MGrid *grid = nullptr;
 	MGridPos pos;
 	Vector3 world_pos;
 	MPixelRegion normals_pixel_region; // use for recalculating normals

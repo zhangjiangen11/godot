@@ -33,7 +33,7 @@ private:
 	Ref<PhysicsMaterial> physics_material;
 	int collision_layer = 1;
 	int collision_mask = 1;
-	uint64_t update_id;
+	uint64_t update_id = 0;
 	std::mutex update_mutex;
 	uint64_t final_count = 0;
 	int grass_count_limit = 9000000;
@@ -55,15 +55,15 @@ public:
 	RID space;
 	Ref<MGrassData> grass_data;
 	MGrid *grid = nullptr;
-	uint32_t base_grid_size_in_pixel;
-	uint32_t grass_region_pixel_width; // Width or Height both are equal
-	uint32_t grass_region_pixel_size; // Total pixel size for each region
-	uint32_t region_grid_width;
-	uint32_t width;
-	uint32_t height;
+	uint32_t base_grid_size_in_pixel = 0;
+	uint32_t grass_region_pixel_width = 0; // Width or Height both are equal
+	uint32_t grass_region_pixel_size = 0; // Total pixel size for each region
+	uint32_t region_grid_width = 0;
+	uint32_t width = 0;
+	uint32_t height = 0;
 	MPixelRegion grass_pixel_region;
 	MBound grass_bound_limit;
-	int lod_count;
+	int lod_count = 0;
 	int min_grass_cutoff = 1;
 	Array lod_settings;
 	Array materials;

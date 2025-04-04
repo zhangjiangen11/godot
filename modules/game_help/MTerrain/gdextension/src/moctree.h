@@ -43,7 +43,7 @@ private:
 		int8_t lod = -1;
 		uint8_t update_id = 0;
 		uint16_t oct_id = 0;
-		int32_t id;
+		int32_t id = 0;
 		Vector3 position;
 		OctPoint() {}
 		OctPoint(const int32_t _id, const Vector3 &_position, uint8_t _oct_id) :
@@ -52,9 +52,9 @@ private:
 
 public:
 	struct PointUpdate {
-		int8_t lod;
-		int8_t last_lod;
-		int32_t id;
+		int8_t lod = 0;
+		int8_t last_lod = 0;
+		int32_t id = 0;
 		_FORCE_INLINE_ bool operator<(const PointUpdate &other) const {
 			return id < other.id;
 		}

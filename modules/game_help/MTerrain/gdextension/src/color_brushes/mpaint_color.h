@@ -4,7 +4,7 @@
 
 class MPaintColor : public MColorBrush {
 	Color color;
-	float hardness;
+	float hardness = 0.0f;
 	String _get_name();
 	void _set_property(String prop_name, Variant value);
 	bool is_two_point_brush();
