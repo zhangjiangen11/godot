@@ -598,7 +598,7 @@ if env["build_profile"] != "":
 if env["dev_mode"]:
     env["verbose"] = methods.get_cmdline_bool("verbose", True)
     env["warnings"] = ARGUMENTS.get("warnings", "extra")
-    #env["werror"] = methods.get_cmdline_bool("werror", True)
+    # env["werror"] = methods.get_cmdline_bool("werror", True)
     env["tests"] = methods.get_cmdline_bool("tests", True)
     env["strict_checks"] = methods.get_cmdline_bool("strict_checks", True)
 if env["production"]:
