@@ -77,7 +77,7 @@ void MGrass::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_meshes", "input"), &MGrass::set_meshes);
 	ClassDB::bind_method(D_METHOD("get_meshes"), &MGrass::get_meshes);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "meshes", PROPERTY_HINT_RESOURCE_TYPE, "MMeshLod"), "set_meshes", "get_meshes");
-	ClassDB::bind_method(D_METHOD("set_materials"), &MGrass::set_materials);
+	ClassDB::bind_method(D_METHOD("set_materials", "material"), &MGrass::set_materials);
 	ClassDB::bind_method(D_METHOD("get_materials"), &MGrass::get_materials);
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "materials", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "set_materials", "get_materials");
 
@@ -893,7 +893,7 @@ void MGrass::set_meshes(Variant input) { // For comtibilty with older MTerrain v
 	}
 	recreate_all_grass();
 }
-Ref<MMeshLod> MGrass::get_meshes() {
+Variant MGrass::get_meshes() {
 	return meshes;
 }
 

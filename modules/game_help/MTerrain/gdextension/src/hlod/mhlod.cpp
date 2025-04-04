@@ -49,7 +49,7 @@ void MHlod::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("shape_add_cylinder", "transform", "radius", "height", "layers", "body_id"), &MHlod::shape_add_cylinder);
 	ClassDB::bind_method(D_METHOD("shape_add_complex", "id", "transform", "layers", "body_id"), &MHlod::shape_add_complex);
 
-	ClassDB::bind_method(D_METHOD("packed_scene_add", "transform", "id", "arg0", "arg0", "arg2", "layers"), &MHlod::packed_scene_add);
+	ClassDB::bind_method(D_METHOD("packed_scene_add", "transform", "id", "arg0", "arg1", "arg2", "layers"), &MHlod::packed_scene_add);
 	ClassDB::bind_method(D_METHOD("packed_scene_set_bind_items", "packed_scene_item_id", "bind0", "bind1"), &MHlod::packed_scene_set_bind_items);
 
 	ClassDB::bind_method(D_METHOD("light_add", "light_node", "transform", "layers"), &MHlod::light_add);

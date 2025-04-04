@@ -176,7 +176,7 @@ protected:
 	virtual void _update_lightmap_size() override;
 
 public:
-	static void create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w = 0, int subdivide_h = 0, int subdivide_d = 0, bool p_add_uv2 = false, const float p_uv2_padding = 1.0, bool start_by_center = false);
+	static void create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w = 0, int subdivide_h = 0, int subdivide_d = 0, bool p_add_uv2 = false, const float p_uv2_padding = 1.0, bool start_by_center = true);
 
 	void set_size(const Vector3 &p_size);
 	Vector3 get_size() const;

@@ -71,7 +71,7 @@ void MCurve::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("commit_conn_update", "conn_id"), &MCurve::commit_conn_update);
 
 	ClassDB::bind_method(D_METHOD("toggle_conn_type", "point", "conn_id"), &MCurve::toggle_conn_type);
-	ClassDB::bind_method(D_METHOD("validate_conn", "conn_id"), &MCurve::validate_conn);
+	ClassDB::bind_method(D_METHOD("validate_conn", "conn_id", "send_sig"), &MCurve::validate_conn, DEFVAL(true));
 	ClassDB::bind_method(D_METHOD("swap_points", "p_a", "p_b"), &MCurve::swap_points);
 	ClassDB::bind_method(D_METHOD("swap_points_with_validation", "p_a", "p_b"), &MCurve::swap_points_with_validation);
 	ClassDB::bind_method(D_METHOD("sort_from", "root_id", "increasing"), &MCurve::sort_from);
@@ -83,7 +83,7 @@ void MCurve::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_conn_aabb", "conn_id"), &MCurve::get_conn_aabb);
 	ClassDB::bind_method(D_METHOD("get_conns_aabb", "conn_ids"), &MCurve::get_conns_aabb);
 	ClassDB::bind_method(D_METHOD("get_closest_ratio_to_point", "conn_id", "pos"), &MCurve::get_closest_ratio_to_point);
-	ClassDB::bind_method(D_METHOD("get_conn_transform", "conn_id", "t"), &MCurve::get_conn_transform);
+	ClassDB::bind_method(D_METHOD("get_conn_transform", "conn_id", "apply_tilt", "apply_scale"), &MCurve::get_conn_transform);
 	ClassDB::bind_method(D_METHOD("get_conn_lenght", "conn_id"), &MCurve::get_conn_lenght);
 	ClassDB::bind_method(D_METHOD("get_conn_distance_ratio", "conn_id", "distance"), &MCurve::get_conn_distance_ratio);
 

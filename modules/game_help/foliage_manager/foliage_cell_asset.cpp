@@ -98,7 +98,7 @@ void SceneInstanceBlock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("init_xz_position", "start_position", "cell_step_x", "cell_step_z"), &SceneInstanceBlock::init_xz_position);
 	ClassDB::bind_method(D_METHOD("remove_hiden_instances"), &SceneInstanceBlock::remove_hiden_instances);
 	ClassDB::bind_method(D_METHOD("compute_rotation", "p_index", "p_normal", "p_angle"), &SceneInstanceBlock::compute_rotation);
-	ClassDB::bind_method(D_METHOD("hide_instance_by_cell_mask", "p_cell_mask", "p_visble_value_min", "p_visble_value_max"), &SceneInstanceBlock::hide_instance_by_cell_mask);
+	ClassDB::bind_method(D_METHOD("hide_instance_by_cell_mask", "pos_move", "p_cell_mask", "p_visble_value_min", "p_visble_value_max"), &SceneInstanceBlock::hide_instance_by_cell_mask);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "guid"), "set_guid", "get_guid");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "proto_type_index"), "set_proto_type_index", "get_proto_type_index");

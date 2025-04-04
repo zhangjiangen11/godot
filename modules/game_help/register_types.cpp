@@ -239,6 +239,7 @@ void initialize_game_help_module(ModuleInitializationLevel p_level) {
 		ClassDB::register_class<CharacterAI_CheckPatrol>();
 
 		ClassDB::register_class<CharacterAILogicNode>();
+		ClassDB::register_class<BeehaveRuncontext>(true);
 
 		ClassDB::register_class<BeehaveNode>(true);
 		ClassDB::register_class<BeehaveComposite>(true);

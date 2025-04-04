@@ -3,7 +3,7 @@
 void MDecalInstance::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("has_decal"), &MDecalInstance::has_decal);
 
-	ClassDB::bind_method(D_METHOD("set_decal"), &MDecalInstance::set_decal);
+	ClassDB::bind_method(D_METHOD("set_decal", "decal"), &MDecalInstance::set_decal);
 	ClassDB::bind_method(D_METHOD("get_decal"), &MDecalInstance::get_decal);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "decal", PROPERTY_HINT_RESOURCE_TYPE, "MDecal"), "set_decal", "get_decal");
 }

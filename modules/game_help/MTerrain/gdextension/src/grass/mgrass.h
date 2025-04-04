@@ -127,7 +127,7 @@ public:
 	void set_lod_settings(Array input);
 	Array get_lod_settings();
 	void set_meshes(Variant input);
-	Ref<MMeshLod> get_meshes();
+	Variant get_meshes();
 	void set_materials(Array input);
 	Array get_materials();
 	uint32_t get_width();

@@ -19,7 +19,7 @@ MAssetTable *MAssetTable::asset_table_singelton = nullptr;
 
 void MAssetTable::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("finish_import", PropertyInfo(Variant::STRING, "glb_path")));
-	ClassDB::bind_static_method("MAssetTable", D_METHOD("set_singleton"), &MAssetTable::set_singleton);
+	ClassDB::bind_static_method("MAssetTable", D_METHOD("set_singleton", "asset_table"), &MAssetTable::set_singleton);
 	ClassDB::bind_static_method("MAssetTable", D_METHOD("get_singleton"), &MAssetTable::get_singleton);
 	ClassDB::bind_static_method("MAssetTable", D_METHOD("save"), &MAssetTable::save);
 	ClassDB::bind_static_method("MAssetTable", D_METHOD("get_asset_table_path"), &MAssetTable::get_asset_table_path);
@@ -82,7 +82,7 @@ void MAssetTable::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("collection_get_list"), &MAssetTable::collection_get_list);
 	ClassDB::bind_method(D_METHOD("collections_get_by_type", "item_types"), &MAssetTable::collections_get_by_type);
 	ClassDB::bind_method(D_METHOD("collection_add_tag", "collection_id", "tag"), &MAssetTable::collection_add_tag);
-	ClassDB::bind_method(D_METHOD("collection_add_sub_collection", "collection_id", "sub_collection_id"), &MAssetTable::collection_add_sub_collection);
+	ClassDB::bind_method(D_METHOD("collection_add_sub_collection", "collection_id", "sub_collection_id", "transform"), &MAssetTable::collection_add_sub_collection);
 	ClassDB::bind_method(D_METHOD("collection_add_collision", "collection_id", "col_type", "col_transform", "base_transform"), &MAssetTable::collection_add_collision);
 	ClassDB::bind_method(D_METHOD("collection_get_sub_collections", "collection_id"), &MAssetTable::collection_get_sub_collections);
 	ClassDB::bind_method(D_METHOD("collection_get_collision_count", "collection_id"), &MAssetTable::collection_get_collision_count);

@@ -394,18 +394,18 @@ void CharacterAnimatorNodeBase::Blend2dDataConstant::precompute_freeform(BlendTy
 		neighborArray[c] = false;
 	}
 
-	float minX = 10000.0f;
-	float maxX = -10000.0f;
-	float minY = 10000.0f;
-	float maxY = -10000.0f;
+	real_t minX = 10000.0f;
+	real_t maxX = -10000.0f;
+	real_t minY = 10000.0f;
+	real_t maxY = -10000.0f;
 	for (uint32_t c = 0; c < count; c++) {
 		minX = std::min(minX, positionArray[c].x);
 		maxX = std::max(maxX, positionArray[c].x);
 		minY = std::min(minY, positionArray[c].y);
 		maxY = std::max(maxY, positionArray[c].y);
 	}
-	float xRange = (maxX - minX) * 0.5f;
-	float yRange = (maxY - minY) * 0.5f;
+	real_t xRange = (maxX - minX) * 0.5f;
+	real_t yRange = (maxY - minY) * 0.5f;
 	minX -= xRange;
 	maxX += xRange;
 	minY -= yRange;

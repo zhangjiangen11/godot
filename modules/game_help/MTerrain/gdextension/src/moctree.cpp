@@ -12,15 +12,15 @@ void MOctree::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("update_finished"));
 
 	ClassDB::bind_method(D_METHOD("get_oct_id"), &MOctree::get_oct_id);
-	ClassDB::bind_method(D_METHOD("clear_oct_id"), &MOctree::clear_oct_id);
-	ClassDB::bind_method(D_METHOD("remove_oct_id"), &MOctree::remove_oct_id);
+	ClassDB::bind_method(D_METHOD("clear_oct_id", "oct_id"), &MOctree::clear_oct_id);
+	ClassDB::bind_method(D_METHOD("remove_oct_id", "oct_id"), &MOctree::remove_oct_id);
 
 	ClassDB::bind_method(D_METHOD("point_process_finished", "oct_id"), &MOctree::point_process_finished);
 	ClassDB::bind_method(D_METHOD("get_point_update_dictionary_array", "oct_id"), &MOctree::get_point_update_dictionary_array);
 	ClassDB::bind_method(D_METHOD("insert_points", "points", "ids", "oct_id"), &MOctree::insert_points);
-	ClassDB::bind_method(D_METHOD("get_ids", "search_bound"), &MOctree::get_ids);
+	ClassDB::bind_method(D_METHOD("get_ids", "search_bound", "oct_id"), &MOctree::get_ids);
 	ClassDB::bind_method(D_METHOD("get_ids_exclude", "search_bound", "exclude_bound"), &MOctree::get_ids_exclude);
-	ClassDB::bind_method(D_METHOD("set_camera_node"), &MOctree::set_camera_node);
+	ClassDB::bind_method(D_METHOD("set_camera_node", "camera"), &MOctree::set_camera_node);
 
 	ClassDB::bind_method(D_METHOD("get_points_count"), &MOctree::get_points_count);
 	ClassDB::bind_method(D_METHOD("get_oct_id_points_count", "oct_id"), &MOctree::get_oct_id_points_count);

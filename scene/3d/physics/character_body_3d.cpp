@@ -35,7 +35,7 @@
 
 bool CharacterBody3D::move_and_slide(float delta) {
 	// Hack in order to work with calling from _process as well as from _physics_process; calling from thread is risky
-	if(delta < 0) {
+	if (delta < 0) {
 		delta = Engine::get_singleton()->is_in_physics_frame() ? get_physics_process_delta_time() : get_process_delta_time();
 	}
 	//double delta = Engine::get_singleton()->is_in_physics_frame() ? get_physics_process_delta_time() : get_process_delta_time();
@@ -133,7 +133,7 @@ bool CharacterBody3D::move_and_slide(float delta) {
 	return motion_results.size() > 0;
 }
 
-void CharacterBody3D::_move_and_slide_grounded(const Vector3& p_motion, bool p_was_on_floor) {
+void CharacterBody3D::_move_and_slide_grounded(const Vector3 &p_motion, bool p_was_on_floor) {
 	Vector3 motion = p_motion;
 	Vector3 motion_slide_up = motion.slide(up_direction);
 	Vector3 prev_floor_normal = floor_normal;
@@ -395,7 +395,7 @@ void CharacterBody3D::_move_and_slide_grounded(const Vector3& p_motion, bool p_w
 	}
 }
 
-void CharacterBody3D::_move_and_slide_floating(const Vector3& p_motion) {
+void CharacterBody3D::_move_and_slide_floating(const Vector3 &p_motion) {
 	Vector3 motion = p_motion;
 
 	platform_rid = RID();
@@ -848,7 +848,7 @@ void CharacterBody3D::_notification(int p_what) {
 }
 
 void CharacterBody3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("move_and_slide"), &CharacterBody3D::move_and_slide, DEFVAL(0.0f));
+	ClassDB::bind_method(D_METHOD("move_and_slide", "delta"), &CharacterBody3D::move_and_slide, DEFVAL(0.0f));
 	ClassDB::bind_method(D_METHOD("apply_floor_snap"), &CharacterBody3D::apply_floor_snap);
 
 	ClassDB::bind_method(D_METHOD("set_velocity", "velocity"), &CharacterBody3D::set_velocity);

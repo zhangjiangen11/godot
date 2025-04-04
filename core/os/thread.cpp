@@ -34,7 +34,6 @@
 
 #include "thread.h"
 
-
 #ifdef THREADS_ENABLED
 #include "core/object/script_language.h"
 
@@ -92,16 +91,7 @@ void Thread::wait_to_finish() {
 	thread = THREADING_NAMESPACE::thread();
 	id = UNASSIGNED_ID;
 }
-void Thread::set_thread_name(const String& p_name)
-{
-#if defined(WINDOWS_ENABLED)
-	auto wbuf = p_name.to_wchar_buffer();
-	wchar_t* buf = (wchar_t*)alloca(sizeof(wchar_t) + wbuf.size());
-	memset(buf, 0, sizeof(wchar_t) + wbuf.size());
-	memcpy(buf, wbuf.ptr(), wbuf.size());
-	SetThreadDescription(thread.native_handle(), buf);
-#endif
-
+void Thread::set_thread_name(const String &p_name) {
 }
 
 Error Thread::set_name(const String &p_name) {

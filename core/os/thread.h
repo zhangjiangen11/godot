@@ -199,6 +199,7 @@ public:
 	void start(Thread::Callback p_callback, void *p_user, const Settings &p_settings = Settings()) {}
 	bool is_started() const { return false; }
 	void wait_to_finish() {}
+	void set_thread_name(const String &p_name) {}
 };
 
 #endif // THREADS_ENABLED

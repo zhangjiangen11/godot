@@ -712,14 +712,14 @@ int TabBar::get_tab_count() const {
 }
 
 int TabBar::get_tab_index_by_name(const String &p_name) const {
-	for(int i = 0; i < tabs.size(); i++) {
-		if(tabs[i].text == p_name) {
+	for (int i = 0; i < tabs.size(); i++) {
+		if (tabs[i].text == p_name) {
 			return i;
 		}
 	}
 	return -1;
 }
-void TabBar::set_current_tab_by_name(const String& p_current_name,bool p_emit_signal) {
+void TabBar::set_current_tab_by_name(const String &p_current_name, bool p_emit_signal) {
 	int p_current = get_tab_index_by_name(p_current_name);
 	if (p_current == -1) {
 		// An index of -1 is only valid if deselecting is enabled or there are no valid tabs.
@@ -739,7 +739,7 @@ void TabBar::set_current_tab_by_name(const String& p_current_name,bool p_emit_si
 		emit_signal(SNAME("tab_selected"), current);
 		return;
 	}
-	if(p_emit_signal) {
+	if (p_emit_signal) {
 		emit_signal(SNAME("tab_selected"), current);
 	}
 
@@ -748,7 +748,7 @@ void TabBar::set_current_tab_by_name(const String& p_current_name,bool p_emit_si
 		ensure_tab_visible(current);
 	}
 	queue_redraw();
-	if(p_emit_signal) {
+	if (p_emit_signal) {
 		emit_signal(SNAME("tab_changed"), p_current);
 	}
 }
@@ -1867,8 +1867,8 @@ bool TabBar::get_deselect_enabled() const {
 
 void TabBar::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_tab_index_by_name", "title"), &TabBar::get_tab_index_by_name);
-	ClassDB::bind_method(D_METHOD("set_current_tab_by_name", "name"), &TabBar::set_current_tab_by_name);
-	
+	ClassDB::bind_method(D_METHOD("set_current_tab_by_name", "name", "emit_sig"), &TabBar::set_current_tab_by_name, DEFVAL(true));
+
 	ClassDB::bind_method(D_METHOD("set_tab_count", "count"), &TabBar::set_tab_count);
 	ClassDB::bind_method(D_METHOD("get_tab_count"), &TabBar::get_tab_count);
 	ClassDB::bind_method(D_METHOD("set_current_tab", "tab_idx"), &TabBar::set_current_tab);

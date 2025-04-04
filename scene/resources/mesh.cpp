@@ -800,10 +800,10 @@ Ref<Resource> Mesh::create_placeholder() const {
 }
 
 void Mesh::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("set_resource_group"), &Mesh::set_resource_group);
+	ClassDB::bind_method(D_METHOD("set_resource_group", "group"), &Mesh::set_resource_group);
 	ClassDB::bind_method(D_METHOD("get_resource_group"), &Mesh::get_resource_group);
 
-	ClassDB::bind_method(D_METHOD("set_resource_tag"), &Mesh::set_resource_tag);
+	ClassDB::bind_method(D_METHOD("set_resource_tag", "rag"), &Mesh::set_resource_tag);
 	ClassDB::bind_method(D_METHOD("get_resource_tag"), &Mesh::get_resource_tag);
 
 	ClassDB::bind_method(D_METHOD("set_lightmap_size_hint", "size"), &Mesh::set_lightmap_size_hint);

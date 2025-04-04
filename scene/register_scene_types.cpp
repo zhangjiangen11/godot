@@ -210,6 +210,7 @@
 #ifndef _3D_DISABLED
 #include "scene/3d/audio_listener_3d.h"
 #include "scene/3d/audio_stream_player_3d.h"
+#include "scene/3d/audio_stream_player_3d_compoent.h"
 #include "scene/3d/bone_attachment_3d.h"
 #include "scene/3d/camera_3d.h"
 #include "scene/3d/cpu_particles_3d.h"
@@ -944,6 +945,7 @@ void register_scene_types() {
 
 #ifndef _3D_DISABLED
 	GDREGISTER_CLASS(AudioStreamPlayer3D);
+	GDREGISTER_CLASS(AudioStreamPlayer3DCompoent);
 	GDREGISTER_VIRTUAL_CLASS(PrimitiveMesh);
 	GDREGISTER_CLASS(BoxMesh);
 	GDREGISTER_CLASS(CapsuleMesh);

@@ -175,7 +175,7 @@ void MTerrain::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_layer_visibility", "input"), &MTerrain::get_layer_visibility);
 
 	ClassDB::bind_method(D_METHOD("_terrain_ready_signal"), &MTerrain::terrain_ready_signal);
-	ClassDB::bind_method(D_METHOD("terrain_child_changed"), &MTerrain::terrain_child_changed);
+	ClassDB::bind_method(D_METHOD("terrain_child_changed", "node"), &MTerrain::terrain_child_changed);
 	ClassDB::bind_method(D_METHOD("get_region_grid_size"), &MTerrain::get_region_grid_size);
 	ClassDB::bind_method(D_METHOD("get_region_id_by_world_pos", "world_pos"), &MTerrain::get_region_id_by_world_pos);
 	ClassDB::bind_method(D_METHOD("get_base_size"), &MTerrain::get_base_size);

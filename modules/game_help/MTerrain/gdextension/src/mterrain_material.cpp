@@ -22,14 +22,14 @@ void MTerrainMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_clear_all"), &MTerrainMaterial::get_clear_all);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "clear_all", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_clear_all", "get_clear_all");
 
-	ClassDB::bind_method(D_METHOD("_set_uniforms"), &MTerrainMaterial::set_uniforms);
+	ClassDB::bind_method(D_METHOD("_set_uniforms", "uniform"), &MTerrainMaterial::set_uniforms);
 	ClassDB::bind_method(D_METHOD("_get_uniforms"), &MTerrainMaterial::get_uniforms);
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "_uniforms", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_uniforms", "_get_uniforms");
-	ClassDB::bind_method(D_METHOD("_set_next_passes"), &MTerrainMaterial::set_next_passes);
+	ClassDB::bind_method(D_METHOD("_set_next_passes", "pass"), &MTerrainMaterial::set_next_passes);
 	ClassDB::bind_method(D_METHOD("_get_next_passes"), &MTerrainMaterial::get_next_passes);
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "_next_passes", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_next_passes", "_get_next_passes");
 	ClassDB::bind_method(D_METHOD("_shader_code_changed"), &MTerrainMaterial::_shader_code_changed);
-	ClassDB::bind_method(D_METHOD("get_material"), &MTerrainMaterial::get_material);
+	ClassDB::bind_method(D_METHOD("get_material", "region_id"), &MTerrainMaterial::get_material);
 	ClassDB::bind_method(D_METHOD("get_reserved_uniforms"), &MTerrainMaterial::get_reserved_uniforms);
 }
 
