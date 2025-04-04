@@ -54,6 +54,8 @@ skip = [
 	"*.po",
 	"*.pot",
 	"*.rc",
+	"*.gd",
+	"*.md",
 	"AUTHORS.md",
 	"COPYRIGHT.txt",
 	"core/input/gamecontrollerdb.txt",
