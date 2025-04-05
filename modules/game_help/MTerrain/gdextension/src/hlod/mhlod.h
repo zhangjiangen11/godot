@@ -210,6 +210,8 @@ _FORCE_INLINE_ int16_t MHlod::Item::get_physics_body() {
 			return collision.get_body_id();
 		case Type::COLLISION_COMPLEX:
 			return collision_complex.get_body_id();
+		default:
+			break;
 	}
 	return -1;
 }

@@ -17,7 +17,7 @@ private:
 	float deform_offest = 0.0f;
 	float deform_radius = 6.0f;
 	float deform_falloff = 2.0f;
-	MCurve *curve = nullptr;
+	Ref<MCurve> curve = nullptr;
 	MTerrain *terrain = nullptr;
 	MGrid *grid = nullptr;
 	String terrain_layer_name;
@@ -29,8 +29,8 @@ private:
 	float paint_falloff = 0.0f;
 
 public:
-	void set_curve(MCurve *input);
-	MCurve *get_curve();
+	void set_curve(Ref<MCurve> input);
+	Ref<MCurve> get_curve();
 	void set_terrain(MTerrain *m_terrain);
 	MTerrain *get_terrain();
 	void set_terrain_layer_name(const String &input);

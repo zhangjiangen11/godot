@@ -19,7 +19,7 @@ void MOctree::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_point_update_dictionary_array", "oct_id"), &MOctree::get_point_update_dictionary_array);
 	ClassDB::bind_method(D_METHOD("insert_points", "points", "ids", "oct_id"), &MOctree::insert_points);
 	ClassDB::bind_method(D_METHOD("get_ids", "search_bound", "oct_id"), &MOctree::get_ids);
-	ClassDB::bind_method(D_METHOD("get_ids_exclude", "search_bound", "exclude_bound"), &MOctree::get_ids_exclude);
+	ClassDB::bind_method(D_METHOD("get_ids_exclude", "search_bound", "exclude_bound", "oct_id"), &MOctree::get_ids_exclude);
 	ClassDB::bind_method(D_METHOD("set_camera_node", "camera"), &MOctree::set_camera_node);
 
 	ClassDB::bind_method(D_METHOD("get_points_count"), &MOctree::get_points_count);

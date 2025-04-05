@@ -374,6 +374,8 @@ String BBParam::get_property_hint_text(PropertyHint p_hint) {
 		case PROPERTY_HINT_MAX: {
 			return "MAX";
 		}
+		default:
+			break;
 	}
 	return "";
 }

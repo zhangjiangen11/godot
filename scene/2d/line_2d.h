@@ -116,7 +116,7 @@ public:
 
 protected:
 	void _notification(int p_what);
-	void _draw();
+	void _draw() override;
 
 	static void _bind_methods();
 

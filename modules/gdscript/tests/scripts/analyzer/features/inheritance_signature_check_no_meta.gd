@@ -6,5 +6,5 @@ class A:
 	extends RefCounted
 class B:
 	extends A
-	func duplicate():
+	func duplicate(_subresources):
 		pass

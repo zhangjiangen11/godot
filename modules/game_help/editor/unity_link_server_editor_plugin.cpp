@@ -132,7 +132,7 @@ public:
 			}
 		}
 	}
-	virtual void _on_clear_slots() {
+	virtual void _on_clear_slots() override {
 		for (uint32_t i = 0; i < slots.size(); i++) {
 			EditorPropertyArray::Slot &slot = slots[i];
 			if (slot.state_button == nullptr) {

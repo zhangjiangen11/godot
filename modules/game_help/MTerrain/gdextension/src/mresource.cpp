@@ -14,7 +14,7 @@
 #include "mimage.h"
 
 MResource::QuadTreeRF::QuadTreeRF(MPixelRegion _px_region, float *_data, uint32_t _window_width, float _accuracy, MResource::QuadTreeRF *_root, uint8_t _depth, uint8_t _h_encoding) :
-		data(_data), window_width(_window_width), px_region(_px_region), accuracy(_accuracy), root(_root), depth(_depth), h_encoding(_h_encoding) {
+		px_region(_px_region), data(_data), window_width(_window_width), depth(_depth), h_encoding(_h_encoding), accuracy(_accuracy), root(_root) {
 	update_min_max_height();
 	if (!root) {
 		// Then we are root
@@ -33,7 +33,7 @@ MResource::QuadTreeRF::QuadTreeRF(MPixelRegion _px_region, float *_data, uint32_
 }
 
 MResource::QuadTreeRF::QuadTreeRF(MPixelRegion _px_region, float *_data, uint32_t _window_width, uint8_t _h_encoding, uint8_t _depth, MResource::QuadTreeRF *_root) :
-		px_region(_px_region), data(_data), window_width(_window_width), h_encoding(_h_encoding), depth(_depth), root(_root) {
+		px_region(_px_region), data(_data), window_width(_window_width), depth(_depth), h_encoding(_h_encoding), root(_root) {
 }
 
 MResource::QuadTreeRF::~QuadTreeRF() {

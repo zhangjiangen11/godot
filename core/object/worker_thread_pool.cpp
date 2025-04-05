@@ -896,7 +896,7 @@ void TaskJobHandle::set_task_completed(int count) {
 void TaskJobHandle::set_completed() {
 	completed.set();
 	// 通知等待的线程
-	std::lock_guard<std::mutex> lock(done_mutex);
+	MutexLock lock(done_mutex);
 	cv.notify_all();
 }
 bool TaskJobHandle::is_completed() {
@@ -937,7 +937,7 @@ void TaskJobHandle::wait_completion() {
 	}
 	if (is_job) {
 		// 如果完成，等待完成信号
-		std::unique_lock<std::mutex> lock(done_mutex);
+		MutexLock lock(done_mutex);
 		cv.wait(lock, [this] { return WorkerTaskPool::get_singleton() == nullptr || completed.is_set(); });
 	}
 }

@@ -47,7 +47,7 @@ private:
 		Vector3 position;
 		OctPoint() {}
 		OctPoint(const int32_t _id, const Vector3 &_position, uint8_t _oct_id) :
-				id(_id), position(_position), oct_id(_oct_id) {}
+				oct_id(_oct_id), id(_id), position(_position) {}
 	};
 
 public:

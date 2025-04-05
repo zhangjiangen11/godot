@@ -33,11 +33,11 @@
 
 #include "core/io/marshalls.h"
 #include "core/math/geometry_3d.h"
-#include "scene/scene_string_names.h"
 #include "scene/3d/skeleton_3d.h"
+#include "scene/scene_string_names.h"
 Animation::pf_get_animation_group_names Animation::get_animation_group_names_func = nullptr;
 Animation::pf_get_animation_group_names Animation::get_animation_tags_func = nullptr;
-HumanAnimationBoneNameMapping* HumanAnimationBoneNameMapping::singleton = nullptr;
+HumanAnimationBoneNameMapping *HumanAnimationBoneNameMapping::singleton = nullptr;
 
 bool Animation::_set(const StringName &p_name, const Variant &p_value) {
 	String prop_name = p_name;
@@ -470,8 +470,7 @@ bool Animation::_get(const StringName &p_name, Variant &r_ret) const {
 	String prop_name = p_name;
 
 	if (p_name == SNAME("_compression")) {
-		if (!compression.enabled)
-		{
+		if (!compression.enabled) {
 			return false;
 		}
 		ERR_FAIL_COND_V(!compression.enabled, false);
@@ -899,13 +898,13 @@ void Animation::_get_property_list(List<PropertyInfo> *p_list) const {
 void Animation::reset_state() {
 	clear();
 }
-void Animation::set_human_bone_mask(const Vector<uint8_t>& p_human_bone_mask) {
+void Animation::set_human_bone_mask(const Vector<uint8_t> &p_human_bone_mask) {
 	human_bone_mask = p_human_bone_mask;
 }
 Vector<uint8_t> Animation::get_human_bone_mask() const {
 	return human_bone_mask;
 }
-void Animation::add_track_ins(Track* p_track, int p_at_pos ) {
+void Animation::add_track_ins(Track *p_track, int p_at_pos) {
 	if (p_at_pos < 0 || p_at_pos >= tracks.size()) {
 		p_at_pos = tracks.size();
 	}
@@ -3850,16 +3849,13 @@ StringName Animation::animation_track_get_key_animation(int p_track, int p_key) 
 	return at->values[p_key].value;
 }
 
-void Animation::set_track_info(const TypedArray<StringName> & p_track_info)
-{
-
+void Animation::set_track_info(const TypedArray<StringName> &p_track_info) {
 }
-TypedArray<StringName> Animation::get_track_info() const
-{
+TypedArray<StringName> Animation::get_track_info() const {
 	TypedArray<StringName> ret;
-	for(int i=0;i<tracks.size();i++) {
+	for (int i = 0; i < tracks.size(); i++) {
 		ret.push_back(StringName(tracks[i]->path));
-	}	
+	}
 	return ret;
 }
 
@@ -3956,14 +3952,13 @@ real_t Animation::get_step() const {
 	return step;
 }
 
-void Animation::set_bone_map(const Ref<Resource>& p_bone_map) {
+void Animation::set_bone_map(const Ref<Resource> &p_bone_map) {
 	bone_map = p_bone_map;
 }
 
 Ref<Resource> Animation::get_bone_map() const {
 	return bone_map;
 }
-
 
 void Animation::set_is_human_animation(bool p_is_human_animation) {
 	is_human_animation = p_is_human_animation;
@@ -3972,8 +3967,7 @@ bool Animation::get_is_human_animation() const {
 	return is_human_animation;
 }
 
-void Animation::remap_node_to_bone_name(const Vector<String> &p_bone_names)
-{
+void Animation::remap_node_to_bone_name(const Vector<String> &p_bone_names) {
 	HashSet<String> bone_names;
 	for (int i = 0; i < p_bone_names.size(); i++) {
 		bone_names.insert(p_bone_names[i]);
@@ -3981,29 +3975,27 @@ void Animation::remap_node_to_bone_name(const Vector<String> &p_bone_names)
 
 	for (int i = 0; i < tracks.size(); i++) {
 		AnimationTrack *at = static_cast<AnimationTrack *>(tracks[i]);
-		if( at->type == TYPE_POSITION_3D || at->type == TYPE_ROTATION_3D || at->type == TYPE_SCALE_3D ) {
+		if (at->type == TYPE_POSITION_3D || at->type == TYPE_ROTATION_3D || at->type == TYPE_SCALE_3D) {
 			String path_name = at->path;
 			if (path_name.begins_with("Skeleton3D:")) {
 				continue;
 			}
 			auto sv = path_name.split("/");
-			if (bone_names.has(sv[sv.size()-1])) {
-				at->path = "Skeleton3D:" + String(sv[sv.size()-1]);					
+			if (bone_names.has(sv[sv.size() - 1])) {
+				at->path = "Skeleton3D:" + String(sv[sv.size() - 1]);
 			}
-		}		
+		}
 	}
 }
-void Animation::get_node_names(HashSet<String>& p_bone_names) {
+void Animation::get_node_names(HashSet<String> &p_bone_names) {
 	for (int i = 0; i < tracks.size(); i++) {
-		AnimationTrack* at = static_cast<AnimationTrack*>(tracks[i]);
+		AnimationTrack *at = static_cast<AnimationTrack *>(tracks[i]);
 		if (at->type == TYPE_POSITION_3D || at->type == TYPE_ROTATION_3D || at->type == TYPE_SCALE_3D) {
 			String path_name = at->path;
 			auto sv = path_name.split("/");
 			p_bone_names.insert(String(sv[sv.size() - 1]));
-			
 		}
 	}
-
 }
 
 void Animation::copy_track(int p_track, Ref<Animation> p_to_animation) {
@@ -4026,28 +4018,22 @@ void Animation::copy_track(int p_track, Ref<Animation> p_to_animation) {
 	}
 }
 
-
-void Animation::set_human_bone_mapping(const Dictionary &p_mapping,bool is_only_enable_human)
-{
-	if(p_mapping.size() == 0)
-	{
+void Animation::set_human_bone_mapping(const Dictionary &p_mapping, bool is_only_enable_human) {
+	if (p_mapping.size() == 0) {
 		return;
 	}
-	for(int i = 0; i < tracks.size(); i++) {
+	for (int i = 0; i < tracks.size(); i++) {
 		String _name = tracks[i]->path;
-		if(!_name.begins_with("Skeleton3D:")) {
+		if (!_name.begins_with("Skeleton3D:")) {
 			continue;
 		}
 		auto sv = _name.split(":");
-		if(sv.size() != 2)
-		{
+		if (sv.size() != 2) {
 			continue;
 		}
-		if(!p_mapping.has(sv[1]))
-		{
-			if(is_only_enable_human)
-			{
-				tracks[i]->enabled = false;		
+		if (!p_mapping.has(sv[1])) {
+			if (is_only_enable_human) {
+				tracks[i]->enabled = false;
 			}
 			continue;
 		}
@@ -4126,7 +4112,7 @@ void Animation::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("bezier_track_interpolate", "track_idx", "time"), &Animation::bezier_track_interpolate);
 
-	ClassDB::bind_method(D_METHOD("set_human_bone_mapping", "mapping","is_only_enable_human"), &Animation::set_human_bone_mapping,DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("set_human_bone_mapping", "mapping", "is_only_enable_human"), &Animation::set_human_bone_mapping, DEFVAL(false));
 
 	ClassDB::bind_method(D_METHOD("audio_track_insert_key", "track_idx", "time", "stream", "start_offset", "end_offset"), &Animation::audio_track_insert_key, DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("audio_track_set_key_stream", "track_idx", "key_idx", "stream"), &Animation::audio_track_set_key_stream);
@@ -4182,7 +4168,7 @@ void Animation::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_show_name", "show_name"), &Animation::set_show_name);
 	ClassDB::bind_method(D_METHOD("get_show_name"), &Animation::get_show_name);
 
-	ClassDB::bind_method(D_METHOD("set_animation_tag"), &Animation::set_animation_tag);
+	ClassDB::bind_method(D_METHOD("set_animation_tag", "tag"), &Animation::set_animation_tag);
 	ClassDB::bind_method(D_METHOD("get_animation_tag"), &Animation::get_animation_tag);
 
 	ClassDB::bind_method(D_METHOD("set_human_config", "human_config"), &Animation::set_human_config);
@@ -4200,7 +4186,6 @@ void Animation::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("is_capture_included"), &Animation::is_capture_included);
 
-
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "track_info", PROPERTY_HINT_ARRAY_TYPE, "StringName", PROPERTY_USAGE_EDITOR), "set_track_info", "get_track_info");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "length", PROPERTY_HINT_RANGE, "0.001,99999,0.001,suffix:s"), "set_length", "get_length");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "loop_mode", PROPERTY_HINT_ENUM, "None,Linear,Ping-Pong"), "set_loop_mode", "get_loop_mode");
@@ -4211,9 +4196,9 @@ void Animation::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "capture_included", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "", "is_capture_included");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "preview_prefab_path", PROPERTY_HINT_DIR), "set_preview_prefab_path", "get_preview_prefab_path");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "show_name"), "set_show_name", "get_show_name");
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "animation_tag",PROPERTY_HINT_ENUM_DYNAMIC_LIST, "editor_get_animation_tags"), "set_animation_tag", "get_animation_tag");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "animation_tag", PROPERTY_HINT_ENUM_DYNAMIC_LIST, "editor_get_animation_tags"), "set_animation_tag", "get_animation_tag");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "animation_group", PROPERTY_HINT_ENUM_DYNAMIC_LIST, "editor_get_animation_Group"), "set_animation_group", "get_animation_group");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "human_config", PROPERTY_HINT_RESOURCE_TYPE,MAKE_RESOURCE_TYPE_HINT("HumanBoneConfig")), "set_human_config", "get_human_config");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "human_config", PROPERTY_HINT_RESOURCE_TYPE, MAKE_RESOURCE_TYPE_HINT("HumanBoneConfig")), "set_human_config", "get_human_config");
 
 	BIND_ENUM_CONSTANT(TYPE_VALUE);
 	BIND_ENUM_CONSTANT(TYPE_POSITION_3D);
@@ -6599,56 +6584,49 @@ bool Animation::inform_variant_array(int &r_min, int &r_max) {
 
 Array Animation::editor_get_animation_Group() const {
 	Array arr;
-	if(get_animation_group_names_func != nullptr) {
+	if (get_animation_group_names_func != nullptr) {
 		get_animation_group_names_func(&arr);
 		return arr;
 	}
-    arr.append(L"人形");
-    arr.append(L"马");
-    arr.append(L"龙");
-    arr.append(L"狗");
+	arr.append(L"人形");
+	arr.append(L"马");
+	arr.append(L"龙");
+	arr.append(L"狗");
 	return arr;
 }
 Array Animation::editor_get_animation_tags() const {
 	Array arr;
-	if(get_animation_group_names_func != nullptr) {
+	if (get_animation_group_names_func != nullptr) {
 		get_animation_group_names_func(&arr);
 		return arr;
 	}
 
-    
-    arr.append(StringName(L"醉.走路"));
-    arr.append(StringName(L"醉.休闲"));
-    arr.append(StringName(L"醉.跑步"));
+	arr.append(StringName(L"醉.走路"));
+	arr.append(StringName(L"醉.休闲"));
+	arr.append(StringName(L"醉.跑步"));
 
-    
-    arr.append(StringName(L"僵尸.走路"));
-    arr.append(StringName(L"僵尸.休闲"));
-    arr.append(StringName(L"僵尸.跑步"));
+	arr.append(StringName(L"僵尸.走路"));
+	arr.append(StringName(L"僵尸.休闲"));
+	arr.append(StringName(L"僵尸.跑步"));
 
-    
-    arr.append(StringName(L"跳跃"));
+	arr.append(StringName(L"跳跃"));
 
-    
-    arr.append(StringName(L"左手.攻击"));
-    arr.append(StringName(L"右手.攻击"));
-    arr.append(StringName(L"双手.攻击"));
+	arr.append(StringName(L"左手.攻击"));
+	arr.append(StringName(L"右手.攻击"));
+	arr.append(StringName(L"双手.攻击"));
 
-    
-    arr.append(StringName(L"受击"));
+	arr.append(StringName(L"受击"));
 
-
-    arr.append(StringName(L"舞蹈"));
+	arr.append(StringName(L"舞蹈"));
 	return arr;
 }
-
 
 Animation::Animation() {
 }
 
 Animation::~Animation() {
-	HumanAnimationBoneNameMapping* mapping = HumanAnimationBoneNameMapping::get_singleton();
-	if(mapping != nullptr) {
+	HumanAnimationBoneNameMapping *mapping = HumanAnimationBoneNameMapping::get_singleton();
+	if (mapping != nullptr) {
 		mapping->UnmapAnimationBoneName(this);
 	}
 	for (int i = 0; i < tracks.size(); i++) {
@@ -6656,10 +6634,9 @@ Animation::~Animation() {
 	}
 }
 
-
 /********************************************************HumanAnimationBoneNameMapping***********************************************************/
-HumanAnimationBoneNameMapping* HumanAnimationBoneNameMapping::get_singleton() {
-	if(singleton == nullptr) {
+HumanAnimationBoneNameMapping *HumanAnimationBoneNameMapping::get_singleton() {
+	if (singleton == nullptr) {
 		singleton = memnew(HumanAnimationBoneNameMapping);
 	}
 	return singleton;
@@ -6667,71 +6644,53 @@ HumanAnimationBoneNameMapping* HumanAnimationBoneNameMapping::get_singleton() {
 void HumanAnimationBoneNameMapping::MapAnimationBoneName(const Ref<Animation> &p_animation) {
 	MutexLock lock(mutex);
 	ObjectID anim_id = p_animation->get_instance_id();
-	if(cache_animation.has(anim_id)) {
+	if (cache_animation.has(anim_id)) {
 		return;
 	}
 	cache_animation.insert(anim_id);
-	for(int i = 0; i < p_animation->get_track_count(); i++) {
+	for (int i = 0; i < p_animation->get_track_count(); i++) {
 		NodePath path = p_animation->track_get_path(i);
 		Animation::TrackType track_src_type = p_animation->track_get_type(i);
-		if(track_src_type == Animation::TYPE_POSITION_3D || track_src_type == Animation::TYPE_VALUE) {
-			
+		if (track_src_type == Animation::TYPE_POSITION_3D || track_src_type == Animation::TYPE_VALUE) {
 			StringName bone_name = path.get_name(0);
-			if(mapping.has(bone_name)) {
+			if (mapping.has(bone_name)) {
 				continue;
 			}
-			if(bone_name.begins_with("hm.p.")) {					
+			if (bone_name.begins_with("hm.p.")) {
 				String name = bone_name.substr(5);
 				mapping[bone_name] = name;
-			}
-			else if(bone_name.begins_with("hm.v.")) {				
-				String name = bone_name.substr(5);
-				mapping[bone_name] = name;					
-			}
-			else if(bone_name.begins_with("hm.vr.")) {				
-				String name = bone_name.substr(6);
-				mapping[bone_name] = name;					
-			}
-			else if(bone_name.begins_with("hm.g.")) {				
-				String name = bone_name.substr(5);
-				mapping[bone_name] = name;					
-			}
-			else if(bone_name.begins_with("hm.gr.")) {				
-				String name = bone_name.substr(6);
-				mapping[bone_name] = name;					
-			}
-			else if (bone_name.begins_with("hm.r.")) {
+			} else if (bone_name.begins_with("hm.v.")) {
 				String name = bone_name.substr(5);
 				mapping[bone_name] = name;
-			}
-			else if (bone_name.begins_with("hm.a.")) {
+			} else if (bone_name.begins_with("hm.vr.")) {
+				String name = bone_name.substr(6);
+				mapping[bone_name] = name;
+			} else if (bone_name.begins_with("hm.g.")) {
+				String name = bone_name.substr(5);
+				mapping[bone_name] = name;
+			} else if (bone_name.begins_with("hm.gr.")) {
+				String name = bone_name.substr(6);
+				mapping[bone_name] = name;
+			} else if (bone_name.begins_with("hm.r.")) {
+				String name = bone_name.substr(5);
+				mapping[bone_name] = name;
+			} else if (bone_name.begins_with("hm.a.")) {
 				String name = bone_name.substr(5);
 				mapping[bone_name] = name;
 			}
 		}
 	}
 }
-void HumanAnimationBoneNameMapping::UnmapAnimationBoneName(Animation* p_animation) {
+void HumanAnimationBoneNameMapping::UnmapAnimationBoneName(Animation *p_animation) {
 	MutexLock lock(mutex);
 	ObjectID anim_id = p_animation->get_instance_id();
-	if(cache_animation.has(anim_id)) {
+	if (cache_animation.has(anim_id)) {
 		cache_animation.erase(anim_id);
 	}
-	
 }
 StringName HumanAnimationBoneNameMapping::get_bone_name(const StringName &p_bone) {
-	if(mapping.has(p_bone)) {
+	if (mapping.has(p_bone)) {
 		return mapping[p_bone];
 	}
 	return p_bone;
 }
-
-
-
-
-
-
-
-
-
-

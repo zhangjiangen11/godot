@@ -91,7 +91,7 @@ public:
 		int32_t glb_id = -1;
 		CollectionIdentifier() = default;
 		inline CollectionIdentifier(int glb_id, const String &name) :
-				glb_id(glb_id), name(name) {}
+				name(name), glb_id(glb_id) {}
 
 		inline bool is_null() const {
 			return glb_id == -1 || name.is_empty();

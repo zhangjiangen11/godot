@@ -64,7 +64,7 @@ Ref<Image> MTool::get_r16_image(const String &file_path, const uint64_t width, c
 		PackedByteArray data;
 		data.resize(size);
 		uint64_t offset = 0;
-		for (int i = 0; i < size16; i++) {
+		for (uint64_t i = 0; i < size16; i++) {
 			double p = (double)file->get_16() / 65535;
 			p *= (max_height - min_height);
 			p += min_height;
@@ -74,7 +74,7 @@ Ref<Image> MTool::get_r16_image(const String &file_path, const uint64_t width, c
 		img = Image::create_from_data(final_width, final_height, false, Image::FORMAT_RH, data);
 	} else {
 		PackedFloat32Array dataf;
-		for (int i = 0; i < size16; i++) {
+		for (uint64_t i = 0; i < size16; i++) {
 			double p = (double)file->get_16() / 65535;
 			p *= (max_height - min_height);
 			p += min_height;

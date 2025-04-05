@@ -66,11 +66,11 @@ void MCurveTerrain::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("modify_grass", "conn_ids", "grass", "start_offset", "radius", "add"), &MCurveTerrain::modify_grass);
 }
 
-void MCurveTerrain::set_curve(MCurve *input) {
+void MCurveTerrain::set_curve(Ref<MCurve> input) {
 	curve = input;
 }
 
-MCurve *MCurveTerrain::get_curve() {
+Ref<MCurve> MCurveTerrain::get_curve() {
 	return curve;
 }
 

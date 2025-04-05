@@ -310,14 +310,14 @@ class AnimationNode2D : public AnimationNodeSectionBase {
 	GDCLASS(AnimationNode2D, AnimationNodeSectionBase);
 
 public:
-	virtual void init_node_item(int p_index, AnimatorNodeItemEditor *item) {
+	virtual void init_node_item(int p_index, AnimatorNodeItemEditor *item) override {
 		Ref<CharacterAnimatorNode2D> node_2d = Object::cast_to<CharacterAnimatorNode2D>(node.ptr());
 		if (node_2d.is_valid()) {
 			item->set_x_input_value(node_2d->get_position_x(p_index));
 			item->set_y_input_value(node_2d->get_position_y(p_index));
 		}
 	}
-	virtual void update_node_item(int p_index, AnimatorNodeItemEditor *item) {
+	virtual void update_node_item(int p_index, AnimatorNodeItemEditor *item) override {
 		Ref<CharacterAnimatorNode2D> node_2d = Object::cast_to<CharacterAnimatorNode2D>(node.ptr());
 		if (node_2d.is_valid()) {
 			node_2d->set_position_x(p_index, item->get_x_input_value());
@@ -338,13 +338,13 @@ public:
 			item->set_x_input_value(node_1d->get_position(p_index));
 		}
 	}
-	virtual void update_node_item(int p_index, AnimatorNodeItemEditor *item) {
+	virtual void update_node_item(int p_index, AnimatorNodeItemEditor *item) override {
 		Ref<CharacterAnimatorNode1D> node_1d = Object::cast_to<CharacterAnimatorNode1D>(node.ptr());
 		if (node_1d.is_valid()) {
 			node_1d->set_position(p_index, item->get_x_input_value());
 		}
 	}
-	virtual bool is_show_x_input() { return true; }
+	virtual bool is_show_x_input() override { return true; }
 };
 
 void AnimatorNodeItemEditor::update_item_state() {

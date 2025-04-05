@@ -64,7 +64,7 @@ public:
 		data[most_left].right = most_right;
 		data[most_right].right = 0;
 		data[most_right].left = most_left;
-		for (int i = 3; i < size; i++) {
+		for (uint64_t i = 3; i < size; i++) {
 			free_indicies.push_back(i);
 		}
 	}

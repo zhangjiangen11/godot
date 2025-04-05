@@ -71,7 +71,7 @@ Array PathExtrudeProfileRect::_generate_cross_section() {
 		norms.push_back(Vector2(-1.0, 0.0));
 	}
 
-	for (uint64_t idx = 0; idx < subdivisions.y; ++idx) {
+	for (int64_t idx = 0; idx < subdivisions.y; ++idx) {
 		y -= height_subdiv;
 		cs.push_back(Vector2(x, y));
 		norms.push_back(Vector2(-1.0, 0.0));

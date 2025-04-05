@@ -62,7 +62,7 @@ class EmbeddedProcess : public Control {
 	void _update_embedded_process();
 	void _timer_embedding_timeout();
 	void _timer_update_embedded_process_timeout();
-	void _draw();
+	void _draw() override;
 	void _check_mouse_over();
 	void _check_focused_process_id();
 	bool _is_embedded_process_updatable();

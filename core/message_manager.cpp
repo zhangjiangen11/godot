@@ -7,7 +7,7 @@ void MessageManager::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("emit_enum", "msg_name", "arg"), &MessageManager::emit_enum);
 	ClassDB::bind_method(D_METHOD("emit_enum_deferred", "msg_name", "arg"), &MessageManager::emit_enum_deferred);
 	ClassDB::bind_method(D_METHOD("process", "max_process_count"), &MessageManager::process);
-	ClassDB::bind_method(D_METHOD("register_message"), &MessageManager::register_message);
+	ClassDB::bind_method(D_METHOD("register_message", "msg_name", "callable"), &MessageManager::register_message);
 	ClassDB::bind_method(D_METHOD("unregister_message", "msg_name", "callable"), &MessageManager::unregister_message);
 	ClassDB::bind_method(D_METHOD("register_enum_message", "msg_name", "callable"), &MessageManager::register_enum_message);
 	ClassDB::bind_method(D_METHOD("unregister_enum_message", "msg_name", "callable"), &MessageManager::unregister_enum_message);

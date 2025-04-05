@@ -215,7 +215,6 @@ void MHlod::Item::clear() {
 			decal.~MHLodItemDecal();
 		default:
 			ERR_FAIL_MSG("Undefine Item Type!");
-			break;
 	}
 }
 
@@ -596,7 +595,7 @@ int32_t MHlod::get_mesh_id(int32_t item_id, bool current_lod, bool lowest_lod) c
 }
 
 int MHlod::shape_add_sphere(const Transform3D &_transform, float radius, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, String("Body Id can be bigger than ") + itos(std::numeric_limits<int16_t>::max()));
 	MHLodItemCollision mcol(MHLodItemCollision::Type::SPHERE);
 	mcol.set_param(radius);
 	mcol.set_body_id(body_id);
@@ -609,7 +608,7 @@ int MHlod::shape_add_sphere(const Transform3D &_transform, float radius, uint16_
 	return item_list.size() - 1;
 }
 int MHlod::shape_add_box(const Transform3D &_transform, const Vector3 &size, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
 	MHLodItemCollision mcol(MHLodItemCollision::Type::BOX);
 	mcol.set_param(size.x / 2, size.y / 2, size.z / 2);
 	mcol.set_body_id(body_id);
@@ -623,7 +622,7 @@ int MHlod::shape_add_box(const Transform3D &_transform, const Vector3 &size, uin
 }
 
 int MHlod::shape_add_capsule(const Transform3D &_transform, float radius, float height, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
 	MHLodItemCollision mcol(MHLodItemCollision::Type::CAPSULE);
 	mcol.set_param(radius, height);
 	mcol.set_body_id(body_id);
@@ -637,7 +636,7 @@ int MHlod::shape_add_capsule(const Transform3D &_transform, float radius, float 
 }
 
 int MHlod::shape_add_cylinder(const Transform3D &_transform, float radius, float height, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
 	MHLodItemCollision mcol(MHLodItemCollision::Type::CYLINDER);
 	mcol.set_param(radius, height);
 	mcol.set_body_id(body_id);
@@ -651,7 +650,7 @@ int MHlod::shape_add_cylinder(const Transform3D &_transform, float radius, float
 }
 
 int MHlod::shape_add_complex(const int32_t id, const Transform3D &_transform, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
 	MHLodItemCollisionComplex mcol;
 	mcol.id = id;
 	mcol.static_body = body_id;

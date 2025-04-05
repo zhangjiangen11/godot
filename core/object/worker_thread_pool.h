@@ -433,8 +433,8 @@ protected:
 	// 依赖的句柄
 	LocalVector<Ref<TaskJobHandle>> dependJob;
 	// 完成标志
-	mutable THREADING_NAMESPACE::mutex done_mutex;
-	std::condition_variable cv;
+	BinaryMutex done_mutex;
+	ConditionVariable cv;
 	SafeFlag completed;
 	// 完成数量
 	SafeNumeric<uint32_t> completed_index;

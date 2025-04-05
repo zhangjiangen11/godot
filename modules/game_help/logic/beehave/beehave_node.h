@@ -73,7 +73,7 @@ public:
 		touch(curr_this_node);
 		currRunState->reset(child_count);
 	}
-	Blackboard *get_blackboard() { return blackboard.ptr(); }
+	Ref<Blackboard> get_blackboard() { return blackboard.ptr(); }
 	void reset() {
 		properties.clear();
 		time = 0;

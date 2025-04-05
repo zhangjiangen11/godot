@@ -40,7 +40,7 @@
 
 // Based on "A Novel Multichannel Panning Method for Standard and Arbitrary Loudspeaker Configurations" by Ramy Sadek and Chris Kyriakakis (2004)
 // Speaker-Placement Correction Amplitude Panning (SPCAP)
-class Spcap {
+class SpcapCompoent {
 private:
 	struct Speaker {
 		Vector3 direction;
@@ -51,7 +51,7 @@ private:
 	Vector<Speaker> speakers;
 
 public:
-	Spcap(unsigned int speaker_count, const Vector3 *speaker_directions) {
+	SpcapCompoent(unsigned int speaker_count, const Vector3 *speaker_directions) {
 		speakers.resize(speaker_count);
 		Speaker *w = speakers.ptrw();
 		for (unsigned int speaker_num = 0; speaker_num < speaker_count; speaker_num++) {
@@ -87,17 +87,6 @@ public:
 	}
 };
 
-//TODO: hardcoded main speaker directions for 2, 3.1, 5.1 and 7.1 setups - these are simplified and could also be made configurable
-static const Vector3 speaker_directions[7] = {
-	Vector3(-1.0, 0.0, -1.0).normalized(), // front-left
-	Vector3(1.0, 0.0, -1.0).normalized(), // front-right
-	Vector3(0.0, 0.0, -1.0).normalized(), // center
-	Vector3(-1.0, 0.0, 1.0).normalized(), // rear-left
-	Vector3(1.0, 0.0, 1.0).normalized(), // rear-right
-	Vector3(-1.0, 0.0, 0.0).normalized(), // side-left
-	Vector3(1.0, 0.0, 0.0).normalized(), // side-right
-};
-
 void AudioStreamPlayer3DCompoent::_calc_output_vol(const Vector3 &source_dir, real_t tightness, Vector<AudioFrame> &output) {
 	unsigned int speaker_count = 0; // only main speakers (no LFE)
 	switch (AudioServer::get_singleton()->get_speaker_mode()) {
@@ -115,7 +104,17 @@ void AudioStreamPlayer3DCompoent::_calc_output_vol(const Vector3 &source_dir, re
 			break;
 	}
 
-	Spcap spcap(speaker_count, speaker_directions); //TODO: should only be created/recreated once the speaker mode / speaker positions changes
+	//TODO: hardcoded main speaker directions for 2, 3.1, 5.1 and 7.1 setups - these are simplified and could also be made configurable
+	static const Vector3 speaker_com_directions[7] = {
+		Vector3(-1.0, 0.0, -1.0).normalized(), // front-left
+		Vector3(1.0, 0.0, -1.0).normalized(), // front-right
+		Vector3(0.0, 0.0, -1.0).normalized(), // center
+		Vector3(-1.0, 0.0, 1.0).normalized(), // rear-left
+		Vector3(1.0, 0.0, 1.0).normalized(), // rear-right
+		Vector3(-1.0, 0.0, 0.0).normalized(), // side-left
+		Vector3(1.0, 0.0, 0.0).normalized(), // side-right
+	};
+	SpcapCompoent spcap(speaker_count, speaker_com_directions); //TODO: should only be created/recreated once the speaker mode / speaker positions changes
 	real_t volumes[7];
 	spcap.calculate(source_dir, tightness, speaker_count, volumes);
 
@@ -239,7 +238,7 @@ float AudioStreamPlayer3DCompoent::_get_attenuation_db(float p_distance) const {
 }
 
 void AudioStreamPlayer3DCompoent::notification(int p_what) {
-	Node3D* node = Object::cast_to<Node3D>(owenr);
+	Node3D *node = Object::cast_to<Node3D>(owenr);
 	if (!node) {
 		return;
 	}
@@ -287,9 +286,8 @@ void AudioStreamPlayer3DCompoent::notification(int p_what) {
 
 // Interacts with PhysicsServer3D, so can only be called during _physics_process
 Area3D *AudioStreamPlayer3DCompoent::_get_overriding_area() {
-
-	Node3D* node = Object::cast_to<Node3D>(owenr);
-	if(!node) {
+	Node3D *node = Object::cast_to<Node3D>(owenr);
+	if (!node) {
 		return nullptr;
 	}
 
@@ -341,9 +339,8 @@ StringName AudioStreamPlayer3DCompoent::_get_actual_bus() {
 
 // Interacts with PhysicsServer3D, so can only be called during _physics_process.
 Vector<AudioFrame> AudioStreamPlayer3DCompoent::_update_panning() {
-	
-	Node3D* node = Object::cast_to<Node3D>(owenr);
-	if(node) {
+	Node3D *node = Object::cast_to<Node3D>(owenr);
+	if (node) {
 		return Vector<AudioFrame>();
 	}
 
@@ -576,7 +573,7 @@ void AudioStreamPlayer3DCompoent::play(float p_from_pos) {
 	}
 }
 
-void AudioStreamPlayer3DCompoent::seek( float p_seconds) {
+void AudioStreamPlayer3DCompoent::seek(float p_seconds) {
 	if (is_playing()) {
 		stop();
 		play(p_seconds);
@@ -698,7 +695,7 @@ void AudioStreamPlayer3DCompoent::set_doppler_tracking(DopplerTracking p_trackin
 	if (doppler_tracking == p_tracking) {
 		return;
 	}
-	Node3D* node = Object::cast_to<Node3D>(owenr);
+	Node3D *node = Object::cast_to<Node3D>(owenr);
 	if (node) {
 		return;
 	}
@@ -883,10 +880,10 @@ void AudioStreamPlayer3DCompoent::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("finished"));
 }
 void AudioStreamPlayer3DCompoent::set_owenr(Node *p_owner) {
-	if(p_owner == nullptr) {
-		return ;
+	if (p_owner == nullptr) {
+		return;
 	}
-	owenr = p_owner;	
+	owenr = p_owner;
 }
 
 AudioStreamPlayer3DCompoent::AudioStreamPlayer3DCompoent() {

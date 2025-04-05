@@ -59,9 +59,23 @@ public:
 		condition.wait(p_lock._get_lock());
 	}
 
+	template <typename BinaryMutexT, class _Predicate>
+	_ALWAYS_INLINE_ void wait(const MutexLock<BinaryMutexT> &p_lock, _Predicate _Pred) { // wait for signal and test predicate
+		while (!_Pred()) {
+			wait(p_lock);
+		}
+	}
+
 	template <int Tag>
 	_ALWAYS_INLINE_ void wait(const MutexLock<SafeBinaryMutex<Tag>> &p_lock) const {
 		condition.wait(p_lock.mutex._get_lock());
+	}
+
+	template <int Tag, class _Predicate>
+	_ALWAYS_INLINE_ void wait(const MutexLock<SafeBinaryMutex<Tag>> &p_lock, _Predicate _Pred) const {
+		while (!_Pred()) {
+			wait(p_lock);
+		}
 	}
 
 	_ALWAYS_INLINE_ void notify_one() const {
@@ -79,6 +93,13 @@ class ConditionVariable {
 public:
 	template <typename BinaryMutexT>
 	void wait(const MutexLock<BinaryMutexT> &p_lock) const {}
+	template <typename BinaryMutexT, class _Predicate>
+	void wait(const MutexLock<BinaryMutexT> &p_lock, _Predicate _Pred) {}
+	template <int Tag>
+	void wait(const MutexLock<SafeBinaryMutex<Tag>> &p_lock) const {}
+
+	template <int Tag, class _Predicate>
+	_ALWAYS_INLINE_ void wait(const MutexLock<SafeBinaryMutex<Tag>> &p_lock, _Predicate _Pred) const {}
 	void notify_one() const {}
 	void notify_all() const {}
 };

@@ -364,7 +364,8 @@ AudioStreamPlayerInternal::AudioStreamPlayerInternal(Node *p_node, const Callabl
 	stop_callable = p_stop_callable;
 	physical = p_physical;
 	bus = SceneStringName(Master);
-
-	AudioServer::get_singleton()->connect("bus_layout_changed", callable_mp((Object *)node, &Object::notify_property_list_changed));
-	AudioServer::get_singleton()->connect("bus_renamed", callable_mp((Object *)node, &Object::notify_property_list_changed).unbind(3));
+	if (node) {
+		AudioServer::get_singleton()->connect("bus_layout_changed", callable_mp((Object *)node, &Object::notify_property_list_changed));
+		AudioServer::get_singleton()->connect("bus_renamed", callable_mp((Object *)node, &Object::notify_property_list_changed).unbind(3));
+	}
 }

@@ -929,6 +929,8 @@ int MImage::get_format_pixel_size(Image::Format p_format) {
 			return 16;
 		case Image::FORMAT_RGBE9995:
 			return 4;
+		default:
+			break;
 	}
 	return 0;
 }

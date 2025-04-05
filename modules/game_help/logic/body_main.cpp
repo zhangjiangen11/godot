@@ -353,7 +353,7 @@ void CharacterBodyMain::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("play_audio", "audio_socket", "stream"), &CharacterBodyMain::play_audio);
 
-	ClassDB::bind_method(D_METHOD("get_audio_player"), &CharacterBodyMain::get_audio_player);
+	ClassDB::bind_method(D_METHOD("get_audio_player", "audio_socket"), &CharacterBodyMain::get_audio_player);
 
 	ClassDB::bind_method(D_METHOD("get_animation_Group"), &CharacterBodyMain::get_animation_Group);
 	ClassDB::bind_method(D_METHOD("get_animation_Tags"), &CharacterBodyMain::get_animation_Tags);
