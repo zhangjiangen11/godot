@@ -174,7 +174,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 		}
 
 		if (version_texts.is_empty()) {
-			version_texts[""] = ""; //make sure a default version exists
+			version_texts[""] = p_defines; //make sure a default version exists
 		}
 
 		bool errors_found = false;

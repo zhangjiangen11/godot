@@ -30,8 +30,8 @@ public:
 	ResourceEditorTool() {
 		set_h_size_flags(SIZE_EXPAND_FILL);
 		set_v_size_flags(SIZE_EXPAND_FILL);
-		List<StringName> inheriters;
-		ClassDB::get_inheriters_from_class(ResourceEditorToolItem::get_class_static(), &inheriters);
+		LocalVector<StringName> inheriters;
+		ClassDB::get_inheriters_from_class(ResourceEditorToolItem::get_class_static(), inheriters);
 
 		for (const StringName &S : inheriters) {
 			curr_tool = S;

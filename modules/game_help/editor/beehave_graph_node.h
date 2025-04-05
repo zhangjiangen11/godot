@@ -285,8 +285,8 @@ protected:
 				p_vector->insert(p_type);
 			}
 
-			List<StringName> inheriters;
-			ClassDB::get_inheriters_from_class(p_type, &inheriters);
+			LocalVector<StringName> inheriters;
+			ClassDB::get_inheriters_from_class(p_type, inheriters);
 			for (const StringName &S : inheriters) {
 				_add_allowed_type(S, p_vector);
 			}

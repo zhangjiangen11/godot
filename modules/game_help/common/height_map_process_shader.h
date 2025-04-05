@@ -38,6 +38,7 @@ public:
 	void remove_using_process_shader(ObjectID id) {
 		link_process_shaders.erase(id);
 	}
+	uint64_t get_template_version() { return version; }
 
 protected:
 	void load();
@@ -54,6 +55,7 @@ protected:
 	HashSet<ObjectID> link_process_shaders;
 
 	LocalVector<ObjectID> remove;
+	uint64_t version = 0;
 	bool is_error = true;
 };
 
@@ -149,7 +151,7 @@ private:
 	uint64_t code_file_path_time = -1;
 
 	String preview_name;
-
+	uint64_t template_version = 0;
 	bool is_error = false;
 };
 
