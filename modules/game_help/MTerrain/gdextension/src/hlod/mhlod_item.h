@@ -201,8 +201,8 @@ struct MHLodItemCollision {
 		RID rid;
 		int64_t user_count = 1;
 		ShapeData() = default;
-		_FORCE_INLINE_ ShapeData(RID rid) :
-				rid(rid) {}
+		_FORCE_INLINE_ ShapeData(RID p_rid) :
+				rid(p_rid) {}
 	};
 
 private:

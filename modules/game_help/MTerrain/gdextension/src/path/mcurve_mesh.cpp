@@ -847,7 +847,7 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 
 	PackedColorArray vcolor;
 	vcolor.resize(vertex.size());
-	memcpy(vcolor.ptrw(), inter_info->weights.ptr(), inter_info->weights.size() * sizeof(float));
+	memcpy((void *)vcolor.ptrw(), (void *)inter_info->weights.ptr(), inter_info->weights.size() * sizeof(float));
 
 	Array data_arr;
 	data_arr.resize(Mesh::ARRAY_MAX);

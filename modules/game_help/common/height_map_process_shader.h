@@ -65,6 +65,7 @@ class HeightMapProcessShader : public RefCounted {
 
 public:
 	void init(const Ref<HeightMapTemplateShader> &p_template_shader, const String &p_code_file_path);
+	void init_from_only_process(const String &p_code_file_path);
 
 	Array get_params() {
 		return params;
@@ -152,6 +153,7 @@ private:
 
 	String preview_name;
 	uint64_t template_version = 0;
+	bool is_only_process = false;
 	bool is_error = false;
 };
 

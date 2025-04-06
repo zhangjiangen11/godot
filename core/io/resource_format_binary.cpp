@@ -2021,11 +2021,10 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 				}
 			}
 
-			if(res.is_valid())
-			{
+			if (res.is_valid()) {
 				if (!p_main && (!bundle_resources) && !res->is_built_in()) {
 					if (res->get_path() == path) {
-					ERR_PRINT(vformat("Circular reference to resource being saved found: '%s' will be null next time it's loaded.", local_path));
+						ERR_PRINT(vformat("Circular reference to resource being saved found: '%s' will be null next time it's loaded.", local_path));
 						return;
 					}
 					int idx = external_resources.size();
@@ -2039,8 +2038,7 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 
 				resource_set.insert(res);
 			}
-			if(ref.is_null())
-			{
+			if (ref.is_null()) {
 				return;
 			}
 
@@ -2061,8 +2059,7 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 						if (sres.is_valid()) {
 							resource_set.insert(sres);
 							saved_resources.push_back(sres);
-							if (sres->is_built_in())
-							{
+							if (sres->is_built_in()) {
 								_find_resources(sres);
 							}
 						} else {
@@ -2074,8 +2071,9 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 				}
 			}
 
-			if(res.is_valid())
-				saved_resources.push_back(res); 
+			if (res.is_valid()) {
+				saved_resources.push_back(res);
+			}
 
 		} break;
 

@@ -132,6 +132,7 @@ int main(int argc, char **argv) {
 	// _argc and _argv are ignored
 	// we are going to use the WideChar version of them instead
 #if defined(CRASH_HANDLER_EXCEPTION) && defined(_MSC_VER)
+	OS::get_singleton()->set_call_stack_func(&windows_msvc_get_call_stack);
 	__try {
 		return _main();
 	} __except (CrashHandlerException(GetExceptionInformation())) {

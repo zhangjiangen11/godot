@@ -126,7 +126,6 @@ int64_t get_image_base(const String &p_path) {
 		return 0;
 	}
 }
-
 extern void CrashHandlerException(int signal) {
 	CrashHandlerData data;
 
@@ -208,6 +207,9 @@ void CrashHandler::disable() {
 }
 
 void CrashHandler::initialize() {
+#if defined(CRASH_HANDLER_EXCEPTION) && defined(_MSC_VER)
+	OS::get_singleton()->set_call_stack_func(&windows_msvc_get_call_stack);
+#endif
 #if defined(CRASH_HANDLER_EXCEPTION)
 	signal(SIGSEGV, CrashHandlerException);
 	signal(SIGFPE, CrashHandlerException);

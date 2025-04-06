@@ -733,8 +733,8 @@ void TriangleMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("intersect_ray", "begin", "dir"), &TriangleMesh::intersect_ray_scriptwrap);
 
 	ClassDB::bind_method(D_METHOD("create", "faces", "surface_indices"), &TriangleMesh::create);
-	ClassDB::bind_method(D_METHOD("intersect_segment", "begin", "end", "auto_swap_normal"), &TriangleMesh::_intersect_segment, DEFVAL(true));
-	ClassDB::bind_method(D_METHOD("get_closest_point_to", "point", "max_distance", "auto_swap_normal"), &TriangleMesh::_get_closest_point_to, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("intersect_segment_swap_normal", "begin", "end", "auto_swap_normal"), &TriangleMesh::_intersect_segment, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("get_closest_point_to_swap_normal", "point", "max_distance", "auto_swap_normal"), &TriangleMesh::_get_closest_point_to, DEFVAL(true));
 }
 
 TriangleMesh::TriangleMesh() {

@@ -22,7 +22,7 @@ VSet<MObstacle *> MNavigationRegion3D::obstacles;
 Vector<MNavigationRegion3D *> MNavigationRegion3D::all_navigation_nodes;
 
 void MNavigationRegion3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("update_navmesh", "cam_pos"), &MNavigationRegion3D::update_navmesh);
+	ClassDB::bind_method(D_METHOD("_update_navmesh", "cam_pos"), &MNavigationRegion3D::update_navmesh);
 	ClassDB::bind_method(D_METHOD("_finish_update", "nvm"), &MNavigationRegion3D::_finish_update);
 	ClassDB::bind_method(D_METHOD("_update_loop"), &MNavigationRegion3D::_update_loop);
 	ClassDB::bind_method(D_METHOD("_set_is_updating", "input"), &MNavigationRegion3D::_set_is_updating);

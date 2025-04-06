@@ -108,7 +108,7 @@ void MCurve::_bind_methods() {
 }
 
 MCurve::Point::Point(Vector3 _position, Vector3 _in, Vector3 _out) :
-		position(_position), out(_out), in(_in) {
+		in(_in), out(_out), position(_position) {
 }
 
 MCurve::PointSave MCurve::Point::get_point_save() {

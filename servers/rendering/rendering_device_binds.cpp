@@ -190,7 +190,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 				if (code.is_empty()) {
 					continue;
 				}
-				code = code.replace("VERSION_DEFINES", E.value);
+				code = code.replace("#VERSION_DEFINES", E.value);
 				String error;
 				Vector<uint8_t> spirv = RenderingDevice::get_singleton()->shader_compile_spirv_from_source(RD::ShaderStage(i), code, RD::SHADER_LANGUAGE_GLSL, &error, false);
 				bytecode->set_stage_bytecode(RD::ShaderStage(i), spirv);

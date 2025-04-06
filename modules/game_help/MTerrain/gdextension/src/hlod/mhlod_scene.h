@@ -36,8 +36,8 @@ private:
 			oct_point_id = -1;
 			transform_index = -1;
 		}
-		_FORCE_INLINE_ GlobalItemID(int32_t oct_point_id, int32_t transform_index) :
-				oct_point_id(oct_point_id), transform_index(transform_index) {}
+		_FORCE_INLINE_ GlobalItemID(int32_t p_oct_point_id, int32_t p_transform_index) :
+				oct_point_id(p_oct_point_id), transform_index(p_transform_index) {}
 		_FORCE_INLINE_ GlobalItemID(int64_t id) :
 				id(id) {}
 		_FORCE_INLINE_ bool is_valid() const { return transform_index >= 0; }
@@ -51,10 +51,10 @@ private:
 		};
 		int64_t id;
 		PermanentItemID() = default;
-		_FORCE_INLINE_ PermanentItemID(int32_t proc_id, int32_t item_id) :
-				proc_id(proc_id), item_id(item_id) {}
-		_FORCE_INLINE_ PermanentItemID(int64_t id) :
-				id(id) {}
+		_FORCE_INLINE_ PermanentItemID(int32_t p_proc_id, int32_t p_item_id) :
+				proc_id(p_proc_id), item_id(p_item_id) {}
+		_FORCE_INLINE_ PermanentItemID(int64_t pid) :
+				id(pid) {}
 		_FORCE_INLINE_ bool is_valid() { return item_id >= 0; }
 	};
 

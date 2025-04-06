@@ -31,6 +31,8 @@
 #include "crash_handler_windows.h"
 
 #include "core/config/project_settings.h"
+#include "core/object/script_instance.h"
+#include "core/object/script_language.h"
 #include "core/os/os.h"
 #include "core/string/print_string.h"
 #include "core/version.h"
@@ -61,6 +63,123 @@ struct module_data {
 	DWORD load_size;
 };
 
+static String stack_frame_to_string(String file, String function, int32_t line) {
+	String out;
+	if (out.length() > 0) {
+		out += "\n";
+	}
+	out += file + "(" + itos(line) + "):" + function + "";
+	return out;
+}
+void windows_msvc_get_call_stack(String &call_stack) {
+	_global_lock();
+	HANDLE process = GetCurrentProcess();
+	HANDLE thread = GetCurrentThread();
+
+	CONTEXT context = {};
+	context.ContextFlags = CONTEXT_FULL;
+	RtlCaptureContext(&context);
+
+	SymSetOptions(SymGetOptions() | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_EXACT_SYMBOLS);
+	SymInitialize(process, nullptr, TRUE);
+
+	DWORD image;
+	STACKFRAME64 stackFrame;
+	ZeroMemory(&stackFrame, sizeof(STACKFRAME64));
+
+	image = IMAGE_FILE_MACHINE_AMD64;
+	stackFrame.AddrPC.Offset = context.Rip;
+	stackFrame.AddrPC.Mode = AddrModeFlat;
+	stackFrame.AddrFrame.Offset = context.Rsp;
+	stackFrame.AddrFrame.Mode = AddrModeFlat;
+	stackFrame.AddrStack.Offset = context.Rsp;
+	stackFrame.AddrStack.Mode = AddrModeFlat;
+#if defined(_M_X64)
+	stackFrame.AddrPC.Offset = context.Rip;
+	stackFrame.AddrStack.Offset = context.Rsp;
+	stackFrame.AddrFrame.Offset = context.Rbp;
+#elif defined(_M_ARM64) || defined(_M_ARM64EC)
+	stackFrame.AddrPC.Offset = context.Pc;
+	stackFrame.AddrStack.Offset = context.Sp;
+	stackFrame.AddrFrame.Offset = context->Fp;
+#elif defined(_M_ARM)
+	stackFrame.AddrPC.Offset = context.Pc;
+	stackFrame.AddrStack.Offset = context.Sp;
+	stackFrame.AddrFrame.Offset = context->R11;
+#else
+	stackFrame.AddrPC.Offset = context.Eip;
+	stackFrame.AddrStack.Offset = context.Esp;
+	stackFrame.AddrFrame.Offset = context.Ebp;
+
+#endif
+
+	typedef SYMBOL_INFO sym_type;
+	sym_type *symbol = (sym_type *)alloca(sizeof(sym_type) + 1024);
+	int index = 0;
+	bool is_in_gdscript = false;
+	while (true) {
+		if (StackWalk64(
+					image, process, thread,
+					&stackFrame, &context, nullptr,
+					SymFunctionTableAccess64, SymGetModuleBase64, nullptr) == FALSE) {
+			break;
+		}
+
+		if (stackFrame.AddrReturn.Offset == stackFrame.AddrPC.Offset) {
+			break;
+		}
+
+		++index;
+		if (index < 2) {
+			continue;
+		}
+		memset(symbol, '\0', sizeof(sym_type) + 1024);
+		symbol->SizeOfStruct = sizeof(sym_type);
+		symbol->MaxNameLen = 1024;
+
+		DWORD64 displacementSymbol = 0;
+		const char *symbolName;
+		if (SymFromAddr(process, stackFrame.AddrPC.Offset, &displacementSymbol, symbol) == TRUE) {
+			symbolName = symbol->Name;
+		} else {
+			symbolName = "??";
+		}
+
+		SymSetOptions(SYMOPT_LOAD_LINES);
+
+		IMAGEHLP_LINE64 line;
+		line.SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+
+		DWORD displacementLine = 0;
+
+		int32_t lineNumber = -1;
+		const char *fileName;
+		if (SymGetLineFromAddr64(process, stackFrame.AddrPC.Offset, &displacementLine, &line) == TRUE) {
+			lineNumber = line.LineNumber;
+			fileName = line.FileName;
+		} else {
+			lineNumber = -1;
+			fileName = "??";
+		}
+		if (is_in_gdscript == false && strcmp(symbolName, "GDScriptFunction::call") == 0) {
+			is_in_gdscript = true;
+			for (int i = 0; i < ScriptServer::get_language_count(); i++) {
+				if (ScriptServer::get_language(i)->get_type() == "GDScript") {
+					Vector<ScriptLanguage::StackInfo> si = ScriptServer::get_language(i)->debug_get_current_stack_info();
+					for (int j = 0; j < si.size(); j++) {
+						call_stack += stack_frame_to_string(si[j].file, si[j].func, si[j].line);
+					}
+				}
+			}
+		}
+		{
+			call_stack += stack_frame_to_string(fileName, symbolName, lineNumber);
+		}
+	}
+
+	SymCleanup(process);
+	_global_unlock();
+}
 class symbol {
 	typedef IMAGEHLP_SYMBOL64 sym_type;
 	sym_type *sym;
@@ -232,6 +351,9 @@ DWORD CrashHandlerException(EXCEPTION_POINTERS *ep) {
 
 	// Pass the exception to the OS
 	return EXCEPTION_CONTINUE_SEARCH;
+}
+static String get_call_stack() {
+	String call_stack;
 }
 #endif
 

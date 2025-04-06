@@ -40,6 +40,7 @@
 
 #include <stdlib.h>
 
+typedef void (*get_call_stack_func)(String &r_stack);
 class OS {
 	static OS *singleton;
 	static uint64_t target_ticks;
@@ -146,6 +147,8 @@ public:
 	void print(const char *p_format, ...) _PRINTF_FORMAT_ATTRIBUTE_2_3;
 	void print_rich(const char *p_format, ...) _PRINTF_FORMAT_ATTRIBUTE_2_3;
 	void printerr(const char *p_format, ...) _PRINTF_FORMAT_ATTRIBUTE_2_3;
+	String get_call_stack() const; // Get the current call stack
+	void set_call_stack_func(get_call_stack_func p_func);
 
 	virtual String get_stdin_string(int64_t p_buffer_size = 1024) = 0;
 	virtual PackedByteArray get_stdin_buffer(int64_t p_buffer_size = 1024) = 0;

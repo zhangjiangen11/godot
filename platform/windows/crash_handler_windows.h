@@ -39,6 +39,7 @@
 
 #ifdef _MSC_VER
 extern DWORD CrashHandlerException(EXCEPTION_POINTERS *ep);
+extern void windows_msvc_get_call_stack(class String &stack);
 #endif
 
 #endif

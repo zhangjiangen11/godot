@@ -51,6 +51,8 @@
 OS *OS::singleton = nullptr;
 uint64_t OS::target_ticks = 0;
 
+static get_call_stack_func s_get_call_stack = nullptr;
+
 OS *OS::get_singleton() {
 	return singleton;
 }
@@ -205,6 +207,18 @@ String OS::multibyte_to_string(const String &p_encoding, const PackedByteArray &
 
 PackedByteArray OS::string_to_multibyte(const String &p_encoding, const String &p_string) const {
 	return PackedByteArray();
+}
+
+String OS::get_call_stack() const {
+	String ret;
+	if (s_get_call_stack) {
+		(*s_get_call_stack)(ret);
+	}
+	return ret;
+}
+
+void OS::set_call_stack_func(get_call_stack_func p_func) {
+	s_get_call_stack = p_func;
 }
 
 int OS::get_exit_code() const {

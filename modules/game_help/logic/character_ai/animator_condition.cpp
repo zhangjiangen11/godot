@@ -61,6 +61,12 @@ void AnimatorAIStateConditionBase::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "is_value_by_property"), "set_is_value_by_property", "get_is_value_by_property");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "property_name", PROPERTY_HINT_ENUM_DYNAMIC_LIST, "get_blackbord_propertys"), "set_property_name", "get_property_name");
 
+	BIND_ENUM_CONSTANT(Equal);
+	BIND_ENUM_CONSTANT(Less);
+	BIND_ENUM_CONSTANT(LessEqual);
+	BIND_ENUM_CONSTANT(Greater);
+	BIND_ENUM_CONSTANT(GreaterEqual);
+	BIND_ENUM_CONSTANT(NotEqual);
 	//ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "blackboard_plan", PROPERTY_HINT_RESOURCE_TYPE, "BlackboardPlan"), "set_blackboard_plan", "get_blackboard_plan");
 }
 

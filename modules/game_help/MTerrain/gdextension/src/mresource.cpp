@@ -1651,6 +1651,8 @@ bool MResource::get_supported_png_format(Image::Format format) {
 			return true;
 		case Image::FORMAT_L8:
 			return true;
+		default:
+			break;
 	}
 	return false;
 }

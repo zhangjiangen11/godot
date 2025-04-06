@@ -543,6 +543,13 @@ Ref<Resource> ResourceLoader::load(const String &p_path, const String &p_type_hi
 	if (r_error) {
 		*r_error = OK;
 	}
+	Ref<Resource> res;
+	if (p_cache_mode == ResourceFormatLoader::CACHE_MODE_REUSE) {
+		res = ResourceCache::get_ref(p_path);
+		if (res.is_valid()) {
+			return res;
+		}
+	}
 
 	LoadThreadMode thread_mode = LOAD_THREAD_FROM_CURRENT;
 	if (WorkerThreadPool::get_singleton()->get_caller_task_id() != WorkerThreadPool::INVALID_TASK_ID) {
@@ -560,7 +567,7 @@ Ref<Resource> ResourceLoader::load(const String &p_path, const String &p_type_hi
 		return Ref<Resource>();
 	}
 
-	Ref<Resource> res = _load_complete(*load_token.ptr(), r_error);
+	res = _load_complete(*load_token.ptr(), r_error);
 	return res;
 }
 
@@ -723,7 +730,7 @@ ResourceLoader::ThreadLoadStatus ResourceLoader::load_threaded_get_status(const 
 	return status;
 }
 
-ResourceLoader::ThreadLoadStatus ResourceLoader::load_threaded_get_status(const String &p_path, Ref<Resource> &r_resource, float *r_progress ) {
+ResourceLoader::ThreadLoadStatus ResourceLoader::load_threaded_get_status(const String &p_path, Ref<Resource> &r_resource, float *r_progress) {
 	bool ensure_progress = false;
 	ThreadLoadStatus status = THREAD_LOAD_IN_PROGRESS;
 	{
@@ -760,7 +767,6 @@ ResourceLoader::ThreadLoadStatus ResourceLoader::load_threaded_get_status(const 
 	}
 
 	return status;
-
 }
 
 Ref<Resource> ResourceLoader::load_threaded_get(const String &p_path, Error *r_error) {

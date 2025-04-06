@@ -51,11 +51,11 @@ private:
 	Vector<Speaker> speakers;
 
 public:
-	SpcapCompoent(unsigned int speaker_count, const Vector3 *speaker_directions) {
+	SpcapCompoent(unsigned int speaker_count, const Vector3 *p_speaker_directions) {
 		speakers.resize(speaker_count);
 		Speaker *w = speakers.ptrw();
 		for (unsigned int speaker_num = 0; speaker_num < speaker_count; speaker_num++) {
-			w[speaker_num].direction = speaker_directions[speaker_num];
+			w[speaker_num].direction = p_speaker_directions[speaker_num];
 			w[speaker_num].squared_gain = 0.0;
 			w[speaker_num].effective_number_of_speakers = 0.0;
 			for (unsigned int other_speaker_num = 0; other_speaker_num < speaker_count; other_speaker_num++) {
