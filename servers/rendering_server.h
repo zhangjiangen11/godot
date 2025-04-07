@@ -61,25 +61,26 @@ class RDMultimeshUpdate : public RefCounted {
 		ClassDB::bind_method(D_METHOD("update_static_instance", "index_start", "index_count", "transform_data", "color_data", "custom_data"), &RDMultimeshUpdate::update_static_instance);
 		ClassDB::bind_method(D_METHOD("update_dynamic_instance", "index_start", "index_count", "transform_data", "color_data", "custom_data", "pre_transform_data", "pre_color_data", "pre_custom_data"), &RDMultimeshUpdate::update_dynamic_instance);
 	}
+
 public:
 	virtual ~RDMultimeshUpdate() {}
 	// 更新静态实例
-	void update_static_instance(int index_start, int index_count, const Vector<float>& transform_data, const Vector<float>& color_data, const Vector<float>& custom_data) {
+	void update_static_instance(int index_start, int index_count, const Vector<float> &transform_data, const Vector<float> &color_data, const Vector<float> &custom_data) {
 		_update_dynamic_instance(index_start, index_count, transform_data, color_data, custom_data, transform_data, color_data, custom_data);
 	}
 
-	void update_dynamic_instance(int index_start, int index_count, const Vector<float>& transform_data, const Vector<float>& color_data,
-		const Vector<float>& custom_data, const Vector<float>& pre_transform_data,
-		const Vector<float>& pre_color_data,
-		const Vector<float>& pre_custom_data) {
+	void update_dynamic_instance(int index_start, int index_count, const Vector<float> &transform_data, const Vector<float> &color_data,
+			const Vector<float> &custom_data, const Vector<float> &pre_transform_data,
+			const Vector<float> &pre_color_data,
+			const Vector<float> &pre_custom_data) {
 		_update_dynamic_instance(index_start, index_count, transform_data, color_data, custom_data, pre_transform_data, pre_color_data, pre_custom_data);
 	}
-protected:
-	virtual void _update_dynamic_instance(int index_start, int index_count, const Vector<float>& transform_data, const Vector<float>& color_data,
-		const Vector<float>& custom_data, const Vector<float>& pre_transform_data,
-		const Vector<float>& pre_color_data,
-		const Vector<float>& pre_custom_data) {}
 
+protected:
+	virtual void _update_dynamic_instance(int index_start, int index_count, const Vector<float> &transform_data, const Vector<float> &color_data,
+			const Vector<float> &custom_data, const Vector<float> &pre_transform_data,
+			const Vector<float> &pre_color_data,
+			const Vector<float> &pre_custom_data) {}
 };
 class RenderingServer : public Object {
 	GDCLASS(RenderingServer, Object);
@@ -156,6 +157,7 @@ public:
 	};
 
 	virtual RID texture_2d_create(const Ref<Image> &p_image) = 0;
+	virtual bool texture_is_valid(RID p_texture) const = 0;
 	virtual RID texture_2d_layered_create(const Vector<Ref<Image>> &p_layers, TextureLayeredType p_layered_type) = 0;
 	virtual RID texture_3d_create(Image::Format, int p_width, int p_height, int p_depth, bool p_mipmaps, const Vector<Ref<Image>> &p_data) = 0; //all slices, then all the mipmaps, must be coherent
 	virtual RID texture_external_create(int p_width, int p_height, uint64_t p_external_buffer = 0) = 0;

@@ -63,6 +63,7 @@ public:
 
 	virtual RID texture_allocate() = 0;
 	virtual void texture_free(RID p_rid) = 0;
+	virtual bool texture_is_valid(RID p_rid) const = 0;
 
 	virtual void texture_2d_initialize(RID p_texture, const Ref<Image> &p_image) = 0;
 	virtual void texture_2d_layered_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type) = 0;

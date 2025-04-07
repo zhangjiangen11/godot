@@ -755,6 +755,10 @@ RID TextureStorage::texture_allocate() {
 	return texture_owner.allocate_rid();
 }
 
+bool TextureStorage::texture_is_valid(RID p_rid) const {
+	return texture_owner.get_or_null(p_rid) != nullptr;
+}
+
 void TextureStorage::texture_free(RID p_texture) {
 	Texture *t = texture_owner.get_or_null(p_texture);
 	ERR_FAIL_NULL(t);

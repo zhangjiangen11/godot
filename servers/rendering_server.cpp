@@ -2251,6 +2251,7 @@ void RenderingServer::_bind_methods() {
 
 	/* TEXTURE */
 
+	ClassDB::bind_method(D_METHOD("texture_is_valid", "texture_rid"), &RenderingServer::texture_is_valid);
 	ClassDB::bind_method(D_METHOD("texture_2d_create", "image"), &RenderingServer::texture_2d_create);
 	ClassDB::bind_method(D_METHOD("texture_2d_layered_create", "layers", "layered_type"), &RenderingServer::_texture_2d_layered_create);
 	ClassDB::bind_method(D_METHOD("texture_3d_create", "format", "width", "height", "depth", "mipmaps", "data"), &RenderingServer::_texture_3d_create);
@@ -3103,7 +3104,7 @@ void RenderingServer::_bind_methods() {
 	BIND_ENUM_CONSTANT(ENV_HDDAGI_CASCADE_FORMAT_16x16x16);
 	BIND_ENUM_CONSTANT(ENV_HDDAGI_CASCADE_FORMAT_16x16x16_75_PERCENT_HEIGHT);
 	BIND_ENUM_CONSTANT(ENV_HDDAGI_CASCADE_FORMAT_16x16x16_50_PERCENT_HEIGHT);
-	
+
 	BIND_ENUM_CONSTANT(ENV_HDDAGI_CASCADE_FORMAT_MAX);
 
 	BIND_ENUM_CONSTANT(ENV_HDDAGI_CONVERGE_IN_6_FRAMES);

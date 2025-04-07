@@ -73,7 +73,7 @@ static inline unsigned int encode_uint16(uint16_t p_uint, uint8_t *p_arr) {
 	return sizeof(uint16_t);
 }
 
-static inline unsigned int encode_uint16(int16_t p_int, uint8_t *p_arr) {
+static inline unsigned int encode_int16(int16_t p_int, uint8_t *p_arr) {
 	return encode_uint16((uint16_t)p_int, p_arr);
 }
 

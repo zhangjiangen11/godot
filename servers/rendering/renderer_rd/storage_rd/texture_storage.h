@@ -511,6 +511,7 @@ public:
 
 	virtual RID texture_allocate() override;
 	virtual void texture_free(RID p_rid) override;
+	virtual bool texture_is_valid(RID p_rid) const override;
 
 	virtual void texture_2d_initialize(RID p_texture, const Ref<Image> &p_image) override;
 	virtual void texture_2d_layered_initialize(RID p_texture, const Vector<Ref<Image>> &p_layers, RS::TextureLayeredType p_layered_type) override;

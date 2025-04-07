@@ -79,6 +79,8 @@ public:
 		memdelete(texture);
 	}
 
+	virtual bool texture_is_valid(RID p_rid) const override { return texture_owner.owns(p_rid) != nullptr; }
+
 	virtual void texture_2d_initialize(RID p_texture, const Ref<Image> &p_image) override {
 		DummyTexture *t = texture_owner.get_or_null(p_texture);
 		ERR_FAIL_NULL(t);

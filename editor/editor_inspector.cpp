@@ -5010,7 +5010,7 @@ void EditorInspector::_handle_menu_option(int p_option) {
 
 void EditorInspector::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("edit", "object"), &EditorInspector::edit);
-	ClassDB::bind_method(D_METHOD("edit_request_change", "object", "property"), &EditorInspector::_edit_request_change);
+	ClassDB::bind_method(D_METHOD("_edit_request_change", "object", "property"), &EditorInspector::_edit_request_change);
 	ClassDB::bind_method(D_METHOD("get_selected_path"), &EditorInspector::get_selected_path);
 	ClassDB::bind_method(D_METHOD("get_edited_object"), &EditorInspector::get_edited_object);
 	ClassDB::bind_method(D_METHOD("set_autoclear", "enable"), &EditorInspector::set_autoclear);

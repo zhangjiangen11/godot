@@ -37,6 +37,8 @@
 #include "core/config/project_settings.h"
 #include "core/io/dir_access.h"
 
+#include "servers/rendering_server.h"
+
 #define FORCE_SEPARATE_PRESENT_QUEUE 0
 #define PRINT_FRAMEBUFFER_FORMAT 0
 
@@ -3613,6 +3615,9 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 					ERR_FAIL_NULL_V_MSG(sampler_driver_id, RID(), "SamplerBuffer (binding: " + itos(uniform.binding) + ", index " + itos(j + 1) + ") is not a valid sampler.");
 
 					RID texture_id = uniform.get_id(j + 1);
+					if (RS::get_singleton()->texture_is_valid(texture_id)) {
+						texture_id = RS::get_singleton()->texture_get_rd_texture(texture_id);
+					}
 					Texture *texture = texture_owner.get_or_null(texture_id);
 					ERR_FAIL_NULL_V_MSG(texture, RID(), "Texture (binding: " + itos(uniform.binding) + ", index " + itos(j) + ") is not a valid texture.");
 
@@ -4715,7 +4720,6 @@ void RenderingDevice::draw_list_set_push_constant(DrawListID p_list, const void 
 	draw_list.validation.pipeline_push_constant_supplied = true;
 #endif
 }
-
 
 void RenderingDevice::draw_list_draw(DrawListID p_list, bool p_use_indices, uint32_t p_instances, uint32_t p_procedural_vertices) {
 	ERR_RENDER_THREAD_GUARD();

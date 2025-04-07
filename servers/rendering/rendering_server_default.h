@@ -217,6 +217,7 @@ public:
 	FUNC2(texture_bind, RID, uint32_t)
 #endif
 
+	FUNC1RC(bool, texture_is_valid, RID )
 	FUNC3(texture_set_detect_3d_callback, RID, TextureDetectCallback, void *)
 	FUNC3(texture_set_detect_normal_callback, RID, TextureDetectCallback, void *)
 	FUNC3(texture_set_detect_roughness_callback, RID, TextureDetectRoughnessCallback, void *)
