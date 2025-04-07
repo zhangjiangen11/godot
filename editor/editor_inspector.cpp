@@ -5017,7 +5017,7 @@ void EditorInspector::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_show_categories", "show_standard", "show_custom"), &EditorInspector::set_show_categories);
 	ClassDB::bind_method(D_METHOD("set_hide_script", "hide"), &EditorInspector::set_hide_script);
 	ClassDB::bind_method(D_METHOD("set_hide_metadata", "hide"), &EditorInspector::set_hide_metadata);
-	ClassDB::bind_method(D_METHOD("set_use_folding", "enable"), &EditorInspector::set_use_folding);
+	ClassDB::bind_method(D_METHOD("set_use_folding", "enable", "update_tree"), &EditorInspector::set_use_folding, DEFVAL(true));
 
 	ClassDB::bind_static_method("EditorInspector", D_METHOD("instantiate_property_editor", "object", "type", "path", "hint", "hint_text", "usage", "wide"), &EditorInspector::instantiate_property_editor, DEFVAL(false));
 

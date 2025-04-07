@@ -102,6 +102,7 @@ static String _include_function(const String &p_path, void *userpointer) {
 }
 void HeightMapProcessShader::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("init", "template_shader", "code_file_path"), &HeightMapProcessShader::init);
+	ClassDB::bind_method(D_METHOD("init_from_only_process", "code_file_path"), &HeightMapProcessShader::init_from_only_process);
 	ClassDB::bind_method(D_METHOD("get_params"), &HeightMapProcessShader::get_params);
 	ClassDB::bind_method(D_METHOD("get_params_dict"), &HeightMapProcessShader::get_params_dict);
 	ClassDB::bind_method(D_METHOD("get_params_display_name_dict"), &HeightMapProcessShader::get_params_display_name_dict);

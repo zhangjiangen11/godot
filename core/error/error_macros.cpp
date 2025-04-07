@@ -51,7 +51,7 @@ struct StackFrame {
 
 static void getStackTrace(LocalVector<StackFrame> &stackTrace);
 
-#if defined(CRASH_HANDLER_EXCEPTION) && defined(_MSC_VER)
+#if defined(WINDOWS_ENABLED) && defined(_MSC_VER)
 
 #include <windows.h>
 // 调试

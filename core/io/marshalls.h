@@ -73,6 +73,10 @@ static inline unsigned int encode_uint16(uint16_t p_uint, uint8_t *p_arr) {
 	return sizeof(uint16_t);
 }
 
+static inline unsigned int encode_uint16(int16_t p_int, uint8_t *p_arr) {
+	return encode_uint16((uint16_t)p_int, p_arr);
+}
+
 static inline unsigned int encode_uint32(uint32_t p_uint, uint8_t *p_arr) {
 	for (int i = 0; i < 4; i++) {
 		*p_arr = p_uint & 0xFF;
@@ -81,6 +85,10 @@ static inline unsigned int encode_uint32(uint32_t p_uint, uint8_t *p_arr) {
 	}
 
 	return sizeof(uint32_t);
+}
+
+static inline unsigned int encode_int32(int32_t p_int, uint8_t *p_arr) {
+	return encode_uint32((uint32_t)p_int, p_arr);
 }
 
 static inline unsigned int encode_half(float p_float, uint8_t *p_arr) {
@@ -105,6 +113,10 @@ static inline unsigned int encode_uint64(uint64_t p_uint, uint8_t *p_arr) {
 	}
 
 	return sizeof(uint64_t);
+}
+
+static inline unsigned int encode_int64(int64_t p_uint, uint8_t *p_arr) {
+	return encode_uint64((uint64_t)p_uint, p_arr);
 }
 
 static inline unsigned int encode_double(double p_double, uint8_t *p_arr) {
