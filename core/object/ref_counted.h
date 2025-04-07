@@ -258,19 +258,6 @@ struct PtrToArg<Ref<T>> {
 };
 
 template <typename T>
-struct PtrToArg<const Ref<T> &> {
-	typedef Ref<T> EncodeT;
-
-	_FORCE_INLINE_ static Ref<T> convert(const void *p_ptr) {
-		if (p_ptr == nullptr) {
-			return Ref<T>();
-		}
-		// p_ptr points to a RefCounted object
-		return Ref<T>(*((T *const *)p_ptr));
-	}
-};
-
-template <typename T>
 struct GetTypeInfo<Ref<T>> {
 	static const Variant::Type VARIANT_TYPE = Variant::OBJECT;
 	static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;
@@ -282,6 +269,7 @@ struct GetTypeInfo<Ref<T>> {
 };
 
 template <typename T>
+<<<<<<< HEAD
 struct GetTypeInfo<const Ref<T> &> {
 	static const Variant::Type VARIANT_TYPE = Variant::OBJECT;
 	static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;
@@ -293,13 +281,9 @@ struct GetTypeInfo<const Ref<T> &> {
 };
 
 template <typename T>
+=======
+>>>>>>> godotengine-master
 struct VariantInternalAccessor<Ref<T>> {
-	static _FORCE_INLINE_ Ref<T> get(const Variant *v) { return Ref<T>(*VariantInternal::get_object(v)); }
-	static _FORCE_INLINE_ void set(Variant *v, const Ref<T> &p_ref) { VariantInternal::object_assign(v, p_ref); }
-};
-
-template <typename T>
-struct VariantInternalAccessor<const Ref<T> &> {
 	static _FORCE_INLINE_ Ref<T> get(const Variant *v) { return Ref<T>(*VariantInternal::get_object(v)); }
 	static _FORCE_INLINE_ void set(Variant *v, const Ref<T> &p_ref) { VariantInternal::object_assign(v, p_ref); }
 };
