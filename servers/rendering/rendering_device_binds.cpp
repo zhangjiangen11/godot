@@ -197,7 +197,7 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 				if (!error.is_empty()) {
 					error += String() + "\n\nStage '" + stage_str[i] + "' source code: \n\n";
 					Vector<String> sclines = code.split("\n");
-					for (int j = 0; j < sclines.size(); j++) {
+					for (int64_t j = 0; j < sclines.size(); j++) {
 						error += itos(j + 1) + "\t\t" + sclines[j] + "\n";
 					}
 					errors_found = true;

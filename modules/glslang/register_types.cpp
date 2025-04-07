@@ -147,9 +147,9 @@ static Vector<uint8_t> _compile_shader_glsl(RenderingDevice::ShaderStage p_stage
 	if (!shader.parse(GetDefaultResources(), DefaultVersion, false, messages)) {
 		if (r_error) {
 			(*r_error) = "Failed parse:\n";
-			(*r_error) += shader.getInfoLog();
+			(*r_error) += String::utf8(shader.getInfoLog());
 			(*r_error) += "\n";
-			(*r_error) += shader.getInfoDebugLog();
+			(*r_error) += String::utf8(shader.getInfoDebugLog());
 		}
 		return ret;
 	}
@@ -161,9 +161,9 @@ static Vector<uint8_t> _compile_shader_glsl(RenderingDevice::ShaderStage p_stage
 	if (!program.link(messages)) {
 		if (r_error) {
 			(*r_error) = "Failed link:\n";
-			(*r_error) += program.getInfoLog();
+			(*r_error) += String::utf8(program.getInfoLog());
 			(*r_error) += "\n";
-			(*r_error) += program.getInfoDebugLog();
+			(*r_error) += String::utf8(program.getInfoDebugLog());
 		}
 
 		return ret;

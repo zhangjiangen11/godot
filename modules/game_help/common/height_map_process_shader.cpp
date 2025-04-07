@@ -243,7 +243,7 @@ void HeightMapProcessShader::load() {
 	String params_str;
 	for (int i = 0; i < params.size(); i++) {
 		Dictionary param_dict = params[i];
-		params_str += "#define " + (String)param_dict["arg_name"] + " " + "(blendparameters.arg[" + String::num_int64(i) + "])" + "\n";
+		params_str += "#define " + (String)param_dict["arg_name"] + " " + "(maskparameters.arg[" + String::num_int64(i) + "])" + "\n";
 	}
 
 	String file_txt;

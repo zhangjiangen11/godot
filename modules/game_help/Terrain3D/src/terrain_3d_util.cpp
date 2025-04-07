@@ -11,9 +11,8 @@
 
 void Terrain3DUtil::print_dict(const String &p_name, const Dictionary &p_dict, const int p_level) {
 	LOG(p_level, "Printing Dictionary: ", p_name);
-	Array keys = p_dict.keys();
-	for (int i = 0; i < keys.size(); i++) {
-		LOG(p_level, "Key: ", keys[i], ", Value: ", p_dict[keys[i]]);
+	for (auto &it : p_dict) {
+		LOG(p_level, "Key: ", it.key, ", Value: ", it.value);
 	}
 }
 
@@ -216,7 +215,7 @@ Ref<Image> Terrain3DUtil::load_image(const String &p_file_name, const int p_cach
 	Ref<Image> img;
 	LOG(INFO, "Attempting to load: ", p_file_name);
 	String ext = p_file_name.get_extension().to_lower();
-	PackedStringArray imgloader_extensions = {"bmp", "dds", "exr", "hdr", "jpg", "jpeg", "png", "tga", "svg", "webp"};
+	PackedStringArray imgloader_extensions = { "bmp", "dds", "exr", "hdr", "jpg", "jpeg", "png", "tga", "svg", "webp" };
 
 	// If R16 integer format (read/writeable by Krita)
 	if (ext == "r16" || ext == "raw") {

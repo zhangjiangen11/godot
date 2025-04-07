@@ -78,12 +78,13 @@ void SceneRPCInterface::_parse_rpc_config(const Variant &p_config, bool p_for_no
 	const Dictionary config = p_config;
 	Array names = config.keys();
 	names.sort_custom(callable_mp_static(&StringLikeVariantOrder::compare)); // Ensure ID order
-	for (int i = 0; i < names.size(); i++) {
-		ERR_CONTINUE(!names[i].is_string());
-		String name = names[i].operator String();
-		ERR_CONTINUE(config[name].get_type() != Variant::DICTIONARY);
-		ERR_CONTINUE(!config[name].operator Dictionary().has("rpc_mode"));
-		Dictionary dict = config[name];
+	int i = 0;
+	for (auto &it : config) {
+		ERR_CONTINUE(!it.key.is_string());
+		String name = it.key;
+		ERR_CONTINUE(it.value.get_type() != Variant::DICTIONARY);
+		ERR_CONTINUE(!it.value.operator Dictionary().has("rpc_mode"));
+		Dictionary dict = it.value;
 		RPCConfig cfg;
 		cfg.name = name;
 		cfg.rpc_mode = ((MultiplayerAPI::RPCMode)dict.get("rpc_mode", MultiplayerAPI::RPC_MODE_AUTHORITY).operator int());
@@ -96,6 +97,7 @@ void SceneRPCInterface::_parse_rpc_config(const Variant &p_config, bool p_for_no
 		}
 		r_cache.configs[id] = cfg;
 		r_cache.ids[name] = id;
+		++i;
 	}
 }
 

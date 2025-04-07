@@ -269,20 +269,6 @@ struct GetTypeInfo<Ref<T>> {
 };
 
 template <typename T>
-<<<<<<< HEAD
-struct GetTypeInfo<const Ref<T> &> {
-	static const Variant::Type VARIANT_TYPE = Variant::OBJECT;
-	static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;
-
-	static inline const PropertyInfo &get_class_info() {
-		static PropertyInfo info = PropertyInfo(Variant::OBJECT, String(), PROPERTY_HINT_RESOURCE_TYPE, T::get_class_static());
-		return info;
-	}
-};
-
-template <typename T>
-=======
->>>>>>> godotengine-master
 struct VariantInternalAccessor<Ref<T>> {
 	static _FORCE_INLINE_ Ref<T> get(const Variant *v) { return Ref<T>(*VariantInternal::get_object(v)); }
 	static _FORCE_INLINE_ void set(Variant *v, const Ref<T> &p_ref) { VariantInternal::object_assign(v, p_ref); }

@@ -80,9 +80,9 @@ public:
 		clear();
 		Dictionary pose = aDict["virtual_pose"];
 		auto keys = pose.keys();
-		for (auto &it : keys) {
-			Dictionary dict = pose.get(it, Dictionary());
-			virtual_pose[it].load(dict);
+		for (auto &it : pose) {
+			Dictionary dict = it.value;
+			virtual_pose[it.key].load(dict);
 		}
 
 		Vector<String> root = aDict["root_bone"];

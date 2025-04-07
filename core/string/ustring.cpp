@@ -305,6 +305,11 @@ void String::append_latin1(const Span<char> &p_cstr) {
 	if (p_cstr.is_empty()) {
 		return;
 	}
+	// 如果是utf8就直接添加,否则随便搞搞吧!
+	if (is_valid_utf8(p_cstr.ptr(), p_cstr.size())) {
+		append_utf8(p_cstr);
+		return;
+	}
 
 	const int prev_length = length();
 	resize(prev_length + p_cstr.size() + 1); // include 0
@@ -1840,11 +1845,9 @@ void String::print_unicode_error(const String &p_message, bool p_critical) const
 		print_error(vformat("Unicode parsing error: %s", p_message));
 	}
 }
-static void remove_single_ampersand(const char32_t* p_string, char32_t* p_out_string,int &index,int size) {
-		
-	while(index < size) {
-		if(p_string[index] == '\n')
-		{
+static void remove_single_ampersand(const char32_t *p_string, char32_t *p_out_string, int &index, int size) {
+	while (index < size) {
+		if (p_string[index] == '\n') {
 			p_out_string[index] = '\n';
 			++index;
 			break;
@@ -1853,54 +1856,50 @@ static void remove_single_ampersand(const char32_t* p_string, char32_t* p_out_st
 		++index;
 	}
 }
-static void remove_mult_ampersand(const char32_t* p_string, char32_t* p_out_string,int &index,int size) {
-		
-	while(index + 1 < size) {
-		if(p_string[index ] == '*' && p_string[index + 1] == '/') {
+static void remove_mult_ampersand(const char32_t *p_string, char32_t *p_out_string, int &index, int size) {
+	while (index + 1 < size) {
+		if (p_string[index] == '*' && p_string[index + 1] == '/') {
 			p_out_string[index] = ' ';
 			p_out_string[index + 1] = ' ';
 			index += 2;
 			break;
 		}
-		if(p_string[index] == '\n' || p_string[index] == '\r' || p_string[index] == '\t') {
+		if (p_string[index] == '\n' || p_string[index] == '\r' || p_string[index] == '\t') {
 			p_out_string[index] = p_string[index];
 			++index;
-		}
-		else {
+		} else {
 			p_out_string[index] = ' ';
 			++index;
 		}
 	}
 }
-	// 刪除注釋
+// 刪除注釋
 String String::remove_annotate() const {
 	String ret;
 	ret.resize(size());
 	int code_size = size();
-	const char32_t* p_source_code = ptr();
-	char32_t* code = ret.ptrw();
+	const char32_t *p_source_code = ptr();
+	char32_t *code = ret.ptrw();
 	int index = 0;
-	while(index < code_size) {
+	while (index < code_size) {
 		// 去除注释
-		if(p_source_code[index] == '/') {
-			if(index + 1 < code_size) {
-				if(p_source_code[index + 1] == '/') {
+		if (p_source_code[index] == '/') {
+			if (index + 1 < code_size) {
+				if (p_source_code[index + 1] == '/') {
 					code[index] = ' ';
 					code[index + 1] = ' ';
 					index += 2;
-					remove_single_ampersand(p_source_code,code, index,code_size);
+					remove_single_ampersand(p_source_code, code, index, code_size);
 					continue;
-				}
-				else if(p_source_code[index + 1] == '*') {
+				} else if (p_source_code[index + 1] == '*') {
 					code[index] = ' ';
 					code[index + 1] = ' ';
 					index += 2;
-					remove_mult_ampersand(p_source_code,code, index,code_size);
+					remove_mult_ampersand(p_source_code, code, index, code_size);
 					continue;
 				}
 			}
 		}
-		
 
 		code[index] = p_source_code[index];
 		++index;
@@ -2138,6 +2137,122 @@ Error String::append_utf8(const char *p_utf8, int p_len, bool p_skip_cr) {
 	resize(prev_length + dst - ptr());
 
 	return result;
+}
+bool String::is_valid_utf8(const char *p_utf8, int p_len = -1) {
+	if (!p_utf8) {
+		return false;
+	}
+
+	/* HANDLE BOM (Byte Order Mark) */
+	if (p_len < 0 || p_len >= 3) {
+		bool has_bom = uint8_t(p_utf8[0]) == 0xef && uint8_t(p_utf8[1]) == 0xbb && uint8_t(p_utf8[2]) == 0xbf;
+		if (has_bom) {
+			//8-bit encoding, byte order has no meaning in UTF-8, just skip it
+			if (p_len >= 0) {
+				p_len -= 3;
+			}
+			p_utf8 += 3;
+		}
+	}
+
+	if (p_len < 0) {
+		p_len = strlen(p_utf8);
+	}
+
+	bool result = true;
+
+	const uint8_t *ptrtmp = (uint8_t *)p_utf8;
+	const uint8_t *ptr_limit = (uint8_t *)p_utf8 + p_len;
+
+	while (ptrtmp < ptr_limit && *ptrtmp) {
+		uint8_t c = *ptrtmp;
+
+		if (c == '\r') {
+			++ptrtmp;
+			continue;
+		}
+		uint32_t unicode = _replacement_char;
+		uint32_t size = 1;
+
+		if ((c & 0b10000000) == 0) {
+			unicode = c;
+			if (unicode > 0x7F) {
+				return false;
+			}
+		} else if ((c & 0b11100000) == 0b11000000) {
+			if (ptrtmp + 1 >= ptr_limit) {
+				return false;
+			} else {
+				uint8_t c2 = *(ptrtmp + 1);
+
+				if ((c2 & 0b11000000) == 0b10000000) {
+					unicode = (uint32_t)((c & 0b00011111) << 6) | (uint32_t)(c2 & 0b00111111);
+
+					if (unicode < 0x80) {
+						return false;
+					} else if (unicode > 0x7FF) {
+						return false;
+					} else {
+						size = 2;
+					}
+				} else {
+					return false;
+				}
+			}
+		} else if ((c & 0b11110000) == 0b11100000) {
+			uint32_t range_min = (c == 0xE0) ? 0xA0 : 0x80;
+			uint32_t range_max = (c == 0xED) ? 0x9F : 0xBF;
+			uint8_t c2 = (ptrtmp + 1) < ptr_limit ? *(ptrtmp + 1) : 0;
+			uint8_t c3 = (ptrtmp + 2) < ptr_limit ? *(ptrtmp + 2) : 0;
+			bool c2_valid = c2 && (c2 >= range_min) && (c2 <= range_max);
+			bool c3_valid = c3 && ((c3 & 0b11000000) == 0b10000000);
+
+			if (c2_valid && c3_valid) {
+				unicode = (uint32_t)((c & 0b00001111) << 12) | (uint32_t)((c2 & 0b00111111) << 6) | (uint32_t)(c3 & 0b00111111);
+
+				if (unicode < 0x800) {
+					return false;
+				} else if (unicode > 0xFFFF) {
+					return false;
+				} else {
+					size = 3;
+				}
+			} else {
+				return false;
+			}
+		} else if ((c & 0b11111000) == 0b11110000) {
+			uint32_t range_min = (c == 0xF0) ? 0x90 : 0x80;
+			uint32_t range_max = (c == 0xF4) ? 0x8F : 0xBF;
+
+			uint8_t c2 = ((ptrtmp + 1) < ptr_limit) ? *(ptrtmp + 1) : 0;
+			uint8_t c3 = ((ptrtmp + 2) < ptr_limit) ? *(ptrtmp + 2) : 0;
+			uint8_t c4 = ((ptrtmp + 3) < ptr_limit) ? *(ptrtmp + 3) : 0;
+
+			bool c2_valid = c2 && (c2 >= range_min) && (c2 <= range_max);
+			bool c3_valid = c3 && ((c3 & 0b11000000) == 0b10000000);
+			bool c4_valid = c4 && ((c4 & 0b11000000) == 0b10000000);
+
+			if (c2_valid && c3_valid && c4_valid) {
+				unicode = (uint32_t)((c & 0b00000111) << 18) | (uint32_t)((c2 & 0b00111111) << 12) | (uint32_t)((c3 & 0b00111111) << 6) | (uint32_t)(c4 & 0b00111111);
+
+				if (unicode < 0x10000) {
+					return false;
+				} else if (unicode > 0x10FFFF) {
+					return false;
+				} else {
+					size = 4;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+
+		ptrtmp += size;
+	}
+
+	return true;
 }
 
 CharString String::utf8() const {

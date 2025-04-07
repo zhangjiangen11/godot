@@ -1,11 +1,10 @@
 // Copyright © 2024 Cory Petkovsek, Roope Palmroos, and Contributors.
 
-
-#include "logger.h"
 #include "terrain_3d_material.h"
-#include "terrain_3d_util.h"
+#include "logger.h"
 #include "modules/noise/fastnoise_lite.h"
 #include "modules/noise/noise_texture_2d.h"
+#include "terrain_3d_util.h"
 
 ///////////////////////////
 // Private Functions
@@ -38,12 +37,12 @@ void Terrain3DMaterial::_preload_shaders() {
 #include "shaders/main.glsl"
 	);
 
-	if (Terrain3D::debug_level >= DEBUG) {
-		Array keys = _shader_code.keys();
-		for (int i = 0; i < keys.size(); i++) {
-			LOG(DEBUG, "Loaded shader insert: ", keys[i]);
-		}
-	}
+	// if (Terrain3D::debug_level >= DEBUG) {
+	// 	Array keys = _shader_code.keys();
+	// 	for (int i = 0; i < keys.size(); i++) {
+	// 		LOG(DEBUG, "Loaded shader insert: ", keys[i]);
+	// 	}
+	// }
 }
 
 /**
@@ -578,37 +577,34 @@ void Terrain3DMaterial::set_show_vertex_grid(const bool p_enabled) {
 void Terrain3DMaterial::save() {
 	LOG(DEBUG, "Generating parameter list from shaders");
 	// Get shader parameters from default shader (eg world_noise)
-	List<PropertyInfo>  param_list;
-	RS::get_singleton()->get_shader_parameter_list(_shader,&param_list);
+	List<PropertyInfo> param_list;
+	RS::get_singleton()->get_shader_parameter_list(_shader, &param_list);
 	// Get shader parameters from custom shader if present
 	if (_shader_override.is_valid()) {
-		List<PropertyInfo>  override_param_list;
+		List<PropertyInfo> override_param_list;
 		_shader_override->get_shader_uniform_list(&override_param_list, true);
 		param_list.append(override_param_list);
 	}
 
 	// Remove saved shader params that don't exist in either shader
-	Array keys = _shader_params.keys();
-	for (int i = 0; i < keys.size(); i++) {
+	for (auto &it : _shader_params) {
 		bool has = false;
-		StringName _name = keys[i];
-		//for (int j = 0; j < param_list.size(); j++) {
-		for(auto& j : param_list) {
+		StringName _name = it.key;
+		for (auto &j : param_list) {
 			//Dictionary dict = j;
 			StringName dname;
 			//if (j < param_list.size()) {
 			//	dict = param_list[j];
-				//dname = dict["name"];
-				if (_name == j.name) {
-					has = true;
-					break;
-				}
-			//}
+			//dname = dict["name"];
+			if (_name == j.name) {
+				has = true;
+				break;
+			}
 		}
-		if (!has) {
-			LOG(DEBUG, "'", _name, "' not found in shader parameters. Removing from dictionary.");
-			_shader_params.erase(_name);
-		}
+	}
+	if (!has) {
+		LOG(DEBUG, "'", _name, "' not found in shader parameters. Removing from dictionary.");
+		_shader_params.erase(_name);
 	}
 
 	// Save to external resource file if used
@@ -631,18 +627,18 @@ void Terrain3DMaterial::save() {
 void Terrain3DMaterial::_get_property_list(List<PropertyInfo> *p_list) const {
 	Resource::_get_property_list(p_list);
 	IS_INIT(VOID);
-	List<PropertyInfo>  param_list;
+	List<PropertyInfo> param_list;
 	if (_shader_override_enabled && _shader_override.is_valid()) {
 		// Get shader parameters from custom shader
 		_shader_override->get_shader_uniform_list(&param_list, true);
 	} else {
 		// Get shader parameters from default shader (eg world_noise)
-		RS::get_singleton()->get_shader_parameter_list(_shader,&param_list);
+		RS::get_singleton()->get_shader_parameter_list(_shader, &param_list);
 	}
 
 	_active_params.clear();
 	//for (int i = 0; i < param_list.size(); i++) {
-	for(auto& j : param_list) {
+	for (auto &j : param_list) {
 		//Dictionary dict = param_list[i];
 		StringName name = j.name;
 		// Filter out private uniforms that start with _

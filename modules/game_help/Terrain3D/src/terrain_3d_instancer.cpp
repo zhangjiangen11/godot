@@ -32,16 +32,16 @@ void Terrain3DInstancer::_update_mmis() {
 		LOG(WARN, "Removed errant null in MMI dictionary");
 	}
 	Array keys = region_dict.keys();
-	for (int r = 0; r < keys.size(); r++) {
-		Vector2i region_offset = keys[r];
-		Dictionary mesh_dict = region_dict.get(region_offset, Dictionary());
+	for (auto &it : region_dict) {
+		Vector2i region_offset = it.key;
+		Dictionary mesh_dict = it.value;
 		LOG(DEBUG, "Updating MMIs from meshes: ", mesh_dict);
 
 		// For all mesh ids
-		for (int m = 0; m < mesh_dict.keys().size(); m++) {
-			int mesh_id = mesh_dict.keys()[m];
+		for (auto &mit : mesh_dict) {
+			int mesh_id = mit.key;
 			bool fail = false;
-			Ref<MultiMesh> mm = mesh_dict.get(mesh_id, Ref<MultiMesh>());
+			Ref<MultiMesh> mm = mit.value;
 			if (mm.is_null()) {
 				LOG(DEBUG, "Dictionary for mesh id ", mesh_id, " is null, skipping");
 				fail = true;
@@ -126,8 +126,8 @@ void Terrain3DInstancer::initialize(Terrain3D *p_terrain) {
 void Terrain3DInstancer::destroy() {
 	IS_STORAGE_INIT(VOID);
 	LOG(INFO, "Destroying all MMIs");
-	while (_mmis.size() > 0) {
-		Vector3i key = _mmis.keys()[0];
+	for (auto &it : _mmis) {
+		Vector3i key = it.key;
 		_destroy_mmi_by_offset(Vector2i(key.x, key.y), key.z);
 	}
 	_mmis.clear();
@@ -531,11 +531,11 @@ void Terrain3DInstancer::add_multimesh(const int p_mesh_id, const Ref<MultiMesh>
 
 void Terrain3DInstancer::set_cast_shadows(const int p_mesh_id, const GeometryInstance3D::ShadowCastingSetting p_cast_shadows) {
 	LOG(INFO, "Setting shadow casting on MMIS with mesh: ", p_mesh_id, " to mode: ", p_cast_shadows);
-	Array keys = _mmis.keys();
-	for (int i = 0; i < keys.size(); i++) {
-		Vector3i key = keys[i];
+
+	for (auto &it : _mmis) {
+		Vector3i key = it.key;
 		if (key.z == p_mesh_id) {
-			MultiMeshInstance3D *mmi = cast_to<MultiMeshInstance3D>(_mmis[key]);
+			MultiMeshInstance3D *mmi = it.value;
 			if (mmi) {
 				mmi->set_cast_shadows_setting(p_cast_shadows);
 			}

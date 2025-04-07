@@ -301,7 +301,6 @@ public:
 	_FORCE_INLINE_ void set(int p_index, const char32_t &p_elem) { _cowdata.set(p_index, p_elem); }
 	Error resize(int p_size) { return _cowdata.resize(p_size); }
 
-
 	_FORCE_INLINE_ const char32_t &operator[](int p_index) const {
 		if (unlikely(p_index == _cowdata.size())) {
 			return _null;
@@ -520,6 +519,7 @@ public:
 		return append_utf8(p_range.ptr(), p_range.size(), p_skip_cr);
 	}
 	static String utf8(const char *p_utf8, int p_len = -1);
+	static bool is_valid_utf8(const char *p_utf8, int p_len = -1);
 	static String utf8(const Span<char> &p_range) { return utf8(p_range.ptr(), p_range.size()); }
 
 	Char16String utf16() const;

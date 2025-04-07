@@ -244,10 +244,10 @@ struct is_zero_constructible<BitField<T>> : std::true_type {};
 	struct GetTypeInfo<m_enum> {                                                                                                                                     \
 		static const Variant::Type VARIANT_TYPE = Variant::INT;                                                                                                      \
 		static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_NONE;                                                                                \
-		static inline sconst PropertyInfo &get_class_info() {                                                                                                        \
+		static inline const PropertyInfo &get_class_info() {                                                                                                         \
 			static PropertyInfo info = PropertyInfo(Variant::INT, String(), PROPERTY_HINT_NONE, String(), PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_CLASS_IS_BITFIELD, \
-					return info;                                                                                                                                     \
 					GodotTypeInfo::Internal::enum_qualified_name_to_class_info_name(String(#m_enum)));                                                               \
+			return info;    		                                                                                                                                 \
 		}                                                                                                                                                            \
 	};                                                                                                                                                               \
 	template <>                                                                                                                                                      \
