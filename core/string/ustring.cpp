@@ -2138,7 +2138,7 @@ Error String::append_utf8(const char *p_utf8, int p_len, bool p_skip_cr) {
 
 	return result;
 }
-bool String::is_valid_utf8(const char *p_utf8, int p_len = -1) {
+bool String::is_valid_utf8(const char *p_utf8, int p_len) {
 	if (!p_utf8) {
 		return false;
 	}
@@ -2158,8 +2158,6 @@ bool String::is_valid_utf8(const char *p_utf8, int p_len = -1) {
 	if (p_len < 0) {
 		p_len = strlen(p_utf8);
 	}
-
-	bool result = true;
 
 	const uint8_t *ptrtmp = (uint8_t *)p_utf8;
 	const uint8_t *ptr_limit = (uint8_t *)p_utf8 + p_len;
