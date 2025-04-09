@@ -76,7 +76,7 @@ protected:
 	void _notification(int p_what);
 	static void _bind_methods();
 
-	bool is_radio();
+	bool is_radio() const;
 
 public:
 	void set_checked_texture(const Ref<Texture2D> &p_texture) {

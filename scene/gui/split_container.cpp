@@ -61,7 +61,7 @@ void SplitContainerDragger::gui_input(const Ref<InputEvent> &p_event) {
 				queue_redraw();
 				sc->emit_signal(SNAME("drag_ended"));
 			}
-			
+
 			accept_event();
 		}
 	}
@@ -94,8 +94,59 @@ Control::CursorShape SplitContainerDragger::get_cursor_shape(const Point2 &p_pos
 	return Control::get_cursor_shape(p_pos);
 }
 
+void SplitContainerDragger::_accessibility_action_inc(const Variant &p_data) {
+	SplitContainer *sc = Object::cast_to<SplitContainer>(get_parent());
+
+	if (sc->collapsed || !sc->_get_sortable_child(0) || !sc->_get_sortable_child(1) || !sc->dragging_enabled) {
+		return;
+	}
+	sc->split_offset -= 10;
+	sc->_compute_split_offset(true);
+	sc->queue_sort();
+}
+
+void SplitContainerDragger::_accessibility_action_dec(const Variant &p_data) {
+	SplitContainer *sc = Object::cast_to<SplitContainer>(get_parent());
+
+	if (sc->collapsed || !sc->_get_sortable_child(0) || !sc->_get_sortable_child(1) || !sc->dragging_enabled) {
+		return;
+	}
+	sc->split_offset += 10;
+	sc->_compute_split_offset(true);
+	sc->queue_sort();
+}
+
+void SplitContainerDragger::_accessibility_action_set_value(const Variant &p_data) {
+	SplitContainer *sc = Object::cast_to<SplitContainer>(get_parent());
+
+	if (sc->collapsed || !sc->_get_sortable_child(0) || !sc->_get_sortable_child(1) || !sc->dragging_enabled) {
+		return;
+	}
+	sc->split_offset = p_data;
+	sc->_compute_split_offset(true);
+	sc->queue_sort();
+}
+
 void SplitContainerDragger::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_ACCESSIBILITY_UPDATE: {
+			RID ae = get_accessibility_element();
+			ERR_FAIL_COND(ae.is_null());
+
+			DisplayServer::get_singleton()->accessibility_update_set_role(ae, DisplayServer::AccessibilityRole::ROLE_SPLITTER);
+
+			SplitContainer *sc = Object::cast_to<SplitContainer>(get_parent());
+			if (sc->collapsed || !sc->_get_sortable_child(0) || !sc->_get_sortable_child(1) || !sc->dragging_enabled) {
+				return;
+			}
+			sc->_compute_split_offset(true);
+			DisplayServer::get_singleton()->accessibility_update_set_num_value(ae, sc->split_offset);
+
+			DisplayServer::get_singleton()->accessibility_update_add_action(ae, DisplayServer::AccessibilityAction::ACTION_DECREMENT, callable_mp(this, &SplitContainerDragger::_accessibility_action_dec));
+			DisplayServer::get_singleton()->accessibility_update_add_action(ae, DisplayServer::AccessibilityAction::ACTION_INCREMENT, callable_mp(this, &SplitContainerDragger::_accessibility_action_inc));
+			DisplayServer::get_singleton()->accessibility_update_add_action(ae, DisplayServer::AccessibilityAction::ACTION_SET_VALUE, callable_mp(this, &SplitContainerDragger::_accessibility_action_set_value));
+		} break;
+
 		case NOTIFICATION_MOUSE_ENTER: {
 			mouse_inside = true;
 			SplitContainer *sc = Object::cast_to<SplitContainer>(get_parent());
@@ -145,12 +196,11 @@ void ResetParentOffsetDragger::gui_input(const Ref<InputEvent> &p_event) {
 				dragging = true;
 				sc->emit_signal(SNAME("drag_started"));
 				drag_ofs = sc->get_offset(dragger_dir);
-				if(dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
-					drag_from =  get_global_mouse_position().y;
-					
-				}
-				else {
-					drag_from =  get_global_mouse_position().x;
+				if (dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
+					drag_from = get_global_mouse_position().y;
+
+				} else {
+					drag_from = get_global_mouse_position().x;
 				}
 			} else {
 				dragging = false;
@@ -168,10 +218,9 @@ void ResetParentOffsetDragger::gui_input(const Ref<InputEvent> &p_event) {
 		}
 
 		Vector2i in_parent_pos = get_global_mouse_position();
-		if(dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
-			sc->set_offset(dragger_dir, drag_ofs + (in_parent_pos.y  - drag_from));
+		if (dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
+			sc->set_offset(dragger_dir, drag_ofs + (in_parent_pos.y - drag_from));
 		} else {
-
 			sc->set_offset(dragger_dir, drag_ofs + (in_parent_pos.x - drag_from));
 		}
 		queue_redraw();
@@ -180,13 +229,13 @@ void ResetParentOffsetDragger::gui_input(const Ref<InputEvent> &p_event) {
 
 void ResetParentOffsetDragger::_notification(int p_what) {
 	switch (p_what) {
-	case NOTIFICATION_DRAW: {
-		draw_rect(Rect2(Vector2(0, 0), get_size()), dragging ? Color(1, 1, 0, 0.3) : Color(1, 0, 0, 0.3));
-	} break;
+		case NOTIFICATION_DRAW: {
+			draw_rect(Rect2(Vector2(0, 0), get_size()), dragging ? Color(1, 1, 0, 0.3) : Color(1, 0, 0, 0.3));
+		} break;
 	}
 }
-Control* ResetParentOffsetDragger::get_parent_control() const{
-	if(parent_name.is_empty()) {
+Control *ResetParentOffsetDragger::get_parent_control() const {
+	if (parent_name.is_empty()) {
 		return nullptr;
 	}
 
@@ -194,7 +243,7 @@ Control* ResetParentOffsetDragger::get_parent_control() const{
 	while (parent) {
 		Control *c = Object::cast_to<Control>(parent);
 		if (c && c->get_name() == parent_name) {
-			if(c->get_layout_mode() != LAYOUT_MODE_ANCHORS) {
+			if (c->get_layout_mode() != LAYOUT_MODE_ANCHORS) {
 				return nullptr;
 			}
 			return c;
@@ -205,14 +254,13 @@ Control* ResetParentOffsetDragger::get_parent_control() const{
 	return nullptr;
 }
 Control::CursorShape ResetParentOffsetDragger::get_cursor_shape(const Point2 &p_pos) const {
-	
 	Control *sc = get_parent_control();
-	
+
 	if (sc) {
-		if(dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
+		if (dragger_dir == SIDE_TOP || dragger_dir == SIDE_BOTTOM) {
 			return CURSOR_VSPLIT;
 		}
-		if(dragger_dir == SIDE_LEFT || dragger_dir == SIDE_RIGHT) {
+		if (dragger_dir == SIDE_LEFT || dragger_dir == SIDE_RIGHT) {
 			return CURSOR_HSPLIT;
 		}
 	}
@@ -220,7 +268,6 @@ Control::CursorShape ResetParentOffsetDragger::get_cursor_shape(const Point2 &p_
 }
 
 void ResetParentOffsetDragger::_bind_methods() {
-
 	ClassDB::bind_method(D_METHOD("set_dragger_dir", "dir"), &ResetParentOffsetDragger::set_dragger_dir);
 	ClassDB::bind_method(D_METHOD("get_dragger_dir"), &ResetParentOffsetDragger::get_dragger_dir);
 
@@ -232,16 +279,15 @@ void ResetParentOffsetDragger::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "parent_name"), "set_parent_name", "get_parent_name");
 }
 PackedStringArray ResetParentOffsetDragger::get_configuration_warnings() const {
-
 	PackedStringArray warnings = Node::get_configuration_warnings();
-	if(parent_name.is_empty()) {
+	if (parent_name.is_empty()) {
 		warnings.push_back(L"没有设置父节点名称:parent_name");
 	}
 	Node *parent = get_parent();
 	while (parent) {
 		Control *c = Object::cast_to<Control>(parent);
 		if (c && c->get_name() == parent_name) {
-			if(c->get_layout_mode() != LAYOUT_MODE_ANCHORS) {
+			if (c->get_layout_mode() != LAYOUT_MODE_ANCHORS) {
 				warnings.push_back(L"父节点布局模式必须是描点模式");
 				return warnings;
 			}
@@ -249,13 +295,17 @@ PackedStringArray ResetParentOffsetDragger::get_configuration_warnings() const {
 		}
 		parent = parent->get_parent();
 	}
-	
+
 	warnings.push_back(L"没有找到父节点");
 
 	return warnings;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+SplitContainerDragger::SplitContainerDragger() {
+	set_focus_mode(FOCUS_ACCESSIBILITY);
+}
 
 Control *SplitContainer::_get_sortable_child(int p_idx, SortableVisibilityMode p_visibility_mode) const {
 	int idx = 0;

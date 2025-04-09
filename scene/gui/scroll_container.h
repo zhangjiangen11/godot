@@ -105,6 +105,12 @@ protected:
 	void _scroll_moved(float);
 	virtual void _scroll_changed(float) {}
 
+	void _accessibility_action_scroll_set(const Variant &p_data);
+	void _accessibility_action_scroll_up(const Variant &p_data);
+	void _accessibility_action_scroll_down(const Variant &p_data);
+	void _accessibility_action_scroll_left(const Variant &p_data);
+	void _accessibility_action_scroll_right(const Variant &p_data);
+
 public:
 	virtual void gui_input(const Ref<InputEvent> &p_gui_input) override;
 
