@@ -59,15 +59,14 @@ Dictionary::ConstIterator Dictionary::end() const {
 	return _p->variant_map.end();
 }
 
-void Dictionary::get_key_list(List<Variant> *p_keys) const {
-	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
-	if (_p->variant_map.is_empty()) {
-		return;
-	}
+LocalVector<Variant> Dictionary::get_key_list() const {
+	LocalVector<Variant> keys;
 
+	keys.reserve(_p->variant_map.size());
 	for (const KeyValue<Variant, Variant> &E : _p->variant_map) {
-		p_keys->push_back(E.key);
+		keys.push_back(E.key);
 	}
+	return keys;
 }
 
 Variant Dictionary::get_key_at_index(int p_index) const {
@@ -220,8 +219,7 @@ bool Dictionary::set(const Variant &p_key, const Variant &p_value) {
 }
 
 int Dictionary::size() const {
-
-	ERR_FAIL_COND_V_MSG(_p == nullptr , 0, "Dictionary is error.");
+	ERR_FAIL_COND_V_MSG(_p == nullptr, 0, "Dictionary is error.");
 	return _p->variant_map.size();
 }
 
@@ -323,13 +321,13 @@ void Dictionary::clear() {
 }
 
 void Dictionary::sort() {
-	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
+	ERR_FAIL_COND_MSG(_p == nullptr, "Dictionary is error.");
 	ERR_FAIL_COND_MSG(_p->read_only, "Dictionary is in read-only state.");
 	_p->variant_map.sort();
 }
 
 void Dictionary::merge(const Dictionary &p_dictionary, bool p_overwrite) {
-	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
+	ERR_FAIL_COND_MSG(_p == nullptr, "Dictionary is error.");
 	ERR_FAIL_COND_MSG(_p->read_only, "Dictionary is in read-only state.");
 	for (const KeyValue<Variant, Variant> &E : p_dictionary._p->variant_map) {
 		Variant key = E.key;
@@ -430,7 +428,7 @@ Array Dictionary::values() const {
 }
 
 void Dictionary::assign(const Dictionary &p_dictionary) {
-	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
+	ERR_FAIL_COND_MSG(_p == nullptr, "Dictionary is error.");
 	const ContainerTypeValidate &typed_key = _p->typed_key;
 	const ContainerTypeValidate &typed_key_source = p_dictionary._p->typed_key;
 
@@ -601,7 +599,7 @@ Dictionary Dictionary::duplicate(bool p_deep) const {
 }
 
 void Dictionary::make_read_only() {
-	ERR_FAIL_COND_MSG(_p == nullptr,  "Dictionary is error.");
+	ERR_FAIL_COND_MSG(_p == nullptr, "Dictionary is error.");
 	if (_p->read_only == nullptr) {
 		_p->read_only = memnew(Variant);
 	}

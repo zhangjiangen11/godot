@@ -473,7 +473,6 @@ bool Animation::_get(const StringName &p_name, Variant &r_ret) const {
 		if (!compression.enabled) {
 			return false;
 		}
-		ERR_FAIL_COND_V(!compression.enabled, false);
 		Dictionary comp;
 		comp["fps"] = compression.fps;
 		Array bounds;
