@@ -1581,6 +1581,19 @@ void EditorPropertyInteger::_value_changed(int64_t val) {
 }
 
 void EditorPropertyInteger::update_property() {
+	StringName name = get_range_method(get_edited_property());
+
+	if (get_edited_object()->has_method(name)) {
+		Variant ret = get_edited_object()->call(name);
+		// if (ret.get_type() == Variant::VECTOR2) {
+		// 	property_range = ret;
+		// } else
+		{
+			Vector2i rangei = ret;
+			spin->set_min(rangei.x);
+			spin->set_max(rangei.y);
+		}
+	}
 	int64_t val = get_edited_property_display_value();
 	spin->set_value_no_signal(val);
 #ifdef DEBUG_ENABLED
@@ -1711,6 +1724,15 @@ void EditorPropertyFloat::_value_changed(double val) {
 }
 
 void EditorPropertyFloat::update_property() {
+	StringName name = get_range_method(get_edited_property());
+	if (get_edited_object()->has_method(name)) {
+		Variant ret = get_edited_object()->call(name);
+		{
+			Vector2 rangei = ret;
+			spin->set_min(rangei.x);
+			spin->set_max(rangei.y);
+		}
+	}
 	double val = get_edited_property_value();
 	if (radians_as_degrees) {
 		val = Math::rad_to_deg(val);

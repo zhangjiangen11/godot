@@ -51,7 +51,7 @@ struct StackFrame {
 
 static void getStackTrace(LocalVector<StackFrame> &stackTrace);
 
-#if defined(WINDOWS_ENABLED) && defined(_MSC_VER)
+#if defined(WINDOWS_ENABLED) && defined(_MSC_VER) && defined(DEBUG_ENABLED)
 
 #include <windows.h>
 // 调试
@@ -170,7 +170,6 @@ static void getStackTrace(LocalVector<StackFrame> &stackTrace) {
 #else
 
 static void getStackTrace(LocalVector<StackFrame> &stackFrame) {
-	stackFrame.push_back({ "??", "Stacktrace collecting not available!", 0 });
 }
 
 #endif

@@ -31,6 +31,14 @@ public:
 	void set_multi_mesh(const Ref<MultiMesh> &p_multi_mesh);
 	Ref<MultiMesh> get_multi_mesh() const;
 
+	void set_mesh_rotation(const Vector3 &p_rotation) {
+		source_mesh_rotation = p_rotation;
+		queue_rebuild();
+	}
+	Vector3 get_mesh_rotation() const {
+		return source_mesh_rotation;
+	}
+
 	void set_path_3d(Path3D *p_path);
 	Path3D *get_path_3d() const;
 
@@ -64,6 +72,7 @@ protected:
 
 private:
 	Ref<MultiMesh> multi_mesh;
+	Vector3 source_mesh_rotation = Vector3();
 	Path3D *path3d = nullptr;
 	Distribution distribution = DISTRIBUTE_BY_COUNT;
 	Alignment alignment = ALIGN_FROM_START;

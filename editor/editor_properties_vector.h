@@ -65,7 +65,6 @@ public:
 	EditorPropertyVectorN(Variant::Type p_type, bool p_force_wide, bool p_horizontal);
 };
 
-
 class Vector2MinMaxPropertyEditor : public EditorProperty {
 	GDCLASS(Vector2MinMaxPropertyEditor, EditorProperty);
 
@@ -112,7 +111,6 @@ class Vector2MinMaxPropertyEditor : public EditorProperty {
 
 	Vector2 curr_value;
 	Vector2 property_range;
-	
 
 	bool mouse_inside = false;
 	Hover hover = Hover::NONE;
@@ -151,13 +149,11 @@ protected:
 	void update_dyn_range();
 
 public:
-	void setup(float p_min, float p_max, float p_step, bool p_allow_less, bool p_allow_greater, bool p_degrees,bool p_is_int = false);
+	void setup(float p_min, float p_max, float p_step, bool p_allow_less, bool p_allow_greater, bool p_degrees, bool p_is_int = false);
 	virtual void update_property() override;
 
 	Vector2MinMaxPropertyEditor();
 };
-
-
 
 class EditorPropertyVector2 : public EditorPropertyVectorN {
 	GDCLASS(EditorPropertyVector2, EditorPropertyVectorN);

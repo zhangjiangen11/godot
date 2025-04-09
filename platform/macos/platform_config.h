@@ -32,7 +32,7 @@
 
 #include <alloca.h>
 
-#define PTHREAD_RENAME_SELF
+//#define PTHREAD_RENAME_SELF
 
 #define _weakify(var) __weak typeof(var) GDWeak_##var = var;
 #define _strongify(var)                                      \

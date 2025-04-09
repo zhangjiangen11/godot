@@ -39,23 +39,6 @@
 #include "scene/gui/texture_button.h"
 
 const String EditorPropertyVectorN::COMPONENT_LABELS[4] = { "x", "y", "z", "w" };
-static Mutex property_to_range_method_name_mutex;
-
-static StringName get_range_method(const StringName& _property) {
-	StringName ret;
-	property_to_range_method_name_mutex.lock();
-	static HashMap<StringName,StringName>* property_to_range_method_name = new (HashMap<StringName,StringName>);
-	auto it = property_to_range_method_name->find(_property);
-	if(it == property_to_range_method_name->end()) {
-		StringName name = StringName(_property.str() + "__get_range_min_max__");
-		property_to_range_method_name->insert(_property,name);
-	}
-	else {
-		ret = it->value;
-	}
-	property_to_range_method_name_mutex.unlock();
-	return ret;
-}
 
 void EditorPropertyVectorN::_set_read_only(bool p_read_only) {
 	for (EditorSpinSlider *spin : spin_sliders) {
@@ -106,12 +89,11 @@ void EditorPropertyVectorN::update_property() {
 
 	bool is_dynamic_range = false;
 	Vector2 range;
-	if(get_edited_object()->has_method(name)) {
+	if (get_edited_object()->has_method(name)) {
 		Variant ret = get_edited_object()->call(name);
-		if(ret.get_type() == Variant::VECTOR2 ) {
+		if (ret.get_type() == Variant::VECTOR2) {
 			range = ret;
-		}
-		else {
+		} else {
 			Vector2i rangei = ret;
 			range.x = rangei.x;
 			range.y = rangei.y;
@@ -120,7 +102,7 @@ void EditorPropertyVectorN::update_property() {
 	}
 	for (int i = 0; i < component_count; i++) {
 		if (radians_as_degrees) {
-			if(is_dynamic_range) {
+			if (is_dynamic_range) {
 				spin_sliders[i]->set_min(range.x);
 				spin_sliders[i]->set_max(range.y);
 			}
@@ -306,7 +288,6 @@ EditorPropertyVector4::EditorPropertyVector4(bool p_force_wide) :
 EditorPropertyVector4i::EditorPropertyVector4i(bool p_force_wide) :
 		EditorPropertyVectorN(Variant::VECTOR4I, p_force_wide, EDITOR_GET("interface/inspector/horizontal_vector_types_editing")) {}
 
-
 void Vector2MinMaxPropertyEditor::_update_sizing() {
 	update_dyn_range();
 	edit_size = range_edit_widget->get_size();
@@ -364,42 +345,38 @@ void Vector2MinMaxPropertyEditor::_range_edit_draw() {
 
 	range_edit_widget->draw_rect(midpoint_rect, midpoint_color);
 	Vector2 size = usable_area;
-	if(size.x < 30 || size.y < 16) {
+	if (size.x < 30 || size.y < 16) {
 		return;
 	}
 	Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("LineEdit"));
-	float mid_y =  (size.y - 16.0) * 0.5;
-	if(mid_y < 0) {
+	float mid_y = (size.y - 16.0) * 0.5;
+	if (mid_y < 0) {
 		mid_y = 0;
 	}
-	if(is_int) {
+	if (is_int) {
 		const Vector2i value = Vector2i(min_range->get_value(), max_range->get_value());
-		range_edit_widget->draw_string(font,Point2(0, edit_size.y / 2.0),String::num_int64(value.x),HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
+		range_edit_widget->draw_string(font, Point2(0, edit_size.y / 2.0), String::num_int64(value.x), HORIZONTAL_ALIGNMENT_LEFT, size.x * 0.5);
 
 		String max_str = String::num_int64(value.y);
 
-		
 		int text_w = font->get_string_size(max_str).x;
 		float off = size.x - text_w;
-		if(off < size.x * 0.5) {
+		if (off < size.x * 0.5) {
 			off = size.x * 0.5;
 		}
-		range_edit_widget->draw_string(font,Point2(off, edit_size.y / 2.0),max_str,HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
-	}
-	else {
+		range_edit_widget->draw_string(font, Point2(off, edit_size.y / 2.0), max_str, HORIZONTAL_ALIGNMENT_LEFT, size.x * 0.5);
+	} else {
 		const Vector2 value = Vector2(min_range->get_value(), max_range->get_value());
-		range_edit_widget->draw_string(font,Point2(0, edit_size.y / 2.0),vformat(TTR("%0.4f"), value.x),HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
+		range_edit_widget->draw_string(font, Point2(0, edit_size.y / 2.0), vformat(TTR("%0.4f"), value.x), HORIZONTAL_ALIGNMENT_LEFT, size.x * 0.5);
 
 		String max_str = vformat(TTR("%0.4f"), value.y);
 
-		
 		int text_w = font->get_string_size(max_str).x;
 		float off = size.x - text_w;
-		if(off < size.x * 0.5) {
+		if (off < size.x * 0.5) {
 			off = size.x * 0.5;
 		}
-		range_edit_widget->draw_string(font,Point2(off, edit_size.y / 2.0),max_str,HORIZONTAL_ALIGNMENT_LEFT,size.x * 0.5);
-
+		range_edit_widget->draw_string(font, Point2(off, edit_size.y / 2.0), max_str, HORIZONTAL_ALIGNMENT_LEFT, size.x * 0.5);
 	}
 }
 
@@ -535,11 +512,10 @@ void Vector2MinMaxPropertyEditor::_set_clamped_values(float p_min, float p_max) 
 }
 
 void Vector2MinMaxPropertyEditor::_sync_property() {
-	if(is_int){
+	if (is_int) {
 		const Vector2i value = Vector2i(min_range->get_value(), max_range->get_value());
 		emit_changed(get_edited_property(), value, "", true);
-	}
-	else {
+	} else {
 		const Vector2 value = Vector2(min_range->get_value(), max_range->get_value());
 		emit_changed(get_edited_property(), value, "", true);
 	}
@@ -635,12 +611,12 @@ void Vector2MinMaxPropertyEditor::_notification(int p_what) {
 			drag_color = hovered_color.lerp(accent_color, 0.8);
 			midpoint_color = dark_theme ? Color(1, 1, 1) : Color(0, 0, 0);
 
-			range_edit_widget->set_custom_minimum_size(Vector2(0, range_slider_left_icon->get_height()  * 2));
+			range_edit_widget->set_custom_minimum_size(Vector2(0, range_slider_left_icon->get_height() * 2));
 		} break;
 	}
 }
 
-void Vector2MinMaxPropertyEditor::setup(float p_min, float p_max, float p_step, bool p_allow_less, bool p_allow_greater, bool p_degrees,bool p_is_int) {
+void Vector2MinMaxPropertyEditor::setup(float p_min, float p_max, float p_step, bool p_allow_less, bool p_allow_greater, bool p_degrees, bool p_is_int) {
 	property_range = Vector2(p_min, p_max);
 	is_int = p_is_int;
 	update_dyn_range();
@@ -662,40 +638,37 @@ void Vector2MinMaxPropertyEditor::setup(float p_min, float p_max, float p_step, 
 }
 
 void Vector2MinMaxPropertyEditor::update_dyn_range() {
-	if(get_edited_object() == nullptr) {
+	if (get_edited_object() == nullptr) {
 		return;
 	}
 	StringName name = get_range_method(get_edited_property());
 
 	bool is_dynamic_range = false;
-	if(get_edited_object()->has_method(name)) {
+	if (get_edited_object()->has_method(name)) {
 		Variant ret = get_edited_object()->call(name);
-		if(ret.get_type() == Variant::VECTOR2 ) {
+		if (ret.get_type() == Variant::VECTOR2) {
 			property_range = ret;
-		}
-		else {
+		} else {
 			Vector2i rangei = ret;
 			property_range.x = rangei.x;
 			property_range.y = rangei.y;
 		}
 		is_dynamic_range = true;
 	}
-	if(is_dynamic_range) {
+	if (is_dynamic_range) {
 		for (Range *r : Vector<Range *>{ min_range, min_edit, max_range, max_edit }) {
 			r->set_min(property_range.x);
 			r->set_max(property_range.y);
 		}
 	}
-
 }
 void Vector2MinMaxPropertyEditor::update_property() {
 	update_dyn_range();
-	if(is_int){
+	if (is_int) {
 		const Vector2i value = get_edited_property_value();
 		min_range->set_value(value.x);
 		max_range->set_value(value.y);
-	}
-	else {
+	} else {
 		const Vector2 value = get_edited_property_value();
 		min_range->set_value(value.x);
 		max_range->set_value(value.y);
@@ -726,7 +699,7 @@ Vector2MinMaxPropertyEditor::Vector2MinMaxPropertyEditor() {
 	range_edit_widget->set_h_size_flags(SIZE_EXPAND_FILL);
 	range_edit_widget->set_tooltip_text(TTR("Hold Shift to scale around midpoint instead of moving."));
 	hb->add_child(range_edit_widget);
-	range_edit_widget->set_custom_minimum_size(Vector2(0,40));
+	range_edit_widget->set_custom_minimum_size(Vector2(0, 40));
 	range_edit_widget->connect(SceneStringName(draw), callable_mp(this, &Vector2MinMaxPropertyEditor::_range_edit_draw));
 	range_edit_widget->connect(SceneStringName(gui_input), callable_mp(this, &Vector2MinMaxPropertyEditor::_range_edit_gui_input));
 	range_edit_widget->connect(SceneStringName(mouse_entered), callable_mp(this, &Vector2MinMaxPropertyEditor::_set_mouse_inside).bind(true));
@@ -753,12 +726,3 @@ Vector2MinMaxPropertyEditor::Vector2MinMaxPropertyEditor() {
 
 	//set_bottom_editor(content_vb);
 }
-
-
-
-
-
-
-
-
-

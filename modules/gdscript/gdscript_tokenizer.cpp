@@ -1559,7 +1559,7 @@ GDScriptTokenizer::Token GDScriptTokenizerText::scan() {
 			if (_peek() == '=') {
 				_advance();
 				return make_token(Token::PLUS_EQUAL);
-			}else if (_peek() == '+') {
+			} else if (_peek() == '+') {
 				return make_error(vformat(R"(Invalid supper ++ .)"));
 			} else if (is_digit(_peek()) && !last_token.can_precede_bin_op()) {
 				// Number starting with '+'.
@@ -1571,6 +1571,8 @@ GDScriptTokenizer::Token GDScriptTokenizerText::scan() {
 			if (_peek() == '=') {
 				_advance();
 				return make_token(Token::MINUS_EQUAL);
+			} else if (_peek() == '-') {
+				return make_error(vformat(R"(Invalid supper -- .)"));
 			} else if (is_digit(_peek()) && !last_token.can_precede_bin_op()) {
 				// Number starting with '-'.
 				return number();

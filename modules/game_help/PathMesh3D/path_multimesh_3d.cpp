@@ -285,20 +285,23 @@ void PathMultiMesh3D::_rebuild_mesh() {
 	multi_mesh->set_transform_format(MultiMesh::TRANSFORM_3D);
 	multi_mesh->set_instance_count(n_instances);
 
+	Basis mesh_r = Basis::from_euler(source_mesh_rotation);
 	for (uint64_t i = 0; i < n_instances; ++i) {
 		Transform3D transform;
 		switch (rotation_mode) {
 			case ROTATE_FIXED: {
 				transform.origin = curve->sample_baked(offset, sample_cubic);
-				transform.basis = Basis::from_euler(rotation);
+				transform.basis = Basis::from_euler(rotation) * mesh_r;
 			} break;
 			case ROTATE_PATH: {
 				transform = curve->sample_baked_with_rotation(offset, sample_cubic, true);
 				transform.basis.rotate(rotation);
+				transform.basis = transform.basis * mesh_r;
 			} break;
 			case ROTATE_RANDOM: {
-				transform = curve->sample_baked_with_rotation(offset, sample_cubic, true);
+				transform = curve->sample_baked_with_rotation(offset, sample_cubic, true) * mesh_r;
 				transform.basis.rotate(Vector3(0.0, 1.0, 0.0), Math::random(0.0, Math_TAU));
+				transform.basis = transform.basis * mesh_r;
 			} break;
 			default:
 				ERR_FAIL();

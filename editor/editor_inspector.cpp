@@ -73,6 +73,22 @@ static StringName get_object_property_display_name(const StringName &_property) 
 	property_display_name_mutex.unlock();
 	return ret;
 }
+static Mutex property_to_range_method_name_mutex;
+
+StringName EditorProperty::get_range_method(const StringName &_property) {
+	StringName ret;
+	property_to_range_method_name_mutex.lock();
+	static HashMap<StringName, StringName> *property_to_range_method_name = new (HashMap<StringName, StringName>);
+	auto it = property_to_range_method_name->find(_property);
+	if (it == property_to_range_method_name->end()) {
+		StringName name = StringName(_property.str() + "__get_range_min_max__");
+		property_to_range_method_name->insert(_property, name);
+	} else {
+		ret = it->value;
+	}
+	property_to_range_method_name_mutex.unlock();
+	return ret;
+}
 
 bool EditorInspector::_property_path_matches(const String &p_property_path, const String &p_filter, EditorPropertyNameProcessor::Style p_style) {
 	if (p_property_path.containsn(p_filter)) {
