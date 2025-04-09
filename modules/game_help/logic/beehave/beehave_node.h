@@ -306,10 +306,10 @@ public:
 		return String(L"组合节点");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 	}
 	virtual TypedArray<StringName> get_class_name() override {
-		TypedArray<StringName> rs = base_class_type::get_class_name();
+		TypedArray<StringName> rs = super_type::get_class_name();
 		rs.push_back("BeehaveComposite");
 		return rs;
 	}
@@ -332,10 +332,10 @@ public:
 		return String(L"装饰器节点");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 	}
 	virtual TypedArray<StringName> get_class_name() override {
-		TypedArray<StringName> rs = base_class_type::get_class_name();
+		TypedArray<StringName> rs = super_type::get_class_name();
 		rs.push_back("BeehaveDecorator");
 		return rs;
 	}
@@ -358,10 +358,10 @@ public:
 		return String(L"叶节点");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 	}
 	virtual TypedArray<StringName> get_class_name() override {
-		TypedArray<StringName> rs = base_class_type::get_class_name();
+		TypedArray<StringName> rs = super_type::get_class_name();
 		rs.push_back("BeehaveLeaf");
 		return rs;
 	}
@@ -385,15 +385,15 @@ public:
 		return SNAME("action");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 		GDVIRTUAL_CALL(_interrupt, run_context);
 	}
 	virtual void before_run(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::before_run(run_context);
+		super_type::before_run(run_context);
 		GDVIRTUAL_CALL(_before_run, run_context);
 	}
 	virtual void after_run(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::after_run(run_context);
+		super_type::after_run(run_context);
 		GDVIRTUAL_CALL(_after_run, run_context);
 	}
 	virtual int tick(const Ref<BeehaveRuncontext> &run_context) override {
@@ -403,7 +403,7 @@ public:
 			run_context->set_run_state(this, rs);
 			return rs;
 		}
-		int rs = base_class_type::tick(run_context);
+		int rs = super_type::tick(run_context);
 		run_context->set_run_state(this, rs);
 		return rs;
 	}

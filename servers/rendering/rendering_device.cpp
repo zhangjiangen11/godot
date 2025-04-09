@@ -169,7 +169,7 @@ void RenderingDevice::_free_dependencies(RID p_id) {
 	HashMap<RID, HashSet<RID>>::Iterator E = dependency_map.find(p_id);
 	if (E) {
 		while (E->value.size()) {
-			free(*E->value.begin());
+			rd_free(*E->value.begin());
 		}
 		dependency_map.remove(E);
 	}
@@ -6140,11 +6140,11 @@ void RenderingDevice::_free_internal(RID p_id) {
 		frames[frame].compute_pipelines_to_dispose_of.push_back(*pipeline);
 		compute_pipeline_owner.free(p_id);
 	} else {
-#ifdef DEV_ENABLED
-		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()) + " " + resource_name);
-#else
-		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()));
-#endif
+//#ifdef DEV_ENABLED
+//		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()) + " " + resource_name);
+//#else
+//		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()));
+//#endif
 	}
 
 	frames_pending_resources_for_processing = uint32_t(frames.size());

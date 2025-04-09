@@ -18,11 +18,11 @@ public:
 		return SNAME("BTParallel");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 	}
 
 	virtual TypedArray<StringName> get_class_name() override {
-		TypedArray<StringName> rs = base_class_type::get_class_name();
+		TypedArray<StringName> rs = super_type::get_class_name();
 		rs.push_back(StringName("BeehaveCompositeParallel"));
 		return rs;
 	}

@@ -16,13 +16,13 @@ public:
 		return SNAME("sequence_reactive");
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 		Dictionary prop = run_context->get_property(this);
 		prop[SNAME("successful_index")] = 0;
 	}
 
 	virtual TypedArray<StringName> get_class_name() override {
-		TypedArray<StringName> rs = base_class_type::get_class_name();
+		TypedArray<StringName> rs = super_type::get_class_name();
 		rs.push_back(StringName("BeehaveCompositeSequence"));
 		return rs;
 	}

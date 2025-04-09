@@ -7,7 +7,7 @@ class BeehaveCompositeSelector : public BeehaveComposite {
 
 public:
 	virtual TypedArray<StringName> get_class_name() override {
-		TypedArray<StringName> rs = base_class_type::get_class_name();
+		TypedArray<StringName> rs = super_type::get_class_name();
 		rs.push_back("BeehaveCompositeSelector");
 		return rs;
 	}
@@ -51,11 +51,11 @@ public:
 		return FAILURE;
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 		last_execution_index = 0;
 	}
 	virtual void after_run(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::after_run(run_context);
+		super_type::after_run(run_context);
 		last_execution_index = 0;
 	}
 

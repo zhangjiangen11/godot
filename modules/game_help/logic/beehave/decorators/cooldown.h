@@ -17,7 +17,7 @@ public:
 		return String(L"冷却装饰器");
 	}
 	virtual TypedArray<StringName> get_class_name() override {
-		TypedArray<StringName> rs = base_class_type::get_class_name();
+		TypedArray<StringName> rs = super_type::get_class_name();
 		rs.push_back("BeehaveSequence");
 		return rs;
 	}
@@ -25,7 +25,7 @@ public:
 		return SNAME("cooldown");
 	}
 	virtual void before_run(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::before_run(run_context);
+		super_type::before_run(run_context);
 		Dictionary prop = run_context->get_property(this);
 		prop[SNAME("is_init")] = false;
 		prop[SNAME("remaining_time")] = wait_time;

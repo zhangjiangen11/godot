@@ -342,7 +342,7 @@ public:
 	}
 	void setup(Ref<BeehaveNode> p_beehave_node, StringName property_name, Variant::Type p_array_type, const String &p_hint_string = "") {
 		beehave_node = p_beehave_node;
-		base_class_type::setup(p_array_type, p_hint_string);
+		super_type::setup(p_array_type, p_hint_string);
 		set_object_and_property(p_beehave_node.ptr(), property_name);
 		set_label(property_name);
 	}

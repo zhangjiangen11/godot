@@ -22,11 +22,11 @@ public:
 		return L"重复执行装饰器";
 	}
 	virtual void interrupt(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::interrupt(run_context);
+		super_type::interrupt(run_context);
 	}
 
 	virtual void before_run(const Ref<BeehaveRuncontext> &run_context) override {
-		base_class_type::before_run(run_context);
+		super_type::before_run(run_context);
 		Dictionary prop = run_context->get_property(this);
 		prop[SNAME("current_count")] = 0;
 	}
