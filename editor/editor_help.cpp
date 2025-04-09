@@ -3064,6 +3064,7 @@ void EditorHelp::_load_doc_thread(void* p_udata) {
 	}
 
 	OS::get_singleton()->benchmark_end_measure("EditorHelp", vformat("Generate Documentation (Run %d)", doc_generation_count));
+	_script_docs_loaded.set();
 }
 
 void EditorHelp::_gen_doc_thread(void* p_udata) {
@@ -3097,6 +3098,7 @@ void EditorHelp::_gen_doc_thread(void* p_udata) {
 	}
 
 	OS::get_singleton()->benchmark_end_measure("EditorHelp", vformat("Generate Documentation (Run %d)", doc_generation_count));
+	_script_docs_loaded.set();
 }
 
 void EditorHelp::_gen_extensions_docs() {
@@ -3196,8 +3198,8 @@ void EditorHelp::regenerate_script_doc_cache() {
 // Runs on worker_thread since it writes to DocData.
 void EditorHelp::_finish_regen_script_doc_thread(void* p_udata) {
 	loader_thread.wait_to_finish();
-	_process_postponed_docs();
 	_script_docs_loaded.set();
+	_process_postponed_docs();
 
 	OS::get_singleton()->benchmark_end_measure("EditorHelp", "Generate Script Documentation");
 }
