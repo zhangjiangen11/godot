@@ -354,6 +354,7 @@ DWORD CrashHandlerException(EXCEPTION_POINTERS *ep) {
 }
 static String get_call_stack() {
 	String call_stack;
+	return call_stack;
 }
 #endif
 

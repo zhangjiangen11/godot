@@ -59,8 +59,16 @@ protected:
 	bool is_error = true;
 };
 
-class HeightMapProcessShader : public RefCounted {
-	GDCLASS(HeightMapProcessShader, RefCounted);
+class ProcessShaderBase : public RefCounted {
+	GDCLASS(ProcessShaderBase, RefCounted);
+	static void _bind_methods() {}
+
+public:
+	virtual void auto_reload() {}
+};
+
+class HeightMapProcessShader : public ProcessShaderBase {
+	GDCLASS(HeightMapProcessShader, ProcessShaderBase);
 	static void _bind_methods();
 
 public:
@@ -130,11 +138,12 @@ public:
 		return preview_name;
 	}
 
-	void auto_reload();
+	virtual void auto_reload() override;
+
+	~HeightMapProcessShader();
 
 protected:
 	void load();
-	~HeightMapProcessShader();
 
 private:
 	Ref<HeightMapTemplateShader> template_shader;
@@ -154,6 +163,72 @@ private:
 	String preview_name;
 	uint64_t template_version = 0;
 	bool is_only_process = false;
+	bool is_error = false;
+};
+
+class ManualRenderProcessShader : public ProcessShaderBase {
+	GDCLASS(ManualRenderProcessShader, ProcessShaderBase);
+	static void _bind_methods();
+
+public:
+	void init(const Ref<HeightMapTemplateShader> &p_template_shader, const String &p_code_file_path);
+	virtual void auto_reload() override {
+		load();
+	}
+	Array get_params() {
+		return params;
+	}
+	Dictionary get_params_dict() {
+		Dictionary dict;
+		for (int i = 0; i < params.size(); i++) {
+			Dictionary p = params[i];
+			dict[p["name"]] = p["value"];
+		}
+		return dict;
+	}
+	Dictionary get_params_display_name_dict() {
+		Dictionary dict;
+		for (int i = 0; i < params.size(); i++) {
+			Dictionary p = params[i];
+			dict[p["name"]] = p["show_name"];
+		}
+		return dict;
+	}
+	void update_process_shader_params(Dictionary p_params, Vector<uint8_t> p_code, int start_index) {
+		p_code.resize((params.size() + (int64_t)start_index) * 4L);
+
+		float *p = (float *)p_code.ptrw();
+		p += start_index;
+		for (int i = 0; i < params.size(); i++) {
+			float v = 0;
+			Dictionary dict = params[i];
+			if (p_params.has(dict["name"])) {
+				v = p_params[dict["name"]];
+			}
+			p[i] = v;
+		}
+	}
+	~ManualRenderProcessShader();
+
+protected:
+	void on_template_changed() {
+		load();
+	}
+	void load();
+
+private:
+	Ref<HeightMapTemplateShader> template_shader;
+	Ref<RDShaderFile> render_shader_file;
+	RID render_shader;
+
+	Array params;
+
+	String code_file_path;
+	String function_code;
+	String process_code;
+
+	uint64_t code_file_path_time = -1;
+	uint64_t template_version = 0;
 	bool is_error = false;
 };
 

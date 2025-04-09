@@ -785,7 +785,7 @@ void WorkerThreadPool::init(int p_thread_count, float p_low_priority_task_ratio)
 		threads[i].index = i;
 		threads[i].pool = this;
 		threads[i].thread.start(&WorkerThreadPool::_thread_function, &threads[i]);
-		threads[i].thread.set_name(String("[") + thread_name + "] Pool:" + String::num_int64(i));
+		threads[i].thread.set_thread_name(String("[") + thread_name + "] Pool:" + String::num_int64(i));
 		thread_ids.insert(threads[i].thread.get_id(), i);
 	}
 }
@@ -1171,14 +1171,14 @@ void WorkerTaskPool::_bind_methods() {
 
 void WorkerTaskPool::init() {
 	int cpu_count = OS::get_singleton()->get_processor_count();
-	threads.resize(cpu_count * 2);
+	threads.resize(cpu_count + 2);
 	for (uint32_t i = 0; i < threads.size(); ++i) {
 		threads[i].index = i;
 		Thread::Settings settings;
 		settings.priority = Thread::PRIORITY_NORMAL;
 
 		threads[i].thread.start(&WorkerTaskPool::_thread_task_function, &threads[i], settings);
-		threads[i].thread.set_name(String("Worker Job Pool Thread:") + String::num_int64(i));
+		threads[i].thread.set_thread_name(String("Worker Job Pool Thread:") + String::num_int64(i));
 	}
 }
 

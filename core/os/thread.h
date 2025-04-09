@@ -84,7 +84,7 @@ public:
 	};
 
 	struct PlatformFunctions {
-		Error (*set_name)(const String &) = nullptr;
+		Error (*set_name)(const String &,uint64_t ) = nullptr;
 		void (*set_priority)(Thread::Priority) = nullptr;
 		void (*init)() = nullptr;
 		void (*wrapper)(Thread::Callback, void *) = nullptr;

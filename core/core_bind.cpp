@@ -1398,6 +1398,12 @@ Variant Thread::wait_to_finish() {
 
 	return r;
 }
+bool Thread::is_main_thread() {
+	return ::Thread::is_main_thread();
+}
+uint64_t Thread::get_caller_id() {
+	return ::Thread::get_caller_id();
+}
 
 void Thread::set_thread_safety_checks_enabled(bool p_enabled) {
 	ERR_FAIL_COND_MSG(::Thread::is_main_thread(), "This call is forbidden on the main thread.");
@@ -1411,6 +1417,8 @@ void Thread::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_alive"), &Thread::is_alive);
 	ClassDB::bind_method(D_METHOD("wait_to_finish"), &Thread::wait_to_finish);
 
+	ClassDB::bind_static_method("Thread", D_METHOD("is_main_thread"), &Thread::is_main_thread);
+	ClassDB::bind_static_method("Thread", D_METHOD("get_caller_id"), &Thread::get_caller_id);
 	ClassDB::bind_static_method("Thread", D_METHOD("set_thread_safety_checks_enabled", "enabled"), &Thread::set_thread_safety_checks_enabled);
 
 	BIND_ENUM_CONSTANT(PRIORITY_LOW);

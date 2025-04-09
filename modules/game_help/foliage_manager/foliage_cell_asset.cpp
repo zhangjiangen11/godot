@@ -201,6 +201,9 @@ void FoliageCellMask::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_is_bit", "is_bit"), &FoliageCellMask::set_is_bit);
 	ClassDB::bind_method(D_METHOD("get_is_bit"), &FoliageCellMask::get_is_bit);
 
+	ClassDB::bind_method(D_METHOD("create_sub_mask", "x", "y", "width", "height"), &FoliageCellMask::create_sub_mask);
+	ClassDB::bind_method(D_METHOD("apply_mask", "p_x", "p_y", "mask"), &FoliageCellMask::apply_mask);
+
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_BYTE_ARRAY, "data"), "set_data", "get_data");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "width"), "set_width", "get_width");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "height"), "set_height", "get_height");
@@ -214,16 +217,20 @@ void FoliageCellMask::init(uint32_t p_width, uint32_t p_height, bool p_is_bit) {
 	is_bit = p_is_bit;
 	// 每一个位存储一个状态
 	if (is_bit) {
-		if (width % 32 == 0) {
-			real_width = width / 32;
+		if (width % 8 == 0) {
+			real_width = width / 8;
 		} else {
-			real_width = width / 32 + 1;
+			real_width = width / 8 + 1;
 		}
 		data.resize((uint64_t)real_width * height);
 		memset(data.ptrw(), 0, (uint64_t)real_width * height);
 	} else {
 		data.resize(width * height);
 		memset(data.ptrw(), 0, width * height);
+	}
+	if (is_bit) {
+		ERR_FAIL_COND(width % 8 != 0);
+		ERR_FAIL_COND(p_height % 8 != 0);
 	}
 }
 void FoliageCellMask::set_pixel(int p_x, int p_y, uint8_t p_value) {
@@ -233,8 +240,8 @@ void FoliageCellMask::set_pixel(int p_x, int p_y, uint8_t p_value) {
 	if (!is_bit) {
 		data.write[p_x + p_y * width] = p_value;
 	} else {
-		int index = p_x / 32;
-		int offset = p_x % 32;
+		int index = p_x / 8;
+		int offset = p_x % 8;
 		uint8_t v = data[index + p_y * (uint64_t)real_width];
 		if (p_value == 0) {
 			v &= ~(1 << offset);
@@ -255,8 +262,8 @@ uint8_t FoliageCellMask::get_pixel(int p_x, int p_y) {
 	if (!is_bit) {
 		return data[p_x + p_y * (uint64_t)width];
 	} else {
-		int index = p_x / 32;
-		int offset = p_x % 32;
+		int index = p_x / 8;
+		int offset = p_x % 8;
 		uint8_t v = data[index + p_y * (uint64_t)real_width];
 		return (v >> offset) & 1;
 	}
@@ -307,6 +314,91 @@ void FoliageCellMask::set_form_texture_pixel(const Ref<Image> &p_texture, const 
 	}
 }
 
+Ref<FoliageCellMask> FoliageCellMask::create_sub_mask(int p_x, int p_y, int p_width, int p_height) {
+	if (is_bit) {
+		ERR_FAIL_COND_V(p_x % 8 != 0, Ref<FoliageCellMask>());
+		ERR_FAIL_COND_V(p_y % 8 != 0, Ref<FoliageCellMask>());
+		ERR_FAIL_COND_V(p_width % 8 != 0, Ref<FoliageCellMask>());
+		ERR_FAIL_COND_V(p_height % 8 != 0, Ref<FoliageCellMask>());
+	}
+	Ref<FoliageCellMask> sub_mask = memnew(FoliageCellMask);
+	sub_mask->init(p_width, p_height, is_bit);
+	if (is_bit) {
+		int64_t src_w_index = p_x / 8;
+		int64_t src_h_index = p_y;
+		int data_width = p_width / 8;
+		for (int w = 0; w < data_width; w++) {
+			for (int h = 0; h < p_height / 8; h++) {
+				int64_t dest_index = h * data_width + w;
+				int64_t src_index = (src_h_index + h) * real_width + src_w_index + w;
+				sub_mask->data.write[dest_index] = data[src_index];
+			}
+		}
+	} else {
+		for (int w = 0; w < p_width; w++) {
+			for (int h = 0; h < p_height; h++) {
+				sub_mask->set_pixel(w, h, get_pixel(p_x + w, p_y + h));
+			}
+		}
+	}
+	return sub_mask;
+}
+Ref<FoliageCellMask> FoliageCellMask::create_ref_sub_mask(int p_x, int p_y, int p_width, int p_height) {
+	if (parent.is_valid()) {
+		ERR_FAIL_V_MSG(Ref<FoliageCellMask>(), "禁止套娃");
+	}
+	if (is_bit) {
+		ERR_FAIL_COND_V(p_x % 8 != 0, Ref<FoliageCellMask>());
+		ERR_FAIL_COND_V(p_y % 8 != 0, Ref<FoliageCellMask>());
+		ERR_FAIL_COND_V(p_width % 8 != 0, Ref<FoliageCellMask>());
+		ERR_FAIL_COND_V(p_height % 8 != 0, Ref<FoliageCellMask>());
+	}
+	Ref<FoliageCellMask> sub_mask = memnew(FoliageCellMask);
+	sub_mask->width = p_width;
+	sub_mask->height = p_height;
+	sub_mask->is_bit = is_bit;
+	if (is_bit) {
+		sub_mask->real_width = p_width / 8;
+	} else {
+		sub_mask->real_width = real_width;
+	}
+	sub_mask->use_parent_offset = Vector2(p_x, p_y);
+	sub_mask->parent = this;
+	return sub_mask;
+}
+void FoliageCellMask::apply_mask(int p_x, int p_y, const Ref<FoliageCellMask> &p_mask) {
+	if (p_mask.is_null()) {
+		return;
+	}
+	if (is_bit) {
+		ERR_FAIL_COND(p_x % 8 != 0);
+		ERR_FAIL_COND(p_y % 8 != 0);
+		ERR_FAIL_COND(p_mask->get_width() % 8 != 0);
+		ERR_FAIL_COND(p_mask->get_height() % 8 != 0);
+	}
+	if (is_bit) {
+		int64_t src_w_index = p_x / 8;
+		int64_t src_h_index = p_y;
+		int data_width = p_mask->get_width() / 8;
+		for (int w = 0; w < data_width; w++) {
+			for (uint64_t h = 0; h < p_mask->get_height() / 8; h++) {
+				int64_t dest_index = h * data_width + w;
+				int64_t src_index = (src_h_index + h) * p_mask->get_real_width() + src_w_index + w;
+				data.write[dest_index] = (data[dest_index] | p_mask->data[src_index]);
+			}
+		}
+	} else {
+		for (int x = 0; x < int(p_mask->get_width()); x++) {
+			for (int y = 0; y < int(p_mask->get_height()); y++) {
+				uint8_t value = p_mask->get_pixel(p_x + x, p_y + y);
+				uint8_t va = p_mask->get_pixel(x, y);
+				
+				value = MAX(value, va);
+				set_pixel(p_x + x, p_y + y, value);
+			}
+		}
+	}
+}
 void FoliageCellMask::scale_instance(const Ref<SceneInstanceBlock> &p_block, float p_sacle_min, float p_scale_max, bool is_invert) {
 	if (is_bit) {
 		return;

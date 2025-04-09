@@ -752,6 +752,13 @@ public:
 
 	void set_form_texture_pixel(const Ref<Image> &p_texture, const Rect2 &p_dest_rect, const Rect2 &p_src_rect, int image_slot);
 
+	Ref<FoliageCellMask> create_sub_mask(int p_x, int p_y, int p_width, int p_height);
+	// 创建引用遮罩图,操作的时候不要存在其他线程的写入数据
+	Ref<FoliageCellMask> create_ref_sub_mask(int p_x, int p_y, int p_width, int p_height);
+
+	// 应用掩码,不能多线程执行,否则会导致数据错乱
+	void apply_mask(int p_x, int p_y, const Ref<FoliageCellMask> &p_mask);
+
 	uint8_t get_pixel(int p_x, int p_y);
 
 	void set_data(const Vector<uint8_t> &p_data) { data = p_data; }

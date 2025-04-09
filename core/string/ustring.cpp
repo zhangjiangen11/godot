@@ -305,11 +305,6 @@ void String::append_latin1(const Span<char> &p_cstr) {
 	if (p_cstr.is_empty()) {
 		return;
 	}
-	// 如果是utf8就直接添加,否则随便搞搞吧!
-	if (is_valid_utf8(p_cstr.ptr(), p_cstr.size())) {
-		append_utf8(p_cstr);
-		return;
-	}
 
 	const int prev_length = length();
 	resize(prev_length + p_cstr.size() + 1); // include 0

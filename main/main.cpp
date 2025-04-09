@@ -955,6 +955,8 @@ int Main::test_entrypoint(int argc, char *argv[], bool &tests_need_run) {
  */
 
 Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_phase) {
+
+	Thread::set_name("Main Thread");
 	Thread::make_main_thread();
 	set_current_thread_safe_for_nodes(true);
 

@@ -159,7 +159,9 @@ void initialize_game_help_module(ModuleInitializationLevel p_level) {
 		ClassDB::register_class<CharacterPrefabProcessPanel>();
 
 		ClassDB::register_class<HeightMapTemplateShader>();
+		ClassDB::register_class<ProcessShaderBase>();
 		ClassDB::register_class<HeightMapProcessShader>();
+		ClassDB::register_class<ManualRenderProcessShader>();
 
 #endif
 

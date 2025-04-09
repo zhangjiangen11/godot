@@ -4061,8 +4061,8 @@ EditorExportPlatformAndroid::EditorExportPlatformAndroid() {
 #ifndef ANDROID_ENABLED
 		_create_editor_debug_keystore_if_needed();
 		_update_preset_status();
-		check_for_changes_thread.set_name("Editor Export Platform Android Thread");
 		check_for_changes_thread.start(_check_for_changes_poll_thread, this);
+		check_for_changes_thread.set_thread_name("Editor Export Platform Android Thread");
 #endif
 	}
 }

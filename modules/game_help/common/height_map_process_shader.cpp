@@ -2,6 +2,7 @@
 #if TOOLS_ENABLED
 #include "height_map_process_shader.h"
 
+/******************************************************HeightMapTemplateShader***************************************************************************/
 void HeightMapTemplateShader::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("init", "process_file_path", "priview_file_path"), &HeightMapTemplateShader::init);
 	ClassDB::bind_method(D_METHOD("get_process_file_path"), &HeightMapTemplateShader::get_process_file_path);
@@ -69,7 +70,7 @@ void HeightMapTemplateShader::auto_reload() {
 	}
 	remove.clear();
 	for (auto &id : link_process_shaders) {
-		HeightMapProcessShader *shader = Object::cast_to<HeightMapProcessShader>(ObjectDB::get_instance(id));
+		ProcessShaderBase *shader = Object::cast_to<ProcessShaderBase>(ObjectDB::get_instance(id));
 		if (shader) {
 			shader->auto_reload();
 		} else {
@@ -82,7 +83,7 @@ void HeightMapTemplateShader::auto_reload() {
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/********************************************************HeightMapProcessShader******************************************************************************/
 
 static String _include_function(const String &p_path, void *userpointer) {
 	Error err;
@@ -347,4 +348,139 @@ HeightMapProcessShader::~HeightMapProcessShader() {
 	}
 	template_shader = nullptr;
 }
+/*****************************************************************************************************************************************************/
+void ManualRenderProcessShader::_bind_methods() {
+}
+void ManualRenderProcessShader::init(const Ref<HeightMapTemplateShader> &p_template_shader, const String &p_code_file_path) {
+	if (template_shader.is_valid()) {
+		template_shader->remove_using_process_shader(get_instance_id());
+	}
+	code_file_path = ResourceUID::get_singleton()->ensure_path(p_code_file_path);
+	if (template_shader.is_valid()) {
+		template_shader->disconnect(CoreStringName(changed), callable_mp(this, &ManualRenderProcessShader::on_template_changed));
+	}
+	template_shader = p_template_shader;
+	if (template_shader.is_null()) {
+		is_error = true;
+		ERR_FAIL_COND_MSG(p_template_shader.is_null(), "template shader not exist");
+	}
+	if (template_shader.is_valid()) {
+		template_shader->connect(CoreStringName(changed), callable_mp(this, &ManualRenderProcessShader::on_template_changed));
+	}
+	template_shader->add_using_process_shader(get_instance_id());
+	load();
+}
+void ManualRenderProcessShader::load() {
+	is_error = false;
+	if (template_shader.is_null()) {
+		is_error = true;
+		return;
+	}
+	if (template_shader->get_is_error()) {
+		is_error = true;
+		return;
+	}
+	if (!FileAccess::exists(code_file_path)) {
+		is_error = true;
+		ERR_FAIL_MSG(code_file_path + ": file not exist");
+	}
+	code_file_path_time = FileAccess::get_modified_time(code_file_path);
+	Error err;
+	Ref<FileAccess> file = FileAccess::open(code_file_path, FileAccess::READ, &err);
+	if (err != OK) {
+		is_error = true;
+		return;
+	}
+	if (render_shader.is_valid()) {
+		RD::get_singleton()->free(render_shader);
+		render_shader = RID();
+	}
+
+	template_version = template_shader->get_template_version();
+
+	String code = file->get_as_utf8_string();
+	if (code.is_empty()) {
+		is_error = true;
+		ERR_FAIL_COND_MSG(code.is_empty(), code_file_path + ": file not exist");
+	}
+	code = code.remove_annotate().remove_char('\r').remove_char('\t');
+	Vector<String> lines = code.split("$$", false);
+
+	if (lines.size() != 3) {
+		is_error = true;
+		ERR_FAIL_COND_MSG(lines.size() != 3, code_file_path + L": 格式錯誤，請檢查，必須存在$$分隔符號，格式為[params_a:(name,value,min,max);params_b;...]\n$$[function_code]\n$$[process_code]");
+	}
+
+	String _params = lines[0];
+	function_code = lines[1];
+	process_code = lines[2];
+
+	Vector<String> params_list = _params.remove_char(' ').split("\n", false);
+	params.clear();
+
+	for (int i = 0; i < params_list.size(); i++) {
+		Vector<String> param = params_list[i].remove_char(';').split(",", false);
+		if (param.size() == 0) {
+			continue;
+		}
+		if (param.size() != 5) {
+			is_error = true;
+			ERR_FAIL_COND_MSG(param.size() != 2, code_file_path + L": params格式錯誤[show_name,name,value,min,max]請檢查 " + String::num_int64(i) + ":" + params_list[i]);
+		}
+
+		Dictionary param_dict;
+		param_dict["show_name"] = param[0];
+		param_dict["arg_name"] = param[1];
+		param_dict["value"] = param[2].to_float();
+		param_dict["min"] = param[3].to_float();
+		param_dict["max"] = param[4].to_float();
+
+		param_dict["name"] = String("shader_parameter/") + param[1];
+		param_dict["type"] = Variant::FLOAT;
+		param_dict["hint"] = PROPERTY_HINT_RANGE;
+		param_dict["usage"] = PROPERTY_USAGE_DEFAULT;
+		param_dict["hint_string"] = param[3] + "," + param[4] + ",0.01";
+		params.push_back(param_dict);
+	}
+	if (params.size() > 32) {
+		is_error = true;
+		ERR_FAIL_COND_MSG(params.size() > 32, code_file_path + L": params數量過多,最多32個");
+	}
+
+	if (render_shader_file.is_null()) {
+		render_shader_file.instantiate();
+	}
+
+	//"uniform float time : hint_range(0.0, 10.0);"
+	String params_str;
+	for (int i = 0; i < params.size(); i++) {
+		Dictionary param_dict = params[i];
+		params_str += "#define " + (String)param_dict["arg_name"] + " " + "(maskparameters.arg[" + String::num_int64(i) + "])" + "\n";
+	}
+
+	String file_txt;
+	file_txt = process_code;
+	{
+		file_txt = file_txt.replace("//@BLEND_PARAMETER_RENAME", params_str);
+		file_txt = file_txt.replace("//@BLEND_FUNCTION", function_code);
+		file_txt = file_txt.replace("//@BLEND_CODE", process_code);
+		String base_path = template_shader->get_process_file_path().get_base_dir();
+
+		err = render_shader_file->parse_versions_from_text(file_txt, "#define PROCESS_SHADER 1\n#define BLEND_HEIGHT 1\n", _include_function, &base_path);
+
+		if (err != OK) {
+			is_error = true;
+			render_shader_file->print_errors(code_file_path);
+			return;
+		}
+	}
+}
+ManualRenderProcessShader::~ManualRenderProcessShader() {
+	if (template_shader.is_valid()) {
+		template_shader->disconnect(CoreStringName(changed), callable_mp(this, &ManualRenderProcessShader::on_template_changed));
+		template_shader->remove_using_process_shader(get_instance_id());
+	}
+	template_shader = nullptr;
+}
+
 #endif

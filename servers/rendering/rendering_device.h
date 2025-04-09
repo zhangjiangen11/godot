@@ -35,6 +35,7 @@
 #include "core/os/thread_safe.h"
 #include "core/templates/local_vector.h"
 #include "core/templates/rid_owner.h"
+#include "core/templates/safe_stack.h"
 #include "core/variant/typed_array.h"
 #include "servers/display_server.h"
 #include "servers/rendering/rendering_device_commons.h"
@@ -123,6 +124,7 @@ public:
 private:
 	HashMap<RID, HashSet<RID>> dependency_map; // IDs to IDs that depend on it.
 	HashMap<RID, HashSet<RID>> reverse_dependency_map; // Same as above, but in reverse.
+	SafeStack<RID> free_id_stack;
 
 	void _add_dependency(RID p_id, RID p_depends_on);
 	void _free_dependencies(RID p_id);
@@ -1609,6 +1611,7 @@ public:
 	void _set_max_fps(int p_max_fps);
 
 	void free(RID p_id);
+	void rd_free(RID p_id);
 	bool has_texture(RID p_id);
 
 	/****************/

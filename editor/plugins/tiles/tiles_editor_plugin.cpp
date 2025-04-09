@@ -301,6 +301,7 @@ TilesEditorUtils::TilesEditorUtils() {
 	singleton = this;
 	// Pattern preview generation thread.
 	pattern_preview_thread.start(_thread_func, this);
+	pattern_preview_thread.set_thread_name("Tiles Editor Utils");
 
 	ED_SHORTCUT("tiles_editor/cut", TTRC("Cut"), KeyModifierMask::CMD_OR_CTRL | Key::X);
 	ED_SHORTCUT("tiles_editor/copy", TTRC("Copy"), KeyModifierMask::CMD_OR_CTRL | Key::C);

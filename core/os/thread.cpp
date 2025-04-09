@@ -92,11 +92,12 @@ void Thread::wait_to_finish() {
 	id = UNASSIGNED_ID;
 }
 void Thread::set_thread_name(const String &p_name) {
+	platform_functions.set_name(p_name, (uint64_t)thread.native_handle());
 }
 
 Error Thread::set_name(const String &p_name) {
 	if (platform_functions.set_name) {
-		return platform_functions.set_name(p_name);
+		return platform_functions.set_name(p_name, 0);
 	}
 
 	return ERR_UNAVAILABLE;
