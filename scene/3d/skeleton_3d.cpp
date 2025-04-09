@@ -2619,8 +2619,7 @@ Dictionary Skeleton3D::get_human_bone_mapping() {
 	Dictionary human_bone_mapping;
 	auto_mapping_process(this, human_bone_mapping);
 	Dictionary rs;
-	List<Variant> keys;
-	human_bone_mapping.get_key_list(&keys);
+	LocalVector<Variant> keys =	human_bone_mapping.get_key_list();
 
 	for (const Variant &E : keys) {
 		rs[human_bone_mapping[E]] = E;
@@ -2629,8 +2628,7 @@ Dictionary Skeleton3D::get_human_bone_mapping() {
 }
 
 void Skeleton3D::set_human_bone_mapping(const Dictionary &p_human_bone_mapping) {
-	List<Variant> keys;
-	p_human_bone_mapping.get_key_list(&keys);
+	LocalVector<Variant> keys = p_human_bone_mapping.get_key_list();
 	const HashSet<String> &human_bones = get_human_bones();
 	for (const Variant &E : keys) {
 		int bone_index = this->find_bone(E);
