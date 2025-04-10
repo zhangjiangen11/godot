@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  thread.h                                                              */
+/*  thread_apple.h                                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,34 +30,11 @@
 
 #pragma once
 
-#include "platform_config.h"
-
-// Define PLATFORM_THREAD_OVERRIDE in your platform's `platform_config.h`
-// to use a custom Thread implementation defined in `platform/[your_platform]/platform_thread.h`.
-// Overriding the Thread implementation is required in some proprietary platforms.
-
-#ifdef PLATFORM_THREAD_OVERRIDE
-
-#include "platform_thread.h"
-
-#else
-
+#include "core/templates/safe_refcount.h"
 #include "core/typedefs.h"
 
-#ifdef THREADS_ENABLED
-
-#include "core/templates/safe_refcount.h"
-
-#include <new> // IWYU pragma: keep // For hardware interference size.
-
-#ifdef MINGW_ENABLED
-#define MINGW_STDTHREAD_REDUNDANCY_WARNING
-#include "thirdparty/mingw-std-threads/mingw.thread.h"
-#define THREADING_NAMESPACE mingw_stdthread
-#else
-#include <thread>
-#define THREADING_NAMESPACE std
-#endif
+#include <pthread.h>
+#include <new> // For hardware interference size
 
 class String;
 
@@ -80,18 +57,12 @@ public:
 
 	struct Settings {
 		Priority priority;
+		/// Override the default stack size (0 means default)
+		uint64_t stack_size = 0;
 		Settings() { priority = PRIORITY_NORMAL; }
 	};
 
-	struct PlatformFunctions {
-		Error (*set_name)(const String &, uint64_t) = nullptr;
-		void (*set_priority)(Thread::Priority) = nullptr;
-		void (*init)() = nullptr;
-		void (*wrapper)(Thread::Callback, void *) = nullptr;
-		void (*term)() = nullptr;
-	};
-
-#if defined(__cpp_lib_hardware_interference_size) && !defined(ANDROID_ENABLED) // This would be OK with NDK >= 26.
+#if defined(__cpp_lib_hardware_interference_size)
 	GODOT_GCC_WARNING_PUSH_AND_IGNORE("-Winterference-size")
 	static constexpr size_t CACHE_LINE_BYTES = std::hardware_destructive_interference_size;
 	GODOT_GCC_WARNING_POP
@@ -103,24 +74,19 @@ public:
 private:
 	friend class Main;
 
-	static PlatformFunctions platform_functions;
-
 	ID id = UNASSIGNED_ID;
+	pthread_t pthread;
 
 	static SafeNumeric<uint64_t> id_counter;
 	static thread_local ID caller_id;
-	THREADING_NAMESPACE::thread thread;
 
-	static void callback(ID p_caller_id, const Settings &p_settings, Thread::Callback p_callback, void *p_userdata);
+	static void *thread_callback(void *p_data);
 
 	static void make_main_thread() { caller_id = MAIN_ID; }
 	static void release_main_thread() { caller_id = id_counter.increment(); }
 
 public:
-	static void _set_platform_functions(const PlatformFunctions &p_functions);
-	void set_thread_name(const String &p_name);
-
-	_FORCE_INLINE_ static void yield() { std::this_thread::yield(); }
+	_FORCE_INLINE_ static void yield() { pthread_yield_np(); }
 
 	_FORCE_INLINE_ ID get_id() const { return id; }
 	// get the ID of the caller thread
@@ -130,80 +96,15 @@ public:
 	// get the ID of the main thread
 	_FORCE_INLINE_ static ID get_main_id() { return MAIN_ID; }
 
-	_FORCE_INLINE_ static bool is_main_thread() { return caller_id == MAIN_ID; } // Gain a tiny bit of perf here because there is no need to validate caller_id here, because only main thread will be set as 1.
+	_FORCE_INLINE_ static bool is_main_thread() { return caller_id == MAIN_ID; }
 
 	static Error set_name(const String &p_name);
 
 	ID start(Thread::Callback p_callback, void *p_user, const Settings &p_settings = Settings());
-	bool is_started() const;
-	///< waits until thread is finished, and deallocates it.
+	bool is_started() const { return id != UNASSIGNED_ID; }
+	/// Waits until thread is finished, and deallocates it.
 	void wait_to_finish();
 
-	Thread();
+	Thread() = default;
 	~Thread();
 };
-
-#else // No threads.
-
-class String;
-
-class Thread {
-public:
-	typedef void (*Callback)(void *p_userdata);
-
-	typedef uint64_t ID;
-
-	static constexpr size_t CACHE_LINE_BYTES = sizeof(void *);
-
-	enum : ID {
-		UNASSIGNED_ID = 0,
-		MAIN_ID = 1
-	};
-
-	enum Priority {
-		PRIORITY_LOW,
-		PRIORITY_NORMAL,
-		PRIORITY_HIGH
-	};
-
-	struct Settings {
-		Priority priority;
-		Settings() { priority = PRIORITY_NORMAL; }
-	};
-
-	struct PlatformFunctions {
-		Error (*set_name)(const String &, uint64_t) = nullptr;
-		void (*set_priority)(Thread::Priority) = nullptr;
-		void (*init)() = nullptr;
-		void (*wrapper)(Thread::Callback, void *) = nullptr;
-		void (*term)() = nullptr;
-	};
-
-private:
-	friend class Main;
-
-	static PlatformFunctions platform_functions;
-
-	static void make_main_thread() {}
-	static void release_main_thread() {}
-
-public:
-	static void _set_platform_functions(const PlatformFunctions &p_functions);
-
-	_FORCE_INLINE_ ID get_id() const { return 0; }
-	_FORCE_INLINE_ static ID get_caller_id() { return MAIN_ID; }
-	_FORCE_INLINE_ static ID get_main_id() { return MAIN_ID; }
-
-	_FORCE_INLINE_ static bool is_main_thread() { return true; }
-
-	static Error set_name(const String &p_name) { return ERR_UNAVAILABLE; }
-
-	void start(Thread::Callback p_callback, void *p_user, const Settings &p_settings = Settings()) {}
-	bool is_started() const { return false; }
-	void wait_to_finish() {}
-	void set_thread_name(const String &p_name) {}
-};
-
-#endif // THREADS_ENABLED
-
-#endif // PLATFORM_THREAD_OVERRIDE
