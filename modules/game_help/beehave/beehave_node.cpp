@@ -4,6 +4,7 @@
 #include "core/object/object.h"
 
 #include "beehave_tree.h"
+#include "scene/main/node.h"
 
 int BeehaveNode::process(const Ref<BeehaveRuncontext> &run_context) {
 	if (run_context->tree->debug_break_node == this) {

@@ -17,6 +17,7 @@
 #include "core/object/script_language.h"
 
 #define ADD_STYLEBOX_OVERRIDE(m_control, m_name, m_stylebox) (m_control->add_theme_style_override(m_name, m_stylebox))
+class Texture2D;
 class BBParam : public Resource {
 	GDCLASS(BBParam, Resource);
 

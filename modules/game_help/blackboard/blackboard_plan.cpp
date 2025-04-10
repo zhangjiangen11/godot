@@ -11,6 +11,7 @@
 
 #include "blackboard_plan.h"
 #include "bb_param/bb_param.h"
+#include "scene/main/node.h"
 
 bool BlackboardPlan::_set(const StringName &p_name, const Variant &p_value) {
 	// * Editor

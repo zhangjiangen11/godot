@@ -2,8 +2,7 @@
 
 #include "../blackboard/blackboard_plan.h"
 #include "core/io/resource.h"
-#include "scene/main/node.h"
-
+class Node;
 struct BeehaveRunState {
 public:
 	void reset(int child_count) {
