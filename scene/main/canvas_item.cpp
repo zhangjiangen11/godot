@@ -60,7 +60,7 @@ Transform2D CanvasItem::_edit_get_transform() const {
 #endif //TOOLS_ENABLED
 
 bool CanvasItem::is_visible_in_tree() const {
-	ERR_READ_THREAD_GUARD_V(false);
+	//ERR_READ_THREAD_GUARD_V(false);
 	return visible && parent_visible_in_tree;
 }
 
