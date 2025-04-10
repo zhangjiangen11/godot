@@ -476,6 +476,27 @@ TEST_CASE("[String] Find and replace") {
 	MULTICHECK_STRING_STRING_EQ(s, replacen, "Y", "Y", "HappY BirthdaY, Anna!");
 }
 
+TEST_CASE("[String] replace_char") {
+	String s = "Banana";
+	CHECK(s.replace_char('n', 'x') == "Baxaxa");
+	CHECK(s.replace_char('\0', 'x') == "Banana");
+	ERR_PRINT_OFF
+	CHECK(s.replace_char('n', '\0') == "Banana");
+	ERR_PRINT_ON
+}
+
+TEST_CASE("[String] replace_chars") {
+	String s = "Banana";
+	CHECK(s.replace_chars(String("Bn"), 'x') == "xaxaxa");
+	CHECK(s.replace_chars("Bn", 'x') == "xaxaxa");
+	CHECK(s.replace_chars(String(), 'x') == "Banana");
+	CHECK(s.replace_chars("", 'x') == "Banana");
+	ERR_PRINT_OFF
+	CHECK(s.replace_chars(String("Bn"), '\0') == "Banana");
+	CHECK(s.replace_chars("Bn", '\0') == "Banana");
+	ERR_PRINT_ON
+}
+
 TEST_CASE("[String] Insertion") {
 	String s = "Who is Frederic?";
 	s = s.insert(s.find("?"), " Chopin");
@@ -1774,6 +1795,7 @@ TEST_CASE("[String] uri_encode/unescape") {
 	static const uint8_t u8str[] = { 0x54, 0xC4, 0x93, 0xC5, 0xA1, 0x74, 0x00 };
 	String x2 = String::utf8((const char *)u8str);
 	String x3 = U"Tēšt";
+	String x4 = U"file+name";
 
 	CHECK(x1.uri_decode() == x2);
 	CHECK(x1.uri_decode() == x3);
@@ -1783,6 +1805,8 @@ TEST_CASE("[String] uri_encode/unescape") {
 
 	CHECK(s.uri_encode() == t);
 	CHECK(t.uri_decode() == s);
+	CHECK(x4.uri_file_decode() == x4);
+	CHECK(x4.uri_decode() == U"file name");
 }
 
 TEST_CASE("[String] xml_escape/unescape") {

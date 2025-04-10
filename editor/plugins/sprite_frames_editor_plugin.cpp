@@ -1104,7 +1104,7 @@ void SpriteFramesEditor::_animation_name_edited() {
 		new_name = "new_animation";
 	}
 
-	new_name = new_name.replace("/", "_").replace(",", " ");
+	new_name = new_name.replace_char('/', '_').replace_char(',', ' ');
 
 	String name = new_name;
 	int counter = 0;
@@ -1294,6 +1294,10 @@ void SpriteFramesEditor::_animation_speed_resized() {
 }
 
 void SpriteFramesEditor::_animation_speed_changed(double p_value) {
+	if (frames.is_null()) {
+		return;
+	}
+
 	if (updating) {
 		return;
 	}
@@ -1374,6 +1378,10 @@ void SpriteFramesEditor::_frame_list_item_selected(int p_index, bool p_selected)
 }
 
 void SpriteFramesEditor::_frame_duration_changed(double p_value) {
+	if (frames.is_null()) {
+		return;
+	}
+
 	if (updating) {
 		return;
 	}
