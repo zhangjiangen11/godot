@@ -11,8 +11,6 @@ env_game_help.add_source_files(env.modules_sources, "foliage_manager/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "game_gui/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/animator/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "human_anim/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "human_anim/Simd/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "common/*.cpp")
 
 
@@ -45,13 +43,6 @@ env_game_help.add_source_files(env.modules_sources, "foliage_manager/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "PathMesh3D/extrude_profiles/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "PathMesh3D/gen/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "PathMesh3D/*.cpp")
-
-env_game_help.add_source_files(env.modules_sources, "yaml/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "yaml/std/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "yaml/detail/*.cpp")
-
-
-env_game_help.add_source_files(env.modules_sources, "yaml/c4/*.cpp")
 
 
 if env.editor_build:

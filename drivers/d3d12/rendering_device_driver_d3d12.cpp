@@ -3364,15 +3364,26 @@ Vector<uint8_t> RenderingDeviceDriverD3D12::shader_compile_binary_from_spirv(Vec
 
 		// NIR-DXIL runtime data.
 		if (binary_data.nir_runtime_data_root_param_idx == 1) { // Set above to 1 when discovering runtime data is needed.
-			DEV_ASSERT(!binary_data.is_compute); // Could be supported if needed, but it's pointless as of now.
-			binary_data.nir_runtime_data_root_param_idx = root_params.size();
-			CD3DX12_ROOT_PARAMETER1 nir_runtime_data;
-			nir_runtime_data.InitAsConstants(
-					sizeof(dxil_spirv_vertex_runtime_data) / sizeof(uint32_t),
-					RUNTIME_DATA_REGISTER,
-					0,
-					D3D12_SHADER_VISIBILITY_VERTEX);
-			root_params.push_back(nir_runtime_data);
+			//DEV_ASSERT(!binary_data.is_compute); // Could be supported if needed, but it's pointless as of now.
+			if (binary_data.is_compute) {
+				binary_data.nir_runtime_data_root_param_idx = root_params.size();
+				CD3DX12_ROOT_PARAMETER1 nir_runtime_data;
+				nir_runtime_data.InitAsConstants(
+						sizeof(dxil_spirv_vertex_runtime_data) / sizeof(uint32_t),
+						RUNTIME_DATA_REGISTER,
+						0,
+						D3D12_SHADER_VISIBILITY_VERTEX);
+				root_params.push_back(nir_runtime_data);
+			} else {
+				binary_data.nir_runtime_data_root_param_idx = root_params.size();
+				CD3DX12_ROOT_PARAMETER1 nir_runtime_data;
+				nir_runtime_data.InitAsConstants(
+						sizeof(dxil_spirv_vertex_runtime_data) / sizeof(uint32_t),
+						RUNTIME_DATA_REGISTER,
+						0,
+						D3D12_SHADER_VISIBILITY_VERTEX);
+				root_params.push_back(nir_runtime_data);
+			}
 		}
 
 		// Descriptor tables (up to two per uniform set, for resources and/or samplers).

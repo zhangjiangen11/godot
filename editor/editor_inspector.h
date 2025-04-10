@@ -145,9 +145,8 @@ private:
 
 	void _update_flags();
 
-
 protected:
-	static StringName get_range_method(const StringName& _property);
+	static StringName get_range_method(const StringName &_property);
 	bool has_borders = false;
 
 	void _notification(int p_what);
