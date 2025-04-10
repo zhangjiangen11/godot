@@ -16,7 +16,7 @@
 #include "./character_shape/character_body_prefab.h"
 #include "animator/animation_help.h"
 #include "animator/body_animator.h"
-#include "beehave/beehave_tree.h"
+#include "../beehave/beehave_tree.h"
 #include "character_check_area_3d.h"
 #include "character_movement.h"
 #include "modules/renik/renik.h"
@@ -24,7 +24,7 @@
 
 #include "core/object/worker_thread_pool.h"
 
-#include "./blackboard/blackboard_plan.h"
+#include "../blackboard/blackboard_plan.h"
 #include "auto_delete.h"
 
 class CharacterAI;

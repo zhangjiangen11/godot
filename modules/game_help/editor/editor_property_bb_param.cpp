@@ -13,8 +13,8 @@
 
 #include "editor_property_bb_param.h"
 
-#include "../logic/blackboard/bb_param/bb_param.h"
-#include "../logic/blackboard/bb_param/bb_variant.h"
+#include "../blackboard/bb_param/bb_param.h"
+#include "../blackboard/bb_param/bb_variant.h"
 #include "editor_property_variable_name.h"
 #include "mode_switch_button.h"
 

@@ -7,7 +7,7 @@
 #include "editor/editor_resource_picker.h"
 #include "editor/gui/editor_bottom_panel.h"
 #include "editor/inspector_dock.h"
-#include "modules/game_help/logic/beehave/beehave_tree.h"
+#include "modules/game_help/beehave/beehave_tree.h"
 #include "scene/gui/graph_edit.h"
 #include "scene/gui/graph_edit_arranger.h"
 #include "scene/gui/view_panner.h"

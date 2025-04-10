@@ -1,5 +1,5 @@
 #pragma once
-#include "../../character_ai/animator_condition.h"
+#include "../../logic/character_ai/animator_condition.h"
 #include "../beehave_node.h"
 
 class BeehaveLeafBlackboardCondition : public BeehaveLeaf {

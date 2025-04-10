@@ -209,7 +209,7 @@ public:
 	Ref<CharacterAnimationLogicRoot> node_object;
 };
 
-#include "../logic/beehave/composites/parallel.h"
+#include "../beehave/composites/parallel.h"
 
 class ConditionList_ED {
 public:

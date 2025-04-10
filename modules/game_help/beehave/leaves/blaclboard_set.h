@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../character_ai/animator_blackboard_set.h"
+#include "../../logic/character_ai/animator_blackboard_set.h"
 #include "../beehave_node.h"
 
 class BeehaveLeafBlackboardSet : public BeehaveLeaf {

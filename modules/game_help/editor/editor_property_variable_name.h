@@ -14,7 +14,7 @@
 
 #ifdef TOOLS_ENABLED
 
-#include "../logic/blackboard/blackboard_plan.h"
+#include "../blackboard/blackboard_plan.h"
 
 #include "editor/editor_inspector.h"
 

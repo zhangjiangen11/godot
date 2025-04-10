@@ -14,7 +14,7 @@ env_game_help.add_source_files(env.modules_sources, "logic/animator/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "common/*.cpp")
 
 
-env_game_help.add_source_files(env.modules_sources, "logic/beehave/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "beehave/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/scene/*.cpp")
 
 env_game_help.add_source_files(env.modules_sources, "logic/character_ai/*.cpp")
@@ -24,18 +24,18 @@ env_game_help.add_source_files(env.modules_sources, "logic/character_shape/*.cpp
 env_game_help.add_source_files(env.modules_sources, "csv/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "unity/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/navigation/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "logic/blackboard/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "logic/blackboard/bb_param/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "blackboard/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "blackboard/bb_param/*.cpp")
 # mterrain
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/height_brushes/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/color_brushes/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/grass/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/navmesh/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/octmesh/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/path/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/hlod/*.cpp")
-env_game_help.add_source_files(env.modules_sources, "MTerrain/gdextension/src/editor/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/height_brushes/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/color_brushes/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/grass/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/navmesh/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/octmesh/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/path/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/hlod/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "MTerrain/src/editor/*.cpp")
 
 
 env_game_help.add_source_files(env.modules_sources, "foliage_manager/*.cpp")

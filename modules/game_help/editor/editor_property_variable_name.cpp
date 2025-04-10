@@ -13,7 +13,7 @@
 
 #include "editor_property_variable_name.h"
 
-#include "../logic/blackboard/bb_param/bb_param.h"
+#include "../blackboard/bb_param/bb_param.h"
 #include "blackboard_plan_editor.h"
 
 #include "scene/gui/box_container.h"

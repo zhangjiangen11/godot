@@ -1,6 +1,6 @@
 #pragma once
-#include "../blackboard/blackboard.h"
-#include "../blackboard/blackboard_plan.h"
+#include "../../blackboard/blackboard.h"
+#include "../../blackboard/blackboard_plan.h"
 #include "scene/3d/node_3d.h"
 
 class CharacterAnimatorLayer;

@@ -1,5 +1,5 @@
 #pragma once
-#include "../blackboard/blackboard_plan.h"
+#include "../../blackboard/blackboard_plan.h"
 #include "scene/3d/node_3d.h"
 
 // 继承Resource目的主要是为了编辑时方便显示名称

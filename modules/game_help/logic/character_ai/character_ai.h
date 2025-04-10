@@ -1,5 +1,5 @@
 #pragma once
-#include "../blackboard/blackboard_plan.h"
+#include "../../blackboard/blackboard_plan.h"
 #include "../body_main.h"
 #include "animator_condition.h"
 #include "core/object/ref_counted.h"

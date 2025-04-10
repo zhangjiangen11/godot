@@ -16,8 +16,8 @@
 
 #include "editor/editor_inspector.h"
 
-#include "../logic/blackboard/bb_param/bb_param.h"
-#include "../logic/blackboard/blackboard_plan.h"
+#include "../blackboard/bb_param/bb_param.h"
+#include "../blackboard/blackboard_plan.h"
 #include "mode_switch_button.h"
 
 #include "scene/gui/box_container.h"

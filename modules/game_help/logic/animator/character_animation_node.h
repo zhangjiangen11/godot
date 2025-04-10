@@ -6,7 +6,7 @@
 #include "scene/main/node.h"
 #include "scene/resources/animation.h"
 
-#include "../blackboard/blackboard_plan.h"
+#include "../../blackboard/blackboard_plan.h"
 #include "human_animation.h"
 
 class CharacterBoneMap : public Resource {
