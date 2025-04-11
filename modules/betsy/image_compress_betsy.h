@@ -124,6 +124,11 @@ public:
 	Error compress(BetsyFormat p_format, Image *r_img) {
 		Error err;
 		command_queue.push_and_ret(this, &BetsyCompressor::_compress, &err, p_format, r_img);
+		auto func = [&](int index) {
+			err = this->_compress(p_format, r_img);
+		};
+		Ref<TaskJobHandle> job = WorkerTaskPool::get_singleton()->add_group_task(StringName("BetsyCompressor.compress"), callable_mp_static(func), 1, 1, nullptr);
+		job->wait_completion();
 		return err;
 	}
 };

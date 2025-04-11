@@ -104,6 +104,7 @@ public:
 	bool is_started() const { return id != UNASSIGNED_ID; }
 	/// Waits until thread is finished, and deallocates it.
 	void wait_to_finish();
+	void set_thread_name(const String &p_name) {}
 
 	Thread() = default;
 	~Thread();

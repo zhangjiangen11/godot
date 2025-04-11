@@ -581,7 +581,7 @@ static void make_res_path(const String &p_path) {
 		return;
 	}
 	String path = p_path.replace("res://", "");
-	path = path.replace("\\", "/");
+	path = path.replace_char('\\', '/');
 	Vector<String> paths = path.split("/");
 
 	String curr_path = "res://";
