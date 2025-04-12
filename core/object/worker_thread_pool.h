@@ -39,6 +39,7 @@
 #include "core/templates/paged_allocator.h"
 #include "core/templates/rid.h"
 #include "core/templates/safe_refcount.h"
+#include <functional>
 
 class WorkerThreadPool : public Object {
 	GDCLASS(WorkerThreadPool, Object)
@@ -353,6 +354,7 @@ public:
 public:
 	Ref<TaskJobHandle> add_native_group_task(const StringName &_task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements_count, int _batch_count, TaskJobHandle *depend_task);
 	Ref<TaskJobHandle> add_group_task(const StringName &_task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task);
+	Ref<TaskJobHandle> add_labada_group_task(const StringName& _task_name, const std::function<void(int)>& p_action, int p_elements, int _batch_count, TaskJobHandle* depend_task);
 
 public:
 	Ref<TaskJobHandle> combined_job_handle(TypedArray<TaskJobHandle> _handles);

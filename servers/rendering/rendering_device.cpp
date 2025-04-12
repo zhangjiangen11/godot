@@ -38,6 +38,8 @@
 #include "core/io/dir_access.h"
 
 #include "servers/rendering_server.h"
+#include "servers/rendering/rendering_server_globals.h"
+#include "servers/rendering/storage/texture_storage.h"
 
 #define FORCE_SEPARATE_PRESENT_QUEUE 0
 #define PRINT_FRAMEBUFFER_FORMAT 0
@@ -3615,9 +3617,12 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 					ERR_FAIL_NULL_V_MSG(sampler_driver_id, RID(), "SamplerBuffer (binding: " + itos(uniform.binding) + ", index " + itos(j + 1) + ") is not a valid sampler.");
 
 					RID texture_id = uniform.get_id(j + 1);
-					if (RS::get_singleton()->texture_is_valid(texture_id)) {
-						texture_id = RS::get_singleton()->texture_get_rd_texture(texture_id);
+					if (RenderingServerGlobals::texture_storage->texture_is_valid(texture_id)) {
+						texture_id = RenderingServerGlobals::texture_storage->texture_get_rd_texture(texture_id);
 					}
+					//if (RS::get_singleton()->texture_is_valid(texture_id)) {
+					//	texture_id = RS::get_singleton()->texture_get_rd_texture(texture_id);
+					//}
 					Texture *texture = texture_owner.get_or_null(texture_id);
 					ERR_FAIL_NULL_V_MSG(texture, RID(), "Texture (binding: " + itos(uniform.binding) + ", index " + itos(j) + ") is not a valid texture.");
 
@@ -6140,11 +6145,11 @@ void RenderingDevice::_free_internal(RID p_id) {
 		frames[frame].compute_pipelines_to_dispose_of.push_back(*pipeline);
 		compute_pipeline_owner.free(p_id);
 	} else {
-//#ifdef DEV_ENABLED
-//		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()) + " " + resource_name);
-//#else
-//		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()));
-//#endif
+		//#ifdef DEV_ENABLED
+		//		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()) + " " + resource_name);
+		//#else
+		//		WARN_PRINT("Attempted to free invalid ID: " + itos(p_id.get_id()));
+		//#endif
 	}
 
 	frames_pending_resources_for_processing = uint32_t(frames.size());

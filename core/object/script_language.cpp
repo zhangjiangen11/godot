@@ -272,7 +272,7 @@ void ScriptServer::init_languages() {
 				if (!c.has("class") || !c.has("language") || !c.has("path") || !c.has("base") || !c.has("is_abstract") || !c.has("is_tool")) {
 					continue;
 				}
-				if(!FileAccess::exists(c["path"])) {
+				if (!FileAccess::exists(c["path"])) {
 					// TODO: This should be a warning.
 					continue;
 				}
@@ -288,7 +288,7 @@ void ScriptServer::init_languages() {
 			if (!c.has("class") || !c.has("language") || !c.has("path") || !c.has("base") || !c.has("is_abstract") || !c.has("is_tool")) {
 				continue;
 			}
-			if(!FileAccess::exists(c["path"])) {
+			if (!FileAccess::exists(c["path"])) {
 				// TODO: This should be a warning.
 				continue;
 			}
@@ -429,7 +429,7 @@ void ScriptServer::remove_global_class(const StringName &p_class) {
 	inheriters_cache_dirty = true;
 }
 
-void ScriptServer::get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes) {
+void ScriptServer::get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes, bool _it_all) {
 	if (inheriters_cache_dirty) {
 		inheriters_cache.clear();
 		for (const KeyValue<StringName, GlobalScriptClass> &K : global_classes) {
@@ -447,10 +447,17 @@ void ScriptServer::get_inheriters_list(const StringName &p_base_type, List<Strin
 	if (!inheriters_cache.has(p_base_type)) {
 		return;
 	}
-
-	const Vector<StringName> &v = inheriters_cache[p_base_type];
-	for (int i = 0; i < v.size(); i++) {
-		r_classes->push_back(v[i]);
+	List<StringName> next_find;
+	next_find.push_back(p_base_type);
+	while (next_find.size() > 0) {
+		const Vector<StringName> &v = inheriters_cache[next_find.front()->get()];
+		next_find.pop_front();
+		for (int i = 0; i < v.size(); i++) {
+			r_classes->push_back(v[i]);
+			if (_it_all) {
+				next_find.push_back(v[i]);
+			}
+		}
 	}
 }
 
@@ -529,7 +536,7 @@ void ScriptServer::save_global_classes() {
 	get_global_class_list(&gc);
 	Array gcarr;
 	for (const StringName &E : gc) {
-		if(!FileAccess::exists(global_classes[E].path)) {
+		if (!FileAccess::exists(global_classes[E].path)) {
 			// TODO: This should be a warning.
 			continue;
 		}
@@ -547,41 +554,35 @@ void ScriptServer::save_global_classes() {
 	ProjectSettings::get_singleton()->store_global_class_list(gcarr);
 }
 
-String ScriptServer::get_global_name(const Ref<Script>& p_script) {
-	if (p_script.is_valid())
-	{
+String ScriptServer::get_global_name(const Ref<Script> &p_script) {
+	if (p_script.is_valid()) {
 		return p_script->get_global_name();
 	}
 	return "";
 }
 
-ScriptServer::GlobalScriptClass ScriptServer::get_global_class(const StringName& p_class_name)
-{
-    return global_classes[p_class_name];
+ScriptServer::GlobalScriptClass ScriptServer::get_global_class(const StringName &p_class_name) {
+	return global_classes[p_class_name];
 }
 
-PackedStringArray ScriptServer::get_class_hierarchy(const StringName& p_class_name, bool p_include_native_classes) {
+PackedStringArray ScriptServer::get_class_hierarchy(const StringName &p_class_name, bool p_include_native_classes) {
 	PackedStringArray hierarchy;
 	StringName class_name = p_class_name;
-	while (!class_name.is_empty())
-	{
-		if (is_global_class(class_name))
-		{
+	while (!class_name.is_empty()) {
+		if (is_global_class(class_name)) {
 			hierarchy.push_back(class_name);
 			class_name = get_global_class(class_name).base;
-		}
-		else if (p_include_native_classes)
-		{
+		} else if (p_include_native_classes) {
 			hierarchy.push_back(class_name);
 			class_name = ClassDB::get_parent_class(class_name);
-		}
-		else
+		} else {
 			break;
+		}
 	}
 	return hierarchy;
 }
 
-bool ScriptServer::is_parent_class(const StringName& p_source_class_name, const StringName& p_target_class_name) {
+bool ScriptServer::is_parent_class(const StringName &p_source_class_name, const StringName &p_target_class_name) {
 	return get_class_hierarchy(p_source_class_name, true).has(p_target_class_name);
 }
 ////////////////////

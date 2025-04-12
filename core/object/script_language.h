@@ -56,6 +56,7 @@ class ScriptServer {
 
 	static bool scripting_enabled;
 	static bool reload_scripts_on_save;
+
 public:
 	struct GlobalScriptClass {
 		StringName language;
@@ -98,15 +99,15 @@ public:
 	static bool is_global_class_abstract(const String &p_class);
 	static bool is_global_class_tool(const String &p_class);
 	static void get_global_class_list(List<StringName> *r_global_classes);
-	static void get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes);
+	static void get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes, bool _it_all = false);
 	static void save_global_classes();
 
 	static void init_languages();
 	static void finish_languages();
-	static  String get_global_name(const Ref<Script>& p_script);
-    static PackedStringArray get_class_hierarchy(const StringName& p_class_name, bool p_include_native_classes);    
-    static bool is_parent_class(const StringName& p_source_class_name, const StringName& p_target_class_name);
-	static GlobalScriptClass get_global_class(const StringName& p_class_name);
+	static String get_global_name(const Ref<Script> &p_script);
+	static PackedStringArray get_class_hierarchy(const StringName &p_class_name, bool p_include_native_classes);
+	static bool is_parent_class(const StringName &p_source_class_name, const StringName &p_target_class_name);
+	static GlobalScriptClass get_global_class(const StringName &p_class_name);
 
 	static bool are_languages_initialized();
 	static bool thread_is_entered();

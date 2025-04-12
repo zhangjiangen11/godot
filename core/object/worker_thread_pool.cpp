@@ -967,6 +967,8 @@ class ThreadTaskGroup {
 	// 事件的句柄
 	Ref<TaskJobHandle> handle;
 	Callable callable;
+	std::function<void(int)> labada;
+	bool is_labada = false;
 	void (*native_group_func)(void *, uint32_t) = nullptr;
 	void *native_func_userdata = nullptr;
 	int start = 0;
@@ -980,7 +982,16 @@ protected:
 		handle->wait_depend_completion();
 		//try
 		{
-			if (native_group_func != nullptr) {
+			if (is_labada) {
+				for (int i = start; i < end; ++i) {
+					labada(i);
+					if (WorkerTaskPool::get_singleton()->exit_threads) {
+						handle->set_completed();
+						return;
+					}
+				}
+			}
+			else if (native_group_func != nullptr) {
 				for (int i = start; i < end; ++i) {
 					(*native_group_func)(native_func_userdata, i);
 					if (WorkerTaskPool::get_singleton()->exit_threads) {
@@ -1084,6 +1095,7 @@ void WorkerTaskPool::_process_task_queue(int thread_id) {
 		task->Process();
 		task->native_func_userdata = nullptr;
 		task->native_group_func = nullptr;
+		task->labada = std::function<void(int)>();
 		task->callable = Callable();
 
 		if (capture_stack) {
@@ -1123,6 +1135,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_
 		if (task->end > p_elements) {
 			task->end = p_elements;
 		}
+		task->is_labada = false;
 		// 增加一个任务
 		add_task(task);
 	}
@@ -1153,10 +1166,43 @@ Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, c
 		if (task->end > p_elements) {
 			task->end = p_elements;
 		}
+		task->is_labada = false;
 		// 增加一个任务
 		add_task(task);
 	}
 	return hand;
+}
+Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName& _task_name, const std::function<void(int)>& p_action, int p_elements, int _batch_count, TaskJobHandle* depend_task) {
+	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
+	hand->init();
+	hand->task_name = _task_name;
+	// 增加依赖，保持依赖链条是正确的
+	if (depend_task != nullptr) {
+		hand->dependJob.push_back(depend_task);
+	}
+	if (p_elements <= 0) {
+		return hand;
+	}
+	hand->is_job = true;
+	if (_batch_count <= 0) {
+		_batch_count = 1;
+	}
+	hand->taskMax = p_elements;
+	for (int i = 0; i < p_elements; i += _batch_count) {
+		ThreadTaskGroup* task = allocal_task();
+		task->handle = hand;
+		task->labada = p_action;
+		task->start = i;
+		task->end = i + _batch_count;
+		if (task->end > p_elements) {
+			task->end = p_elements;
+		}
+		task->is_labada = true;
+		// 增加一个任务
+		add_task(task);
+	}
+	return hand;
+
 }
 Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle> _handles) {
 	if (_handles.size() == 0) {

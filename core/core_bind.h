@@ -478,7 +478,7 @@ public:
 
 	PackedStringArray get_class_list() const;
 	PackedStringArray get_inheriters_from_class(const StringName &p_class) const;
-	PackedStringArray get_script_inheriters_from_class(const StringName &p_class) const;
+	PackedStringArray get_script_inheriters_from_class(const StringName &p_class, bool it_all = false) const;
 
 	Variant create_class_instance(StringName p_class_name);
 	Variant get_instance(ObjectID object_id);

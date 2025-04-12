@@ -1458,9 +1458,9 @@ PackedStringArray ClassDB::get_inheriters_from_class(const StringName &p_class) 
 
 	return ret;
 }
-PackedStringArray ClassDB::get_script_inheriters_from_class(const StringName &p_class) const {
+PackedStringArray ClassDB::get_script_inheriters_from_class(const StringName &p_class, bool it_all) const {
 	List<StringName> classes;
-	ScriptServer::get_inheriters_list(p_class, &classes);
+	ScriptServer::get_inheriters_list(p_class, &classes, it_all);
 
 	PackedStringArray ret;
 	ret.resize(classes.size());
@@ -1755,7 +1755,7 @@ void ClassDB::_bind_methods() {
 	::ClassDB::bind_method(D_METHOD("get_class_list"), &ClassDB::get_class_list);
 	::ClassDB::bind_method(D_METHOD("get_inheriters_from_class", "class"), &ClassDB::get_inheriters_from_class);
 	::ClassDB::bind_method(D_METHOD("get_instance", "object_id"), &ClassDB::get_instance);
-	::ClassDB::bind_method(D_METHOD("get_script_inheriters_from_class", "class"), &ClassDB::get_script_inheriters_from_class);
+	::ClassDB::bind_method(D_METHOD("get_script_inheriters_from_class", "class", "it_all"), &ClassDB::get_script_inheriters_from_class, DEFVAL(false));
 	::ClassDB::bind_method(D_METHOD("create_class_instance", "class"), &ClassDB::create_class_instance);
 	::ClassDB::bind_method(D_METHOD("get_parent_class", "class"), &ClassDB::get_parent_class);
 	::ClassDB::bind_method(D_METHOD("class_exists", "class"), &ClassDB::class_exists);
