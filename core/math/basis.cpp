@@ -206,7 +206,7 @@ Basis Basis::diagonalize() {
 		// Compute the rotation angle
 		real_t angle;
 		if (Math::is_equal_approx(rows[j][j], rows[i][i])) {
-			angle = Math_PI / 4;
+			angle = Math::PI / 4;
 		} else {
 			angle = 0.5f * Math::atan(2 * rows[i][j] / (rows[j][j] - rows[i][i]));
 		}
@@ -506,12 +506,12 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 					}
 				} else {
 					euler.x = Math::atan2(rows[2][1], rows[1][1]);
-					euler.y = -Math_PI / 2.0f;
+					euler.y = -Math::PI / 2.0f;
 					euler.z = 0.0f;
 				}
 			} else {
 				euler.x = Math::atan2(rows[2][1], rows[1][1]);
-				euler.y = Math_PI / 2.0f;
+				euler.y = Math::PI / 2.0f;
 				euler.z = 0.0f;
 			}
 			return euler;
@@ -535,13 +535,13 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 					// It's -1
 					euler.x = -Math::atan2(rows[1][2], rows[2][2]);
 					euler.y = 0.0f;
-					euler.z = Math_PI / 2.0f;
+					euler.z = Math::PI / 2.0f;
 				}
 			} else {
 				// It's 1
 				euler.x = -Math::atan2(rows[1][2], rows[2][2]);
 				euler.y = 0.0f;
-				euler.z = -Math_PI / 2.0f;
+				euler.z = -Math::PI / 2.0f;
 			}
 			return euler;
 		}
@@ -571,12 +571,12 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 						euler.z = atan2(rows[1][0], rows[1][1]);
 					}
 				} else { // m12 == -1
-					euler.x = Math_PI * 0.5f;
+					euler.x = Math::PI * 0.5f;
 					euler.y = atan2(rows[0][1], rows[0][0]);
 					euler.z = 0;
 				}
 			} else { // m12 == 1
-				euler.x = -Math_PI * 0.5f;
+				euler.x = -Math::PI * 0.5f;
 				euler.y = -atan2(rows[0][1], rows[0][0]);
 				euler.z = 0;
 			}
@@ -602,13 +602,13 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 					// It's -1
 					euler.x = Math::atan2(rows[2][1], rows[2][2]);
 					euler.y = 0.0f;
-					euler.z = -Math_PI / 2.0f;
+					euler.z = -Math::PI / 2.0f;
 				}
 			} else {
 				// It's 1
 				euler.x = Math::atan2(rows[2][1], rows[2][2]);
 				euler.y = 0.0f;
-				euler.z = Math_PI / 2.0f;
+				euler.z = Math::PI / 2.0f;
 			}
 			return euler;
 		} break;
@@ -628,13 +628,13 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 					euler.z = Math::atan2(-rows[0][1], rows[1][1]);
 				} else {
 					// It's -1
-					euler.x = -Math_PI / 2.0f;
+					euler.x = -Math::PI / 2.0f;
 					euler.y = Math::atan2(rows[0][2], rows[0][0]);
 					euler.z = 0;
 				}
 			} else {
 				// It's 1
-				euler.x = Math_PI / 2.0f;
+				euler.x = Math::PI / 2.0f;
 				euler.y = Math::atan2(rows[0][2], rows[0][0]);
 				euler.z = 0;
 			}
@@ -657,13 +657,13 @@ Vector3 Basis::get_euler(EulerOrder p_order) const {
 				} else {
 					// It's -1
 					euler.x = 0;
-					euler.y = Math_PI / 2.0f;
+					euler.y = Math::PI / 2.0f;
 					euler.z = -Math::atan2(rows[0][1], rows[1][1]);
 				}
 			} else {
 				// It's 1
 				euler.x = 0;
-				euler.y = -Math_PI / 2.0f;
+				euler.y = -Math::PI / 2.0f;
 				euler.z = -Math::atan2(rows[0][1], rows[1][1]);
 			}
 			return euler;
@@ -801,8 +801,8 @@ void Basis::get_axis_angle(Vector3 &r_axis, real_t &r_angle) const {
 		if ((xx > yy) && (xx > zz)) { // rows[0][0] is the largest diagonal term.
 			if (xx < CMP_EPSILON) {
 				x = 0;
-				y = Math_SQRT12;
-				z = Math_SQRT12;
+				y = Math::SQRT12;
+				z = Math::SQRT12;
 			} else {
 				x = Math::sqrt(xx);
 				y = xy / x;
@@ -810,9 +810,9 @@ void Basis::get_axis_angle(Vector3 &r_axis, real_t &r_angle) const {
 			}
 		} else if (yy > zz) { // rows[1][1] is the largest diagonal term.
 			if (yy < CMP_EPSILON) {
-				x = Math_SQRT12;
+				x = Math::SQRT12;
 				y = 0;
-				z = Math_SQRT12;
+				z = Math::SQRT12;
 			} else {
 				y = Math::sqrt(yy);
 				x = xy / y;
@@ -820,8 +820,8 @@ void Basis::get_axis_angle(Vector3 &r_axis, real_t &r_angle) const {
 			}
 		} else { // rows[2][2] is the largest diagonal term so base result on this.
 			if (zz < CMP_EPSILON) {
-				x = Math_SQRT12;
-				y = Math_SQRT12;
+				x = Math::SQRT12;
+				y = Math::SQRT12;
 				z = 0;
 			} else {
 				z = Math::sqrt(zz);
@@ -830,7 +830,7 @@ void Basis::get_axis_angle(Vector3 &r_axis, real_t &r_angle) const {
 			}
 		}
 		r_axis = Vector3(x, y, z);
-		r_angle = Math_PI;
+		r_angle = Math::PI;
 		return;
 	}
 	// As we have reached here there are no singularities so we can handle normally.
