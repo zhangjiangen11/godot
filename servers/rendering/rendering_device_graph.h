@@ -115,9 +115,9 @@ public:
 		int32_t buffer_barrier_count = 0;
 #endif
 		int32_t label_index = -1;
-		BitField<RDD::PipelineStageBits> previous_stages;
-		BitField<RDD::PipelineStageBits> next_stages;
-		BitField<RDD::PipelineStageBits> self_stages;
+		BitField<RDD::PipelineStageBits> previous_stages = {};
+		BitField<RDD::PipelineStageBits> next_stages = {};
+		BitField<RDD::PipelineStageBits> self_stages = {};
 	};
 
 	struct RecordedBufferCopy {
@@ -157,8 +157,8 @@ public:
 	struct ResourceTracker {
 		uint32_t reference_count = 0;
 		int64_t command_frame = -1;
-		BitField<RDD::PipelineStageBits> previous_frame_stages;
-		BitField<RDD::PipelineStageBits> current_frame_stages;
+		BitField<RDD::PipelineStageBits> previous_frame_stages = {};
+		BitField<RDD::PipelineStageBits> current_frame_stages = {};
 		int32_t read_full_command_list_index = -1;
 		int32_t read_slice_command_list_index = -1;
 		int32_t write_command_or_list_index = -1;
@@ -167,7 +167,7 @@ public:
 		int32_t compute_list_index = -1;
 		ResourceUsage compute_list_usage = RESOURCE_USAGE_NONE;
 		ResourceUsage usage = RESOURCE_USAGE_NONE;
-		BitField<RDD::BarrierAccessBits> usage_access;
+		BitField<RDD::BarrierAccessBits> usage_access = {};
 		RDD::BufferID buffer_driver_id;
 		RDD::TextureID texture_driver_id;
 		RDD::TextureSubresourceRange texture_subresources;
@@ -242,7 +242,7 @@ private:
 		LocalVector<uint8_t> data;
 		LocalVector<ResourceTracker *> command_trackers;
 		LocalVector<ResourceUsage> command_tracker_usages;
-		BitField<RDD::PipelineStageBits> stages;
+		BitField<RDD::PipelineStageBits> stages = {};
 		int32_t index = 0;
 
 		void clear() {
@@ -676,8 +676,8 @@ private:
 	};
 
 	struct BarrierGroup {
-		BitField<RDD::PipelineStageBits> src_stages;
-		BitField<RDD::PipelineStageBits> dst_stages;
+		BitField<RDD::PipelineStageBits> src_stages = {};
+		BitField<RDD::PipelineStageBits> dst_stages = {};
 		RDD::MemoryBarrier memory_barrier;
 		LocalVector<RDD::TextureBarrier> normalization_barriers;
 		LocalVector<RDD::TextureBarrier> transition_barriers;

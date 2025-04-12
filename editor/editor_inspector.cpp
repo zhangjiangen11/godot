@@ -420,11 +420,6 @@ void EditorProperty::_notification(int p_what) {
 				draw_style_box(bg_stylebox, bottom_child_rect);
 			}
 
-			Ref<StyleBox> focus_sb = get_theme_stylebox(SNAME("Focus"), EditorStringName(EditorStyles));
-			if (focus_sb.is_valid() && has_focus()) {
-				draw_style_box(focus_sb, Rect2(Vector2(), get_size()));
-			}
-
 			Color color;
 			if (draw_warning || draw_prop_warning) {
 				color = get_theme_color(is_read_only() ? SNAME("readonly_warning_color") : SNAME("warning_color"));
@@ -1580,11 +1575,6 @@ void EditorInspectorCategory::_notification(int p_what) {
 
 			draw_style_box(sb, Rect2(Vector2(), get_size()));
 
-			Ref<StyleBox> focus_sb = get_theme_stylebox(SNAME("Focus"), EditorStringName(EditorStyles));
-			if (focus_sb.is_valid() && has_focus()) {
-				draw_style_box(focus_sb, Rect2(Vector2(), get_size()));
-			}
-
 			Ref<Font> font = get_theme_font(SNAME("bold"), EditorStringName(EditorFonts));
 			int font_size = get_theme_font_size(SNAME("bold_size"), EditorStringName(EditorFonts));
 
@@ -1831,12 +1821,6 @@ void EditorInspectorSection::_notification(int p_what) {
 				c = c.lightened(Input::get_singleton()->is_mouse_button_pressed(MouseButton::LEFT) ? -0.05 : 0.2);
 			}
 			draw_rect(header_rect, c);
-
-			// Draw focus.
-			Ref<StyleBox> focus_sb = get_theme_stylebox(SNAME("Focus"), EditorStringName(EditorStyles));
-			if (focus_sb.is_valid() && has_focus()) {
-				draw_style_box(focus_sb, Rect2(Vector2(), get_size()));
-			}
 
 			// Draw header title, folding arrow and count of revertable properties.
 			{
@@ -2783,7 +2767,7 @@ void EditorInspectorArray::drop_data_fw(const Point2 &p_point, const Variant &p_
 	Dictionary dict = p_data;
 
 	int to_drop = dict["index"];
-	int drop_position = (p_point == Vector2(INFINITY, INFINITY)) ? selected : _drop_position();
+	int drop_position = (p_point == Vector2(Math::INF, Math::INF)) ? selected : _drop_position();
 	if (drop_position < 0) {
 		return;
 	}
@@ -2801,7 +2785,7 @@ bool EditorInspectorArray::can_drop_data_fw(const Point2 &p_point, const Variant
 		return false;
 	}
 	Dictionary dict = p_data;
-	int drop_position = (p_point == Vector2(INFINITY, INFINITY)) ? selected : _drop_position();
+	int drop_position = (p_point == Vector2(Math::INF, Math::INF)) ? selected : _drop_position();
 	if (!dict.has("type") || dict["type"] != "property_array_element" || String(dict["property_array_prefix"]) != array_element_prefix || drop_position < 0) {
 		return false;
 	}
