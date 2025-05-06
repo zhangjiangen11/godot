@@ -83,7 +83,7 @@
 #include "core/object/worker_thread_pool.h"
 
 #include "core/message_manager.h"
-
+StringName StringName::None;
 static Ref<ResourceFormatSaverBinary> resource_saver_binary;
 static Ref<ResourceFormatLoaderBinary> resource_loader_binary;
 static Ref<ResourceFormatImporter> resource_format_importer;

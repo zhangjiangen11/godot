@@ -558,8 +558,7 @@ int MTerrain::get_image_id(String uniform_name) {
 
 void MTerrain::set_save_config(Ref<ConfigFile> conf) {
 	ERR_FAIL_COND(!grid);
-	List<String> sections;
-	conf->get_sections(&sections);
+	Vector<String> sections = conf->get_sections();
 	for (const String &section : sections) {
 		if (section == "heightmap") {
 			if (conf->has_section_key(section, "accuracy")) {

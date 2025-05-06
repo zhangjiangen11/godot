@@ -67,8 +67,7 @@ static Node *import_fbx(const String &p_path) {
 	config.instantiate();
 	Error err = config->load(p_path + ".import");
 	if (err == OK) {
-		List<String> keys;
-		config->get_section_keys("params", &keys);
+		Vector<String> keys = config->get_section_keys("params");
 		for (const String &E : keys) {
 			Variant value = config->get_value("params", E);
 			if (E == "_subresources") {

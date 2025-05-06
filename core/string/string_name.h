@@ -44,7 +44,6 @@ class StringName {
 		SafeRefCount refcount;
 		SafeNumeric<uint32_t> static_count;
 		String name;
-		SafeNumeric<uint32_t> static_count;
 #ifdef DEBUG_ENABLED
 		uint32_t debug_references = 0;
 #endif

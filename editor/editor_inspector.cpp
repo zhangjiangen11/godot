@@ -1952,6 +1952,7 @@ void EditorInspectorSection::_notification(int p_what) {
 				} else {
 					font_color = get_theme_color(SceneStringName(font_color), EditorStringName(Editor));
 				}
+				String draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
 
 				if (folded && revertable_properties.size()) {
 					int label_width = font->get_string_size(draw_label, HORIZONTAL_ALIGNMENT_LEFT, available, font_size, TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_CONSTRAIN_ELLIPSIS).x;

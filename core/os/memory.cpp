@@ -63,7 +63,6 @@ SafeNumeric<uint64_t> Memory::mem_usage;
 SafeNumeric<uint64_t> Memory::max_usage;
 #endif
 
-SafeNumeric<uint64_t> Memory::alloc_count;
 #define SAMLL_MEMORY_MANAGER 0
 
 #if SAMLL_MEMORY_MANAGER
@@ -284,7 +283,6 @@ void *Memory::alloc_static(size_t p_bytes, bool p_pad_align) {
 #else
 	bool prepad = p_pad_align;
 #endif
-	alloc_count.increment();
 
 	void *mem = malloc(p_bytes + (prepad ? DATA_OFFSET : 0));
 

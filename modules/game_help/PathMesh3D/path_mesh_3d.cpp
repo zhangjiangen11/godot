@@ -757,7 +757,7 @@ double PathMesh3D::_get_mesh_length() const {
 				}
 			}
 		}
-		return Math::absd(max_z - min_z);
+		return Math::abs(max_z - min_z);
 	} else {
 		return 1.0;
 	}

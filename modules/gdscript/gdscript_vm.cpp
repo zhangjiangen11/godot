@@ -3869,13 +3869,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 	// If that is the case then we exit the function as normal. Otherwise we postpone it until the last `await` is completed.
 	// This ensures the call stack can be properly shown when using `await`, showing what resumed the function.
 	if (!p_state || awaited) {
-<<<<<<< HEAD
-		if (true || EngineDebugger::is_active()) {
-			GDScriptLanguage::get_singleton()->exit_function();
-		}
-#endif
-		======= GDScriptLanguage::get_singleton()->exit_function();
->>>>>>> godotengine-master
+		GDScriptLanguage::get_singleton()->exit_function();
 
 		// Free stack, except reserved addresses.
 		for (int i = FIXED_ADDRESSES_MAX; i < _stack_size; i++) {
