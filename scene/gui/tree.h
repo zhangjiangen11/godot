@@ -464,6 +464,7 @@ private:
 	TreeItem *popup_edited_item = nullptr;
 	TreeItem *selected_item = nullptr;
 	TreeItem *edited_item = nullptr;
+	TreeItem *shift_anchor = nullptr;
 
 	TreeItem *popup_pressing_edited_item = nullptr; // Candidate.
 	int popup_pressing_edited_item_column = -1;
@@ -488,6 +489,7 @@ private:
 	Vector2 range_drag_capture_pos;
 
 	bool propagate_mouse_activated = false;
+	float content_scale_factor = 0.0;
 
 	Rect2 custom_popup_rect;
 	int edited_col = -1;
@@ -742,6 +744,7 @@ private:
 	void _go_right();
 	void _go_down();
 	void _go_up();
+	void _shift_select_range(TreeItem *new_item);
 
 	bool _scroll(bool p_horizontal, float p_pages);
 

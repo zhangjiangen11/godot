@@ -40,7 +40,7 @@ static bool _profile_count_as_native(const Object *p_base_obj, const StringName 
 	if (!p_base_obj) {
 		return false;
 	}
-	const StringName& cname = p_base_obj->get_class_name();
+	const StringName &cname = p_base_obj->get_class_name();
 	if ((p_methodname == "new" && cname == "GDScript") || p_methodname == "call") {
 		return false;
 	}
@@ -621,12 +621,9 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 
 	String err_text;
 
+	GDScriptLanguage::get_singleton()->enter_function(p_instance, this, stack, &ip, &line);
+
 #ifdef DEBUG_ENABLED
-
-	if (true || EngineDebugger::is_active()) {
-		GDScriptLanguage::get_singleton()->enter_function(p_instance, this, stack, &ip, &line);
-	}
-
 #define GD_ERR_BREAK(m_cond)                                                                                           \
 	{                                                                                                                  \
 		if (unlikely(m_cond)) {                                                                                        \
@@ -698,10 +695,10 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 		profile.frame_call_count.increment();
 	}
 	bool exit_ok = false;
-	bool awaited = false;
 	int variant_address_limits[ADDR_TYPE_MAX] = { _stack_size, _constant_count, p_instance ? (int)p_instance->members.size() : 0 };
 #endif
 
+	bool awaited = false;
 	Variant *variant_addresses[ADDR_TYPE_MAX] = { stack, _constants_ptr, p_instance ? p_instance->members.ptrw() : nullptr };
 
 #ifdef DEBUG_ENABLED
@@ -840,7 +837,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type builtin_type = (Variant::Type)_code_ptr[ip + 4];
 				int native_type_idx = _code_ptr[ip + 5];
 				GD_ERR_BREAK(native_type_idx < 0 || native_type_idx >= _global_names_count);
-				const StringName& native_type = _global_names_ptr[native_type_idx];
+				const StringName &native_type = _global_names_ptr[native_type_idx];
 
 				bool result = false;
 				if (value->get_type() == Variant::ARRAY) {
@@ -863,13 +860,13 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type key_builtin_type = (Variant::Type)_code_ptr[ip + 5];
 				int key_native_type_idx = _code_ptr[ip + 6];
 				GD_ERR_BREAK(key_native_type_idx < 0 || key_native_type_idx >= _global_names_count);
-				const StringName& key_native_type = _global_names_ptr[key_native_type_idx];
+				const StringName &key_native_type = _global_names_ptr[key_native_type_idx];
 
 				GET_VARIANT_PTR(value_script_type, 3);
 				Variant::Type value_builtin_type = (Variant::Type)_code_ptr[ip + 7];
 				int value_native_type_idx = _code_ptr[ip + 8];
 				GD_ERR_BREAK(value_native_type_idx < 0 || value_native_type_idx >= _global_names_count);
-				const StringName& value_native_type = _global_names_ptr[value_native_type_idx];
+				const StringName &value_native_type = _global_names_ptr[value_native_type_idx];
 
 				bool result = false;
 				if (value->get_type() == Variant::DICTIONARY) {
@@ -891,7 +888,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 
 				int native_type_idx = _code_ptr[ip + 3];
 				GD_ERR_BREAK(native_type_idx < 0 || native_type_idx >= _global_names_count);
-				const StringName& native_type = _global_names_ptr[native_type_idx];
+				const StringName &native_type = _global_names_ptr[native_type_idx];
 
 				bool was_freed = false;
 				Object *object = value->get_validated_object_with_check(was_freed);
@@ -1414,7 +1411,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type builtin_type = (Variant::Type)_code_ptr[ip + 4];
 				int native_type_idx = _code_ptr[ip + 5];
 				GD_ERR_BREAK(native_type_idx < 0 || native_type_idx >= _global_names_count);
-				const StringName& native_type = _global_names_ptr[native_type_idx];
+				const StringName &native_type = _global_names_ptr[native_type_idx];
 
 				if (src->get_type() != Variant::ARRAY) {
 #ifdef DEBUG_ENABLED
@@ -1449,13 +1446,13 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type key_builtin_type = (Variant::Type)_code_ptr[ip + 5];
 				int key_native_type_idx = _code_ptr[ip + 6];
 				GD_ERR_BREAK(key_native_type_idx < 0 || key_native_type_idx >= _global_names_count);
-				const StringName& key_native_type = _global_names_ptr[key_native_type_idx];
+				const StringName &key_native_type = _global_names_ptr[key_native_type_idx];
 
 				GET_VARIANT_PTR(value_script_type, 3);
 				Variant::Type value_builtin_type = (Variant::Type)_code_ptr[ip + 7];
 				int value_native_type_idx = _code_ptr[ip + 8];
 				GD_ERR_BREAK(value_native_type_idx < 0 || value_native_type_idx >= _global_names_count);
-				const StringName& value_native_type = _global_names_ptr[value_native_type_idx];
+				const StringName &value_native_type = _global_names_ptr[value_native_type_idx];
 
 				if (src->get_type() != Variant::DICTIONARY) {
 #ifdef DEBUG_ENABLED
@@ -1769,7 +1766,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type builtin_type = (Variant::Type)_code_ptr[ip + 2];
 				int native_type_idx = _code_ptr[ip + 3];
 				GD_ERR_BREAK(native_type_idx < 0 || native_type_idx >= _global_names_count);
-				const StringName& native_type = _global_names_ptr[native_type_idx];
+				const StringName &native_type = _global_names_ptr[native_type_idx];
 
 				Array array;
 				array.resize(argc);
@@ -1822,13 +1819,13 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type key_builtin_type = (Variant::Type)_code_ptr[ip + 2];
 				int key_native_type_idx = _code_ptr[ip + 3];
 				GD_ERR_BREAK(key_native_type_idx < 0 || key_native_type_idx >= _global_names_count);
-				const StringName& key_native_type = _global_names_ptr[key_native_type_idx];
+				const StringName &key_native_type = _global_names_ptr[key_native_type_idx];
 
 				GET_INSTRUCTION_ARG(value_script_type, argc * 2 + 2);
 				Variant::Type value_builtin_type = (Variant::Type)_code_ptr[ip + 4];
 				int value_native_type_idx = _code_ptr[ip + 5];
 				GD_ERR_BREAK(value_native_type_idx < 0 || value_native_type_idx >= _global_names_count);
-				const StringName& value_native_type = _global_names_ptr[value_native_type_idx];
+				const StringName &value_native_type = _global_names_ptr[value_native_type_idx];
 
 				Dictionary dict;
 
@@ -1878,7 +1875,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				}
 				Variant::Type base_type = base->get_type();
 				Object *base_obj = base->get_validated_object();
-				const StringName& base_class = base_obj ? base_obj->get_class_name() : StringName::None;
+				const StringName &base_class = base_obj ? base_obj->get_class_name() : StringName::None;
 #endif
 
 				Variant temp_ret;
@@ -2338,7 +2335,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				GD_ERR_BREAK(argc < 0);
 
 				GD_ERR_BREAK(_code_ptr[ip + 2] < 0 || _code_ptr[ip + 2] >= _global_names_count);
-				const StringName& function = _global_names_ptr[_code_ptr[ip + 2]];
+				const StringName &function = _global_names_ptr[_code_ptr[ip + 2]];
 
 				Variant **argptrs = instruction_args;
 
@@ -2567,9 +2564,10 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 						OPCODE_BREAK;
 					}
 
+					awaited = true;
+
 #ifdef DEBUG_ENABLED
 					exit_ok = true;
-					awaited = true;
 #endif
 					OPCODE_BREAK;
 				}
@@ -2768,7 +2766,7 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type builtin_type = (Variant::Type)_code_ptr[ip + 3];
 				int native_type_idx = _code_ptr[ip + 4];
 				GD_ERR_BREAK(native_type_idx < 0 || native_type_idx >= _global_names_count);
-				const StringName& native_type = _global_names_ptr[native_type_idx];
+				const StringName &native_type = _global_names_ptr[native_type_idx];
 
 				if (r->get_type() != Variant::ARRAY) {
 #ifdef DEBUG_ENABLED
@@ -2804,13 +2802,13 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 				Variant::Type key_builtin_type = (Variant::Type)_code_ptr[ip + 4];
 				int key_native_type_idx = _code_ptr[ip + 5];
 				GD_ERR_BREAK(key_native_type_idx < 0 || key_native_type_idx >= _global_names_count);
-				const StringName& key_native_type = _global_names_ptr[key_native_type_idx];
+				const StringName &key_native_type = _global_names_ptr[key_native_type_idx];
 
 				GET_VARIANT_PTR(value_script_type, 2);
 				Variant::Type value_builtin_type = (Variant::Type)_code_ptr[ip + 6];
 				int value_native_type_idx = _code_ptr[ip + 7];
 				GD_ERR_BREAK(value_native_type_idx < 0 || value_native_type_idx >= _global_names_count);
-				const StringName& value_native_type = _global_names_ptr[value_native_type_idx];
+				const StringName &value_native_type = _global_names_ptr[value_native_type_idx];
 
 				if (r->get_type() != Variant::DICTIONARY) {
 #ifdef DEBUG_ENABLED
@@ -3865,23 +3863,25 @@ Variant GDScriptFunction::call(GDScriptInstance *p_instance, const Variant **p_a
 			GDScriptLanguage::get_singleton()->script_frame_time += time_taken - function_call_time;
 		}
 	}
+#endif
 
 	// Check if this is not the last time it was interrupted by `await` or if it's the first time executing.
 	// If that is the case then we exit the function as normal. Otherwise we postpone it until the last `await` is completed.
 	// This ensures the call stack can be properly shown when using `await`, showing what resumed the function.
 	if (!p_state || awaited) {
+<<<<<<< HEAD
 		if (true || EngineDebugger::is_active()) {
 			GDScriptLanguage::get_singleton()->exit_function();
 		}
 #endif
+		======= GDScriptLanguage::get_singleton()->exit_function();
+>>>>>>> godotengine-master
 
 		// Free stack, except reserved addresses.
 		for (int i = FIXED_ADDRESSES_MAX; i < _stack_size; i++) {
 			stack[i].~Variant();
 		}
-#ifdef DEBUG_ENABLED
 	}
-#endif
 
 	// Always free reserved addresses, since they are never copied.
 	for (int i = 0; i < FIXED_ADDRESSES_MAX; i++) {

@@ -34,7 +34,6 @@
 #include "core/templates/safe_refcount.h"
 
 #include <stdlib.h>
-
 #include <string.h>
 
 void *operator new(size_t p_size, const char *p_description) {
@@ -374,8 +373,6 @@ void Memory::free_static(void *p_ptr, bool p_pad_align) {
 #else
 	bool prepad = p_pad_align;
 #endif
-
-	alloc_count.decrement();
 
 	if (prepad) {
 		mem -= DATA_OFFSET;

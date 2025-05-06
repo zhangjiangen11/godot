@@ -554,43 +554,18 @@ void ScriptServer::save_global_classes() {
 	ProjectSettings::get_singleton()->store_global_class_list(gcarr);
 }
 
-String ScriptServer::get_global_name(const Ref<Script> &p_script) {
-	if (p_script.is_valid()) {
-		return p_script->get_global_name();
+Vector<Ref<ScriptBacktrace>> ScriptServer::capture_script_backtraces(bool p_include_variables) {
+	int language_count = ScriptServer::get_language_count();
+	Vector<Ref<ScriptBacktrace>> result;
+	result.resize(language_count);
+	for (int i = 0; i < language_count; i++) {
+		ScriptLanguage *language = ScriptServer::get_language(i);
+		result.write[i].instantiate(language, p_include_variables);
 	}
-	return "";
+	return result;
 }
 
-ScriptServer::GlobalScriptClass ScriptServer::get_global_class(const StringName &p_class_name) {
-	return global_classes[p_class_name];
-}
-
-PackedStringArray ScriptServer::get_class_hierarchy(const StringName &p_class_name, bool p_include_native_classes) {
-	PackedStringArray hierarchy;
-	StringName class_name = p_class_name;
-	while (!class_name.is_empty()) {
-		if (is_global_class(class_name)) {
-			hierarchy.push_back(class_name);
-			class_name = get_global_class(class_name).base;
-		} else if (p_include_native_classes) {
-			hierarchy.push_back(class_name);
-			class_name = ClassDB::get_parent_class(class_name);
-		} else {
-			break;
-		}
-	}
-	return hierarchy;
-}
-
-bool ScriptServer::is_parent_class(const StringName &p_source_class_name, const StringName &p_target_class_name) {
-	return get_class_hierarchy(p_source_class_name, true).has(p_target_class_name);
-}
 ////////////////////
-
-ScriptCodeCompletionCache *ScriptCodeCompletionCache::singleton = nullptr;
-ScriptCodeCompletionCache::ScriptCodeCompletionCache() {
-	singleton = this;
-}
 
 void ScriptLanguage::get_core_type_words(List<String> *p_core_type_words) const {
 	p_core_type_words->push_back("String");

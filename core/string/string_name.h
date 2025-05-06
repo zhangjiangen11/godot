@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include "core/os/mutex.h"
 #include "core/string/ustring.h"
 #include "core/templates/safe_refcount.h"
 
@@ -38,39 +37,22 @@
 
 class Main;
 
-struct StaticCString {
-	const char *ptr;
-	static StaticCString create(const char *p_ptr);
-};
-
 class StringName {
-	enum {
-		STRING_TABLE_BITS = 16,
-		STRING_TABLE_LEN = 1 << STRING_TABLE_BITS,
-		STRING_TABLE_MASK = STRING_TABLE_LEN - 1
-	};
+	struct Table;
 
 	struct _Data {
 		SafeRefCount refcount;
-		const char* cname = nullptr;
+		SafeNumeric<uint32_t> static_count;
 		String name;
 		SafeNumeric<uint32_t> static_count;
 #ifdef DEBUG_ENABLED
 		uint32_t debug_references = 0;
 #endif
-		String get_name() const { return cname ? String(cname) : name; }
-		bool operator==(const String &p_name) const;
-		bool operator!=(const String &p_name) const;
-		bool operator==(const char *p_name) const;
-		bool operator!=(const char *p_name) const;
-		int idx = 0;
 		uint32_t hash = 0;
 		_Data *prev = nullptr;
 		_Data *next = nullptr;
 		_Data() {}
 	};
-
-	static inline _Data *_table[STRING_TABLE_LEN];
 
 	_Data *_data = nullptr;
 
@@ -78,7 +60,6 @@ class StringName {
 	friend void register_core_types();
 	friend void unregister_core_types();
 	friend class Main;
-	static inline Mutex mutex;
 	static void setup();
 	static void cleanup();
 	static uint32_t get_empty_hash();
@@ -96,65 +77,53 @@ class StringName {
 	StringName(_Data *p_data) { _data = p_data; }
 
 public:
-	operator const void *() const { return (_data && (_data->cname || !_data->name.is_empty())) ? (void *)1 : nullptr; }
+	_FORCE_INLINE_ explicit operator bool() const { return _data; }
 
 	bool operator==(const String &p_name) const;
 	bool operator==(const char *p_name) const;
 	bool operator!=(const String &p_name) const;
 	bool operator!=(const char *p_name) const;
-	_FORCE_INLINE_ int find(const String &p_str, int p_from = 0) const
-	{
+	_FORCE_INLINE_ int find(const String &p_str, int p_from = 0) const {
 		return operator String().find(p_str, 0);
 	}
-	_FORCE_INLINE_ bool match(const String &p_wildcard) const
-	{
+	_FORCE_INLINE_ bool match(const String &p_wildcard) const {
 		return operator String().match(p_wildcard);
 	}
-	_FORCE_INLINE_ bool begins_with(const String &p_string) const
-	{
+	_FORCE_INLINE_ bool begins_with(const String &p_string) const {
 		return operator String().begins_with(p_string);
 	}
-	_FORCE_INLINE_ String substr(int p_from, int p_chars = -1) const
-	{
+	_FORCE_INLINE_ String substr(int p_from, int p_chars = -1) const {
 		return operator String().substr(p_from, p_chars);
 	}
-	_FORCE_INLINE_ String replace(const String &p_key, const String &p_with) const
-	{
+	_FORCE_INLINE_ String replace(const String &p_key, const String &p_with) const {
 		return operator String().replace(p_key, p_with);
 	}
-	_FORCE_INLINE_ String to_upper() const
-	{
+	_FORCE_INLINE_ String to_upper() const {
 		return operator String().to_upper();
 	}
-	_FORCE_INLINE_ String to_lower() const
-	{
+	_FORCE_INLINE_ String to_lower() const {
 		return operator String().to_lower();
 	}
-	_FORCE_INLINE_ String get_slice(const String &p_splitter, int p_slice) const
-	{
+	_FORCE_INLINE_ String get_slice(const String &p_splitter, int p_slice) const {
 		return operator String().get_slice(p_splitter, p_slice);
 	}
-	_FORCE_INLINE_ String  str()const
-	{
+	_FORCE_INLINE_ String str() const {
 		if (_data) {
 			return _data->name;
 		}
 		return String();
 	}
 
+	const char32_t *get_data() const { return _data ? _data->name.ptr() : U""; }
 	char32_t operator[](int p_index) const;
 	int length() const;
-	bool is_empty() const;
+	_FORCE_INLINE_ bool is_empty() const { return !_data; }
 
 	_FORCE_INLINE_ bool is_node_unique_name() const {
 		if (!_data) {
 			return false;
 		}
-		if (_data->cname != nullptr) {
-			return (char32_t)_data->cname[0] == (char32_t)UNIQUE_NODE_PREFIX[0];
-		} else {
-			return (char32_t)_data->name[0] == (char32_t)UNIQUE_NODE_PREFIX[0];
-		}
+		return (char32_t)_data->name[0] == (char32_t)UNIQUE_NODE_PREFIX[0];
 	}
 	_FORCE_INLINE_ bool operator<(const StringName &p_name) const {
 		return _data < p_name._data;
@@ -194,7 +163,7 @@ public:
 
 		return String();
 	}
-	_FORCE_INLINE_ bool contains(const String& p_str) const {
+	_FORCE_INLINE_ bool contains(const String &p_str) const {
 		return operator String().contains(p_str);
 	}
 	static StringName search(const char *p_name);
@@ -207,40 +176,13 @@ public:
 			return compare(l, r);
 		}
 		_FORCE_INLINE_ static bool compare(const StringName &l, const StringName &r) {
-			const char *l_cname = l._data ? l._data->cname : "";
-			const char *r_cname = r._data ? r._data->cname : "";
-
-			if (l_cname) {
-				if (r_cname) {
-					return str_compare(l_cname, r_cname) < 0;
-				} else {
-					return str_compare(l_cname, r._data->name.ptr()) < 0;
-				}
-			} else {
-				if (r_cname) {
-					return str_compare(l._data->name.ptr(), r_cname) < 0;
-				} else {
-					return str_compare(l._data->name.ptr(), r._data->name.ptr()) < 0;
-				}
-			}
+			return str_compare(l.get_data(), r.get_data()) < 0;
 		}
 		_FORCE_INLINE_ static bool compare(const String &l, const StringName &r) {
-			const char *r_cname = r._data ? r._data->cname : "";
-
-			if (r_cname) {
-				return str_compare(l.get_data(), r_cname) < 0;
-			} else {
-				return str_compare(l.get_data(), r._data->name.ptr()) < 0;
-			}
+			return str_compare(l.get_data(), r.get_data()) < 0;
 		}
 		_FORCE_INLINE_ static bool compare(const StringName &l, const String &r) {
-			const char *l_cname = l._data ? l._data->cname : "";
-
-			if (l_cname) {
-				return str_compare(l_cname, r.get_data()) < 0;
-			} else {
-				return str_compare(l._data->name.ptr(), r.get_data()) < 0;
-			}
+			return str_compare(l.get_data(), r.get_data()) < 0;
 		}
 		_FORCE_INLINE_ static bool compare(const String &l, const String &r) {
 			return str_compare(l.get_data(), r.get_data()) < 0;
@@ -265,10 +207,7 @@ public:
 		p_name._data = nullptr;
 	}
 	StringName(const String &p_name, bool p_static = false);
-	StringName(const StaticCString &p_static_string, bool p_static = false);
 	StringName() {}
-
-	static void assign_static_unique_class_name(StringName *ptr, const char *p_name);
 
 #ifdef SIZE_EXTRA
 	_NO_INLINE_
@@ -295,8 +234,6 @@ bool operator!=(const String &p_name, const StringName &p_string_name);
 bool operator==(const char *p_name, const StringName &p_string_name);
 bool operator!=(const char *p_name, const StringName &p_string_name);
 
-StringName _scs_create(const char *p_chr, bool p_static = false);
-
 /*
  * The SNAME macro is used to speed up StringName creation, as it allows caching it after the first usage in a very efficient way.
  * It should NOT be used everywhere, but instead in places where high performance is required and the creation of a StringName
@@ -309,4 +246,4 @@ StringName _scs_create(const char *p_chr, bool p_static = false);
  * Use in places that can be called hundreds of times per frame (or more) is recommended, but this situation is very rare. If in doubt, do not use.
  */
 
-#define SNAME(m_arg) ([]() -> const StringName & { static StringName sname = _scs_create(m_arg, true); return sname; })()
+#define SNAME(m_arg) ([]() -> const StringName & { static StringName sname = StringName(m_arg, true); return sname; })()

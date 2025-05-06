@@ -473,7 +473,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 		if (String(GODOT_VERSION_STATUS) == String("stable")) {
 			default_update_mode = EngineUpdateLabel::UpdateMode::NEWEST_STABLE;
 		}
-		EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "network/connection/engine_version_update_mode", int(default_update_mode), "Disable Update Checks,Check Newest Preview,Check Newest Stable,Check Newest Patch"); // Uses EngineUpdateLabel::UpdateMode.
+		EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "network/connection/check_for_updates", int(default_update_mode), "Disable Update Checks,Check Newest Preview,Check Newest Stable,Check Newest Patch"); // Uses EngineUpdateLabel::UpdateMode.
 	}
 
 	EDITOR_SETTING_USAGE(Variant::BOOL, PROPERTY_HINT_NONE, "interface/editor/use_embedded_menu", false, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_RESTART_IF_CHANGED | PROPERTY_USAGE_EDITOR_BASIC_SETTING)
@@ -584,16 +584,16 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	EDITOR_SETTING(Variant::FLOAT, PROPERTY_HINT_RANGE, "interface/touchscreen/scale_gizmo_handles", has_touchscreen_ui ? 3 : 1, "1,5,1")
 	set_restart_if_changed("interface/touchscreen/scale_gizmo_handles", true);
 
-	// Only available in the Android editor.
-	EDITOR_SETTING(Variant::BOOL, PROPERTY_HINT_NONE, "interface/touchscreen/enable_touch_actions_panel", true, "")
-	set_restart_if_changed("interface/touchscreen/enable_touch_actions_panel", true);
-
 	// Disable some touchscreen settings by default for the XR Editor.
 	bool is_native_touchscreen = has_touchscreen_ui && !OS::get_singleton()->has_feature("xr_editor");
 	EDITOR_SETTING(Variant::BOOL, PROPERTY_HINT_NONE, "interface/touchscreen/enable_long_press_as_right_click", is_native_touchscreen, "")
 	set_restart_if_changed("interface/touchscreen/enable_long_press_as_right_click", true);
 	EDITOR_SETTING(Variant::BOOL, PROPERTY_HINT_NONE, "interface/touchscreen/increase_scrollbar_touch_area", is_native_touchscreen, "")
 	set_restart_if_changed("interface/touchscreen/increase_scrollbar_touch_area", true);
+
+	// Only available in the Android editor.
+	String touch_actions_panel_hints = "Disabled:0,Embedded Panel:1,Floating Panel:2";
+	EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "interface/touchscreen/touch_actions_panel", 1, touch_actions_panel_hints)
 
 	// Scene tabs
 	EDITOR_SETTING(Variant::INT, PROPERTY_HINT_ENUM, "interface/scene_tabs/display_close_button", 1, "Never,If Tab Active,Always"); // TabBar::CloseButtonDisplayPolicy
@@ -920,6 +920,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 	_initial_set("editors/panning/simple_panning", false);
 	_initial_set("editors/panning/warped_mouse_panning", true);
 	_initial_set("editors/panning/2d_editor_pan_speed", 20, true);
+	EDITOR_SETTING_BASIC(Variant::INT, PROPERTY_HINT_ENUM, "editors/panning/zoom_style", 0, "Vertical,Horizontal");
 
 	// Tiles editor
 	_initial_set("editors/tiles_editor/display_grid", true);
@@ -1072,8 +1073,7 @@ void EditorSettings::_load_defaults(Ref<ConfigFile> p_extra_config) {
 		}
 
 		if (p_extra_config->has_section("presets")) {
-			List<String> keys;
-			p_extra_config->get_section_keys("presets", &keys);
+			Vector<String> keys = p_extra_config->get_section_keys("presets");
 
 			for (const String &key : keys) {
 				Variant val = p_extra_config->get_value("presets", key);
@@ -1217,6 +1217,7 @@ const String EditorSettings::_get_project_metadata_path() const {
 
 #ifndef DISABLE_DEPRECATED
 void EditorSettings::_remove_deprecated_settings() {
+	erase("network/connection/engine_version_update_mode");
 	erase("run/output/always_open_output_on_play");
 	erase("run/output/always_close_output_on_stop");
 }
@@ -1660,8 +1661,7 @@ void EditorSettings::load_favorites_and_recent_dirs() {
 	Ref<ConfigFile> cf;
 	cf.instantiate();
 	if (cf->load(favorite_properties_file) == OK) {
-		List<String> secs;
-		cf->get_sections(&secs);
+		Vector<String> secs = cf->get_sections();
 
 		for (String &E : secs) {
 			PackedStringArray properties = PackedStringArray(cf->get_value(E, "properties"));
@@ -1730,8 +1730,7 @@ void EditorSettings::load_text_editor_theme() {
 		return;
 	}
 
-	List<String> keys;
-	cf->get_section_keys("color_theme", &keys);
+	Vector<String> keys = cf->get_section_keys("color_theme");
 
 	for (const String &key : keys) {
 		String val = cf->get_value("color_theme", key);
@@ -2150,8 +2149,7 @@ void EditorSettings::get_argument_options(const StringName &p_function, int p_id
 				r_options->push_back(E.key.str().quote());
 			}
 		} else if (pf == "get_project_metadata" && project_metadata.is_valid()) {
-			List<String> sections;
-			project_metadata->get_sections(&sections);
+			Vector<String> sections = project_metadata->get_sections();
 			for (const String &section : sections) {
 				r_options->push_back(section.quote());
 			}

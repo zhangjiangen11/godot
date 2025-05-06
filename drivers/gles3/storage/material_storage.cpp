@@ -776,6 +776,9 @@ void MaterialData::update_uniform_buffer(const HashMap<StringName, ShaderLanguag
 			if ((E.value.type == ShaderLanguage::TYPE_VEC3 || E.value.type == ShaderLanguage::TYPE_VEC4) && E.value.hint == ShaderLanguage::ShaderNode::Uniform::HINT_SOURCE_COLOR) {
 				//colors must be set as black, with alpha as 1.0
 				_fill_std140_variant_ubo_value(E.value.type, E.value.array_size, Color(0, 0, 0, 1), data);
+			} else if ((E.value.type == ShaderLanguage::TYPE_VEC3 || E.value.type == ShaderLanguage::TYPE_VEC4) && E.value.hint == ShaderLanguage::ShaderNode::Uniform::HINT_COLOR_CONVERSION_DISABLED) {
+				//colors must be set as black, with alpha as 1.0
+				_fill_std140_variant_ubo_value(E.value.type, E.value.array_size, Color(0, 0, 0, 1), data);
 			} else {
 				//else just zero it out
 				_fill_std140_ubo_empty(E.value.type, E.value.array_size, data);
@@ -1162,6 +1165,7 @@ MaterialStorage::MaterialStorage() {
 		actions.renames["SPECULAR_SHININESS_TEXTURE"] = "specular_texture";
 		actions.renames["SPECULAR_SHININESS"] = "specular_shininess";
 		actions.renames["SCREEN_UV"] = "screen_uv";
+		actions.renames["REGION_RECT"] = "region_rect";
 		actions.renames["SCREEN_PIXEL_SIZE"] = "screen_pixel_size";
 		actions.renames["FRAGCOORD"] = "gl_FragCoord";
 		actions.renames["POINT_COORD"] = "gl_PointCoord";

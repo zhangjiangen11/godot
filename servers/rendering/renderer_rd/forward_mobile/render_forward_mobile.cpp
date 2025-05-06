@@ -183,7 +183,15 @@ RID RenderForwardMobile::RenderBufferDataForwardMobile::get_color_fbs(Framebuffe
 	uint32_t view_count = render_buffers->get_view_count();
 
 	RID vrs_texture;
-	if (render_buffers->has_texture(RB_SCOPE_VRS, RB_TEXTURE)) {
+#ifndef XR_DISABLED
+	if (render_buffers->get_vrs_mode() == RS::VIEWPORT_VRS_XR) {
+		Ref<XRInterface> interface = XRServer::get_singleton()->get_primary_interface();
+		if (interface.is_valid() && RD::get_singleton()->vrs_get_method() == RD::VRS_METHOD_FRAGMENT_DENSITY_MAP && interface->get_vrs_texture_format() == XRInterface::XR_VRS_TEXTURE_FORMAT_FRAGMENT_DENSITY_MAP) {
+			vrs_texture = interface->get_vrs_texture();
+		}
+	}
+#endif // XR_DISABLED
+	if (vrs_texture.is_null() && render_buffers->has_texture(RB_SCOPE_VRS, RB_TEXTURE)) {
 		vrs_texture = render_buffers->get_texture(RB_SCOPE_VRS, RB_TEXTURE);
 	}
 
@@ -910,6 +918,14 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 		global_pipeline_data_required.use_lightmaps = true;
 	}
 
+	if (global_surface_data.screen_texture_used || global_surface_data.depth_texture_used) {
+		if (rb_data.is_valid()) {
+			// Just called to create the framebuffer since we know we will need it later.
+			rb_data->get_color_fbs(RenderBufferDataForwardMobile::FB_CONFIG_RENDER_PASS);
+		}
+		global_pipeline_data_required.use_separate_post_pass = true;
+	}
+
 	_update_dirty_geometry_pipelines();
 
 	p_render_data->scene_data->emissive_exposure_normalization = -1.0;
@@ -1042,7 +1058,7 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 			base_specialization.disable_fog = false;
 			base_specialization.use_fog_aerial_perspective = environment_get_fog_aerial_perspective(p_render_data->environment) > 0.0;
 			base_specialization.use_fog_sun_scatter = environment_get_fog_sun_scatter(p_render_data->environment) > 0.001;
-			base_specialization.use_fog_height_density = abs(environment_get_fog_height_density(p_render_data->environment)) >= 0.0001;
+			base_specialization.use_fog_height_density = std::abs(environment_get_fog_height_density(p_render_data->environment)) >= 0.0001;
 			base_specialization.use_depth_fog = p_render_data->environment.is_valid() && environment_get_fog_mode(p_render_data->environment) == RS::EnvironmentFogMode::ENV_FOG_MODE_DEPTH;
 		}
 
