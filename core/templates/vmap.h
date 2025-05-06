@@ -175,7 +175,7 @@ public:
 		return _cowdata.get_m(p_index).key;
 	}
 
-	_FORCE_INLINE_  const V &operator[](const T &p_key) const {
+	_FORCE_INLINE_ const V &operator[](const T &p_key) const {
 		int pos = _find_exact(p_key);
 
 		CRASH_COND(pos < 0);
@@ -183,7 +183,7 @@ public:
 		return _cowdata.get(pos).value;
 	}
 
-	_FORCE_INLINE_  V &operator[](const T &p_key) {
+	_FORCE_INLINE_ V &operator[](const T &p_key) {
 		int pos = _find_exact(p_key);
 		if (pos < 0) {
 			pos = insert(p_key, V());
@@ -195,9 +195,7 @@ public:
 	_FORCE_INLINE_ VMap() {}
 	_FORCE_INLINE_ VMap(std::initializer_list<T> p_init) :
 			_cowdata(p_init) {}
-	_FORCE_INLINE_ VMap(const VMap &p_from) { _cowdata._ref(p_from._cowdata); }
+	_FORCE_INLINE_ VMap(const VMap &p_from) = default;
 
-	_FORCE_INLINE_  void operator=(const VMap &p_from) {
-		_cowdata._ref(p_from._cowdata);
-	}
+	_FORCE_INLINE_ void operator=(const VMap &p_from) { _cowdata = p_from._cowdata; }
 };
