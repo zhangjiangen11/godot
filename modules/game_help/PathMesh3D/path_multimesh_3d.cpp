@@ -300,7 +300,7 @@ void PathMultiMesh3D::_rebuild_mesh() {
 			} break;
 			case ROTATE_RANDOM: {
 				transform = curve->sample_baked_with_rotation(offset, sample_cubic, true) * mesh_r;
-				transform.basis.rotate(Vector3(0.0, 1.0, 0.0), Math::random(0.0, Math_TAU));
+				transform.basis.rotate(Vector3(0.0, 1.0, 0.0), Math::random(0.0, Math::TAU));
 				transform.basis = transform.basis * mesh_r;
 			} break;
 			default:

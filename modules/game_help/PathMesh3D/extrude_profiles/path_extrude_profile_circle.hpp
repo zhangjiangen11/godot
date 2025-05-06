@@ -18,7 +18,7 @@ public:
 
 	_ALWAYS_INLINE_ void set_starting_angle(const double p_starting_angle) {
 		if (p_starting_angle != starting_angle) {
-			starting_angle = CLAMP(p_starting_angle, double(0.0), double(Math_TAU));
+			starting_angle = CLAMP(p_starting_angle, double(0.0), double(Math::TAU));
 			if (starting_angle > ending_angle) {
 				ending_angle = starting_angle;
 			}
@@ -29,7 +29,7 @@ public:
 
 	_ALWAYS_INLINE_ void set_ending_angle(const double p_ending_angle) {
 		if (p_ending_angle != ending_angle) {
-			ending_angle = CLAMP(p_ending_angle, double(0.0), double(Math_TAU));
+			ending_angle = CLAMP(p_ending_angle, double(0.0), double(Math::TAU));
 			if (ending_angle < starting_angle) {
 				starting_angle = ending_angle;
 			}
@@ -69,7 +69,7 @@ protected:
 private:
 	double radius = 1.0;
 	double starting_angle = 0.0;
-	double ending_angle = Math_TAU;
+	double ending_angle = Math::TAU;
 	bool smooth_normals = true;
 	bool closed = true;
 	uint64_t segments = 32;

@@ -166,7 +166,7 @@ void Ivy::grow() {
 		//add child ivys on existing ivy nodes
 		for (auto node = root->nodes.begin(); node != root->nodes.end(); ++node) {
 			//weight depending on ratio of node length to total length
-			float weight = 1.0f - (cos(2.0f * Math_PI * node->length / root->nodes.back().length) * 0.5f + 0.5f);
+			float weight = 1.0f - (cos(2.0f * Math::PI * node->length / root->nodes.back().length) * 0.5f + 0.5f);
 
 			//random influence
 			float probability = Math::rand() / (float)RAND_MAX;
@@ -399,7 +399,7 @@ void Ivy::birth() {
 			weight += groundIvy * pow(1.0f - node->length / root->nodes.back().length, 2.0f);
 
 			//horizontal angle (+ an epsilon vector, otherwise there's a problem at 0� and 90�... mmmh)
-			float phi = atan2(node->adhesionVector.z, node->adhesionVector.x) - Math_PI * 0.5f;
+			float phi = atan2(node->adhesionVector.z, node->adhesionVector.x) - Math::PI * 0.5f;
 			//random influence
 			phi += (Math::rand() / (float)RAND_MAX - 0.5f) * (1.3f - alignmentWeight);
 
@@ -407,7 +407,7 @@ void Ivy::birth() {
 			float theta = node->adhesionVector.angle_to(Vector3(0.0f, -1.0f, 0.0f)) * 0.5f;
 			theta += (Math::rand() / (float)RAND_MAX - 0.5f) * (1.1f - alignmentWeight);
 			//size of leaf
-			float sizeWeight = 1.5f - (cos(weight * 2.0f * Math_PI) * 0.5f + 0.5f);
+			float sizeWeight = 1.5f - (cos(weight * 2.0f * Math::PI) * 0.5f + 0.5f);
 
 			float leafSize = sizeWeight * ivyLeafSize;
 

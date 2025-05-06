@@ -214,7 +214,7 @@ void PathScene3D::_rebuild_scene() {
             } break;
             case ROTATE_RANDOM: {
                 transform = curve->sample_baked_with_rotation(offset, sample_cubic, true);
-                transform.basis.rotate(Vector3(0.0, 1.0, 0.0), Math::random(0.0, Math_TAU));
+                transform.basis.rotate(Vector3(0.0, 1.0, 0.0), Math::random(0.0, Math::TAU));
             } break;
             default:
                 ERR_FAIL();

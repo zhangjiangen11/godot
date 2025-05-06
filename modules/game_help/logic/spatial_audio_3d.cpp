@@ -100,7 +100,7 @@ LocalVector<RayCast3D *> SpatialAudio3D::create_raycast_sector(int start_angle, 
 	LocalVector<RayCast3D *> rays;
 	int i = 0;
 	for (double heading = 0; heading < heading_count; heading += 1) { // 0: ground, 7: above
-		heading = heading / Math_PI;
+		heading = heading / Math::PI;
 		for (double bearing = (bearing_raycount / 2.0 * -1); bearing < (bearing_raycount / 2.0); bearing += 1) { // -7: right, 7: left
 			bearing = bearing / bearing_raycount * width_factor;
 			RayCast3D *mr = memnew(RayCast3D);
@@ -380,7 +380,7 @@ void Soundsource::_ready() {
 		}
 
 		// create measurement rays
-		measurement_rays = create_raycast_sector(0, 2 * Math_PI, 12, 3);
+		measurement_rays = create_raycast_sector(0, 2 * Math::PI, 12, 3);
 		index = 0;
 		while (index < measurement_rays.size()) {
 			distances.push_back(-1);

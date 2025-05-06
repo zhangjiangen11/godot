@@ -479,7 +479,7 @@ void CharacterAnimatorNodeBase::get_weights_freeform_directional(const Blend2dDa
 		}
 	}
 
-	const float kInversePI = 1 / Math_PI;
+	const float kInversePI = 1 / Math::PI;
 	if (preCompute) {
 		for (uint32_t i = 0; i < count; i++) {
 			// Fade out over 180 degrees away from example

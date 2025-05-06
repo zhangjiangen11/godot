@@ -65,7 +65,7 @@ void CharacterCheckArea3D::get_bound_other_character_by_angle(TypedArray<Charact
 	_array.clear();
 	Vector3 curr_pos = mainBody->get_global_transform().origin;
 	Vector3 forward = mainBody->get_global_transform().basis.xform(Vector3(0, 0, 1));
-	float ref_angle = Math_PI * 0.5 * angle;
+	float ref_angle = Math::PI * 0.5 * angle;
 	for (auto &node : boundOtherCharacter) {
 		node.value->update(curr_pos, forward);
 		if (node.value->angle < ref_angle) {
