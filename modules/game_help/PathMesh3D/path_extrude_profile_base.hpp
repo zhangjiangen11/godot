@@ -37,9 +37,8 @@ protected:
 private:
 	bool dirty = true;
 	bool flip_normals = false;
-	Array mesh_array;
+	Array mesh_array{ PackedVector2Array() };
 
 	void _regen();
 };
-
 //}

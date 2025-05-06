@@ -11,6 +11,11 @@ class PathScene3D : public Node3D {
 	GDCLASS(PathScene3D, Node3D)
 
 public:
+	enum SceneTransform {
+		TRANSFORM_SCENE_LOCAL,
+		TRANSFORM_SCENE_PATH_NODE,
+		TRANSFORM_SCENE_MAX,
+	};
 	enum Distribution {
 		DISTRIBUTE_BY_COUNT = 0,
 		DISTRIBUTE_BY_DISTANCE = 1,
@@ -57,6 +62,15 @@ public:
 	}
 	_ALWAYS_INLINE_ Path3D *get_path_3d() const { return path3d; }
 
+	_ALWAYS_INLINE_ void set_scene_transform(const SceneTransform p_transform) {
+		if (scene_transform != p_transform) {
+			scene_transform = p_transform;
+			queue_rebuild();
+		}
+	}
+
+	_ALWAYS_INLINE_ SceneTransform get_scene_transform() const { return scene_transform; }
+
 	_ALWAYS_INLINE_ void set_distribution(Distribution p_distribution) {
 		if (distribution != p_distribution) {
 			distribution = p_distribution;
@@ -99,13 +113,13 @@ public:
 	}
 	_ALWAYS_INLINE_ Rotation get_rotation_mode() const { return rotation_mode; }
 
-	_ALWAYS_INLINE_ void set_path_rotation(const Vector3 &p_rotation) {
+	_ALWAYS_INLINE_ void set_rotation(const Vector3 &p_rotation) {
 		if (rotation != p_rotation) {
 			rotation = p_rotation;
 			queue_rebuild();
 		}
 	}
-	_ALWAYS_INLINE_ Vector3 get_path_rotation() const { return rotation; }
+	_ALWAYS_INLINE_ Vector3 get_rotation() const { return rotation; }
 
 	_ALWAYS_INLINE_ void set_sample_cubic(bool p_cubic) {
 		if (sample_cubic != p_cubic) {
@@ -117,12 +131,12 @@ public:
 
 	_ALWAYS_INLINE_ void queue_rebuild() {
 		dirty = true;
-		callable_mp(this, &PathScene3D::_rebuild_scene).call_deferred();
 	}
 
 	TypedArray<Node3D> bake_instances();
 
 	PackedStringArray get_configuration_warnings() const override;
+	~PathScene3D();
 
 protected:
 	static void _bind_methods();
@@ -132,6 +146,7 @@ protected:
 private:
 	Ref<PackedScene> scene;
 	Path3D *path3d = nullptr;
+	SceneTransform scene_transform = TRANSFORM_SCENE_LOCAL;
 	Distribution distribution = DISTRIBUTE_BY_COUNT;
 	Alignment alignment = ALIGN_FROM_START;
 	uint64_t count = 1;
@@ -142,6 +157,7 @@ private:
 	bool dirty = true;
 
 	Vector<Node3D *> instances;
+	Transform3D local_transform = Transform3D();
 	Transform3D path_transform = Transform3D();
 
 	void _on_scene_changed();
@@ -151,6 +167,7 @@ private:
 
 //}
 
+VARIANT_ENUM_CAST(PathScene3D::SceneTransform);
 VARIANT_ENUM_CAST(PathScene3D::Distribution);
 VARIANT_ENUM_CAST(PathScene3D::Rotation);
 VARIANT_ENUM_CAST(PathScene3D::Alignment);

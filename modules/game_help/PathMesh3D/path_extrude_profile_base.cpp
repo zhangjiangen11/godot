@@ -1,7 +1,5 @@
 #include "path_extrude_profile_base.hpp"
 
-//using namespace godot;
-
 PackedFloat64Array PathExtrudeProfileBase::_generate_v(const PackedVector2Array &p_vertices) {
 	PackedFloat64Array v;
 	v.resize(p_vertices.size());
