@@ -393,6 +393,8 @@ protected:
 	void _validate_property(PropertyInfo &p_property) const;
 
 protected:
+	virtual bool _uses_signal_mutex() const override { return false; } // Node uses thread guards instead.
+
 	virtual void input(const Ref<InputEvent> &p_event);
 	virtual void shortcut_input(const Ref<InputEvent> &p_key_event);
 	virtual void unhandled_input(const Ref<InputEvent> &p_event);
@@ -413,6 +415,11 @@ protected:
 
 	GDVIRTUAL0RC(RID, _get_focused_accessibility_element)
 	GDVIRTUAL1RC(String, _get_accessibility_container_name, const Node *)
+
+#ifndef DISABLE_DEPRECATED
+	void _set_name_bind_compat_76560(const String &p_name);
+	static void _bind_compatibility_methods();
+#endif
 
 public:
 	enum {
@@ -477,7 +484,7 @@ public:
 
 	StringName get_name() const;
 	String get_description() const;
-	void set_name(const String &p_name);
+	void set_name(const StringName &p_name);
 
 	InternalMode get_internal_mode() const;
 
@@ -746,6 +753,7 @@ public:
 	ProcessThreadGroup get_process_thread_group() const;
 
 	static void print_orphan_nodes();
+	static TypedArray<int> get_orphan_node_ids();
 
 #ifdef TOOLS_ENABLED
 	String validate_child_name(Node *p_child);

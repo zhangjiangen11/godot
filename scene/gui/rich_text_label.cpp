@@ -630,8 +630,8 @@ float RichTextLabel::_shape_line(ItemFrame *p_frame, int p_line, const Ref<Font>
 						t_char_count += cell_ch;
 						remaining_characters -= cell_ch;
 
-						table->columns[column].min_width = MAX(table->columns[column].min_width, frame->lines[i].indent + ceil(frame->lines[i].text_buf->get_size().x));
-						table->columns[column].max_width = MAX(table->columns[column].max_width, frame->lines[i].indent + ceil(frame->lines[i].text_buf->get_non_wrapped_size().x));
+						table->columns[column].min_width = MAX(table->columns[column].min_width, frame->lines[i].indent + std::ceil(frame->lines[i].text_buf->get_size().x));
+						table->columns[column].max_width = MAX(table->columns[column].max_width, frame->lines[i].indent + std::ceil(frame->lines[i].text_buf->get_non_wrapped_size().x));
 					}
 					idx++;
 				}
@@ -755,8 +755,8 @@ void RichTextLabel::_set_table_size(ItemTable *p_table, int p_available_width) {
 			MutexLock sub_lock(frame->lines[i].text_buf->get_mutex());
 
 			frame->lines[i].text_buf->set_width(p_table->columns[column].width);
-			p_table->columns[column].width = MAX(p_table->columns[column].width, ceil(frame->lines[i].text_buf->get_size().x));
-			p_table->columns[column].width_with_padding = MAX(p_table->columns[column].width_with_padding, ceil(frame->lines[i].text_buf->get_size().x + frame->padding.position.x + frame->padding.size.x));
+			p_table->columns[column].width = MAX(p_table->columns[column].width, std::ceil(frame->lines[i].text_buf->get_size().x));
+			p_table->columns[column].width_with_padding = MAX(p_table->columns[column].width_with_padding, std::ceil(frame->lines[i].text_buf->get_size().x + frame->padding.position.x + frame->padding.size.x));
 
 			frame->lines[i].offset.y = prev_h;
 
@@ -1354,8 +1354,8 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 									TS->font_draw_glyph_outline(frid, ci, glyphs[i].font_size, outline_size, fx_offset + char_off, gl, font_color);
 								}
 							}
-							processed_glyphs_step++;
 						}
+						processed_glyphs_step++;
 						if (step == DRAW_STEP_TEXT && skip) {
 							// Finish underline/overline/strikethrough is previous glyph is skipped.
 							if (ul_started) {
@@ -1403,7 +1403,6 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 								}
 							}
 							last_color = color;
-							processed_glyphs_step++;
 						} else {
 							// Finish box is previous glyph is skipped.
 							if (last_color.a > 0.0) {
@@ -1413,6 +1412,7 @@ int RichTextLabel::_draw_line(ItemFrame *p_frame, int p_line, const Vector2 &p_o
 							}
 							last_color = Color(0, 0, 0, 0);
 						}
+						processed_glyphs_step++;
 						off_step.x += glyphs[i].advance;
 					}
 				}
@@ -2404,9 +2404,9 @@ void RichTextLabel::_notification(int p_what) {
 					bool right_to_left = is_layout_rtl();
 					double r = loaded.load();
 					int mp = theme_cache.progress_fg_style->get_minimum_size().width;
-					int p = round(r * (p_size.width - mp));
+					int p = std::round(r * (p_size.width - mp));
 					if (right_to_left) {
-						int p_remaining = round((1.0 - r) * (p_size.width - mp));
+						int p_remaining = std::round((1.0 - r) * (p_size.width - mp));
 						draw_style_box(theme_cache.progress_fg_style, Rect2(p_pos + Point2(p_remaining, 0), Size2(p + theme_cache.progress_fg_style->get_minimum_size().width, p_size.height)));
 					} else {
 						draw_style_box(theme_cache.progress_fg_style, Rect2(p_pos, Size2(p + theme_cache.progress_fg_style->get_minimum_size().width, p_size.height)));
@@ -4253,6 +4253,8 @@ void RichTextLabel::push_dropcap(const String &p_string, const Ref<Font> &p_font
 	item->ol_size = p_ol_size;
 	item->ol_color = p_ol_color;
 	item->dropcap_margins = p_dropcap_margins;
+	p_font->connect_changed(callable_mp(this, &RichTextLabel::_invalidate_fonts), CONNECT_REFERENCE_COUNTED);
+
 	_add_item(item, false);
 }
 
@@ -4269,6 +4271,8 @@ void RichTextLabel::_push_def_font_var(DefaultFont p_def_font, const Ref<Font> &
 	item->font = p_font;
 	item->font_size = p_size;
 	item->def_size = (p_size <= 0);
+	p_font->connect_changed(callable_mp(this, &RichTextLabel::_invalidate_fonts), CONNECT_REFERENCE_COUNTED);
+
 	_add_item(item, true);
 }
 
@@ -4296,7 +4300,17 @@ void RichTextLabel::push_font(const Ref<Font> &p_font, int p_size) {
 	item->rid = items.make_rid(item);
 	item->font = p_font;
 	item->font_size = p_size;
+	p_font->connect_changed(callable_mp(this, &RichTextLabel::_invalidate_fonts), CONNECT_REFERENCE_COUNTED);
+
 	_add_item(item, true);
+}
+
+void RichTextLabel::_invalidate_fonts() {
+	_stop_thread();
+	main->first_invalid_font_line.store(0); // Invalidate all lines.
+	_invalidate_accessibility();
+	queue_accessibility_update();
+	queue_redraw();
 }
 
 void RichTextLabel::push_normal() {
@@ -5398,6 +5412,9 @@ void RichTextLabel::append_text(const String &p_bbcode) {
 			push_language(lang);
 			pos = brk_end + 1;
 			tag_stack.push_front("lang");
+		} else if (tag == "br") {
+			add_text("\r");
+			pos = brk_end + 1;
 		} else if (tag == "p") {
 			push_paragraph(HORIZONTAL_ALIGNMENT_LEFT);
 			pos = brk_end + 1;
@@ -6326,6 +6343,7 @@ Variant RichTextLabel::get_drag_data(const Point2 &p_point) {
 		String t = get_selected_text();
 		Label *l = memnew(Label);
 		l->set_text(t);
+		l->set_focus_mode(FOCUS_ACCESSIBILITY);
 		l->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED); // Text is already translated.
 		set_drag_preview(l);
 		return t;
@@ -7071,6 +7089,41 @@ int RichTextLabel::get_content_width() const {
 	return total_width;
 }
 
+int RichTextLabel::get_line_height(int p_line) const {
+	const_cast<RichTextLabel *>(this)->_validate_line_caches();
+
+	int line_count = 0;
+	int to_line = main->first_invalid_line.load();
+	for (int i = 0; i < to_line; i++) {
+		MutexLock lock(main->lines[i].text_buf->get_mutex());
+		int lc = main->lines[i].text_buf->get_line_count();
+
+		if (p_line < line_count + lc) {
+			const Ref<TextParagraph> text_buf = main->lines[i].text_buf;
+			return text_buf->get_line_ascent(p_line - line_count) + text_buf->get_line_descent(p_line - line_count) + theme_cache.line_separation;
+		}
+		line_count += lc;
+	}
+	return 0;
+}
+
+int RichTextLabel::get_line_width(int p_line) const {
+	const_cast<RichTextLabel *>(this)->_validate_line_caches();
+
+	int line_count = 0;
+	int to_line = main->first_invalid_line.load();
+	for (int i = 0; i < to_line; i++) {
+		MutexLock lock(main->lines[i].text_buf->get_mutex());
+		int lc = main->lines[i].text_buf->get_line_count();
+
+		if (p_line < line_count + lc) {
+			return main->lines[i].text_buf->get_line_width(p_line - line_count);
+		}
+		line_count += lc;
+	}
+	return 0;
+}
+
 #ifndef DISABLE_DEPRECATED
 // People will be very angry, if their texts get erased, because of #39148. (3.x -> 4.0)
 // Although some people may not used bbcode_text, so we only overwrite, if bbcode_text is not empty.
@@ -7241,6 +7294,9 @@ void RichTextLabel::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("get_content_height"), &RichTextLabel::get_content_height);
 	ClassDB::bind_method(D_METHOD("get_content_width"), &RichTextLabel::get_content_width);
+
+	ClassDB::bind_method(D_METHOD("get_line_height", "line"), &RichTextLabel::get_line_height);
+	ClassDB::bind_method(D_METHOD("get_line_width", "line"), &RichTextLabel::get_line_width);
 
 	ClassDB::bind_method(D_METHOD("get_line_offset", "line"), &RichTextLabel::get_line_offset);
 	ClassDB::bind_method(D_METHOD("get_paragraph_offset", "paragraph"), &RichTextLabel::get_paragraph_offset);

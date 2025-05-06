@@ -236,15 +236,15 @@ void Window::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void Window::_validate_property(PropertyInfo &p_property) const {
-	if (p_property.name == "position" && initial_position != WINDOW_INITIAL_POSITION_ABSOLUTE) {
-		p_property.usage = PROPERTY_USAGE_NONE;
-	}
-
-	if (p_property.name == "current_screen" && initial_position != WINDOW_INITIAL_POSITION_CENTER_OTHER_SCREEN) {
-		p_property.usage = PROPERTY_USAGE_NONE;
-	}
-
-	if (p_property.name == "theme_type_variation") {
+	if (p_property.name == "position") {
+		if (initial_position != WINDOW_INITIAL_POSITION_ABSOLUTE) {
+			p_property.usage = PROPERTY_USAGE_NONE;
+		}
+	} else if (p_property.name == "current_screen") {
+		if (initial_position != WINDOW_INITIAL_POSITION_CENTER_OTHER_SCREEN) {
+			p_property.usage = PROPERTY_USAGE_NONE;
+		}
+	} else if (p_property.name == "theme_type_variation") {
 		List<StringName> names;
 
 		// Only the default theme and the project theme are used for the list of options.
@@ -953,7 +953,7 @@ void Window::set_visible(bool p_visible) {
 			embedder = embedder_vp;
 			if (initial_position != WINDOW_INITIAL_POSITION_ABSOLUTE) {
 				if (is_in_edited_scene_root()) {
-					Size2 screen_size = Size2(GLOBAL_GET("display/window/size/viewport_width"), GLOBAL_GET("display/window/size/viewport_height"));
+					Size2 screen_size = Size2(GLOBAL_GET_CACHED(real_t, "display/window/size/viewport_width"), GLOBAL_GET_CACHED(real_t, "display/window/size/viewport_height"));
 					position = (screen_size - size) / 2;
 				} else {
 					position = (embedder->get_visible_rect().size - size) / 2;
@@ -1196,7 +1196,6 @@ void Window::_update_viewport_size() {
 	Size2i final_size;
 	Size2 final_size_override;
 	Rect2i attach_to_screen_rect(Point2i(), size);
-	double font_oversampling = 1.0;
 	window_transform = Transform2D();
 
 	if (content_scale_stretch == Window::CONTENT_SCALE_STRETCH_INTEGER) {
@@ -1211,7 +1210,6 @@ void Window::_update_viewport_size() {
 	}
 
 	if (content_scale_mode == CONTENT_SCALE_MODE_DISABLED || content_scale_size.x == 0 || content_scale_size.y == 0) {
-		font_oversampling = content_scale_factor;
 		final_size = size;
 		final_size_override = Size2(size) / content_scale_factor;
 	} else {
@@ -1289,14 +1287,11 @@ void Window::_update_viewport_size() {
 
 		switch (content_scale_mode) {
 			case CONTENT_SCALE_MODE_DISABLED: {
-				// Already handled above
-				//_update_font_oversampling(1.0);
 			} break;
 			case CONTENT_SCALE_MODE_CANVAS_ITEMS: {
 				final_size = screen_size;
 				final_size_override = viewport_size / content_scale_factor;
 				attach_to_screen_rect = Rect2(margin, screen_size);
-				font_oversampling = (screen_size.x / viewport_size.x) * content_scale_factor;
 
 				window_transform.translate_local(margin);
 			} break;
@@ -1315,7 +1310,7 @@ void Window::_update_viewport_size() {
 	}
 
 	bool allocate = is_inside_tree() && visible && (window_id != DisplayServer::INVALID_WINDOW_ID || embedder != nullptr);
-	bool ci_updated = _set_size(final_size, final_size_override, allocate);
+	_set_size(final_size, final_size_override, allocate);
 
 	if (window_id != DisplayServer::INVALID_WINDOW_ID) {
 		RenderingServer::get_singleton()->viewport_attach_to_screen(get_viewport_rid(), attach_to_screen_rect, window_id);
@@ -1323,23 +1318,11 @@ void Window::_update_viewport_size() {
 		RenderingServer::get_singleton()->viewport_attach_to_screen(get_viewport_rid(), Rect2i(), DisplayServer::INVALID_WINDOW_ID);
 	}
 
-	if (window_id == DisplayServer::MAIN_WINDOW_ID) {
-		if (!use_font_oversampling) {
-			font_oversampling = 1.0;
-		}
-		if (!Math::is_equal_approx(TS->font_get_global_oversampling(), font_oversampling)) {
-			TS->font_set_global_oversampling(font_oversampling);
-			if (!ci_updated) {
-				update_canvas_items();
-				emit_signal(SNAME("size_changed"));
-			}
-		}
-	}
-
 	notification(NOTIFICATION_WM_SIZE_CHANGED);
 
 	if (embedder) {
 		float scale = MIN(embedder->stretch_transform.get_scale().width, embedder->stretch_transform.get_scale().height);
+		Viewport::set_oversampling_override(scale);
 		Size2 s = Size2(final_size.width * scale, final_size.height * scale).ceil();
 		RS::get_singleton()->viewport_set_global_canvas_transform(get_viewport_rid(), global_canvas_transform * scale * content_scale_factor);
 		RS::get_singleton()->viewport_set_size(get_viewport_rid(), s.width, s.height);
@@ -1501,7 +1484,7 @@ void Window::_notification(int p_what) {
 				if (embedder) {
 					if (initial_position != WINDOW_INITIAL_POSITION_ABSOLUTE) {
 						if (is_in_edited_scene_root()) {
-							Size2 screen_size = Size2(GLOBAL_GET("display/window/size/viewport_width"), GLOBAL_GET("display/window/size/viewport_height"));
+							Size2 screen_size = Size2(GLOBAL_GET_CACHED(real_t, "display/window/size/viewport_width"), GLOBAL_GET_CACHED(real_t, "display/window/size/viewport_height"));
 							position = (screen_size - size) / 2;
 						} else {
 							position = (embedder->get_visible_rect().size - size) / 2;
@@ -1719,20 +1702,6 @@ void Window::set_content_scale_factor(real_t p_factor) {
 real_t Window::get_content_scale_factor() const {
 	ERR_READ_THREAD_GUARD_V(0);
 	return content_scale_factor;
-}
-
-void Window::set_use_font_oversampling(bool p_oversampling) {
-	ERR_MAIN_THREAD_GUARD;
-	if (is_inside_tree() && window_id != DisplayServer::MAIN_WINDOW_ID) {
-		ERR_FAIL_MSG("Only the root window can set and use font oversampling.");
-	}
-	use_font_oversampling = p_oversampling;
-	_update_viewport_size();
-}
-
-bool Window::is_using_font_oversampling() const {
-	ERR_READ_THREAD_GUARD_V(false);
-	return use_font_oversampling;
 }
 
 DisplayServer::WindowID Window::get_window_id() const {
@@ -2885,13 +2854,13 @@ bool Window::is_layout_rtl() const {
 	ERR_READ_THREAD_GUARD_V(false);
 	if (layout_dir == LAYOUT_DIRECTION_INHERITED) {
 #ifdef TOOLS_ENABLED
-		if (is_part_of_edited_scene() && GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
+		if (is_part_of_edited_scene() && GLOBAL_GET_CACHED(bool, "internationalization/rendering/force_right_to_left_layout_direction")) {
 			return true;
 		}
 		if (is_inside_tree()) {
 			Node *edited_scene_root = get_tree()->get_edited_scene_root();
 			if (edited_scene_root == this) {
-				int proj_root_layout_direction = GLOBAL_GET(SNAME("internationalization/rendering/root_node_layout_direction"));
+				int proj_root_layout_direction = GLOBAL_GET_CACHED(int, "internationalization/rendering/root_node_layout_direction");
 				if (proj_root_layout_direction == 1) {
 					return false;
 				} else if (proj_root_layout_direction == 2) {
@@ -2906,7 +2875,7 @@ bool Window::is_layout_rtl() const {
 			}
 		}
 #else
-		if (GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
+		if (GLOBAL_GET_CACHED(bool, "internationalization/rendering/force_right_to_left_layout_direction")) {
 			return true;
 		}
 #endif
@@ -2936,14 +2905,14 @@ bool Window::is_layout_rtl() const {
 			return TS->is_locale_right_to_left(locale);
 		}
 	} else if (layout_dir == LAYOUT_DIRECTION_APPLICATION_LOCALE) {
-		if (GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
+		if (GLOBAL_GET_CACHED(bool, "internationalization/rendering/force_right_to_left_layout_direction")) {
 			return true;
 		} else {
 			String locale = TranslationServer::get_singleton()->get_tool_locale();
 			return TS->is_locale_right_to_left(locale);
 		}
 	} else if (layout_dir == LAYOUT_DIRECTION_SYSTEM_LOCALE) {
-		if (GLOBAL_GET(SNAME("internationalization/rendering/force_right_to_left_layout_direction"))) {
+		if (GLOBAL_GET_CACHED(bool, "internationalization/rendering/force_right_to_left_layout_direction")) {
 			return true;
 		} else {
 			String locale = OS::get_singleton()->get_locale();
@@ -2955,6 +2924,15 @@ bool Window::is_layout_rtl() const {
 }
 
 #ifndef DISABLE_DEPRECATED
+
+void Window::set_use_font_oversampling(bool p_oversampling) {
+	Viewport::set_use_oversampling(p_oversampling);
+}
+
+bool Window::is_using_font_oversampling() const {
+	return Viewport::is_using_oversampling();
+}
+
 void Window::set_auto_translate(bool p_enable) {
 	ERR_MAIN_THREAD_GUARD;
 	set_auto_translate_mode(p_enable ? AUTO_TRANSLATE_MODE_ALWAYS : AUTO_TRANSLATE_MODE_DISABLED);
@@ -3138,9 +3116,6 @@ void Window::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_content_scale_factor", "factor"), &Window::set_content_scale_factor);
 	ClassDB::bind_method(D_METHOD("get_content_scale_factor"), &Window::get_content_scale_factor);
 
-	ClassDB::bind_method(D_METHOD("set_use_font_oversampling", "enable"), &Window::set_use_font_oversampling);
-	ClassDB::bind_method(D_METHOD("is_using_font_oversampling"), &Window::is_using_font_oversampling);
-
 	ClassDB::bind_method(D_METHOD("set_mouse_passthrough_polygon", "polygon"), &Window::set_mouse_passthrough_polygon);
 	ClassDB::bind_method(D_METHOD("get_mouse_passthrough_polygon"), &Window::get_mouse_passthrough_polygon);
 
@@ -3207,6 +3182,9 @@ void Window::_bind_methods() {
 #ifndef DISABLE_DEPRECATED
 	ClassDB::bind_method(D_METHOD("set_auto_translate", "enable"), &Window::set_auto_translate);
 	ClassDB::bind_method(D_METHOD("is_auto_translating"), &Window::is_auto_translating);
+
+	ClassDB::bind_method(D_METHOD("set_use_font_oversampling", "enable"), &Window::set_use_font_oversampling);
+	ClassDB::bind_method(D_METHOD("is_using_font_oversampling"), &Window::is_using_font_oversampling);
 #endif
 
 	ClassDB::bind_method(D_METHOD("popup", "rect"), &Window::popup, DEFVAL(Rect2i()));
