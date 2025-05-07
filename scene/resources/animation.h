@@ -117,7 +117,6 @@ public:
 		TypeHash thash = 0; // Hash by Path + SubPath + TrackType.
 		bool imported = false;
 		bool enabled = true;
-		Track() {}
 		virtual ~Track() {}
 		
 		virtual Track* duplicate() const {return nullptr;}

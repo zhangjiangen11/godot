@@ -218,7 +218,6 @@ public:
 		TrackCacheTransform() {
 			type = Animation::TYPE_POSITION_3D;
 		}
-		~TrackCacheTransform() {}
 	};
 
 	struct RootMotionCache {
@@ -242,7 +241,6 @@ public:
 		void reset() {
 			value = init_value;
 		}
-		~TrackCacheBlendShape() {}
 	};
 
 	struct TrackCacheValue : public TrackCache {
@@ -281,7 +279,6 @@ public:
 
 	struct TrackCacheMethod : public TrackCache {
 		TrackCacheMethod() { type = Animation::TYPE_METHOD; }
-		~TrackCacheMethod() {}
 	};
 
 	// Audio stream information for each audio stream placed on the track.
@@ -319,7 +316,6 @@ public:
 		TrackCacheAudio() {
 			type = Animation::TYPE_AUDIO;
 		}
-		~TrackCacheAudio() {}
 	};
 
 	struct TrackCacheAnimation : public TrackCache {
@@ -328,7 +324,6 @@ public:
 		TrackCacheAnimation() {
 			type = Animation::TYPE_ANIMATION;
 		}
-		~TrackCacheAnimation() {}
 	};
 
 	RootMotionCache root_motion_cache;
@@ -413,7 +408,6 @@ public:
 			step = 0.0;
 		}
 
-		CaptureCache() {}
 		~CaptureCache() {
 			clear();
 		}
@@ -483,7 +477,7 @@ public:
 
 	/* ---- Blending processor ---- */
 	void make_animation_instance(const StringName &p_name, const PlaybackInfo p_playback_info);
-	void make_animation_instance_anim(const Ref<Animation> &p_anim, const PlaybackInfo& p_playback_info,const Dictionary& bone_map);
+	void make_animation_instance_anim(const Ref<Animation> &p_anim, const PlaybackInfo &p_playback_info, const Dictionary &bone_map);
 	void clear_animation_instances();
 	virtual void advance(double p_time);
 	virtual void clear_caches(); // Must be called by hand if an animation was modified after added.
@@ -501,29 +495,24 @@ public:
 	void reset();
 
 	/* ---- Settings ---- */
-	void set_animation_group(StringName group)
-	{
+	void set_animation_group(StringName group) {
 		animationGroup = group;
 	}
-	StringName get_animation_group()
-	{
+	StringName get_animation_group() {
 		return animationGroup;
 	}
-	void set_begin_animation_cb(Callable cb)
-	{
+	void set_begin_animation_cb(Callable cb) {
 		cb_begin_animation = cb;
 	}
-	void set_end_animation_cb(Callable cb)
-	{
+	void set_end_animation_cb(Callable cb) {
 		cb_end_animation = cb;
 	}
-	void set_get_animation_cb(Callable cb)
-	{
+	void set_get_animation_cb(Callable cb) {
 		cb_get_animation = cb;
 	}
-	void reset_all_animation(const Ref<Animation>& anim);
+	void reset_all_animation(const Ref<Animation> &anim);
 	// 这个是动态修改的动画的时候调用
-	void change_animation(const StringName &p_name,const Ref<Animation>& anim);
+	void change_animation(const StringName &p_name, const Ref<Animation> &anim);
 	void clear_all_animation();
 
 #ifdef TOOLS_ENABLED

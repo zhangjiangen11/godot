@@ -367,8 +367,6 @@ void ImageTexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_bottom"), "set_nine_bottom", "get_nine_bottom");
 }
 
-ImageTexture::ImageTexture() {}
-
 ImageTexture::~ImageTexture() {
 	if (texture.is_valid()) {
 		ERR_FAIL_NULL(RenderingServer::get_singleton());

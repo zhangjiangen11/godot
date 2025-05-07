@@ -152,8 +152,6 @@ public:
 
 	void set_rings(const int p_rings);
 	int get_rings() const;
-
-	CapsuleMesh();
 };
 
 /**
@@ -192,8 +190,6 @@ public:
 
 	void set_start_by_center(bool v) { start_by_center = v; }
 	bool is_start_by_center() { return start_by_center; }
-
-	BoxMesh();
 };
 
 /**
@@ -241,8 +237,6 @@ public:
 
 	void set_cap_bottom(bool p_cap_bottom);
 	bool is_cap_bottom() const;
-
-	CylinderMesh();
 };
 
 /*
@@ -299,8 +293,6 @@ public:
 
 	void set_using_uv(bool v) { using_uv = v; }
 	bool is_using_uv() { return using_uv; }
-
-	PlaneMesh();
 };
 
 VARIANT_ENUM_CAST(PlaneMesh::Orientation)
@@ -352,8 +344,6 @@ public:
 
 	void set_subdivide_depth(const int p_divisions);
 	int get_subdivide_depth() const;
-
-	PrismMesh();
 };
 
 /**
@@ -392,8 +382,6 @@ public:
 
 	void set_is_hemisphere(const bool p_is_hemisphere);
 	bool get_is_hemisphere() const;
-
-	SphereMesh();
 };
 
 /**
@@ -426,8 +414,6 @@ public:
 
 	void set_ring_segments(const int p_ring_segments);
 	int get_ring_segments() const;
-
-	TorusMesh();
 };
 
 /**

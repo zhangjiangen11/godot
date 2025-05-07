@@ -689,8 +689,6 @@ int CapsuleMesh::get_rings() const {
 	return rings;
 }
 
-CapsuleMesh::CapsuleMesh() {}
-
 /**
   BoxMesh
 */
@@ -1045,8 +1043,6 @@ void BoxMesh::set_subdivide_depth(const int p_divisions) {
 int BoxMesh::get_subdivide_depth() const {
 	return subdivide_d;
 }
-
-BoxMesh::BoxMesh() {}
 
 /**
 	CylinderMesh
@@ -1405,8 +1401,6 @@ bool CylinderMesh::is_cap_bottom() const {
 	return cap_bottom;
 }
 
-CylinderMesh::CylinderMesh() {}
-
 /**
   PlaneMesh
 */
@@ -1631,8 +1625,6 @@ void PlaneMesh::set_orientation(const Orientation p_orientation) {
 PlaneMesh::Orientation PlaneMesh::get_orientation() const {
 	return orientation;
 }
-
-PlaneMesh::PlaneMesh() {}
 
 /**
   PrismMesh
@@ -2004,8 +1996,6 @@ int PrismMesh::get_subdivide_depth() const {
 	return subdivide_d;
 }
 
-PrismMesh::PrismMesh() {}
-
 /**
   SphereMesh
 */
@@ -2224,8 +2214,6 @@ bool SphereMesh::get_is_hemisphere() const {
 	return is_hemisphere;
 }
 
-SphereMesh::SphereMesh() {}
-
 /**
   TorusMesh
 */
@@ -2420,8 +2408,6 @@ void TorusMesh::set_ring_segments(const int p_ring_segments) {
 int TorusMesh::get_ring_segments() const {
 	return ring_segments;
 }
-
-TorusMesh::TorusMesh() {}
 
 /**
   PointMesh
