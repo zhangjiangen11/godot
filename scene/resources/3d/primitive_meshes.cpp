@@ -955,7 +955,7 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 	}
 	if (!start_by_center) {
 		Vector3 *ptr = points.ptr();
-		for (int p = 0; p < points.size(); ++p) {
+		for (uint32_t p = 0; p < points.size(); ++p) {
 			ptr[p] -= start_pos;
 		}
 	}
@@ -1515,7 +1515,7 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 			off.y = start_pos.y;
 		}
 		Vector3 *ptr = points.ptr();
-		for (int p = 0; p < points.size(); ++p) {
+		for (uint32_t p = 0; p < points.size(); ++p) {
 			ptr[p] -= off;
 		}
 	}
