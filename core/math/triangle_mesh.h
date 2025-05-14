@@ -99,6 +99,28 @@ public:
 
 	const Vector<Triangle> &get_triangles() const { return triangles; }
 	const Vector<Vector3> &get_vertices() const { return vertices; }
+	const Vector<Vector2> &get_vertices_xz() const {
+		Vector<Vector2> ret;
+		ret.resize(vertices.size());
+		Vector2 *dest = ret.ptrw();
+		const Vector3 *src = vertices.ptr();
+		for (int64_t i = 0; i < vertices.size(); ++i) {
+			dest[i].x = src[i].x;
+			dest[i].y = src[i].z;
+		}
+		return ret;
+	}
+	const Vector<Vector2> &get_vertices_xy() const {
+		Vector<Vector2> ret;
+		ret.resize(vertices.size());
+		Vector2 *dest = ret.ptrw();
+		const Vector3 *src = vertices.ptr();
+		for (int64_t i = 0; i < vertices.size(); ++i) {
+			dest[i].x = src[i].x;
+			dest[i].y = src[i].y;
+		}
+		return ret;
+	}
 	void get_indices(Vector<int> *r_triangles_indices) const;
 
 	void create(const Vector<Vector3> &p_faces, const Vector<int32_t> &p_surface_indices = Vector<int32_t>());

@@ -728,6 +728,8 @@ Vector<Vector3> TriangleMesh::get_faces_scriptwrap() const {
 void TriangleMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_from_faces", "faces"), &TriangleMesh::create_from_faces);
 	ClassDB::bind_method(D_METHOD("get_faces"), &TriangleMesh::get_faces_scriptwrap);
+	ClassDB::bind_method(D_METHOD("get_vertices_xz"), &TriangleMesh::get_vertices_xz);
+	ClassDB::bind_method(D_METHOD("get_vertices_xy"), &TriangleMesh::get_vertices_xy);
 
 	ClassDB::bind_method(D_METHOD("intersect_segment", "begin", "end"), &TriangleMesh::intersect_segment_scriptwrap);
 	ClassDB::bind_method(D_METHOD("intersect_ray", "begin", "dir"), &TriangleMesh::intersect_ray_scriptwrap);
