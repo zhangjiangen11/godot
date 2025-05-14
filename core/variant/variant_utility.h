@@ -132,18 +132,16 @@ struct VariantUtilityFunctions {
 	static String type_string(Variant::Type p_type);
 	static void print(const Variant **p_args, int p_arg_count, Callable::CallError &r_error);
 
-	
-	template<class... Args> static void _print(const Variant &arg1, const Args&... p_args) {
-
-		Variant args[sizeof...(p_args) + 1] = { arg1 ,p_args... }; // +1 makes sure zero sized arrays are also supported.
+	template <class... Args>
+	static void _print(const Variant &arg1, const Args &...p_args) {
+		Variant args[sizeof...(p_args) + 1] = { arg1, p_args... }; // +1 makes sure zero sized arrays are also supported.
 		Variant *argptrs[sizeof...(p_args) + 1];
 		for (uint32_t i = 0; i < sizeof...(p_args); i++) {
 			argptrs[i] = &args[i];
 		}
 		Callable::CallError error;
-		print((const Variant **)&argptrs, sizeof...(p_args) + 1,error);
+		print((const Variant **)&argptrs, sizeof...(p_args) + 1, error);
 	}
-
 
 	static void print_rich(const Variant **p_args, int p_arg_count, Callable::CallError &r_error);
 	static void _print_verbose(const Variant **p_args, int p_arg_count, Callable::CallError &r_error);
@@ -168,4 +166,5 @@ struct VariantUtilityFunctions {
 	static bool is_same(const Variant &p_a, const Variant &p_b);
 	static bool is_signaling_null(const Variant &p_variant);
 	static Variant create_signaling_null();
+	static String join_string(const Variant **p_args, int p_arg_count);
 };

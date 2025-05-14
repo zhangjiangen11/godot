@@ -2774,6 +2774,7 @@ void GDScriptLanguage::get_reserved_words(List<String> *p_words) const {
 		"when",
 		"while",
 		// Declarations.
+		"abstract",
 		"class",
 		"class_name",
 		"const",

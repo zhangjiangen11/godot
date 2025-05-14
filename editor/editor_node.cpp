@@ -354,6 +354,16 @@ void EditorNode::_update_title() {
 	}
 }
 
+void EditorNode::_update_unsaved_cache() {
+	bool is_unsaved = EditorUndoRedoManager::get_singleton()->is_history_unsaved(EditorUndoRedoManager::GLOBAL_HISTORY) ||
+			EditorUndoRedoManager::get_singleton()->is_history_unsaved(editor_data.get_current_edited_scene_history_id());
+
+	if (unsaved_cache != is_unsaved) {
+		unsaved_cache = is_unsaved;
+		_update_title();
+	}
+}
+
 void EditorNode::input(const Ref<InputEvent> &p_event) {
 	// EditorNode::get_singleton()->set_process_input is set to true in ProgressDialog
 	// only when the progress dialog is visible.
@@ -695,13 +705,6 @@ void EditorNode::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_PROCESS: {
-			bool global_unsaved = EditorUndoRedoManager::get_singleton()->is_history_unsaved(EditorUndoRedoManager::GLOBAL_HISTORY);
-			bool scene_or_global_unsaved = global_unsaved || EditorUndoRedoManager::get_singleton()->is_history_unsaved(editor_data.get_current_edited_scene_history_id());
-			if (unsaved_cache != scene_or_global_unsaved) {
-				unsaved_cache = scene_or_global_unsaved;
-				_update_title();
-			}
-
 			if (editor_data.is_scene_changed(-1)) {
 				scene_tabs->update_scene_tabs();
 			}
@@ -1978,6 +1981,7 @@ int EditorNode::_save_external_resources(bool p_also_save_external_data) {
 	}
 
 	EditorUndoRedoManager::get_singleton()->set_history_as_saved(EditorUndoRedoManager::GLOBAL_HISTORY);
+	_update_unsaved_cache();
 
 	return saved;
 }
@@ -2097,6 +2101,7 @@ void EditorNode::_save_scene(String p_file, int idx) {
 	}
 
 	scene->propagate_notification(NOTIFICATION_EDITOR_POST_SAVE);
+	_update_unsaved_cache();
 }
 
 void EditorNode::save_all_scenes() {
@@ -3069,6 +3074,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 					}
 				}
 			}
+			_update_unsaved_cache();
 		} break;
 		case SCENE_REDO: {
 			EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
@@ -3095,6 +3101,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 					}
 				}
 			}
+			_update_unsaved_cache();
 		} break;
 
 		case SCENE_RELOAD_SAVED_SCENE: {
@@ -3118,6 +3125,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 					unsaved_message = _get_unsaved_scene_dialog_text(scene_filename, started_timestamp);
 					confirmation->set_text(unsaved_message + "\n\n" + TTR("Save before reloading the scene?"));
 					confirmation->popup_centered();
+					confirmation_button->show();
 					confirmation_button->grab_focus();
 					break;
 				} else {
@@ -3207,6 +3215,7 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 					}
 					confirmation->reset_size();
 					confirmation->popup_centered();
+					confirmation_button->hide();
 					break;
 				}
 
@@ -4120,6 +4129,7 @@ void EditorNode::_set_current_scene_nocheck(int p_idx) {
 	}
 
 	_update_undo_redo_allowed();
+	_update_unsaved_cache();
 }
 
 void EditorNode::setup_color_picker(ColorPicker *p_picker) {
@@ -6038,11 +6048,13 @@ Dictionary EditorNode::drag_resource(const Ref<Resource> &p_res, Control *p_from
 
 	{
 		// TODO: make proper previews
-		Ref<ImageTexture> texture = theme->get_icon(SNAME("FileBigThumb"), EditorStringName(EditorIcons));
-		Ref<Image> img = texture->get_image();
-		img = img->duplicate();
-		img->resize(48, 48); // meh
-		preview = ImageTexture::create_from_image(img);
+		Ref<Texture2D> texture = theme->get_icon(SNAME("FileBigThumb"), EditorStringName(EditorIcons));
+		if (texture.is_valid()) {
+			Ref<Image> img = texture->get_image();
+			img = img->duplicate();
+			img->resize(48, 48); // meh
+			preview = ImageTexture::create_from_image(img);
+		}
 	}
 
 	drag_preview->set_texture(preview);
@@ -7283,7 +7295,9 @@ EditorNode::EditorNode() {
 	add_child(epnp);
 
 	EditorUndoRedoManager::get_singleton()->connect("version_changed", callable_mp(this, &EditorNode::_update_undo_redo_allowed));
+	EditorUndoRedoManager::get_singleton()->connect("version_changed", callable_mp(this, &EditorNode::_update_unsaved_cache));
 	EditorUndoRedoManager::get_singleton()->connect("history_changed", callable_mp(this, &EditorNode::_update_undo_redo_allowed));
+	EditorUndoRedoManager::get_singleton()->connect("history_changed", callable_mp(this, &EditorNode::_update_unsaved_cache));
 	ProjectSettings::get_singleton()->connect("settings_changed", callable_mp(this, &EditorNode::_update_from_settings));
 	GDExtensionManager::get_singleton()->connect("extensions_reloaded", callable_mp(this, &EditorNode::_gdextensions_reloaded));
 
