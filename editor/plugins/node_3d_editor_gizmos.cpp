@@ -1081,7 +1081,13 @@ void EditorNode3DGizmoPlugin::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_handle_material", "name", "billboard", "texture"), &EditorNode3DGizmoPlugin::create_handle_material, DEFVAL(false), DEFVAL(Variant()));
 	ClassDB::bind_method(D_METHOD("add_material", "name", "material"), &EditorNode3DGizmoPlugin::add_material);
 
+	ClassDB::bind_method(D_METHOD("set_state", "state"), &EditorNode3DGizmoPlugin::set_state);
+	ClassDB::bind_method(D_METHOD("get_state"), &EditorNode3DGizmoPlugin::get_state);
+
 	ClassDB::bind_method(D_METHOD("get_material", "name", "gizmo"), &EditorNode3DGizmoPlugin::get_material, DEFVAL(Ref<EditorNode3DGizmo>()));
+	ClassDB::bind_method(D_METHOD("get_gizmo"), &EditorNode3DGizmoPlugin::get_gizmo);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "state", PROPERTY_HINT_ENUM, "Visible,Hidden,On Top"), "set_state", "get_state");
 
 	GDVIRTUAL_BIND(_has_gizmo, "for_node_3d");
 	GDVIRTUAL_BIND(_create_gizmo, "for_node_3d");
