@@ -179,7 +179,7 @@ void register_editor_types() {
 	GDREGISTER_CLASS(EditorSpinSlider);
 	GDREGISTER_CLASS(EditorResourcePicker);
 	GDREGISTER_CLASS(EditorScriptPicker);
-	GDREGISTER_ABSTRACT_CLASS(EditorUndoRedoManager);
+	GDREGISTER_CLASS(EditorUndoRedoManager);
 	GDREGISTER_CLASS(EditorContextMenuPlugin);
 
 	GDREGISTER_ABSTRACT_CLASS(FileSystemDock);
