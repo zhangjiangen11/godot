@@ -1,5 +1,6 @@
 #include "beehave_graph_editor.h"
 #include "modules/game_help/logic/body_main.h"
+#include "scene/gui/slider.h"
 
 void BeehaveRunTool::play(const Ref<BeehaveTree> &p_tree) {
 	stop();

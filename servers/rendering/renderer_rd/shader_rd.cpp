@@ -350,6 +350,31 @@ void ShaderRD::_compile_variant(uint32_t p_variant, CompileData p_data) {
 		p_data.version->variant_data.write[variant] = shader_data;
 	}
 }
+static String get_string_line_range(const String& code,int line_start = 0, int line_range = 100) {
+	const Vector<String> lines = code.split("\n");
+	String ret;
+	int min_line = line_start - line_range;
+	if (min_line < 0) {
+		min_line = 0;
+	}
+	int max_line = line_start + line_range;
+	if (max_line > lines.size()) {
+		max_line = (int)lines.size();
+	}
+	for (int i = min_line; i < max_line; i++) {
+		if (i > min_line) {
+			ret += "\n";
+		}
+		if (i == line_start) {
+			ret += vformat("        %4d | %s", i + 1, lines[i]);
+		}
+		else {
+			ret += vformat("%4d | %s", i + 1, lines[i]);
+		}
+	}
+	return ret;
+
+}
 
 RS::ShaderNativeSourceCode ShaderRD::version_get_native_source_code(RID p_version) {
 	Version *version = version_owner.get_or_null(p_version);
