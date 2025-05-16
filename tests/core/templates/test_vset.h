@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  editor_main_screen.h                                                  */
+/*  test_vset.h                                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,63 +30,70 @@
 
 #pragma once
 
-#include "scene/gui/panel_container.h"
+#include "core/templates/vset.h"
 
-class Button;
-class ConfigFile;
-class EditorPlugin;
-class HBoxContainer;
-class VBoxContainer;
+#include "tests/test_macros.h"
 
-class EditorMainScreen : public PanelContainer {
-	GDCLASS(EditorMainScreen, PanelContainer);
+namespace TestVSet {
 
+template <typename T>
+class TestClass : public VSet<T> {
 public:
-	enum EditorTable {
-		EDITOR_2D = 0,
-		EDITOR_3D,
-		EDITOR_SCRIPT,
-		EDITOR_GAME,
-		EDITOR_ASSETLIB,
-	};
-
-private:
-	VBoxContainer *main_screen_vbox = nullptr;
-	EditorPlugin *selected_plugin = nullptr;
-
-	HBoxContainer *button_hb = nullptr;
-	Vector<Button *> buttons;
-	Vector<EditorPlugin *> editor_table;
-	HashMap<String, EditorPlugin *> main_editor_plugins;
-
-	int _get_current_main_editor() const;
-
-protected:
-	void _notification(int p_what);
-
-public:
-	void set_button_container(HBoxContainer *p_button_hb);
-
-	void save_layout_to_config(Ref<ConfigFile> p_config_file, const String &p_section) const;
-	void load_layout_from_config(Ref<ConfigFile> p_config_file, const String &p_section);
-
-	void set_button_enabled(int p_index, bool p_enabled);
-	bool is_button_enabled(int p_index) const;
-
-	void select_next();
-	void select_prev();
-	void select_by_name(const String &p_name);
-	void select(int p_index);
-	int get_selected_index() const;
-	int get_plugin_index(EditorPlugin *p_editor) const;
-	EditorPlugin *get_selected_plugin() const;
-	EditorPlugin *get_plugin_by_name(const String &p_plugin_name) const;
-	bool can_auto_switch_screens() const;
-
-	VBoxContainer *get_control() const;
-
-	void add_main_plugin(EditorPlugin *p_editor);
-	void remove_main_plugin(EditorPlugin *p_editor);
-
-	EditorMainScreen();
+	int _find(const T &p_val, bool &r_exact) const {
+		return VSet<T>::_find(p_val, r_exact);
+	}
 };
+
+TEST_CASE("[VSet] _find and _find_exact correctness.") {
+	TestClass<int> set;
+
+	// insert some values
+	set.insert(10);
+	set.insert(20);
+	set.insert(30);
+	set.insert(40);
+	set.insert(50);
+
+	// data should be sorted
+	CHECK(set.size() == 5);
+	CHECK(set[0] == 10);
+	CHECK(set[1] == 20);
+	CHECK(set[2] == 30);
+	CHECK(set[3] == 40);
+	CHECK(set[4] == 50);
+
+	// _find_exact return exact position for existing elements
+	CHECK(set.find(10) == 0);
+	CHECK(set.find(30) == 2);
+	CHECK(set.find(50) == 4);
+
+	// _find_exact return -1 for non-existing elements
+	CHECK(set.find(15) == -1);
+	CHECK(set.find(0) == -1);
+	CHECK(set.find(60) == -1);
+
+	// test _find
+	bool exact;
+
+	// existing elements
+	CHECK(set._find(10, exact) == 0);
+	CHECK(exact == true);
+
+	CHECK(set._find(30, exact) == 2);
+	CHECK(exact == true);
+
+	// non-existing elements
+	CHECK(set._find(25, exact) == 2);
+	CHECK(exact == false);
+
+	CHECK(set._find(35, exact) == 3);
+	CHECK(exact == false);
+
+	CHECK(set._find(5, exact) == 0);
+	CHECK(exact == false);
+
+	CHECK(set._find(60, exact) == 5);
+	CHECK(exact == false);
+}
+
+} // namespace TestVSet
