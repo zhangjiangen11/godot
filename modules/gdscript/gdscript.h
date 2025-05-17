@@ -493,9 +493,11 @@ public:
 	bool debug_break_parse(const String &p_file, int p_line, const String &p_error);
 
 	_FORCE_INLINE_ void enter_function(GDScriptInstance *p_instance, GDScriptFunction *p_function, Variant *p_stack, int *p_ip, int *p_line) {
+#ifndef DEBUG_ENABLED
 		if (!track_call_stack) {
 			return;
 		}
+#endif
 
 		if (unlikely(_call_stack.levels == nullptr)) {
 			_call_stack.levels = memnew_arr(CallLevel, _debug_max_call_stack + 1);
@@ -530,9 +532,11 @@ public:
 	}
 
 	_FORCE_INLINE_ void exit_function() {
+#ifndef DEBUG_ENABLED
 		if (!track_call_stack) {
 			return;
 		}
+#endif
 
 #ifdef DEBUG_ENABLED
 		ScriptDebugger *script_debugger = EngineDebugger::get_script_debugger();

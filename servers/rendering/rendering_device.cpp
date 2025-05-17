@@ -38,6 +38,7 @@
 #include "core/io/dir_access.h"
 
 #include "servers/rendering_server.h"
+
 #include "servers/rendering/rendering_server_globals.h"
 #include "servers/rendering/storage/texture_storage.h"
 
@@ -6032,7 +6033,8 @@ bool RenderingDevice::_dependencies_make_mutable(RID p_id, RDG::ResourceTracker 
 /**************************/
 
 void RenderingDevice::free(RID p_id) {
-	free_id_stack.push(p_id);
+	rd_free(p_id);
+	//free_id_stack.push(p_id);
 }
 void RenderingDevice::rd_free(RID p_id) {
 	ERR_RENDER_THREAD_GUARD();

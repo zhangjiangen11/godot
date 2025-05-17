@@ -138,6 +138,19 @@ public:
 
 	virtual bool is_editable() const;
 
+	void _redraw() { redraw(); }
+	bool _intersect_frustum(const Camera3D *p_camera, const TypedArray<Plane> &p_frustum) {
+		Vector<Plane> p;
+		for (int i = 0; i < p_frustum.size(); i++) {
+			p.push_back(p_frustum[i]);
+		}
+		if (p.size() > 0) {
+			return intersect_frustum(p_camera, p);
+		} else {
+			return false;
+		}
+	}
+
 	void set_hidden(bool p_hidden);
 	void set_plugin(EditorNode3DGizmoPlugin *p_plugin);
 
