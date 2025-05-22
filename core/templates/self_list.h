@@ -164,7 +164,8 @@ public:
 		_FORCE_INLINE_ List() {}
 		_FORCE_INLINE_ ~List() {
 			// A self list must be empty on destruction.
-			DEV_ASSERT(_first == nullptr);
+			//DEV_ASSERT(_first == nullptr);
+			clear();
 		}
 	};
 

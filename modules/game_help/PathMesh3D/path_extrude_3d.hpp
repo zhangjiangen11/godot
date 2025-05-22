@@ -56,17 +56,14 @@ public:
 	void set_tilt(const bool p_tilt);
 	bool get_tilt() const;
 
-	_ALWAYS_INLINE_ void set_material(const Ref<Material> &p_material) {
-		material = p_material;
-		if (generated_mesh.is_valid() && generated_mesh->get_surface_count() > 0) {
-			generated_mesh->surface_set_material(0, material);
-		}
-	}
-	_ALWAYS_INLINE_ Ref<Material> get_material() const { return material; }
+	void set_material(const Ref<Material> &p_material);
+	Ref<Material> get_material() const;
 
 	void queue_rebuild();
 
 	Ref<ArrayMesh> get_baked_mesh() const;
+
+	uint64_t get_triangle_count() const;
 
 	Node *create_trimesh_collision_node();
 	void create_trimesh_collision();
@@ -100,6 +97,7 @@ private:
 	EndCaps end_cap_mode = END_CAPS_BOTH;
 	Ref<Material> material;
 	bool dirty = true;
+	uint64_t n_tris = 0;
 
 	Transform3D local_transform = Transform3D();
 	Transform3D path_transform = Transform3D();
@@ -110,7 +108,6 @@ private:
 	Node *_setup_collision_node(const Ref<Shape3D> &shape);
 	void _add_child_collision_node(Node *p_node);
 };
-//}
 
 VARIANT_ENUM_CAST(PathExtrude3D::MeshTransform);
 VARIANT_BITFIELD_CAST(PathExtrude3D::EndCaps);

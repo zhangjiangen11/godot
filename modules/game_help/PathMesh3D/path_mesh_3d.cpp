@@ -6,8 +6,8 @@
 
 //using namespace godot;
 
-#define CHECK_SURFACE_IDX(m_idx) ERR_FAIL_COND(m_idx < 0 || m_idx >= surfaces.size())
-#define CHECK_SURFACE_IDX_V(m_idx, m_ret) ERR_FAIL_COND_V(m_idx < 0 || m_idx >= surfaces.size(), m_ret)
+#define CHECK_SURFACE_IDX(m_idx) ERR_FAIL_COND(m_idx < 0 || int64_t(m_idx) >= surfaces.size())
+#define CHECK_SURFACE_IDX_V(m_idx, m_ret) ERR_FAIL_COND_V(m_idx < 0 || int64_t(m_idx)  >= surfaces.size(), m_ret)
 
 void PathMesh3D::set_mesh_transform(MeshTransform p_transform) {
 	if (mesh_transform != p_transform) {
@@ -25,7 +25,7 @@ void PathMesh3D::set_tile_rotation(uint64_t p_surface_idx, Vector3 p_rotation) {
 
 	if (surfaces[p_surface_idx].tile_rotation != p_rotation) {
 		surfaces.write[p_surface_idx].tile_rotation = p_rotation;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 	}
 }
 
@@ -40,7 +40,7 @@ void PathMesh3D::set_tile_rotation_order(uint64_t p_surface_idx, EulerOrder p_or
 
 	if (surfaces[p_surface_idx].tile_rotation_order != p_order) {
 		surfaces.write[p_surface_idx].tile_rotation_order = p_order;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 	}
 }
 
@@ -55,7 +55,7 @@ void PathMesh3D::set_distribution(uint64_t p_surface_idx, Distribution p_distrib
 
 	if (surfaces[p_surface_idx].distribution != p_distribution) {
 		surfaces.write[p_surface_idx].distribution = p_distribution;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 		notify_property_list_changed();
 	}
 }
@@ -71,7 +71,7 @@ void PathMesh3D::set_alignment(uint64_t p_surface_idx, Alignment p_alignment) {
 
 	if (surfaces[p_surface_idx].alignment != p_alignment) {
 		surfaces.write[p_surface_idx].alignment = p_alignment;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 	}
 }
 
@@ -88,7 +88,7 @@ void PathMesh3D::set_count(uint64_t p_surface_idx, uint64_t p_count) {
 	if (surfaces[p_surface_idx].count != p_count) {
 		surfaces.write[p_surface_idx].count = p_count;
 		if (surfaces[p_surface_idx].distribution == DISTRIBUTE_BY_COUNT) {
-			_queue_surface(p_surface_idx);
+			queue_rebuild();
 		}
 	}
 }
@@ -104,7 +104,7 @@ void PathMesh3D::set_warp_along_curve(uint64_t p_surface_idx, bool p_warp) {
 
 	if (surfaces[p_surface_idx].warp_along_curve != p_warp) {
 		surfaces.write[p_surface_idx].warp_along_curve = p_warp;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 	}
 }
 
@@ -119,7 +119,7 @@ void PathMesh3D::set_sample_cubic(uint64_t p_surface_idx, bool p_cubic) {
 
 	if (surfaces[p_surface_idx].cubic != p_cubic) {
 		surfaces.write[p_surface_idx].cubic = p_cubic;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 	}
 }
 
@@ -134,7 +134,7 @@ void PathMesh3D::set_tilt(uint64_t p_surface_idx, bool p_tilt) {
 
 	if (surfaces[p_surface_idx].tilt != p_tilt) {
 		surfaces.write[p_surface_idx].tilt = p_tilt;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 	}
 }
 
@@ -149,7 +149,7 @@ void PathMesh3D::set_offset(uint64_t p_surface_idx, Vector2 p_offset) {
 
 	if (surfaces[p_surface_idx].offset != p_offset) {
 		surfaces.write[p_surface_idx].offset = p_offset;
-		_queue_surface(p_surface_idx);
+		queue_rebuild();
 	}
 }
 
@@ -169,10 +169,9 @@ void PathMesh3D::set_mesh(const Ref<Mesh> &p_mesh) {
 
 		if (source_mesh.is_valid()) {
 			source_mesh->connect("changed", callable_mp(this, &PathMesh3D::_on_mesh_changed));
-			_on_mesh_changed();
-		} else {
-			surfaces.clear();
 		}
+
+		_on_mesh_changed();
 
 		notify_property_list_changed();
 	}
@@ -203,13 +202,26 @@ Path3D *PathMesh3D::get_path_3d() const {
 }
 
 void PathMesh3D::queue_rebuild() {
-	for (SurfaceData &surf : surfaces) {
-		surf.dirty = true;
-	}
+	dirty = true;
 }
 
 Ref<ArrayMesh> PathMesh3D::get_baked_mesh() const {
 	return generated_mesh->duplicate();
+}
+
+uint64_t PathMesh3D::get_triangle_count(uint64_t p_surface_idx) const {
+	CHECK_SURFACE_IDX_V(p_surface_idx, 0);
+
+	return surfaces[p_surface_idx].n_tris;
+}
+
+uint64_t PathMesh3D::get_total_triangle_count() const {
+	uint64_t r_value = 0;
+	for (const SurfaceData &surf : surfaces) {
+		r_value += surf.n_tris;
+	}
+
+	return r_value;
 }
 
 Node *PathMesh3D::create_trimesh_collision_node() {
@@ -303,6 +315,9 @@ void PathMesh3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_path_3d"), &PathMesh3D::get_path_3d);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "path_3d", PROPERTY_HINT_NODE_TYPE, "Path3D"), "set_path_3d", "get_path_3d");
 
+	ClassDB::bind_method(D_METHOD("get_total_triangle_count"), &PathMesh3D::get_total_triangle_count);
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "total_triangle_count", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY), "", "get_total_triangle_count");
+
 	ADD_SIGNAL(MethodInfo("mesh_changed"));
 	ADD_SIGNAL(MethodInfo("curve_changed"));
 
@@ -323,9 +338,12 @@ void PathMesh3D::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
-			bool dirty = _are_any_dirty();
-			dirty |= mesh_transform == TRANSFORM_MESH_PATH_NODE &&
-					(local_transform != get_global_transform() || (path3d != nullptr && path3d->get_global_transform() != path_transform));
+			bool dirty_local_transform = local_transform != get_global_transform();
+			bool dirty_path_transform = path3d != nullptr && path3d->get_global_transform() != path_transform;
+			bool dirty_transform = mesh_transform == TRANSFORM_MESH_PATH_NODE && (dirty_local_transform || dirty_path_transform);
+
+			dirty |= dirty_transform;
+
 			if (dirty) {
 				_rebuild_mesh();
 			}
@@ -363,12 +381,20 @@ void PathMesh3D::_get_property_list(List<PropertyInfo> *p_list) const {
 				Variant::BOOL, surf_name + "/tilt", PROPERTY_HINT_NONE, "", usage));
 		p_list->push_back(PropertyInfo(
 				Variant::VECTOR2, surf_name + "/offset", PROPERTY_HINT_NONE, "", usage));
+		p_list->push_back(PropertyInfo(
+				Variant::INT, surf_name + "/triangle_count", PROPERTY_HINT_NONE, "", usage | PROPERTY_USAGE_READ_ONLY));
 	}
 }
 
 bool PathMesh3D::_property_can_revert(const StringName &p_name) const {
 	if (p_name.begins_with("surface_")) {
-		return true;
+		Pair<uint64_t, String> subprop = _decode_dynamic_propname(p_name);
+		String sub_name = subprop.second;
+		if (sub_name == "triangle_count") {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	return false;
@@ -377,7 +403,6 @@ bool PathMesh3D::_property_can_revert(const StringName &p_name) const {
 bool PathMesh3D::_property_get_revert(const StringName &p_name, Variant &r_property) const {
 	if (p_name.begins_with("surface_")) {
 		Pair<uint64_t, String> subprop = _decode_dynamic_propname(p_name);
-		//uint64_t surf_idx = subprop.first;
 		String sub_name = subprop.second;
 		if (sub_name == "distribution") {
 			r_property = Distribution::DISTRIBUTE_BY_MODEL_LENGTH;
@@ -459,6 +484,8 @@ bool PathMesh3D::_get(const StringName &p_name, Variant &r_property) const {
 			r_property = get_tilt(surf_idx);
 		} else if (sub_name == "offset") {
 			r_property = get_offset(surf_idx);
+		} else if (sub_name == "triangle_count") {
+			r_property = get_triangle_count(surf_idx);
 		} else {
 			return false;
 		}
@@ -488,40 +515,37 @@ void PathMesh3D::_add_child_collision_node(Node *p_node) {
 	}
 }
 
-void PathMesh3D::_queue_surface(uint64_t p_surface_idx) {
-	ERR_FAIL_COND(p_surface_idx < 0 || int64_t(p_surface_idx) >= surfaces.size());
-
-	surfaces.write[p_surface_idx].dirty = true;
-}
-
 void PathMesh3D::_rebuild_mesh() {
-	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || source_mesh.is_null() || !_are_any_dirty()) {
+	if (!dirty) {
 		return;
 	}
 
+	dirty = false;
 	generated_mesh->clear_surfaces();
+	for (SurfaceData &surf : surfaces) {
+		surf.n_tris = 0;
+	}
+
+	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || source_mesh.is_null()) {
+		return;
+	}
 
 	path_transform = path3d->get_global_transform();
 	local_transform = get_global_transform();
 	Transform3D mod_transform = local_transform.affine_inverse() * path_transform;
 
 	Ref<Curve3D> curve = path3d->get_curve();
-	if (curve->get_point_count() < 2) {
-		return;
-	}
+	ERR_FAIL_COND_MSG(curve->get_point_count() < 2, "Curve has < 2 points, cannot tesselate.");
 
 	double baked_l = curve->get_baked_length();
+	ERR_FAIL_COND_MSG(baked_l == 0.0, "Curve has no length.");
+
 	double mesh_l = _get_mesh_length();
-	if (baked_l < mesh_l) {
-		return;
-	}
+	ERR_FAIL_COND_MSG(mesh_l == 0.0, "Provided mesh has no length in Z dimension.  Try rotating on X or Y to gain length.");
+	ERR_FAIL_COND_MSG(baked_l < mesh_l, "Curve length < mesh length, cannot tile.");
 
 	for (int32_t idx_surf = 0; idx_surf < source_mesh->get_surface_count(); ++idx_surf) {
 		SurfaceData &surf = surfaces.write[idx_surf];
-		if (!surf.dirty) {
-			continue;
-		}
-		surf.dirty = false;
 
 		Array arrays = source_mesh->surface_get_arrays(idx_surf);
 
@@ -550,10 +574,6 @@ void PathMesh3D::_rebuild_mesh() {
 #undef MAKE_OLD_ARRAY
 
 		arrays.clear();
-
-		if (surf.warp_along_curve) {
-			old_idx.reverse(); // not sure why necessary
-		}
 
 		// Transform the mesh according to user settings
 		for (int64_t idx = 0; idx < old_verts.size(); ++idx) {
@@ -652,17 +672,19 @@ void PathMesh3D::_rebuild_mesh() {
 		uint64_t k = 0; // overall index into new arrays
 
 		for (uint64_t idx_count = 0; idx_count < count; ++idx_count) {
-			Transform3D transform;
-			if (!surf.warp_along_curve) {
-				double z_offset = z + 0.5 * z_stretch * mesh_l;
-				transform = curve->sample_baked_with_rotation(z_offset, surf.cubic, surf.tilt);
-			}
-
 			for (int64_t idx_vert = 0; idx_vert < old_verts.size(); ++idx_vert) {
+				Vector3 vertex;
+				Transform3D transform;
 				if (surf.warp_along_curve) {
-					double z_offset = z + z_stretch * double(old_verts[idx_vert].z);
+					double z_offset = z + z_stretch * (mesh_l - old_verts[idx_vert].z);
 					transform = curve->sample_baked_with_rotation(z_offset, surf.cubic, surf.tilt);
-					transform.basis.set_column(2, Vector3(0.0, 0.0, 0.0));
+
+					// Avoid double transforming the Z position by zeroing out the original Z value
+					vertex = { old_verts[idx_vert].x, old_verts[idx_vert].y, 0.0 };
+				} else {
+					double z_offset = z + z_stretch * mesh_l;
+					transform = curve->sample_baked_with_rotation(z_offset, surf.cubic, surf.tilt);
+					vertex = old_verts[idx_vert];
 				}
 
 				if (mesh_transform == TRANSFORM_MESH_PATH_NODE) {
@@ -721,23 +743,15 @@ void PathMesh3D::_rebuild_mesh() {
 
 		Mesh::PrimitiveType primitives = Mesh::PRIMITIVE_TRIANGLES;
 		Ref<ArrayMesh> arr_mesh = cast_to<ArrayMesh>(source_mesh.ptr());
-		if (arr_mesh.is_valid()) {
+		if (arr_mesh != nullptr) {
 			primitives = arr_mesh->surface_get_primitive_type(idx_surf);
 		}
 
 		generated_mesh->add_surface_from_arrays(primitives, arrays, source_mesh->surface_get_blend_shape_arrays(idx_surf));
 		generated_mesh->surface_set_material(idx_surf, source_mesh->surface_get_material(idx_surf));
-	}
-}
 
-bool PathMesh3D::_are_any_dirty() const {
-	for (const SurfaceData &surf : surfaces) {
-		if (surf.dirty) {
-			return true;
-		}
+		surf.n_tris = new_verts.size() / 3;
 	}
-
-	return false;
 }
 
 Pair<uint64_t, String> PathMesh3D::_decode_dynamic_propname(const StringName &_name) const {

@@ -515,7 +515,7 @@ SceneShaderForwardClustered::SceneShaderForwardClustered() {
 
 SceneShaderForwardClustered::~SceneShaderForwardClustered() {
 	RendererRD::MaterialStorage *material_storage = RendererRD::MaterialStorage::get_singleton();
-
+	shader_list.clear();
 	RD::get_singleton()->free(default_vec4_xform_buffer);
 	RD::get_singleton()->free(shadow_sampler);
 
