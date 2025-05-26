@@ -106,7 +106,7 @@ void TriangleMesh::get_indices(Vector<int> *r_triangles_indices) const {
 Vector<int> TriangleMesh::_get_indices() const {
 	Vector<int> r_triangles_indices;
 	get_indices(&r_triangles_indices);
-	return r_triangles_indices
+	return r_triangles_indices;
 }
 
 void TriangleMesh::create(const Vector<Vector3> &p_faces, const Vector<int32_t> &p_surface_indices) {

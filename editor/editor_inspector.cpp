@@ -1964,13 +1964,8 @@ void EditorInspectorSection::_notification(int p_what) {
 
 				bool folded = (foldable || hide_feature) && !object->editor_is_section_unfolded(section);
 
-				Ref<Font> font = get_theme_font(SNAME("bold"), EditorStringName(EditorFonts));
-				int font_size = get_theme_font_size(SNAME("bold_size"), EditorStringName(EditorFonts));
-				Color font_color;
 				if (object->has_method("_get_property_warning")) {
 					font_color = get_theme_color(String(object->call("_get_property_warning", related_enable_property)).is_empty() ? SceneStringName(font_color) : SNAME("warning_color"), EditorStringName(Editor));
-				} else {
-					font_color = get_theme_color(SceneStringName(font_color), EditorStringName(Editor));
 				}
 				String draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
 
