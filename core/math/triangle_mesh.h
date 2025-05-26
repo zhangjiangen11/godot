@@ -122,7 +122,7 @@ public:
 		return ret;
 	}
 	void get_indices(Vector<int> *r_triangles_indices) const;
-
+	Vector<int> _get_indices() const;
 	void create(const Vector<Vector3> &p_faces, const Vector<int32_t> &p_surface_indices = Vector<int32_t>());
 
 	// Wrapped functions for compatibility with method bindings

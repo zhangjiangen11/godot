@@ -495,7 +495,7 @@ public:
 	_FORCE_INLINE_ void enter_function(GDScriptInstance *p_instance, GDScriptFunction *p_function, Variant *p_stack, int *p_ip, int *p_line) {
 #ifndef DEBUG_ENABLED
 		if (!track_call_stack) {
-			return;
+			//return;
 		}
 #endif
 
@@ -534,7 +534,7 @@ public:
 	_FORCE_INLINE_ void exit_function() {
 #ifndef DEBUG_ENABLED
 		if (!track_call_stack) {
-			return;
+			//return;
 		}
 #endif
 

@@ -103,6 +103,11 @@ void TriangleMesh::get_indices(Vector<int> *r_triangles_indices) const {
 		r_indices_write[3 * i + 2] = triangles_read[i].indices[2];
 	}
 }
+Vector<int> TriangleMesh::_get_indices() const {
+	Vector<int> r_triangles_indices;
+	get_indices(&r_triangles_indices);
+	return r_triangles_indices
+}
 
 void TriangleMesh::create(const Vector<Vector3> &p_faces, const Vector<int32_t> &p_surface_indices) {
 	valid = false;
@@ -728,6 +733,8 @@ Vector<Vector3> TriangleMesh::get_faces_scriptwrap() const {
 void TriangleMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("create_from_faces", "faces"), &TriangleMesh::create_from_faces);
 	ClassDB::bind_method(D_METHOD("get_faces"), &TriangleMesh::get_faces_scriptwrap);
+	ClassDB::bind_method(D_METHOD("get_indices"), &TriangleMesh::_get_indices);
+	ClassDB::bind_method(D_METHOD("get_vertices"), &TriangleMesh::get_vertices);
 	ClassDB::bind_method(D_METHOD("get_vertices_xz"), &TriangleMesh::get_vertices_xz);
 	ClassDB::bind_method(D_METHOD("get_vertices_xy"), &TriangleMesh::get_vertices_xy);
 
