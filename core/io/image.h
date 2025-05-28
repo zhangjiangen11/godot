@@ -244,6 +244,8 @@ public:
 	static Ref<Image> (*basis_universal_unpacker_ptr)(const uint8_t *p_data, int p_size);
 
 protected:
+	virtual Ref<Resource> _duplicate(const DuplicateParams &p_params) const override;
+
 	static void _bind_methods();
 
 private:
@@ -425,14 +427,16 @@ public:
 	void convert_ra_rgba8_to_rg();
 	void convert_rgba8_to_bgra8();
 
-	virtual Ref<RefCounted> duplicate(bool p_subresources = false) const override;
-
 	UsedChannels detect_used_channels(CompressSource p_source = COMPRESS_SOURCE_GENERIC) const;
 	void optimize_channels();
 
-	bool _has_pixel(const int32_t x,const int32_t y){
-		if(x < 0 || x>=get_width()) return false;
-		if(y < 0 || y>=get_height()) return false;
+	bool _has_pixel(const int32_t x, const int32_t y) {
+		if (x < 0 || x >= get_width()) {
+			return false;
+		}
+		if (y < 0 || y >= get_height()) {
+			return false;
+		}
 		//if(x<0) return false; // There is no need for this as we use uint32
 		//if(y<0) return false;
 		return true;
@@ -455,7 +459,7 @@ public:
 
 	Dictionary compute_image_metrics(const Ref<Image> p_compared_image, bool p_luma_metric = true);
 
-	Vector3 get_height_map_normal(int p_x, int p_y,float p_scale_height, float stepX, float stepZ) const;
+	Vector3 get_height_map_normal(int p_x, int p_y, float p_scale_height, float stepX, float stepZ) const;
 };
 
 VARIANT_ENUM_CAST(Image::Format)

@@ -211,7 +211,7 @@ private:
 		void *process_group = nullptr; // to avoid cyclic dependency
 
 		int multiplayer_authority = 1; // Server by default.
-		Variant rpc_config = Dictionary();
+		Variant rpc_config;
 
 		// Variables used to properly sort the node when processing, ignored otherwise.
 		int process_priority = 0;
@@ -276,23 +276,17 @@ private:
 
 	Ref<MultiplayerAPI> multiplayer;
 
-	
-	virtual void node_process(double delta)const;
-	virtual void node_physics_process(double delta)const;
-	virtual void node_enter_tree()const;
-	virtual void node_exit_tree()const;
-	virtual void node_ready()const;
-	virtual Vector<String> node_get_configuration_warnings()const;
-	
-	virtual void node_input(const Ref<InputEvent> &p_event)const;
-	virtual void node_shortcut_input(const Ref<InputEvent> &p_key_event)const;
-	virtual void node_unhandled_input(const Ref<InputEvent> &p_event)const;
-	virtual void node_unhandled_key_input(const Ref<InputEvent> &p_key_event)const;
+	virtual void node_process(double delta) const;
+	virtual void node_physics_process(double delta) const;
+	virtual void node_enter_tree() const;
+	virtual void node_exit_tree() const;
+	virtual void node_ready() const;
+	virtual Vector<String> node_get_configuration_warnings() const;
 
-
-
-
-
+	virtual void node_input(const Ref<InputEvent> &p_event) const;
+	virtual void node_shortcut_input(const Ref<InputEvent> &p_key_event) const;
+	virtual void node_unhandled_input(const Ref<InputEvent> &p_event) const;
+	virtual void node_unhandled_key_input(const Ref<InputEvent> &p_key_event) const;
 
 	String _get_tree_string_pretty(const String &p_prefix, bool p_last);
 	String _get_tree_string(const Node *p_node);
@@ -374,11 +368,10 @@ protected:
 
 	void _notification(int p_notification);
 
-	virtual void _enter_tree(){}
-	virtual void _exit_tree(){}
-	virtual void _ready(){}
+	virtual void _enter_tree() {}
+	virtual void _exit_tree() {}
+	virtual void _ready() {}
 	virtual void _physics_interpolated_changed();
-
 	virtual void add_child_notify(Node *p_child);
 	virtual void remove_child_notify(Node *p_child);
 	virtual void move_child_notify(Node *p_child);
@@ -413,6 +406,10 @@ protected:
 
 	void _validate_property(PropertyInfo &p_property) const;
 
+	Variant _get_node_rpc_config_bind() const {
+		return get_node_rpc_config().duplicate(true);
+	}
+
 protected:
 	virtual bool _uses_signal_mutex() const override { return false; } // Node uses thread guards instead.
 
@@ -420,8 +417,8 @@ protected:
 	virtual void shortcut_input(const Ref<InputEvent> &p_key_event);
 	virtual void unhandled_input(const Ref<InputEvent> &p_event);
 	virtual void unhandled_key_input(const Ref<InputEvent> &p_key_event);
-	virtual void process(double p_delta){}
-	virtual void physics_process(double p_delta){}
+	virtual void process(double p_delta) {}
+	virtual void physics_process(double p_delta) {}
 	GDVIRTUAL1(_process, double)
 	GDVIRTUAL1(_physics_process, double)
 	GDVIRTUAL0(_enter_tree)
@@ -440,6 +437,7 @@ protected:
 
 #ifndef DISABLE_DEPRECATED
 	void _set_name_bind_compat_76560(const String &p_name);
+	Variant _get_rpc_config_bind_compat_106848() const;
 	static void _bind_compatibility_methods();
 #endif
 
@@ -574,7 +572,6 @@ public:
 
 	void set_unique_name_in_owner(bool p_enabled);
 	bool is_unique_name_in_owner() const;
-
 
 	// 正常流程是不允许多线程调用这个方法,如果外部能够确保期间不会产生冲突,可以调用
 	void set_is_manual_thread(bool v) { data.is_manual_thread = v; }
@@ -823,7 +820,7 @@ public:
 	bool is_multiplayer_authority() const;
 
 	void rpc_config(const StringName &p_method, const Variant &p_config); // config a local method for RPC
-	Variant get_rpc_config() const;
+	const Variant get_node_rpc_config() const;
 
 	template <typename... VarArgs>
 	Error rpc(const StringName &p_method, VarArgs... p_args);
@@ -881,8 +878,7 @@ public:
 	void set_thread_safe(const StringName &p_property, const Variant &p_value);
 	void notify_thread_safe(int p_notification);
 
-	
-	String log_node(const String & _space = "");
+	String log_node(const String &_space = "");
 
 	// These inherited functions need proper multithread locking when overridden in Node.
 #ifdef DEBUG_ENABLED

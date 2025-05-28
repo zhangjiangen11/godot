@@ -141,6 +141,10 @@ protected:
 
 	void _set_debugger_break_language();
 
+	Variant _get_rpc_config_bind() const {
+		return get_rpc_config().duplicate(true);
+	}
+
 public:
 	virtual void reload_from_file() override;
 
@@ -197,7 +201,7 @@ public:
 
 	virtual bool is_placeholder_fallback_enabled() const { return false; }
 
-	virtual Variant get_rpc_config() const = 0;
+	virtual const Variant get_rpc_config() const = 0;
 
 	Script() {}
 };

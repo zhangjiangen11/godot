@@ -135,7 +135,7 @@ void Node::_notification(int p_notification) {
 		case NOTIFICATION_PHYSICS_PROCESS: {
 			physics_process(get_physics_process_delta_time());
 			GDVIRTUAL_CALL(_physics_process, get_physics_process_delta_time());
-			node_physics_process( get_physics_process_delta_time());
+			node_physics_process(get_physics_process_delta_time());
 		} break;
 
 		case NOTIFICATION_ENTER_TREE: {
@@ -201,13 +201,6 @@ void Node::_notification(int p_notification) {
 			}
 			data.is_auto_translate_dirty = true;
 			data.is_translation_domain_dirty = true;
-
-#ifdef TOOLS_ENABLED
-			// Don't translate UI elements when they're being edited.
-			if (is_part_of_edited_scene()) {
-				set_message_translation(false);
-			}
-#endif
 
 			if (data.input) {
 				add_to_group("_vp_input" + itos(get_viewport()->get_instance_id()));
@@ -860,7 +853,7 @@ void Node::rpc_config(const StringName &p_method, const Variant &p_config) {
 	}
 }
 
-Variant Node::get_rpc_config() const {
+const Variant Node::get_node_rpc_config() const {
 	return data.rpc_config;
 }
 
@@ -1563,20 +1556,16 @@ StringName Node::get_name() const {
 void Node::_set_name_nocheck(const StringName &p_name) {
 	data.name = p_name;
 }
-StringName Node::get_tag()
-{
+StringName Node::get_tag() {
 	return data.tag;
 }
-void Node::set_tag(const StringName &p_tag)
-{
+void Node::set_tag(const StringName &p_tag) {
 	data.tag = p_tag;
 }
-void Node::set_dont_save(bool p_enable)
-{
+void Node::set_dont_save(bool p_enable) {
 	data.is_dotnt_saved = p_enable;
 }
-bool Node::get_dont_save() const
-{
+bool Node::get_dont_save() const {
 	return data.is_dotnt_saved;
 }
 
@@ -1999,7 +1988,7 @@ Node *Node::_get_child_by_name(const StringName &p_name) const {
 }
 
 Node *Node::get_node_or_null(const NodePath &p_path) const {
-	if(!data.is_manual_thread) {
+	if (!data.is_manual_thread) {
 		ERR_THREAD_GUARD_V(nullptr);
 	}
 	if (p_path.is_empty()) {
@@ -3189,7 +3178,11 @@ void Node::_duplicate_properties(const Node *p_root, const Node *p_original, Nod
 			continue;
 		}
 
-		Variant value = p_original->get(name).duplicate(true);
+		Variant value = p_original->get(name);
+		// To keep classic behavior, because, in contrast, nowadays a resource would be duplicated.
+		if (value.get_type() != Variant::OBJECT) {
+			value = value.duplicate(true);
+		}
 
 		if (E.usage & PROPERTY_USAGE_ALWAYS_DUPLICATE) {
 			Resource *res = Object::cast_to<Resource>(value);
@@ -4023,7 +4016,7 @@ void Node::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("get_multiplayer"), &Node::get_multiplayer);
 	ClassDB::bind_method(D_METHOD("rpc_config", "method", "config"), &Node::rpc_config);
-	ClassDB::bind_method(D_METHOD("get_rpc_config"), &Node::get_rpc_config);
+	ClassDB::bind_method(D_METHOD("get_node_rpc_config"), &Node::_get_node_rpc_config_bind);
 
 	ClassDB::bind_method(D_METHOD("set_editor_description", "editor_description"), &Node::set_editor_description);
 	ClassDB::bind_method(D_METHOD("get_editor_description"), &Node::get_editor_description);
@@ -4085,7 +4078,7 @@ void Node::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_thread_safe", "property", "value"), &Node::set_thread_safe);
 	ClassDB::bind_method(D_METHOD("notify_thread_safe", "what"), &Node::notify_thread_safe);
 
-	ClassDB::bind_method(D_METHOD("log_node","space"), &Node::log_node,DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("log_node", "space"), &Node::log_node, DEFVAL(""));
 
 	BIND_CONSTANT(NOTIFICATION_ENTER_TREE);
 	BIND_CONSTANT(NOTIFICATION_EXIT_TREE);
@@ -4191,7 +4184,6 @@ void Node::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "owner", PROPERTY_HINT_RESOURCE_TYPE, "Node", PROPERTY_USAGE_NONE), "set_owner", "get_owner");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "multiplayer", PROPERTY_HINT_RESOURCE_TYPE, "MultiplayerAPI", PROPERTY_USAGE_NONE), "", "get_multiplayer");
 
-
 	ADD_GROUP("Process", "process_");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_mode", PROPERTY_HINT_ENUM, "Inherit,Pausable,When Paused,Always,Disabled"), "set_process_mode", "get_process_mode");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "process_priority"), "set_process_priority", "get_process_priority");
@@ -4285,7 +4277,6 @@ Node::Node() {
 }
 
 Node::~Node() {
-	
 	emit_signal(CoreStringName(on_free));
 	data.grouped.clear();
 	data.owned.clear();
@@ -4298,62 +4289,43 @@ Node::~Node() {
 	orphan_node_count--;
 }
 
-
-
-String Node::log_node(const String & _space)
-{
+String Node::log_node(const String &_space) {
 	String rs;
-	for(int i=0;i<get_child_count();i++)
-	{
+	for (int i = 0; i < get_child_count(); i++) {
 		Node *n = get_child(i);
-		rs += _space + n->get_name() + "-> type:" + n->get_class() ;
-		rs += " owner:" + String(n->get_owner() ? n->get_owner()->get_name() : "null") ;
+		rs += _space + n->get_name() + "-> type:" + n->get_class();
+		rs += " owner:" + String(n->get_owner() ? n->get_owner()->get_name() : "null");
 		rs += "\n";
-		if(n->get_child_count()>0)
-		{
+		if (n->get_child_count() > 0) {
 			rs += n->log_node(_space + " ");
 		}
 	}
 	return rs;
-
 }
 
-
-void Node::node_process(double delta)const
-{
+void Node::node_process(double delta) const {
 }
-void Node::node_physics_process(double delta)const
-{
+void Node::node_physics_process(double delta) const {
 }
-void Node::node_enter_tree()const
-{
+void Node::node_enter_tree() const {
 }
-void Node::node_exit_tree()const
-{
-
+void Node::node_exit_tree() const {
 }
-void Node::node_ready()const
-{
+void Node::node_ready() const {
 }
-Vector<String> Node::node_get_configuration_warnings()const
-{
+Vector<String> Node::node_get_configuration_warnings() const {
 	Vector<String> rs;
 	return rs;
 }
 
-void Node::node_input(const Ref<InputEvent> &p_event)const
-{
+void Node::node_input(const Ref<InputEvent> &p_event) const {
 }
-void Node::node_shortcut_input(const Ref<InputEvent> &p_key_event)const
-{
+void Node::node_shortcut_input(const Ref<InputEvent> &p_key_event) const {
 }
-void Node::node_unhandled_input(const Ref<InputEvent> &p_event)const
-{
+void Node::node_unhandled_input(const Ref<InputEvent> &p_event) const {
 }
-void Node::node_unhandled_key_input(const Ref<InputEvent> &p_key_event)const
-{
+void Node::node_unhandled_key_input(const Ref<InputEvent> &p_key_event) const {
 }
-
 
 ////////////////////////////////
 // Multithreaded locked version of Object functions.

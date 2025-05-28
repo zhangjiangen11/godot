@@ -31,7 +31,9 @@
 #pragma once
 
 #include "core/typedefs.h"
+
 #include "core/templates/vector.h"
+#include "core/variant/variant_deep_duplicate.h"
 
 #include <climits>
 #include <initializer_list>
@@ -165,7 +167,8 @@ public:
 	Variant pop_at(int p_pos);
 
 	Array duplicate(bool p_deep = false) const;
-	Array recursive_duplicate(bool p_deep, int recursion_count) const;
+	Array duplicate_deep(ResourceDeepDuplicateMode p_deep_subresources_mode = RESOURCE_DEEP_DUPLICATE_INTERNAL) const;
+	Array recursive_duplicate(bool p_deep, ResourceDeepDuplicateMode p_deep_subresources_mode, int recursion_count) const;
 
 	Array slice(int p_begin, int p_end = INT_MAX, int p_step = 1, bool p_deep = false) const;
 	Array filter(const Callable &p_callable) const;
@@ -198,9 +201,8 @@ public:
 
 	void make_read_only();
 	bool is_read_only() const;
-	template<class T>
-	Vector<T> get_vector()const
-	{
+	template <class T>
+	Vector<T> get_vector() const {
 		Vector<T> ret;
 		ret.resize(size());
 		for (int i = 0; i < size(); i++) {
@@ -208,9 +210,8 @@ public:
 		}
 		return ret;
 	}
-	template<class T>
-	static Array form_vector( const Vector<T> &p_vector)
-	{
+	template <class T>
+	static Array form_vector(const Vector<T> &p_vector) {
 		Array array;
 		array.clear();
 		for (int i = 0; i < p_vector.size(); i++) {

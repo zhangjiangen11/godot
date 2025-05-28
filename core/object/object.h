@@ -586,11 +586,12 @@ public:
 	typedef Object self_type;
 
 	enum ConnectFlags {
-		CONNECT_DEFERRED = 1U,
-		CONNECT_PERSIST = 2U, // hint for scene to save this connection
-		CONNECT_ONE_SHOT = 4U,
-		CONNECT_REFERENCE_COUNTED = 8U,
-		CONNECT_INHERITED = 16U, // Used in editor builds.
+		CONNECT_DEFERRED = 1,
+		CONNECT_PERSIST = 2, // Hint for scene to save this connection.
+		CONNECT_ONE_SHOT = 4,
+		CONNECT_REFERENCE_COUNTED = 8,
+		CONNECT_APPEND_SOURCE_OBJECT = 16,
+		CONNECT_INHERITED = 32, // Used in editor builds.
 	};
 
 	struct Connection {

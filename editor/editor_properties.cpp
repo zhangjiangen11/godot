@@ -58,6 +58,7 @@
 #include "scene/resources/mesh.h"
 #include "scene/resources/style_box_flat.h"
 #include "scene/resources/visual_shader_nodes.h"
+#include "scene/resources/style_box_flat.h"
 
 static Mutex enum_property_name_list;
 static StringName get_object_enum_property_name_list(const StringName &_property) {

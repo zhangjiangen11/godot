@@ -4292,7 +4292,7 @@ Image::Image(const uint8_t *p_mem_png_jpg, int p_len) {
 	}
 }
 
-Ref<RefCounted> Image::duplicate(bool p_subresources) const {
+Ref<Resource> Image::_duplicate(const DuplicateParams &p_params) const {
 	Ref<Image> copy;
 	copy.instantiate();
 	copy->_copy_internals_from(*this);
