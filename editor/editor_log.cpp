@@ -41,6 +41,9 @@
 #include "scene/gui/separator.h"
 #include "scene/resources/font.h"
 
+//
+#include "modules/gdscript/gdscript.h"
+
 void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_file, int p_line, const char *p_error, const char *p_errorexp, bool p_editor_notify, ErrorHandlerType p_type) {
 	EditorLog *self = static_cast<EditorLog *>(p_self);
 
@@ -251,7 +254,11 @@ void EditorLog::add_message(const String &p_msg, MessageType p_type) {
 	if(line_count > 0) {
 		OS::DateTime dt = OS::get_singleton()->get_datetime();
 		const String format_string =  L"%04d年%02d月%02d日 %02d小时%02d分%02d秒:";
+		ScriptLanguage* script = GDScriptLanguage::get_singleton();
 		String time = vformat(format_string, dt.year, (uint8_t)dt.month, dt.day, dt.hour, dt.minute, dt.second);
+		if (script->debug_get_stack_level_count() > 0) {
+			time = script->debug_get_stack_level_source(0) + "(" + itos(script->debug_get_stack_level_line(0)) + " ):" + script->debug_get_stack_level_function(0) + "->" + time;
+		}
 		_process_message(time, p_type, false);
 	}
 	for (int i = 0; i < line_count; i++) {

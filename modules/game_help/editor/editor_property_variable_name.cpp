@@ -86,7 +86,7 @@ void EditorPropertyVariableName::_update_status() {
 			status_btn->set_button_icon(theme_cache.var_error_icon);
 			status_btn->set_tooltip_text(TTR(vformat(
 					"The %s variable in the blackboard plan should be of type %s.\nClick to open the blackboard plan.",
-					BBParam::decorate_var(var_name),
+				LimboUtility::get_singleton()->decorate_var(var_name),
 					Variant::get_type_name(expected_type))));
 		}
 	} else if (name_edit->get_text().begins_with("_")) {
@@ -169,12 +169,12 @@ void EditorPropertyVariableName::_notification(int p_what) {
 		} break;
 		case NOTIFICATION_THEME_CHANGED: {
 			drop_btn->set_button_icon(get_theme_icon(SNAME("GuiOptionArrow"), SNAME("EditorIcons")));
-			theme_cache.var_add_icon = BBParam::get_task_icon(SNAME("LimboVarAdd"));
-			theme_cache.var_exists_icon = BBParam::get_task_icon(SNAME("LimboVarExists"));
-			theme_cache.var_not_found_icon = BBParam::get_task_icon(SNAME("LimboVarNotFound"));
-			theme_cache.var_private_icon = BBParam::get_task_icon(SNAME("LimboVarPrivate"));
-			theme_cache.var_empty_icon = BBParam::get_task_icon(SNAME("LimboVarEmpty"));
-			theme_cache.var_error_icon = BBParam::get_task_icon(SNAME("LimboVarError"));
+			theme_cache.var_add_icon = LimboUtility::get_singleton()->get_task_icon(SNAME("LimboVarAdd"));
+			theme_cache.var_exists_icon = LimboUtility::get_singleton()->get_task_icon(SNAME("LimboVarExists"));
+			theme_cache.var_not_found_icon = LimboUtility::get_singleton()->get_task_icon(SNAME("LimboVarNotFound"));
+			theme_cache.var_private_icon = LimboUtility::get_singleton()->get_task_icon(SNAME("LimboVarPrivate"));
+			theme_cache.var_empty_icon = LimboUtility::get_singleton()->get_task_icon(SNAME("LimboVarEmpty"));
+			theme_cache.var_error_icon = LimboUtility::get_singleton()->get_task_icon(SNAME("LimboVarError"));
 		} break;
 	}
 }

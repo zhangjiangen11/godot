@@ -26,6 +26,8 @@ env_game_help.add_source_files(env.modules_sources, "unity/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/navigation/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "blackboard/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "blackboard/bb_param/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "blackboard/compat/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "blackboard/util/*.cpp")
 # mterrain
 env_game_help.add_source_files(env.modules_sources, "MTerrain/src/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "MTerrain/src/height_brushes/*.cpp")
