@@ -531,8 +531,8 @@ void ManyBoneIK3D::set_kusudama_limit_cone(int32_t p_constraint_index, int32_t p
 }
 
 float ManyBoneIK3D::get_kusudama_limit_cone_radius(int32_t p_constraint_index, int32_t p_index) const {
-	ERR_FAIL_INDEX_V(p_constraint_index, kusudama_limit_cones.size(), Math_TAU);
-	ERR_FAIL_INDEX_V(p_index, kusudama_limit_cones[p_constraint_index].size(), Math_TAU);
+	ERR_FAIL_INDEX_V(p_constraint_index, kusudama_limit_cones.size(), Math::TAU);
+	ERR_FAIL_INDEX_V(p_index, kusudama_limit_cones[p_constraint_index].size(), Math::TAU);
 	return kusudama_limit_cones[p_constraint_index][p_index].w;
 }
 
@@ -1105,8 +1105,8 @@ void ManyBoneIK3D::add_constraint() {
 	constraint_names.write[old_count] = String();
 	kusudama_limit_cone_count.write[old_count] = 0;
 	kusudama_limit_cones.write[old_count].resize(1);
-	kusudama_limit_cones.write[old_count].write[0] = Vector4(0, 1, 0, Math_PI);
-	kusudama_twist.write[old_count] = Vector2(0, Math_PI);
+	kusudama_limit_cones.write[old_count].write[0] = Vector4(0, 1, 0, Math::PI);
+	kusudama_twist.write[old_count] = Vector2(0, Math::PI);
 	set_dirty();
 }
 

@@ -2,9 +2,9 @@
 #define MNAVIGATIONREGION3D
 
 #include "servers/navigation_server_3d.h"
-#include "scene/3d/navigation_region_3d.h"
+#include "scene/3d/navigation/navigation_region_3d.h"
 #include "scene/resources/navigation_mesh.h"
-#include "scene/resources/navigation_mesh_source_geometry_data_3d.h"
+#include "scene/resources/3d/navigation_mesh_source_geometry_data_3d.h"
 #include "scene/resources/mesh.h"
 #include "scene/main/timer.h"
 #include "core/templates/vector.h"

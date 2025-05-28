@@ -15,10 +15,10 @@ bool MPaint16::is_two_point_brush(){
 }
 void MPaint16::before_draw(){
 }
-void MPaint16::set_color(uint32_t local_x,uint32_t local_y,uint32_t x,uint32_t y,MImage* img){
+void MPaint16::set_color(int32_t local_x,int32_t local_y,int32_t x,int32_t y,MImage* img){
     //Calculating w
-    float dx = (float)ABS(x-grid->brush_px_pos_x);
-    float dy = (float)ABS(y-grid->brush_px_pos_y);
+    float dx = (float)Math::abs(x-grid->brush_px_pos_x);
+    float dy = (float)Math::abs(y-grid->brush_px_pos_y);
     float px_dis = sqrt(dx*dx + dy*dy);
     // setting color
     const uint8_t* ptr = grid->get_pixel_by_pointer(x,y,grid->current_paint_index);

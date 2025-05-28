@@ -4,7 +4,6 @@
 #define GEOCLIPMAP_CLASS_H
 #include "core/templates/vector.h"
 
-using namespace godot;
 
 class GeoClipMap {
 public:

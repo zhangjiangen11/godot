@@ -52,8 +52,8 @@ class IKBone3D : public Resource {
 	Vector<Ref<IKBone3D>> children;
 	Ref<IKEffector3D> pin;
 
-	float default_dampening = Math_PI;
-	float dampening = get_parent().is_null() ? Math_PI : default_dampening;
+	float default_dampening = Math::PI;
+	float dampening = get_parent().is_null() ? Math::PI : default_dampening;
 	float cos_half_dampen = Math::cos(dampening / 2.0f);
 	double cos_half_return_damp = 0.0f;
 	double return_damp = 0.0f;
@@ -109,7 +109,7 @@ public:
 	bool is_pinned() const;
 	Ref<IKNode3D> get_ik_transform();
 	IKBone3D() {}
-	IKBone3D(StringName p_bone, Skeleton3D *p_skeleton, const Ref<IKBone3D> &p_parent, Vector<Ref<IKEffectorTemplate3D>> &p_pins, float p_default_dampening = Math_PI, ManyBoneIK3D *p_many_bone_ik = nullptr);
+	IKBone3D(StringName p_bone, Skeleton3D *p_skeleton, const Ref<IKBone3D> &p_parent, Vector<Ref<IKEffectorTemplate3D>> &p_pins, float p_default_dampening = Math::PI, ManyBoneIK3D *p_many_bone_ik = nullptr);
 	~IKBone3D() {}
 	float get_cos_half_dampen() const;
 	void set_cos_half_dampen(float p_cos_half_dampen);

@@ -6,7 +6,6 @@
 //#include <godot_cpp/classes/image.hpp>
 #include "core/io/image.h"
 
-using namespace godot;
 
 class GeneratedTex {
 public:

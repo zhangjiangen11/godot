@@ -114,13 +114,13 @@ public:
 
             // 找到最小高度大于其比例的子节点。让它们保持最小高度并调整其余。
             auto remaining_total_stretch_ratio = total_stretch_ratio;
-            for(int i = 0; i < get_child_count(); ++i)
+            for(int ci = 0; ci < get_child_count(); ++ci)
             {
-                auto child = get_child(i);
+                auto child = get_child(ci);
                 auto con = Object::cast_to<Control>(child);
                 if (!con && !con->is_visible())continue;
 
-                if (_min_heights[i] == _max_heights[i])
+                if (_min_heights[ci] == _max_heights[ci])
                     continue;
 
                 auto h = 0;
@@ -129,13 +129,13 @@ public:
                 else
                     h = int( excess_height * con->get_stretch_ratio() / total_stretch_ratio );
 
-                if (h < _min_heights[i])
+                if (h < _min_heights[ci])
                 {
-                    h = _min_heights[i];
+                    h = _min_heights[ci];
                     remaining_height -= h;
                     expand_count -= 1;
                     remaining_total_stretch_ratio -= con->get_stretch_ratio();
-                    _min_heights.write[i] = _max_heights[i];  // 在下一次遍历中跳过此节点
+                    _min_heights.write[i] = _max_heights[ci];  // 在下一次遍历中跳过此节点
                     _resolve_child_size( child, con->get_size(), limited );  // 最终解析
 
                 }
@@ -147,12 +147,12 @@ public:
                 return;
 
             // 将剩余高度分配给具有最大高度小于其比例的子节点。
-            for(int i = 0; i < get_child_count(); ++i)
+            for(int ci = 0; ci < get_child_count(); ++ci)
             {
-                auto child = get_child(i);
+                auto child = get_child(ci);
                 auto con = Object::cast_to<Control>(child);
                 if (!con && !con->is_visible())continue;
-                if (_min_heights.write[i] == _max_heights.write[i])
+                if (_min_heights.write[ci] == _max_heights.write[ci])
                     continue;
 
                 auto h = 0;
@@ -161,14 +161,14 @@ public:
                 else
                     h = int( excess_height * con->get_stretch_ratio() / total_stretch_ratio );
 
-                if (h > _max_heights.write[i])
+                if (h > _max_heights.write[ci])
                 {
-                    h = _max_heights.write[i];
+                    h = _max_heights.write[ci];
                     _resolve_child_size( child, Vector2(available_size.x,h), limited );
                     remaining_height -= h;
                     expand_count -= 1;
                     remaining_total_stretch_ratio -= con->get_stretch_ratio();
-                    _min_heights.write[i] = _max_heights.write[i];  // 在下一次遍历中跳过此节点
+                    _min_heights.write[ci] = _max_heights.write[i];  // 在下一次遍历中跳过此节点
                 }
             }
 
@@ -184,9 +184,9 @@ public:
             // 分配剩余高度
             for(int i = 0; i < get_child_count(); ++i)
             {
-                auto child = get_child(i);
-                auto con = Object::cast_to<Control>(child);
-                if (!con && !con->is_visible())continue;
+                auto c = get_child(i);
+                auto ccon = Object::cast_to<Control>(c);
+                if (!ccon && !ccon->is_visible())continue;
                 if (_min_heights.write[i] == _max_heights.write[i])
                     continue;
 
@@ -194,9 +194,9 @@ public:
                 if (expand_count == 1)
                     h = remaining_height;
                 else
-                    h = int( excess_height * con->get_stretch_ratio() / total_stretch_ratio );
+                    h = int( excess_height * ccon->get_stretch_ratio() / total_stretch_ratio );
 
-                _resolve_child_size( child, Vector2(available_size.x,h), limited );
+                _resolve_child_size( c, Vector2(available_size.x,h), limited );
                 remaining_height -= h;
                 expand_count -= 1;
             }

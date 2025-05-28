@@ -6,8 +6,6 @@
 #include "generated_tex.h"
 #include "terrain_3d_texture.h"
 
-using namespace godot;
-
 class Terrain3DTextureList : public Resource {
 	GDCLASS(Terrain3DTextureList, Resource);
 

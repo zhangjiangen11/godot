@@ -9,7 +9,6 @@
 #include "constants.h"
 #include "generated_tex.h"
 
-using namespace godot;
 
 class Util {
 public:

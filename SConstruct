@@ -891,9 +891,7 @@ if env.msvc and not methods.using_clang(env):  # MSVC
         # C4267 is particularly finicky & needs to be explicitly disabled.
         env.AppendUnique(CCFLAGS=["/wd4267"])
 
-    if env["werror"]:
-        env.AppendUnique(CCFLAGS=["/WX"])
-        env.AppendUnique(LINKFLAGS=["/WX"])
+
 
 else:  # GCC, Clang
     common_warnings = []
@@ -947,8 +945,6 @@ else:  # GCC, Clang
     else:  # 'no'
         env["WARNLEVEL"] = "-w"
 
-    if env["werror"]:
-        env.AppendUnique(CCFLAGS=["-Werror"])
 
 # Configure external includes.
 if env.msvc:

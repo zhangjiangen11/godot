@@ -83,7 +83,7 @@ bool MToHeight::is_two_point_brush(){
 void MToHeight::before_draw(){
     start_height = grid->get_height(grid->brush_world_pos_start);
 }
-float MToHeight::get_height(uint32_t x,uint32_t y){
+float MToHeight::get_height(int32_t x,int32_t y){
     Vector3 world_pos = grid->get_pixel_world_pos(x,y);
     real_t dis = grid->brush_world_pos.distance_to(world_pos);
     dis = dis/grid->brush_radius;

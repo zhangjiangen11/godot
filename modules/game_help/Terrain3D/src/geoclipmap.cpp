@@ -60,7 +60,6 @@ Vector<RID> GeoClipMap::generate(int p_size, int p_levels) {
 	int PATCH_VERT_RESOLUTION = TILE_RESOLUTION + 1;
 	int CLIPMAP_RESOLUTION = TILE_RESOLUTION * 4 + 1;
 	int CLIPMAP_VERT_RESOLUTION = CLIPMAP_RESOLUTION + 1;
-	int NUM_CLIPMAP_LEVELS = p_levels;
 	AABB aabb;
 	int n = 0;
 

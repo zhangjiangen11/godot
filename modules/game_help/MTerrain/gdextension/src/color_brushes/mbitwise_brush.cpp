@@ -25,10 +25,10 @@ void MBitwiseBrush::before_draw(){
     uint32_t pixel_size = grid->regions[0].images[0]->pixel_size;
     ERR_FAIL_COND_MSG(bit>(pixel_size*8 - 1),"Bit is out of bound");
 }
-void MBitwiseBrush::set_color(uint32_t local_x,uint32_t local_y,uint32_t x,uint32_t y,MImage* img){
+void MBitwiseBrush::set_color(int32_t local_x,int32_t local_y,int32_t x,int32_t y,MImage* img){
     //Calculating w
-    uint32_t dx = ABS(x-grid->brush_px_pos_x);
-    uint32_t dy = ABS(y-grid->brush_px_pos_y);
+    int32_t dx = Math::abs(x-grid->brush_px_pos_x);
+    int32_t dy = Math::abs(y-grid->brush_px_pos_y);
     float px_dis = (float)sqrt(dx*dx + dy*dy);
     px_dis /= (float)grid->brush_px_radius;
     // setting color

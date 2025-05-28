@@ -215,9 +215,9 @@ class MGrid : public Object {
     bool brush_mask_active=false;
     Ref<Image> brush_mask;
     Vector2i brush_mask_px_pos;
-    uint32_t brush_px_pos_x;
-    uint32_t brush_px_pos_y;
-    uint32_t brush_px_radius;
+    int32_t brush_px_pos_x;
+    int32_t brush_px_pos_y;
+    int32_t brush_px_radius;
     MPixelRegion draw_pixel_region;
     real_t brush_radius;
     Vector3 brush_world_pos;

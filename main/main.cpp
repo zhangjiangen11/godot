@@ -420,12 +420,9 @@ void finalize_theme_db() {
 }
 
 void initialize_lua_api() {
-	lua_api = memnew(LuaAPI);
 }
 
 void finalize_lua_api() {
-	memdelete(lua_api);
-	lua_api = nullptr;
 }
 
 //#define DEBUG_INIT

@@ -13,8 +13,6 @@
 #include "terrain_3d_texture_list.h"
 #include "util.h"
 
-using namespace godot;
-
 class Terrain3DStorage : public Resource {
 	GDCLASS(Terrain3DStorage, Resource);
 

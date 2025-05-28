@@ -39,6 +39,7 @@
 #define JPGD_MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define JPGD_MIN(a, b) (((a) < (b)) ? (a) : (b))
 
+using uint8 = std::uint8_t;
 namespace jpgd {
 
 static inline void *jpgd_malloc(size_t nSize) {

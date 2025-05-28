@@ -8,8 +8,6 @@
 
 #include "generated_tex.h"
 
-using namespace godot;
-
 class Terrain3DMaterial : public Resource {
 	GDCLASS(Terrain3DMaterial, Resource);
 

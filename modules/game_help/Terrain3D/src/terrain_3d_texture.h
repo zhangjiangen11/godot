@@ -6,8 +6,6 @@
 //#include "scene/resources/texture.h"
 #include "scene/resources/texture.h"
 
-using namespace godot;
-
 class Terrain3DTexture : public Resource {
 	GDCLASS(Terrain3DTexture, Resource);
 

@@ -442,7 +442,7 @@ void Terrain3D::_update_collision() {
 		// Non rotated shape for normal array index above
 		//Transform3D xform = Transform3D(Basis(), global_pos);
 		// Rotated shape Y=90 for -90 rotated array index
-		Transform3D xform = Transform3D(Basis(Vector3(0.f, 1.f, 0.f), Math_PI * .5f),
+		Transform3D xform = Transform3D(Basis(Vector3(0.f, 1.f, 0.f), Math::PI * .5f),
 				global_pos + Vector3(region_size, 0.f, region_size) * .5f);
 		xform.scale(Vector3(_mesh_vertex_spacing, 1.f, _mesh_vertex_spacing));
 
@@ -642,8 +642,7 @@ void Terrain3D::_generate_triangle_pair(PackedVector3Array &p_vertices, PackedVe
 Terrain3D::Terrain3D() {
 	set_notify_transform(true);
 	List<String> args = OS::get_singleton()->get_cmdline_args();
-	for (int i = args.size() - 1; i >= 0; i--) {
-		String arg = args[i];
+	for(auto & arg : args){
 		if (arg.begins_with("--terrain3d-debug=")) {
 			String value = arg.lstrip("--terrain3d-debug=");
 			if (value == "ERROR") {
@@ -842,10 +841,10 @@ void Terrain3D::snap(Vector3 p_cam_pos) {
 				Vector3 tile_tl = base + Vector3(x, 0.f, y) * tile_size + fill;
 				//Vector3 tile_br = tile_tl + tile_size;
 
-				Transform3D t = Transform3D().scaled(Vector3(scale, 1.f, scale));
-				t.origin = tile_tl;
+				Transform3D tmp = Transform3D().scaled(Vector3(scale, 1.f, scale));
+				tmp.origin = tile_tl;
 
-				RSS->instance_set_transform(_data.tiles[tile], t);
+				RSS->instance_set_transform(_data.tiles[tile], tmp);
 
 				tile++;
 			}

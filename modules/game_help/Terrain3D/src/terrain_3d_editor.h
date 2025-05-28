@@ -12,8 +12,6 @@
 
 #include "terrain_3d.h"
 
-using namespace godot;
-
 class Terrain3DEditor : public Object {
 	GDCLASS(Terrain3DEditor, Object);
 

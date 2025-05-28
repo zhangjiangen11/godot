@@ -498,7 +498,7 @@ class GUIComponent : public Container
         if (com)  // includes GUIComponent
         {
             int64_t h_size_flags = com->get_h_size_flags();
-            int64_t v_size_flags = com->get_v_size_flags();
+            //int64_t v_size_flags = com->get_v_size_flags();
             if (h_size_flags & (SIZE_SHRINK_CENTER | SIZE_FILL) )
             {
                 pos.x += floor( (available_bounds.size.x - rect_size.x) / 2 );
@@ -549,7 +549,7 @@ class GUIComponent : public Container
         if (is_gg )
             is_gg->_on_resolve_size( available_size );
 
-        auto has_mode = (is_gg || component->has_method("request_layout"));
+        //auto has_mode = (is_gg || component->has_method("request_layout"));
         auto h_mode = S_EXPAND_TO_FILL;
         if (is_gg)
         {

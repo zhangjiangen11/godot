@@ -106,13 +106,13 @@ namespace Foliage
 				//Debug.LogError($"小贼别跑，这里有毒：{Length} start:{start} count:{count}！");
 				return;
 			}
-			if (start + count > Length())
+			if (start + count > size())
 			{
 				//Debug.LogError($"移除的数据太多了，当前长度：{Length} start:{start} count:{count}！");
 				listCount.set(start);
 				return;
 			}
-			else if (start + count == Length())
+			else if (start + count == size())
 			{
 				listCount.set(start);
 				return;

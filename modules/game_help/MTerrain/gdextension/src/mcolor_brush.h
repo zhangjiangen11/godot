@@ -26,6 +26,6 @@ class MColorBrush {
     virtual void _set_property(String prop_name, Variant value)=0;
     virtual bool is_two_point_brush()=0;
     virtual void before_draw()=0;
-    virtual void set_color(uint32_t local_x,uint32_t local_y,uint32_t x,uint32_t y,MImage* img)=0;
+    virtual void set_color(int32_t local_x,int32_t local_y,int32_t x,int32_t y,MImage* img)=0;
 };
 #endif

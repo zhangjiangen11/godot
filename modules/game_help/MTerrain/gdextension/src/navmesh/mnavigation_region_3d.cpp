@@ -632,8 +632,8 @@ void MNavigationRegion3D::draw_npoints(Vector3 brush_pos,real_t radius,bool add)
         return;
     }
     uint32_t brush_px_radius = (uint32_t)(radius/h_scale);
-    uint32_t brush_px_pos_x = px_pos.x;
-    uint32_t brush_px_pos_y = px_pos.y;
+    int32_t brush_px_pos_x = px_pos.x;
+    int32_t brush_px_pos_y = px_pos.y;
     // Setting left right top bottom
     MPixelRegion px;
     px.left = (brush_px_pos_x>brush_px_radius) ? brush_px_pos_x - brush_px_radius : 0;
@@ -652,10 +652,10 @@ void MNavigationRegion3D::draw_npoints(Vector3 brush_pos,real_t radius,bool add)
     uint32_t y=px.top;
     uint32_t i=0;
     uint32_t j=1;
-    for(uint32_t y = px.top; y<=px.bottom;y++){
-        for(uint32_t x = px.left; x<=px.right;x++){
-            uint32_t dif_x = UABS_DIFF(x,brush_px_pos_x);
-            uint32_t dif_y = UABS_DIFF(y,brush_px_pos_y);
+    for(int32_t y = px.top; y<=px.bottom;y++){
+        for(int32_t x = px.left; x<=px.right;x++){
+            int32_t dif_x = Math::abs(x-brush_px_pos_x);
+            int32_t dif_y = Math::abs(y-brush_px_pos_y);
             uint32_t dis = sqrt(dif_x*dif_x + dif_y*dif_y);
             if(dis<brush_px_radius)
                 set_npoint_by_pixel(x,y,add);

@@ -407,4 +407,3 @@ public:
 };
 
 VARIANT_ENUM_CAST(RenderCallbackManager::ERenderPoint);
-#endif // RENDERER_SCENE_RENDER_H

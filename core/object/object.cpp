@@ -316,13 +316,6 @@ void Object::set(const StringName &p_name, const Variant &p_value, bool *r_valid
 			return;
 		}
 	}
-	if (p_name == CoreStringNames::get_singleton()->_master_script) {
-		set_master_script(p_value);
-		if (r_valid) {
-			*r_valid = true;
-		}
-		return;
-	}
 
 	if (p_name == CoreStringName(script)) {
 		set_script(p_value);
@@ -412,13 +405,6 @@ Variant Object::get(const StringName &p_name, bool *r_valid) const {
 			}
 			return ret;
 		}
-	}
-	if (p_name == CoreStringNames::get_singleton()->_master_script) {
-		ret = get_master_script();
-		if (r_valid) {
-			*r_valid = true;
-		}
-		return ret;
 	}
 
 	if (p_name == CoreStringName(script)) {

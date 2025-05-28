@@ -11,8 +11,6 @@
 #include "terrain_3d_material.h"
 #include "terrain_3d_storage.h"
 
-using namespace godot;
-
 void initialize_terrain_3d(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 		return;

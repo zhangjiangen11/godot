@@ -149,70 +149,8 @@ Ref<LuaError> LuaCoroutine::yield(Array args) {
 #ifndef LAPI_GDEXTENSION
 
 Variant LuaCoroutine::resume(Array args) {
-	if (done) {
-		return LuaError::newError("Thread is done executing", LuaError::ERR_RUNTIME);
-	}
-
-	List<Connection> resume_connections;
-	get_signal_connection_list("coroutine_resume", &resume_connections);
-
-	if (resume_connections.size() > 0) {
-		if (resume_connections.size() != 1) {
-			return LuaError::newError("Cannot have more than one connection to the coroutine_resume signal", LuaError::ERR_RUNTIME);
-		}
-
-		Callable callback = resume_connections[0].callable;
-		if (!callback.is_valid()) {
-			return LuaError::newError("Invalid callable connected to the coroutine_resume signal", LuaError::ERR_RUNTIME);
-		}
-
-		disconnect("coroutine_resume", callback);
-
-		Vector<const Variant *> mem_args;
-		mem_args.resize(args.size());
-		for (int i = 0; i < args.size(); i++) {
-			mem_args.write[i] = &args[i];
-		}
-
-		const Variant **p_args = (const Variant **)mem_args.ptr();
-
-		Variant returned;
-		Callable::CallError error;
-		callback.callp(p_args, args.size(), returned, error);
-		if (error.error != Callable::CallError::CALL_OK) {
-			return state.handleError(callback.get_method(), error, p_args, args.size());
-		}
-
-		args.clear();
-		args.append(returned);
-	}
-
-	for (int i = 0; i < args.size(); i++) {
-		Ref<LuaError> err = state.pushVariant(args[i]);
-		if (!err.is_null()) {
-			return err;
-		}
-	}
-
-#ifndef LAPI_LUAJIT
-	int argc = 0;
-	int ret = lua_resume(tState, nullptr, args.size(), &argc);
-#else
-	int ret = lua_resume(tState, args.size());
-	int argc = lua_gettop(tState);
-#endif
-
-	if (ret == LUA_OK) {
-		done = true; // thread is finished
-	} else if (ret != LUA_YIELD) {
-		done = true;
-		return state.handleError(ret);
-	}
 
 	Array toReturn;
-	for (int i = 1; i <= argc; i++) {
-		toReturn.append(state.getVar(i));
-	}
 
 	return toReturn;
 }

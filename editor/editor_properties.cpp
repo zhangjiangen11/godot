@@ -57,6 +57,7 @@
 #include "scene/resources/font.h"
 #include "scene/resources/mesh.h"
 #include "scene/resources/visual_shader_nodes.h"
+#include "scene/resources/style_box_flat.h"
 
 ///////////////////// NIL /////////////////////////
 

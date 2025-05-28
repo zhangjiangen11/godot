@@ -143,7 +143,7 @@ void Terrain3DEditor::_operate_map(Vector3 p_global_position, real_t p_camera_di
 	real_t gamma = _brush.get_gamma();
 
 	real_t randf = UtilityFunctions::randf();
-	real_t rot = randf * Math_PI * _brush.get_jitter();
+	real_t rot = randf * Math::PI * _brush.get_jitter();
 	if (_brush.is_aligned_to_view()) {
 		rot += p_camera_direction;
 	}

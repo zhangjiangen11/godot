@@ -75,7 +75,7 @@ class IKKusudama3D : public Resource {
 	 * Defined as some Angle in radians about the limiting_axes Y axis, 0 being equivalent to the
 	 * min_axial_angle
 	 */
-	real_t range_angle = Math_TAU;
+	real_t range_angle = Math::TAU;
 
 	bool orientationally_constrained = false;
 	bool axially_constrained = false;
@@ -94,8 +94,8 @@ public:
 
 	Ref<IKRay3D> bone_ray = Ref<IKRay3D>(memnew(IKRay3D()));
 	Ref<IKRay3D> constrained_ray = Ref<IKRay3D>(memnew(IKRay3D()));
-	double unit_hyper_area = 2 * Math::pow(Math_PI, 2);
-	double unit_area = 4 * Math_PI;
+	double unit_hyper_area = 2 * Math::pow(Math::PI, 2);
+	double unit_area = 4 * Math::PI;
 
 	/**
 	 * Get the swing rotation and twist rotation for the specified axis. The twist rotation represents the rotation around the specified axis. The swing rotation represents the rotation of the specified
