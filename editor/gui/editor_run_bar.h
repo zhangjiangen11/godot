@@ -36,6 +36,7 @@
 
 class Button;
 class EditorRunNative;
+class MenuButton;
 class PanelContainer;
 class HBoxContainer;
 class AcceptDialog;
@@ -73,8 +74,13 @@ class EditorRunBar : public MarginContainer {
 	EditorRun editor_run;
 	EditorRunNative *run_native = nullptr;
 
+	enum MovieMakerMenuItem {
+		MOVIE_MAKER_TOGGLE,
+		MOVIE_MAKER_OPEN_SETTINGS,
+	};
 	PanelContainer *write_movie_panel = nullptr;
-	Button *write_movie_button = nullptr;
+	MenuButton *write_movie_button = nullptr;
+	bool movie_maker_enabled = false;
 
 	bool is_run_editor = false;
 	Button* run_editor_button = nullptr;
@@ -86,6 +92,7 @@ class EditorRunBar : public MarginContainer {
 	void _reset_play_buttons();
 	void _update_play_buttons();
 
+	void _movie_maker_item_pressed(int p_id);
 	void _write_movie_toggled(bool p_enabled);
 	void _quick_run_selected(const String &p_file_path, int p_id = -1);
 
