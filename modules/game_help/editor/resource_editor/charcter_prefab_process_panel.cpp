@@ -4,6 +4,7 @@
 
 #include "scene/3d/skeleton_3d.h"
 #include "scene/gui/separator.h"
+#include "scene/gui/label.h"
 #include "scene/resources/packed_scene.h"
 
 #include "core/io/dir_access.h"

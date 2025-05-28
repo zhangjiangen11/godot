@@ -106,6 +106,7 @@ bool RefCounted::unreference() {
 	return die;
 }
 
+
 Ref<RefCounted> RefCounted::duplicate(bool p_subresources) const {
 	List<PropertyInfo> plist;
 	get_property_list(&plist);

@@ -37,6 +37,7 @@
 #include "editor/themes/editor_theme_manager.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/texture_button.h"
+#include "scene/gui/button.h"
 
 const String EditorPropertyVectorN::COMPONENT_LABELS[4] = { "x", "y", "z", "w" };
 
