@@ -833,12 +833,24 @@ public:
 
 	RID hddagi_ubo;
 
+	enum Group {
+		GROUP_NORMAL,
+		GROUP_VRS,
+	};
+
 	enum Mode {
 		MODE_VOXEL_GI,
+<<<<<<< HEAD
 		MODE_HDDAGI,
 		MODE_COMBINED,
 		MODE_HDDAGI_BLEND_AMBIENT,
 		MODE_COMBINED_BLEND_AMBIENT,
+=======
+		MODE_VOXEL_GI_WITHOUT_SAMPLER,
+		MODE_SDFGI,
+		MODE_COMBINED,
+		MODE_COMBINED_WITHOUT_SAMPLER,
+>>>>>>> b89c47bb8511433440e5e547afe4459ca3383090
 		MODE_MAX
 	};
 
@@ -899,6 +911,8 @@ public:
 	bool voxel_gi_needs_update(RID p_probe) const;
 	void voxel_gi_update(RID p_probe, bool p_update_light_instances, const Vector<RID> &p_light_instances, const PagedArray<RenderGeometryInstance *> &p_dynamic_objects);
 	void debug_voxel_gi(RID p_voxel_gi, RD::DrawListID p_draw_list, RID p_framebuffer, const Projection &p_camera_with_transform, bool p_lighting, bool p_emission, float p_alpha);
+
+	void enable_vrs_shader_group();
 };
 
 } // namespace RendererRD

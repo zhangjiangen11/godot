@@ -40,6 +40,7 @@ class EditorFileDialog;
 class EditorLocaleDialog;
 class EditorResourcePicker;
 class EditorSpinSlider;
+class EditorVariantTypePopupMenu;
 class MenuButton;
 class PropertySelector;
 class SceneTreeDialog;
@@ -60,12 +61,14 @@ class EditorPropertyVariant : public EditorProperty {
 
 	HBoxContainer *content = nullptr;
 	EditorProperty *sub_property = nullptr;
-	MenuButton *change_type = nullptr;
+	Button *edit_button = nullptr;
+	EditorVariantTypePopupMenu *change_type = nullptr;
 
 	Variant::Type current_type = Variant::VARIANT_MAX;
 	Variant::Type new_type = Variant::VARIANT_MAX;
 
 	void _change_type(int p_to_type);
+	void _popup_edit_menu();
 
 protected:
 	virtual void _set_read_only(bool p_read_only) override;

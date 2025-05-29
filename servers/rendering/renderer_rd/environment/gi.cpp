@@ -2944,6 +2944,31 @@ GI::GI() {
 }
 
 GI::~GI() {
+	if (voxel_gi_debug_shader_version.is_valid()) {
+		voxel_gi_debug_shader.version_free(voxel_gi_debug_shader_version);
+	}
+	if (voxel_gi_lighting_shader_version.is_valid()) {
+		voxel_gi_shader.version_free(voxel_gi_lighting_shader_version);
+	}
+	if (shader_version.is_valid()) {
+		shader.version_free(shader_version);
+	}
+	if (sdfgi_shader.debug_probes_shader.is_valid()) {
+		sdfgi_shader.debug_probes.version_free(sdfgi_shader.debug_probes_shader);
+	}
+	if (sdfgi_shader.debug_shader.is_valid()) {
+		sdfgi_shader.debug.version_free(sdfgi_shader.debug_shader);
+	}
+	if (sdfgi_shader.direct_light_shader.is_valid()) {
+		sdfgi_shader.direct_light.version_free(sdfgi_shader.direct_light_shader);
+	}
+	if (sdfgi_shader.integrate_shader.is_valid()) {
+		sdfgi_shader.integrate.version_free(sdfgi_shader.integrate_shader);
+	}
+	if (sdfgi_shader.preprocess_shader.is_valid()) {
+		sdfgi_shader.preprocess.version_free(sdfgi_shader.preprocess_shader);
+	}
+
 	singleton = nullptr;
 }
 
@@ -3065,23 +3090,44 @@ void GI::init(SkyRD *p_sky) {
 	//GK
 	{
 		//calculate tables
+<<<<<<< HEAD
 		String defines = "\n#define LIGHTPROBE_OCT_SIZE " + itos(HDDAGI::LIGHTPROBE_OCT_SIZE) + "\n#define OCCLUSION_OCT_SIZE " + itos(HDDAGI::OCCLUSION_OCT_SIZE) + "\n";
 		if (RendererSceneRenderRD::get_singleton()->is_vrs_supported()) {
 			defines += "\n#define USE_VRS\n";
 		}
 		if (!RD::get_singleton()->sampler_is_format_supported_for_filter(RD::DATA_FORMAT_R8G8_UINT, RD::SAMPLER_FILTER_LINEAR)) {
 			defines += "\n#define SAMPLE_VOXEL_GI_NEAREST\n";
+=======
+		String defines = "\n#define SDFGI_OCT_SIZE " + itos(SDFGI::LIGHTPROBE_OCT_SIZE) + "\n";
+
+		Vector<ShaderRD::VariantDefine> variants;
+		for (uint32_t vrs = 0; vrs < 2; vrs++) {
+			String vrs_base = vrs ? "\n#define USE_VRS\n" : "";
+			Group group = vrs ? GROUP_VRS : GROUP_NORMAL;
+			bool default_enabled = vrs == 0;
+			variants.push_back(ShaderRD::VariantDefine(group, vrs_base + "\n#define USE_VOXEL_GI_INSTANCES\n", default_enabled)); // MODE_VOXEL_GI
+			variants.push_back(ShaderRD::VariantDefine(group, vrs_base + "\n#define USE_VOXEL_GI_INSTANCES\n#define SAMPLE_VOXEL_GI_NEAREST\n", default_enabled)); // MODE_VOXEL_GI_WITHOUT_SAMPLER
+			variants.push_back(ShaderRD::VariantDefine(group, vrs_base + "\n#define USE_SDFGI\n", default_enabled)); // MODE_SDFGI
+			variants.push_back(ShaderRD::VariantDefine(group, vrs_base + "\n#define USE_SDFGI\n\n#define USE_VOXEL_GI_INSTANCES\n", default_enabled)); // MODE_COMBINED
+			variants.push_back(ShaderRD::VariantDefine(group, vrs_base + "\n#define USE_SDFGI\n\n#define USE_VOXEL_GI_INSTANCES\n#define SAMPLE_VOXEL_GI_NEAREST\n", default_enabled)); // MODE_COMBINED_WITHOUT_SAMPLER
+>>>>>>> b89c47bb8511433440e5e547afe4459ca3383090
 		}
 
-		Vector<String> gi_modes;
+		shader.initialize(variants, defines);
 
+<<<<<<< HEAD
 		gi_modes.push_back("\n#define USE_VOXEL_GI_INSTANCES\n"); // MODE_VOXEL_GI
 		gi_modes.push_back("\n#define USE_HDDAGI\n"); // MODE_HDDAGI
 		gi_modes.push_back("\n#define USE_HDDAGI\n\n#define USE_VOXEL_GI_INSTANCES\n"); // MODE_COMBINED
 		gi_modes.push_back("\n#define USE_HDDAGI\n\n#define USE_AMBIENT_BLEND\n"); // MODE_HDDAGI
 		gi_modes.push_back("\n#define USE_HDDAGI\n\n#define USE_VOXEL_GI_INSTANCES\n\n#define USE_AMBIENT_BLEND\n"); // MODE_COMBINED
+=======
+		bool vrs_supported = RendererSceneRenderRD::get_singleton()->is_vrs_supported();
+		if (vrs_supported) {
+			shader.enable_group(GROUP_VRS);
+		}
+>>>>>>> b89c47bb8511433440e5e547afe4459ca3383090
 
-		shader.initialize(gi_modes, defines);
 		shader_version = shader.version_create();
 
 		Vector<RD::PipelineSpecializationConstant> specialization_constants;
@@ -3108,8 +3154,10 @@ void GI::init(SkyRD *p_sky) {
 			specialization_constants.ptrw()[0].bool_value = (v & SHADER_SPECIALIZATION_HALF_RES) ? true : false;
 			specialization_constants.ptrw()[1].bool_value = (v & SHADER_SPECIALIZATION_USE_FULL_PROJECTION_MATRIX) ? true : false;
 			specialization_constants.ptrw()[2].bool_value = (v & SHADER_SPECIALIZATION_USE_VRS) ? true : false;
+
+			int variant_base = vrs_supported ? MODE_MAX : 0;
 			for (int i = 0; i < MODE_MAX; i++) {
-				pipelines[v][i] = RD::get_singleton()->compute_pipeline_create(shader.version_get_shader(shader_version, i), specialization_constants);
+				pipelines[v][i] = RD::get_singleton()->compute_pipeline_create(shader.version_get_shader(shader_version, variant_base + i), specialization_constants);
 			}
 		}
 
@@ -3208,6 +3256,7 @@ void GI::free() {
 		RD::get_singleton()->free(hddagi_ubo);
 	}
 
+<<<<<<< HEAD
 	if (voxel_gi_debug_shader_version.is_valid()) {
 		voxel_gi_debug_shader.version_free(voxel_gi_debug_shader_version);
 	}
@@ -3233,6 +3282,8 @@ void GI::free() {
 		hddagi_shader.preprocess.version_free(hddagi_shader.preprocess_shader);
 	}
 
+=======
+>>>>>>> b89c47bb8511433440e5e547afe4459ca3383090
 	if (voxel_gi_lights) {
 		memdelete_arr(voxel_gi_lights);
 	}
@@ -3491,6 +3542,7 @@ void GI::process_gi(Ref<RenderSceneBuffersRD> p_render_buffers, const RID *p_nor
 		pipeline_specialization |= SHADER_SPECIALIZATION_USE_VRS;
 	}
 
+<<<<<<< HEAD
 	Mode mode;
 
 	if (use_hddagi) {
@@ -3503,17 +3555,200 @@ void GI::process_gi(Ref<RenderSceneBuffersRD> p_render_buffers, const RID *p_nor
 	} else {
 		mode = MODE_VOXEL_GI;
 		push_constant.occlusion_bias = 0;
+=======
+	bool without_sampler = RD::get_singleton()->sampler_is_format_supported_for_filter(RD::DATA_FORMAT_R8G8_UINT, RD::SAMPLER_FILTER_LINEAR);
+	Mode mode;
+	if (use_sdfgi && use_voxel_gi_instances) {
+		mode = without_sampler ? MODE_COMBINED_WITHOUT_SAMPLER : MODE_COMBINED;
+	} else if (use_sdfgi) {
+		mode = MODE_SDFGI;
+	} else {
+		mode = without_sampler ? MODE_VOXEL_GI_WITHOUT_SAMPLER : MODE_VOXEL_GI;
+>>>>>>> b89c47bb8511433440e5e547afe4459ca3383090
 	}
 
 	for (uint32_t v = 0; v < p_view_count; v++) {
 		push_constant.view_index = v;
 
 		// setup our uniform set
+<<<<<<< HEAD
 		RD::Uniform vgiu;
 		vgiu.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
 		vgiu.binding = 17;
 		for (int i = 0; i < MAX_VOXEL_GI_INSTANCES; i++) {
 			vgiu.append_id(rbgi->voxel_gi_textures[i]);
+=======
+		if (rbgi->uniform_set[v].is_null() || !RD::get_singleton()->uniform_set_is_valid(rbgi->uniform_set[v])) {
+			Vector<RD::Uniform> uniforms;
+			{
+				RD::Uniform u;
+				u.binding = 1;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				for (uint32_t j = 0; j < SDFGI::MAX_CASCADES; j++) {
+					if (use_sdfgi && j < sdfgi->cascades.size()) {
+						u.append_id(sdfgi->cascades[j].sdf_tex);
+					} else {
+						u.append_id(texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_3D_WHITE));
+					}
+				}
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.binding = 2;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				for (uint32_t j = 0; j < SDFGI::MAX_CASCADES; j++) {
+					if (use_sdfgi && j < sdfgi->cascades.size()) {
+						u.append_id(sdfgi->cascades[j].light_tex);
+					} else {
+						u.append_id(texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_3D_WHITE));
+					}
+				}
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.binding = 3;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				for (uint32_t j = 0; j < SDFGI::MAX_CASCADES; j++) {
+					if (use_sdfgi && j < sdfgi->cascades.size()) {
+						u.append_id(sdfgi->cascades[j].light_aniso_0_tex);
+					} else {
+						u.append_id(texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_3D_WHITE));
+					}
+				}
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.binding = 4;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				for (uint32_t j = 0; j < SDFGI::MAX_CASCADES; j++) {
+					if (use_sdfgi && j < sdfgi->cascades.size()) {
+						u.append_id(sdfgi->cascades[j].light_aniso_1_tex);
+					} else {
+						u.append_id(texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_3D_WHITE));
+					}
+				}
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				u.binding = 5;
+				if (use_sdfgi) {
+					u.append_id(sdfgi->occlusion_texture);
+				} else {
+					u.append_id(texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_3D_WHITE));
+				}
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
+				u.binding = 6;
+				u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_SAMPLER;
+				u.binding = 7;
+				u.append_id(material_storage->sampler_rd_get_default(RS::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, RS::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED));
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_IMAGE;
+				u.binding = 9;
+				u.append_id(p_render_buffers->get_texture_slice(RB_SCOPE_GI, RB_TEX_AMBIENT, v, 0));
+				uniforms.push_back(u);
+			}
+
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_IMAGE;
+				u.binding = 10;
+				u.append_id(p_render_buffers->get_texture_slice(RB_SCOPE_GI, RB_TEX_REFLECTION, v, 0));
+				uniforms.push_back(u);
+			}
+
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				u.binding = 11;
+				if (use_sdfgi) {
+					u.append_id(sdfgi->lightprobe_texture);
+				} else {
+					u.append_id(texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_2D_ARRAY_WHITE));
+				}
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				u.binding = 12;
+				u.append_id(p_render_buffers->get_depth_texture(v));
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				u.binding = 13;
+				u.append_id(p_normal_roughness_slices[v]);
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				u.binding = 14;
+				RID buffer = p_voxel_gi_buffer.is_valid() ? p_voxel_gi_buffer : texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_BLACK);
+				u.append_id(buffer);
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_UNIFORM_BUFFER;
+				u.binding = 15;
+				u.append_id(sdfgi_ubo);
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_UNIFORM_BUFFER;
+				u.binding = 16;
+				u.append_id(rbgi->get_voxel_gi_buffer());
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_TEXTURE;
+				u.binding = 17;
+				for (int i = 0; i < MAX_VOXEL_GI_INSTANCES; i++) {
+					u.append_id(rbgi->voxel_gi_textures[i]);
+				}
+				uniforms.push_back(u);
+			}
+			{
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_UNIFORM_BUFFER;
+				u.binding = 18;
+				u.append_id(rbgi->scene_data_ubo);
+				uniforms.push_back(u);
+			}
+			if (RendererSceneRenderRD::get_singleton()->is_vrs_supported()) {
+				RD::Uniform u;
+				u.uniform_type = RD::UNIFORM_TYPE_IMAGE;
+				u.binding = 19;
+				RID buffer = has_vrs_texture ? p_render_buffers->get_texture_slice(RB_SCOPE_VRS, RB_TEXTURE, v, 0) : texture_storage->texture_rd_get_default(RendererRD::TextureStorage::DEFAULT_RD_TEXTURE_VRS);
+				u.append_id(buffer);
+				uniforms.push_back(u);
+			}
+
+			bool vrs_supported = RendererSceneRenderRD::get_singleton()->is_vrs_supported();
+			int variant_base = vrs_supported ? MODE_MAX : 0;
+			rbgi->uniform_set[v] = RD::get_singleton()->uniform_set_create(uniforms, shader.version_get_shader(shader_version, variant_base), 0);
+>>>>>>> b89c47bb8511433440e5e547afe4459ca3383090
 		}
 
 		RID uniform_set = UniformSetCacheRD::get_singleton()->get_cache(
@@ -3652,4 +3887,12 @@ void GI::debug_voxel_gi(RID p_voxel_gi, RD::DrawListID p_draw_list, RID p_frameb
 	ERR_FAIL_NULL(voxel_gi);
 
 	voxel_gi->debug(p_draw_list, p_framebuffer, p_camera_with_transform, p_lighting, p_emission, p_alpha);
+<<<<<<< HEAD
 }
+=======
+}
+
+void GI::enable_vrs_shader_group() {
+	shader.enable_group(GROUP_VRS);
+}
+>>>>>>> b89c47bb8511433440e5e547afe4459ca3383090

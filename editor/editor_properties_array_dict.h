@@ -36,6 +36,7 @@
 class Button;
 class CheckButton;
 class EditorSpinSlider;
+class EditorVariantTypePopupMenu;
 class MarginContainer;
 
 class EditorPropertyArrayObject : public RefCounted {
@@ -111,7 +112,7 @@ protected:
 		}
 	};
 
-	PopupMenu *change_type = nullptr;
+	EditorVariantTypePopupMenu *change_type = nullptr;
 
 	bool preview_value = false;
 	int page_length = 20;
@@ -230,7 +231,7 @@ protected:
 		}
 	};
 
-	PopupMenu *change_type = nullptr;
+	EditorVariantTypePopupMenu *change_type = nullptr;
 	bool updating = false;
 	bool show_add = true;
 
