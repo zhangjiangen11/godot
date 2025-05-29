@@ -114,7 +114,7 @@ uint32_t RenderingDXIL::patch_specialization_constant(
 	switch (p_type) {
 		case RenderingDeviceCommons::PIPELINE_SPECIALIZATION_CONSTANT_TYPE_INT: {
 			uint32_t int_value = *((const int *)p_value);
-			ERR_FAIL_COND_V(int_value & (1 << 31), 0);
+			//ERR_FAIL_COND_V(int_value & (1 << 31), 0);
 			patch_val = int_value;
 		} break;
 		case RenderingDeviceCommons::PIPELINE_SPECIALIZATION_CONSTANT_TYPE_BOOL: {
@@ -123,7 +123,7 @@ uint32_t RenderingDXIL::patch_specialization_constant(
 		} break;
 		case RenderingDeviceCommons::PIPELINE_SPECIALIZATION_CONSTANT_TYPE_FLOAT: {
 			uint32_t int_value = *((const int *)p_value);
-			ERR_FAIL_COND_V(int_value & (1 << 31), 0);
+			//ERR_FAIL_COND_V(int_value & (1 << 31), 0);
 			patch_val = (int_value >> 1);
 		} break;
 	}
