@@ -1552,7 +1552,7 @@ void fragment_shader(in SceneData scene_data) {
 	vec3 diffuse_light = vec3(0.0, 0.0, 0.0);
 	vec3 ambient_light = vec3(0.0, 0.0, 0.0);
 #ifndef MODE_UNSHADED
-	// Used in regular draw pass and when drawing SDFs for HDDAGI and materials for VoxelGI.
+	// Used in regular draw pass and when drawing SDFs for SDFGI and materials for VoxelGI.
 	emission *= scene_data.emissive_exposure_normalization;
 #endif
 
@@ -1736,22 +1736,79 @@ void fragment_shader(in SceneData scene_data) {
 	}
 #else
 
-	if (sc_use_forward_gi() && bool(instances.data[instance_index].flags & INSTANCE_FLAGS_USE_HDDAGI)) { //has lightmap capture
+	if (sc_use_forward_gi() && bool(instances.data[instance_index].flags & INSTANCE_FLAGS_USE_SDFGI)) { //has lightmap capture
 
 		//make vertex orientation the world one, but still align to camera
 		vec3 cam_pos = mat3(scene_data.inv_view_matrix) * vertex;
 		vec3 cam_normal = mat3(scene_data.inv_view_matrix) * indirect_normal;
 		vec3 cam_reflection = mat3(scene_data.inv_view_matrix) * reflect(-view, indirect_normal);
 
-		vec4 ret_ambient;
-		vec4 ret_reflection;
-		hddagi_process(cam_pos, cam_normal, cam_reflection, roughness, ret_ambient, ret_reflection);
+		//apply y-mult
+		cam_pos.y *= sdfgi.y_mult;
+		cam_normal.y *= sdfgi.y_mult;
+		cam_normal = normalize(cam_normal);
+		cam_reflection.y *= sdfgi.y_mult;
+		cam_normal = normalize(cam_normal);
+		cam_reflection = normalize(cam_reflection);
 
-		ambient_light = mix(ambient_light, ret_ambient.rgb, ret_ambient.a);
-		indirect_specular_light = mix(indirect_specular_light, ret_reflection.rgb, ret_reflection.a);
+		vec4 light_accum = vec4(0.0);
+		float weight_accum = 0.0;
+
+		vec4 light_blend_accum = vec4(0.0);
+		float weight_blend_accum = 0.0;
+
+		float blend = -1.0;
+
+		// helper constants, compute once
+
+		uint cascade = 0xFFFFFFFF;
+		vec3 cascade_pos;
+		vec3 cascade_normal;
+
+		for (uint i = 0; i < sdfgi.max_cascades; i++) {
+			cascade_pos = (cam_pos - sdfgi.cascades[i].position) * sdfgi.cascades[i].to_probe;
+
+			if (any(lessThan(cascade_pos, vec3(0.0))) || any(greaterThanEqual(cascade_pos, sdfgi.cascade_probe_size))) {
+				continue; //skip cascade
+			}
+
+			cascade = i;
+			break;
+		}
+
+		if (cascade < SDFGI_MAX_CASCADES) {
+			bool use_specular = true;
+			float blend;
+			vec3 diffuse, specular;
+			sdfgi_process(cascade, cascade_pos, cam_pos, cam_normal, cam_reflection, use_specular, roughness, diffuse, specular, blend);
+
+			if (blend > 0.0) {
+				//blend
+				if (cascade == sdfgi.max_cascades - 1) {
+					diffuse = mix(diffuse, ambient_light, blend);
+					if (use_specular) {
+						indirect_specular_light = mix(specular, indirect_specular_light, blend);
+					}
+				} else {
+					vec3 diffuse2, specular2;
+					float blend2;
+					cascade_pos = (cam_pos - sdfgi.cascades[cascade + 1].position) * sdfgi.cascades[cascade + 1].to_probe;
+					sdfgi_process(cascade + 1, cascade_pos, cam_pos, cam_normal, cam_reflection, use_specular, roughness, diffuse2, specular2, blend2);
+					diffuse = mix(diffuse, diffuse2, blend);
+					if (use_specular) {
+						specular = mix(specular, specular2, blend);
+					}
+				}
+			}
+
+			ambient_light = diffuse;
+			if (use_specular) {
+				indirect_specular_light = specular;
+			}
+		}
 	}
 
-	if (sc_use_forward_gi() && bool(instances.data[instance_index].flags & INSTANCE_FLAGS_USE_HDDAGI)) { // process voxel_gi_instances
+	if (sc_use_forward_gi() && bool(instances.data[instance_index].flags & INSTANCE_FLAGS_USE_VOXEL_GI)) { // process voxel_gi_instances
 		uint index1 = instances.data[instance_index].gi_offset & 0xFFFF;
 		// Make vertex orientation the world one, but still align to camera.
 		vec3 cam_pos = mat3(scene_data.inv_view_matrix) * vertex;
@@ -1788,71 +1845,47 @@ void fragment_shader(in SceneData scene_data) {
 
 	if (!sc_use_forward_gi() && bool(instances.data[instance_index].flags & INSTANCE_FLAGS_USE_GI_BUFFERS)) { //use GI buffers
 
-		ivec2 coord = ivec2(gl_FragCoord.xy);
+		vec2 coord;
 
-		if (implementation_data.gi_upscale) {
-			if (implementation_data.gi_upscale_shift > 0) {
-				coord -= coord & 1;
-			}
-
-			ivec2 closest_coord = coord;
-
+		if (implementation_data.gi_upscale_for_msaa) {
+			vec2 base_coord = screen_uv;
+			vec2 closest_coord = base_coord;
 #ifdef USE_MULTIVIEW
-			vec4 closest_nr = texelFetch(sampler2DArray(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), ivec3(coord, ViewIndex), 0);
+			float closest_ang = dot(indirect_normal, normalize(textureLod(sampler2DArray(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), vec3(base_coord, ViewIndex), 0.0).xyz * 2.0 - 1.0));
 #else // USE_MULTIVIEW
-			vec4 closest_nr = texelFetch(sampler2D(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), coord, 0);
+			float closest_ang = dot(indirect_normal, normalize(textureLod(sampler2D(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), base_coord, 0.0).xyz * 2.0 - 1.0));
 #endif // USE_MULTIVIEW
-
-			float closest_r = closest_nr.a;
-			bool dynamic_object = closest_r > 0.5;
-			if (dynamic_object) {
-				closest_r = 1.0 - closest_r;
-			}
-			closest_r /= (127.0 / 255.0);
-
-			float closest_ang = dot(normal, normalize(closest_nr.xyz * 2.0 - 1.0));
-			closest_ang -= abs(closest_r - roughness) * 0.5;
 
 			for (int i = 0; i < 4; i++) {
-				const ivec2 neighbours[4] = ivec2[](ivec2(1, 0), ivec2(0, 1), ivec2(-1, 0), ivec2(0, -1));
-				ivec2 neighbour_coord = coord + (neighbours[i] << implementation_data.gi_upscale_shift);
+				const vec2 neighbors[4] = vec2[](vec2(-1, 0), vec2(1, 0), vec2(0, -1), vec2(0, 1));
+				vec2 neighbour_coord = base_coord + neighbors[i] * scene_data.screen_pixel_size;
 #ifdef USE_MULTIVIEW
-				closest_nr = texelFetch(sampler2DArray(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), ivec3(neighbour_coord, ViewIndex), 0);
+				float neighbour_ang = dot(indirect_normal, normalize(textureLod(sampler2DArray(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), vec3(neighbour_coord, ViewIndex), 0.0).xyz * 2.0 - 1.0));
 #else // USE_MULTIVIEW
-				closest_nr = texelFetch(sampler2D(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), neighbour_coord, 0);
+				float neighbour_ang = dot(indirect_normal, normalize(textureLod(sampler2D(normal_roughness_buffer, SAMPLER_LINEAR_CLAMP), neighbour_coord, 0.0).xyz * 2.0 - 1.0));
 #endif // USE_MULTIVIEW
-
-				float r = closest_nr.a;
-				dynamic_object = r > 0.5;
-				if (dynamic_object) {
-					r = 1.0 - r;
-				}
-				r /= (127.0 / 255.0);
-
-				float ang = dot(normal, normalize(closest_nr.xyz * 2.0 - 1.0));
-				ang -= abs(r - roughness) * 0.5;
-
-				if (ang > closest_ang) {
-					closest_ang = ang;
+				if (neighbour_ang > closest_ang) {
+					closest_ang = neighbour_ang;
 					closest_coord = neighbour_coord;
 				}
 			}
 
-			coord = closest_coord >> implementation_data.gi_upscale_shift;
+			coord = closest_coord;
+
+		} else {
+			coord = screen_uv;
 		}
 
 #ifdef USE_MULTIVIEW
-		vec3 buffer_ambient = texelFetch(sampler2DArray(ambient_buffer, SAMPLER_LINEAR_CLAMP), ivec3(coord, ViewIndex), 0).rgb;
-		vec3 buffer_reflection = texelFetch(sampler2DArray(reflection_buffer, SAMPLER_LINEAR_CLAMP), ivec3(coord, ViewIndex), 0).rgb;
-		vec2 buffer_blend = texelFetch(sampler2DArray(ambient_reflection_blend_buffer, SAMPLER_LINEAR_CLAMP), ivec3(coord, ViewIndex), 0).rg;
+		vec4 buffer_ambient = textureLod(sampler2DArray(ambient_buffer, SAMPLER_LINEAR_CLAMP), vec3(coord, ViewIndex), 0.0);
+		vec4 buffer_reflection = textureLod(sampler2DArray(reflection_buffer, SAMPLER_LINEAR_CLAMP), vec3(coord, ViewIndex), 0.0);
 #else // USE_MULTIVIEW
-		vec3 buffer_ambient = texelFetch(sampler2D(ambient_buffer, SAMPLER_LINEAR_CLAMP), coord, 0).rgb;
-		vec3 buffer_reflection = texelFetch(sampler2D(reflection_buffer, SAMPLER_LINEAR_CLAMP), coord, 0).rgb;
-		vec2 buffer_blend = texelFetch(sampler2D(ambient_reflection_blend_buffer, SAMPLER_LINEAR_CLAMP), coord, 0).rg;
+		vec4 buffer_ambient = textureLod(sampler2D(ambient_buffer, SAMPLER_LINEAR_CLAMP), coord, 0.0);
+		vec4 buffer_reflection = textureLod(sampler2D(reflection_buffer, SAMPLER_LINEAR_CLAMP), coord, 0.0);
 #endif // USE_MULTIVIEW
 
-		ambient_light = mix(ambient_light, buffer_ambient.rgb, buffer_blend.r);
-		indirect_specular_light = mix(indirect_specular_light, buffer_reflection.rgb, buffer_blend.g);
+		ambient_light = mix(ambient_light, buffer_ambient.rgb, buffer_ambient.a);
+		indirect_specular_light = mix(indirect_specular_light, buffer_reflection.rgb, buffer_reflection.a);
 	}
 #endif // !USE_LIGHTMAP
 
@@ -1946,6 +1979,38 @@ void fragment_shader(in SceneData scene_data) {
 	{
 		ambient_light *= ao;
 #ifndef SPECULAR_OCCLUSION_DISABLED
+#ifdef BENT_NORMAL_MAP_USED
+		// Apply cone to cone intersection with cosine weighted assumption:
+		// https://blog.selfshadow.com/publications/s2016-shading-course/activision/s2016_pbs_activision_occlusion.pdf
+		float cos_a_v = sqrt(1.0 - ao);
+		float limited_roughness = max(roughness, 0.01); // Avoid artifacts at really low roughness.
+		float cos_a_s = exp2((-log(10.0) / log(2.0)) * limited_roughness * limited_roughness);
+		float cos_b = dot(bent_normal_vector, reflect(-view, normal));
+
+		// Intersection between the spherical caps of the visibility and specular cone.
+		// Based on Christopher Oat and Pedro V. Sander's "Ambient aperture lighting":
+		// https://advances.realtimerendering.com/s2006/Chapter8-Ambient_Aperture_Lighting.pdf
+		float r1 = acos(cos_a_v);
+		float r2 = acos(cos_a_s);
+		float d = acos(cos_b);
+		float area = 0.0;
+
+		if (d <= max(r1, r2) - min(r1, r2)) {
+			// One cap is enclosed in the other.
+			area = M_TAU - M_TAU * max(cos_a_v, cos_a_s);
+		} else if (d >= r1 + r2) {
+			// No intersection.
+			area = 0.0;
+		} else {
+			float delta = abs(r1 - r2);
+			float x = 1.0 - clamp((d - delta) / (r1 + r2 - delta), 0.0, 1.0);
+			area = smoothstep(0.0, 1.0, x);
+			area *= M_TAU - M_TAU * max(cos_a_v, cos_a_s);
+		}
+
+		float specular_occlusion = area / (M_TAU * (1.0 - cos_a_s));
+		indirect_specular_light *= specular_occlusion;
+#else // BENT_NORMAL_MAP_USED
 		float specular_occlusion = (ambient_light.r * 0.3 + ambient_light.g * 0.59 + ambient_light.b * 0.11) * 2.0; // Luminance of ambient light.
 		specular_occlusion = min(specular_occlusion * 4.0, 1.0); // This multiplication preserves speculars on bright areas.
 
@@ -1954,6 +2019,7 @@ void fragment_shader(in SceneData scene_data) {
 		// Low enough for occlusion, high enough for reaction to lights and shadows.
 		specular_occlusion = max(min(reflective_f * specular_occlusion * 10.0, 1.0), specular_occlusion);
 		indirect_specular_light *= specular_occlusion;
+#endif // BENT_NORMAL_MAP_USED
 #endif // SPECULAR_OCCLUSION_DISABLED
 		ambient_light *= albedo.rgb;
 
@@ -2565,91 +2631,42 @@ void fragment_shader(in SceneData scene_data) {
 #ifdef MODE_RENDER_SDF
 
 	{
-		// Compute geometric normal
-		vec3 ddx_vertex = dFdx(vertex);
-		vec3 ddy_vertex = dFdy(vertex);
-		vec3 geometric_normal = normalize(cross(ddx_vertex, ddy_vertex));
+		vec3 local_pos = (implementation_data.sdf_to_bounds * vec4(vertex, 1.0)).xyz;
+		ivec3 grid_pos = implementation_data.sdf_offset + ivec3(local_pos * vec3(implementation_data.sdf_size));
 
-		/* This optimization needs more benchmark, does not seem to make a difference.
-		if (abs(dot(vec3(0,0,1),geometric_normal)) < 0.55) {
-			// Conservative value to discard this fragment if not belonging to this view
-			discard;
-		}*/
+		uint albedo16 = 0x1; //solid flag
+		albedo16 |= clamp(uint(albedo.r * 31.0), 0, 31) << 11;
+		albedo16 |= clamp(uint(albedo.g * 31.0), 0, 31) << 6;
+		albedo16 |= clamp(uint(albedo.b * 31.0), 0, 31) << 1;
 
-		/* This optimization breaks the image somehow, I have no idea why.
-		if (gl_HelperInvocation) {
-			return;
-		}*/
+		imageStore(albedo_volume_grid, grid_pos, uvec4(albedo16));
+
+		uint facing_bits = 0;
+		const vec3 aniso_dir[6] = vec3[](
+				vec3(1, 0, 0),
+				vec3(0, 1, 0),
+				vec3(0, 0, 1),
+				vec3(-1, 0, 0),
+				vec3(0, -1, 0),
+				vec3(0, 0, -1));
 
 		vec3 cam_normal = mat3(scene_data.inv_view_matrix) * normalize(normal_interp);
-		vec3 cam_geom_normal = mat3(scene_data.inv_view_matrix) * normalize(geometric_normal);
-		if (gl_FrontFacing) {
-			cam_geom_normal = -cam_geom_normal;
-		}
 
-		vec3 local_pos = (implementation_data.sdf_to_bounds * vec4(vertex, 1.0)).xyz;
-		vec3 grid_pos = vec3(implementation_data.sdf_offset) + local_pos * vec3(implementation_data.sdf_size);
-		ivec3 igrid_pos = ivec3(grid_pos);
+		float closest_dist = -1e20;
 
-		// Compute solid bits
-
-		// Compute normal bits.
-		// Lower 6 are inclusive (depending on axis vector.
-
-		// upper 26 are exclusive (With some margin), used to save something closer to the normal.
-
-		const int facing_direction_count = 26;
-		const vec3 facing_directions[26] = vec3[](vec3(-1.0, 0.0, 0.0), vec3(1.0, 0.0, 0.0), vec3(0.0, -1.0, 0.0), vec3(0.0, 1.0, 0.0), vec3(0.0, 0.0, -1.0), vec3(0.0, 0.0, 1.0), vec3(-0.5773502691896258, -0.5773502691896258, -0.5773502691896258), vec3(-0.7071067811865475, -0.7071067811865475, 0.0), vec3(-0.5773502691896258, -0.5773502691896258, 0.5773502691896258), vec3(-0.7071067811865475, 0.0, -0.7071067811865475), vec3(-0.7071067811865475, 0.0, 0.7071067811865475), vec3(-0.5773502691896258, 0.5773502691896258, -0.5773502691896258), vec3(-0.7071067811865475, 0.7071067811865475, 0.0), vec3(-0.5773502691896258, 0.5773502691896258, 0.5773502691896258), vec3(0.0, -0.7071067811865475, -0.7071067811865475), vec3(0.0, -0.7071067811865475, 0.7071067811865475), vec3(0.0, 0.7071067811865475, -0.7071067811865475), vec3(0.0, 0.7071067811865475, 0.7071067811865475), vec3(0.5773502691896258, -0.5773502691896258, -0.5773502691896258), vec3(0.7071067811865475, -0.7071067811865475, 0.0), vec3(0.5773502691896258, -0.5773502691896258, 0.5773502691896258), vec3(0.7071067811865475, 0.0, -0.7071067811865475), vec3(0.7071067811865475, 0.0, 0.7071067811865475), vec3(0.5773502691896258, 0.5773502691896258, -0.5773502691896258), vec3(0.7071067811865475, 0.7071067811865475, 0.0), vec3(0.5773502691896258, 0.5773502691896258, 0.5773502691896258));
-		//vec3 cam_normal = mat3(scene_data.inv_view_matrix) * normalize(normal_interp);
-
-		uint bit_normal = 0;
-
-		//const float exclusive_threshold = 0.86; // given min cos is 0.70710676908493
-		const float exclusive_threshold = 0.7; // given min cos is 0.70710676908493
-		const float inclusive_threshold = 0.001;
-
-		for (int i = 0; i < facing_direction_count; i++) {
-			float dp = dot(cam_geom_normal, facing_directions[i]);
-
-			if (i < 6 && dp > inclusive_threshold) {
-				bit_normal |= uint(1 << i);
-			}
-
-			if (dp > exclusive_threshold) {
-				bit_normal |= uint(1 << (i + 6));
+		for (uint i = 0; i < 6; i++) {
+			float d = dot(cam_normal, aniso_dir[i]);
+			if (d > closest_dist) {
+				closest_dist = d;
+				facing_bits = (1 << i);
 			}
 		}
 
 #ifdef NO_IMAGE_ATOMICS
 		imageStore(geom_facing_grid, grid_pos, uvec4(imageLoad(geom_facing_grid, grid_pos).r | facing_bits)); //store facing bits
 #else
-		imageAtomicOr(geom_normal_bits, igrid_pos, bit_normal); //store solid bits
+		imageAtomicOr(geom_facing_grid, grid_pos, facing_bits); //store facing bits
 #endif
-
-		// Compute aniso albedo
-
-		const vec3 aniso_dir[6] = vec3[](
-				vec3(-1, 0, 0),
-				vec3(1, 0, 0),
-				vec3(0, -1, 0),
-				vec3(0, 1, 0),
-				vec3(0, 0, -1),
-				vec3(0, 0, 1));
-
-		for (int i = 0; i < 6; i++) {
-			float d = dot(cam_normal, aniso_dir[i]);
-			if (d > 0.0) {
-				vec4 aniso_albedo = vec4(albedo, 1.0);
-
-				uint albedo16 = 0;
-				albedo16 |= clamp(uint(aniso_albedo.r * 31.0), 0, 31) << 0;
-				albedo16 |= clamp(uint(aniso_albedo.g * 63.0), 0, 63) << 5;
-				albedo16 |= clamp(uint(aniso_albedo.b * 31.0), 0, 31) << 11;
-				ivec3 store_pos = igrid_pos >> 1;
-				store_pos.z = store_pos.z * 6 + i;
-				imageStore(albedo_volume_grid, store_pos, uvec4(albedo16));
-			}
-		}
 
 		if (length(emission) > 0.001) {
 			float lumas[6];
@@ -2672,27 +2689,35 @@ void fragment_shader(in SceneData scene_data) {
 
 			//compress to RGBE9995 to save space
 
-			uint light_rgbe;
+			const float pow2to9 = 512.0f;
+			const float B = 15.0f;
+			const float N = 9.0f;
+			const float LN2 = 0.6931471805599453094172321215;
 
-			{
-				vec3 rgb = light_total.rgb;
+			float cRed = clamp(light_total.r, 0.0, 65408.0);
+			float cGreen = clamp(light_total.g, 0.0, 65408.0);
+			float cBlue = clamp(light_total.b, 0.0, 65408.0);
 
-				const float rgbe_max = uintBitsToFloat(0x477F8000);
-				const float rgbe_min = uintBitsToFloat(0x37800000);
+			float cMax = max(cRed, max(cGreen, cBlue));
 
-				rgb = clamp(rgb, 0, rgbe_max);
+			float expp = max(-B - 1.0f, floor(log(cMax) / LN2)) + 1.0f + B;
 
-				float max_channel = max(max(rgbe_min, rgb.r), max(rgb.g, rgb.b));
+			float sMax = floor((cMax / pow(2.0f, expp - B - N)) + 0.5f);
 
-				float bias = uintBitsToFloat((floatBitsToUint(max_channel) + 0x07804000) & 0x7F800000);
+			float exps = expp + 1.0f;
 
-				uvec3 urgb = floatBitsToUint(rgb + bias);
-				uint e = (floatBitsToUint(bias) << 4) + 0x10000000;
-				light_rgbe = e | (urgb.b << 18) | (urgb.g << 9) | (urgb.r & 0x1FF);
+			if (0.0 <= sMax && sMax < pow2to9) {
+				exps = expp;
 			}
 
-			imageStore(emission_grid, igrid_pos >> 1, uvec4(light_rgbe));
-			imageStore(emission_aniso_grid, igrid_pos >> 1, uvec4(light_aniso));
+			float sRed = floor((cRed / pow(2.0f, exps - B - N)) + 0.5f);
+			float sGreen = floor((cGreen / pow(2.0f, exps - B - N)) + 0.5f);
+			float sBlue = floor((cBlue / pow(2.0f, exps - B - N)) + 0.5f);
+			//store as 8985 to have 2 extra neighbor bits
+			uint light_rgbe = ((uint(sRed) & 0x1FFu) >> 1) | ((uint(sGreen) & 0x1FFu) << 8) | (((uint(sBlue) & 0x1FFu) >> 1) << 17) | ((uint(exps) & 0x1Fu) << 25);
+
+			imageStore(emission_grid, grid_pos, uvec4(light_rgbe));
+			imageStore(emission_aniso_grid, grid_pos, uvec4(light_aniso));
 		}
 	}
 

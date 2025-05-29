@@ -128,7 +128,7 @@ private:
 
 		enum {
 			VOLUMETRIC_FOG_PROCESS_SHADER_DENSITY,
-			VOLUMETRIC_FOG_PROCESS_SHADER_DENSITY_WITH_HDDAGI,
+			VOLUMETRIC_FOG_PROCESS_SHADER_DENSITY_WITH_SDFGI,
 			VOLUMETRIC_FOG_PROCESS_SHADER_FILTER,
 			VOLUMETRIC_FOG_PROCESS_SHADER_FOG,
 			VOLUMETRIC_FOG_PROCESS_SHADER_COPY,
@@ -311,7 +311,7 @@ public:
 			RID process_uniform_set2;
 		} gi_dependent_sets;
 
-		RID hddagi_uniform_set;
+		RID sdfgi_uniform_set;
 		RID sky_uniform_set;
 
 		int last_shadow_filter = -1;
@@ -346,7 +346,7 @@ public:
 		Ref<VolumetricFog> vfog;
 		ClusterBuilderRD *cluster_builder;
 		GI *gi;
-		Ref<GI::HDDAGI> hddagi;
+		Ref<GI::SDFGI> sdfgi;
 		Ref<GI::RenderBuffersGI> rbgi;
 		RID env;
 		SkyRD *sky;

@@ -142,7 +142,7 @@ float sc_luminance_multiplier() {
 	return 1.0;
 }
 
-#define HDDAGI_MAX_CASCADES 8
+#define SDFGI_MAX_CASCADES 8
 
 /* Set 0: Base Pass (never changes) */
 
@@ -153,7 +153,7 @@ layout(set = 0, binding = 2) uniform sampler shadow_sampler;
 #define INSTANCE_FLAGS_DYNAMIC (1 << 3)
 #define INSTANCE_FLAGS_NON_UNIFORM_SCALE (1 << 4)
 #define INSTANCE_FLAGS_USE_GI_BUFFERS (1 << 5)
-#define INSTANCE_FLAGS_USE_HDDAGI (1 << 6)
+#define INSTANCE_FLAGS_USE_SDFGI (1 << 6)
 #define INSTANCE_FLAGS_USE_LIGHTMAP_CAPTURE (1 << 7)
 #define INSTANCE_FLAGS_USE_LIGHTMAP (1 << 8)
 #define INSTANCE_FLAGS_USE_SH_LIGHTMAP (1 << 9)
@@ -229,36 +229,42 @@ layout(set = 0, binding = 12, std430) restrict readonly buffer GlobalShaderUnifo
 }
 global_shader_uniforms;
 
-struct HDDAGIProbeCascadeData {
+struct SDFVoxelGICascadeData {
 	vec3 position;
 	float to_probe;
-
-	ivec3 region_world_offset;
+	ivec3 probe_world_offset;
 	float to_cell; // 1/bounds * grid_size
-
 	vec3 pad;
 	float exposure_normalization;
-
-	uvec4 pad2;
 };
 
-layout(set = 0, binding = 13, std140) uniform HDDAGI {
-	ivec3 grid_size;
-	int max_cascades;
+layout(set = 0, binding = 13, std140) uniform SDFGI {
+	vec3 grid_size;
+	uint max_cascades;
 
+	bool use_occlusion;
+	int probe_axis_size;
+	float probe_to_uvw;
 	float normal_bias;
+
+	vec3 lightprobe_tex_pixel_size;
 	float energy;
+
+	vec3 lightprobe_uv_offset;
 	float y_mult;
-	float reflection_bias;
 
-	ivec3 probe_axis_size;
-	float esm_strength;
+	vec3 occlusion_clamp;
+	uint pad3;
 
-	uvec4 pad3;
+	vec3 occlusion_renormalize;
+	uint pad4;
 
-	HDDAGIProbeCascadeData cascades[HDDAGI_MAX_CASCADES];
+	vec3 cascade_probe_size;
+	uint pad5;
+
+	SDFVoxelGICascadeData cascades[SDFGI_MAX_CASCADES];
 }
-hddagi;
+sdfgi;
 
 layout(set = 0, binding = 14) uniform sampler DEFAULT_SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP;
 
@@ -288,10 +294,10 @@ struct ImplementationData {
 	mat4 sdf_to_bounds;
 
 	ivec3 sdf_offset;
-	int gi_upscale_shift;
+	uint pad2;
 
 	ivec3 sdf_size;
-	bool gi_upscale;
+	bool gi_upscale_for_msaa;
 
 	bool volumetric_fog_enabled;
 	float volumetric_fog_inv_length;
@@ -371,7 +377,7 @@ layout(set = 1, binding = 12 + 11) uniform sampler SAMPLER_LINEAR_WITH_MIPMAPS_A
 layout(r16ui, set = 1, binding = 24) uniform restrict writeonly uimage3D albedo_volume_grid;
 layout(r32ui, set = 1, binding = 25) uniform restrict writeonly uimage3D emission_grid;
 layout(r32ui, set = 1, binding = 26) uniform restrict writeonly uimage3D emission_aniso_grid;
-layout(r32ui, set = 1, binding = 27) uniform restrict uimage3D geom_normal_bits;
+layout(r32ui, set = 1, binding = 27) uniform restrict uimage3D geom_facing_grid;
 
 //still need to be present for shaders that use it, so remap them to something
 #define depth_buffer shadow_atlas
@@ -382,15 +388,12 @@ layout(r32ui, set = 1, binding = 27) uniform restrict uimage3D geom_normal_bits;
 #else
 
 #ifdef USE_MULTIVIEW
-
 layout(set = 1, binding = 24) uniform texture2DArray depth_buffer;
 layout(set = 1, binding = 25) uniform texture2DArray color_buffer;
 layout(set = 1, binding = 26) uniform texture2DArray normal_roughness_buffer;
 layout(set = 1, binding = 27) uniform texture2DArray ao_buffer;
 layout(set = 1, binding = 28) uniform texture2DArray ambient_buffer;
 layout(set = 1, binding = 29) uniform texture2DArray reflection_buffer;
-layout(set = 1, binding = 30) uniform texture2DArray ambient_reflection_blend_buffer;
-
 #define multiviewSampler sampler2DArray
 #else // USE_MULTIVIEW
 layout(set = 1, binding = 24) uniform texture2D depth_buffer;
@@ -399,13 +402,10 @@ layout(set = 1, binding = 26) uniform texture2D normal_roughness_buffer;
 layout(set = 1, binding = 27) uniform texture2D ao_buffer;
 layout(set = 1, binding = 28) uniform texture2D ambient_buffer;
 layout(set = 1, binding = 29) uniform texture2D reflection_buffer;
-layout(set = 1, binding = 30) uniform texture2D ambient_reflection_blend_buffer;
 #define multiviewSampler sampler2D
 #endif
-
-layout(set = 1, binding = 31) uniform texture2DArray hddagi_lightprobe_specular;
-layout(set = 1, binding = 32) uniform texture2DArray hddagi_lightprobe_diffuse;
-layout(set = 1, binding = 33) uniform texture3D hddagi_occlusion[2];
+layout(set = 1, binding = 30) uniform texture2DArray sdfgi_lightprobe_texture;
+layout(set = 1, binding = 31) uniform texture3D sdfgi_occlusion_cascades;
 
 struct VoxelGIData {
 	mat4 xform; // 64 - 64
@@ -422,18 +422,17 @@ struct VoxelGIData {
 	float exposure_normalization; // 4 - 112
 };
 
-layout(set = 1, binding = 34, std140) uniform VoxelGIs {
+layout(set = 1, binding = 32, std140) uniform VoxelGIs {
 	VoxelGIData data[MAX_VOXEL_GI_INSTANCES];
 }
 voxel_gi_instances;
 
-layout(set = 1, binding = 35) uniform texture3D volumetric_fog_texture;
+layout(set = 1, binding = 33) uniform texture3D volumetric_fog_texture;
 
 #ifdef USE_MULTIVIEW
-layout(set = 1, binding = 36) uniform texture2DArray ssil_buffer;
+layout(set = 1, binding = 34) uniform texture2DArray ssil_buffer;
 #else
-layout(set = 1, binding = 36) uniform texture2D ssil_buffer;
-
+layout(set = 1, binding = 34) uniform texture2D ssil_buffer;
 #endif // USE_MULTIVIEW
 
 #endif

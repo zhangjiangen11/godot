@@ -219,25 +219,19 @@ void LightStorage::light_set_param(RID p_light, RS::LightParam p_param, float p_
 
 	light->param[p_param] = p_value;
 
-	if(p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_1_OFFSET) {
+	if (p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_1_OFFSET) {
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET] = RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE * p_value;
-	}
-	else if(p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_2_OFFSET) {
+	} else if (p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_2_OFFSET) {
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET] = RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE * p_value;
-	}
-	else if(p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_3_OFFSET) {
+	} else if (p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_3_OFFSET) {
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET] = RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE * p_value;
-	}
-	else if(p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET) {
+	} else if (p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET) {
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_1_OFFSET] = p_value / light->param[RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE];
-	}
-	else if(p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET) {
+	} else if (p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET) {
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_2_OFFSET] = p_value / light->param[RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE];
-	}
-	else if(p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET) {
+	} else if (p_param == RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET) {
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_3_OFFSET] = p_value / light->param[RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE];
-	}
-	else if(p_param == RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE) {
+	} else if (p_param == RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE) {
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET] = light->param[RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE] * light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_1_OFFSET];
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET] = light->param[RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE] * light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_2_OFFSET];
 		light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET] = light->param[RS::LIGHT_PARAM_SHADOW_MAX_DISTANCE] * light->param[RS::LIGHT_PARAM_SHADOW_SPLIT_3_OFFSET];
@@ -342,11 +336,11 @@ void LightStorage::light_set_bake_mode(RID p_light, RS::LightBakeMode p_bake_mod
 	light->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_LIGHT);
 }
 
-void LightStorage::light_set_max_hddagi_cascade(RID p_light, uint32_t p_cascade) {
+void LightStorage::light_set_max_sdfgi_cascade(RID p_light, uint32_t p_cascade) {
 	Light *light = light_owner.get_or_null(p_light);
 	ERR_FAIL_NULL(light);
 
-	light->max_hddagi_cascade = p_cascade;
+	light->max_sdfgi_cascade = p_cascade;
 
 	light->version++;
 	light->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_LIGHT);
@@ -421,11 +415,11 @@ RS::LightDirectionalShadowMode LightStorage::light_directional_get_shadow_mode(R
 	return light->directional_shadow_mode;
 }
 
-uint32_t LightStorage::light_get_max_hddagi_cascade(RID p_light) {
+uint32_t LightStorage::light_get_max_sdfgi_cascade(RID p_light) {
 	const Light *light = light_owner.get_or_null(p_light);
 	ERR_FAIL_NULL_V(light, 0);
 
-	return light->max_hddagi_cascade;
+	return light->max_sdfgi_cascade;
 }
 
 RS::LightBakeMode LightStorage::light_get_bake_mode(RID p_light) {

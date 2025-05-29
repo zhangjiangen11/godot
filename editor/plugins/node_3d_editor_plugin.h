@@ -147,8 +147,8 @@ class Node3DEditorViewport : public Control {
 		VIEW_DISPLAY_DEBUG_VOXEL_GI_ALBEDO,
 		VIEW_DISPLAY_DEBUG_VOXEL_GI_LIGHTING,
 		VIEW_DISPLAY_DEBUG_VOXEL_GI_EMISSION,
-		VIEW_DISPLAY_DEBUG_HDDAGI,
-		VIEW_DISPLAY_DEBUG_HDDAGI_PROBES,
+		VIEW_DISPLAY_DEBUG_SDFGI,
+		VIEW_DISPLAY_DEBUG_SDFGI_PROBES,
 		VIEW_DISPLAY_DEBUG_SCENE_LUMINANCE,
 		VIEW_DISPLAY_DEBUG_SSAO,
 		VIEW_DISPLAY_DEBUG_SSIL,
@@ -1077,7 +1077,7 @@ class ViewportNavigationControl : public Control {
 protected:
 	void _notification(int p_what);
 	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-	void _draw() override;
+	void _draw();
 	void _process_click(int p_index, Vector2 p_position, bool p_pressed);
 	void _process_drag(int p_index, Vector2 p_position, Vector2 p_relative_position);
 	void _update_navigation();

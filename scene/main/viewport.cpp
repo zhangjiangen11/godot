@@ -341,10 +341,9 @@ void Viewport::_sub_window_update(Window *p_window) {
 
 	if (!p_window->get_flag(Window::FLAG_BORDERLESS)) {
 		Ref<StyleBox> panel = gui.subwindow_focused == p_window ? p_window->theme_cache.embedded_border : p_window->theme_cache.embedded_unfocused_border;
-		if(p_window->user_data.background.is_valid()) {
+		if (p_window->user_data.background.is_valid()) {
 			p_window->user_data.background->draw_rect(sw.canvas_item, r);
-		}
-		else {
+		} else {
 			panel->draw(sw.canvas_item, r);
 		}
 
@@ -371,14 +370,12 @@ void Viewport::_sub_window_update(Window *p_window) {
 
 		bool pressed = gui.subwindow_focused == sw.window && gui.subwindow_drag == SUB_WINDOW_DRAG_CLOSE && gui.subwindow_drag_close_inside;
 		Ref<Texture2D> close_icon = pressed ? p_window->theme_cache.close_pressed : p_window->theme_cache.close;
-		if(pressed) {
-			
-			if(p_window->user_data.close_pressed.is_valid()) {
+		if (pressed) {
+			if (p_window->user_data.close_pressed.is_valid()) {
 				close_icon = p_window->user_data.close_pressed;
-			}			
-		}
-		else {
-			if(p_window->user_data.close.is_valid()) {
+			}
+		} else {
+			if (p_window->user_data.close.is_valid()) {
 				close_icon = p_window->user_data.close;
 			}
 		}
@@ -704,12 +701,6 @@ void Viewport::_notification(int p_what) {
 			// mouse_focus, because, for example, we want to continue
 			// dragging a scrollbar even if the mouse has left the viewport.
 		} break;
-		//case NOTIFICATION_CHILD_ORDER_CHANGED: {
-		//	if (is_inside_tree()) {
-		//		_propagate_enter_world_3d(this);
-		//	}
-
-		//} break;
 
 		case NOTIFICATION_WM_WINDOW_FOCUS_OUT: {
 			_gui_cancel_tooltip();
@@ -5268,8 +5259,8 @@ void Viewport::_bind_methods() {
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_SSIL);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_PSSM_SPLITS);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_DECAL_ATLAS);
-	BIND_ENUM_CONSTANT(DEBUG_DRAW_HDDAGI);
-	BIND_ENUM_CONSTANT(DEBUG_DRAW_HDDAGI_PROBES);
+	BIND_ENUM_CONSTANT(DEBUG_DRAW_SDFGI);
+	BIND_ENUM_CONSTANT(DEBUG_DRAW_SDFGI_PROBES);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_GI_BUFFER);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_DISABLE_LOD);
 	BIND_ENUM_CONSTANT(DEBUG_DRAW_CLUSTER_OMNI_LIGHTS);

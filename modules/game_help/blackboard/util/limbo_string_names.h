@@ -31,7 +31,12 @@ class LimboStringNames {
 	LimboStringNames();
 
 public:
-	_FORCE_INLINE_ static LimboStringNames *get_singleton() { return singleton; }
+	_FORCE_INLINE_ static LimboStringNames *get_singleton() {
+		if (!singleton) {
+			create();
+		}
+		return singleton;
+	}
 
 	StringName _generate_name;
 	StringName _param_type;

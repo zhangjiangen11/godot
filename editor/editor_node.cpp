@@ -479,13 +479,10 @@ void EditorNode::_update_from_settings() {
 	RS::get_singleton()->directional_soft_shadow_filter_set_quality(directional_shadow_quality);
 	float probe_update_speed = GLOBAL_GET("rendering/lightmapping/probe_capture/update_speed");
 	RS::get_singleton()->lightmap_set_probe_capture_update_speed(probe_update_speed);
-	RS::EnvironmentHDDAGIFramesToConverge frames_to_converge = RS::EnvironmentHDDAGIFramesToConverge(int(GLOBAL_GET("rendering/global_illumination/hddagi/frames_to_converge")));
-	RS::get_singleton()->environment_set_hddagi_frames_to_converge(frames_to_converge);
-	RS::EnvironmentHDDAGIFramesToUpdateLight frames_to_update_light = RS::EnvironmentHDDAGIFramesToUpdateLight(int(GLOBAL_GET("rendering/global_illumination/hddagi/frames_to_update_lights")));
-	RS::get_singleton()->environment_set_hddagi_frames_to_update_light(frames_to_update_light);
-	RS::EnvironmentHDDAGIInactiveProbeFrames inactive_probe_frames = RS::EnvironmentHDDAGIInactiveProbeFrames(int(GLOBAL_GET("rendering/global_illumination/hddagi/frames_to_update_inactive_probes")));
-	RS::get_singleton()->environment_set_hddagi_inactive_probe_frames(inactive_probe_frames);
-
+	RS::EnvironmentSDFGIFramesToConverge frames_to_converge = RS::EnvironmentSDFGIFramesToConverge(int(GLOBAL_GET("rendering/global_illumination/sdfgi/frames_to_converge")));
+	RS::get_singleton()->environment_set_sdfgi_frames_to_converge(frames_to_converge);
+	RS::EnvironmentSDFGIRayCount ray_count = RS::EnvironmentSDFGIRayCount(int(GLOBAL_GET("rendering/global_illumination/sdfgi/probe_ray_count")));
+	RS::get_singleton()->environment_set_sdfgi_ray_count(ray_count);
 	RS::VoxelGIQuality voxel_gi_quality = RS::VoxelGIQuality(int(GLOBAL_GET("rendering/global_illumination/voxel_gi/quality")));
 	RS::get_singleton()->voxel_gi_set_quality(voxel_gi_quality);
 	RS::get_singleton()->environment_set_volumetric_fog_volume_size(GLOBAL_GET("rendering/environment/volumetric_fog/volume_size"), GLOBAL_GET("rendering/environment/volumetric_fog/volume_depth"));
@@ -3343,16 +3340,16 @@ void EditorNode::_menu_option_confirm(int p_option, bool p_confirmed) {
 			_discard_changes();
 		} break;
 		case SPINNER_UPDATE_CONTINUOUSLY: {
-			EditorSettings::get_singleton()->set(SNAME("interface/editor/update_continuously"), true);
+			EditorSettings::get_singleton()->set("interface/editor/update_continuously", true);
 			_update_update_spinner();
 			show_accept(TTR("This option is deprecated. Situations where refresh must be forced are now considered a bug. Please report."), TTR("OK"));
 		} break;
 		case SPINNER_UPDATE_WHEN_CHANGED: {
-			EditorSettings::get_singleton()->set(SNAME("interface/editor/update_continuously"), false);
+			EditorSettings::get_singleton()->set("interface/editor/update_continuously", false);
 			_update_update_spinner();
 		} break;
 		case SPINNER_UPDATE_SPINNER_HIDE: {
-			EditorSettings::get_singleton()->set(SNAME("interface/editor/show_update_spinner"), 2); // Disabled
+			EditorSettings::get_singleton()->set("interface/editor/show_update_spinner", 2); // Disabled
 			_update_update_spinner();
 		} break;
 		case EDITOR_OPEN_SETTINGS: {
@@ -4135,8 +4132,8 @@ void EditorNode::_set_main_scene_state(Dictionary p_state, Node *p_for_scene) {
 	editor_data.notify_edited_scene_changed();
 	emit_signal(SNAME("scene_changed"));
 
-	// Reset HDDAGI after everything else so that any last-second scene modifications will be processed.
-	RenderingServer::get_singleton()->hddagi_reset();
+	// Reset SDFGI after everything else so that any last-second scene modifications will be processed.
+	RenderingServer::get_singleton()->sdfgi_reset();
 }
 
 bool EditorNode::is_changing_scene() const {
