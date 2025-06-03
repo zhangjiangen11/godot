@@ -50,7 +50,7 @@ static Error set_name(const String &p_name,uint64_t handle = 0) {
 	}
 	HRESULT res = E_FAIL;
 	if (w10_SetThreadDescription) {
-		res = w10_SetThreadDescription(hThread, (LPCWSTR)p_name.utf16().get_data());
+		res = w10_SetThreadDescription(hThread, (LPCWSTR)p_name.utf16().get_data()); // Windows 10 Redstone (1607) only.
 	}
 	return SUCCEEDED(res) ? OK : ERR_INVALID_PARAMETER;
 }

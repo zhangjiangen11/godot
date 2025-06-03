@@ -4433,13 +4433,17 @@ int Main::start() {
 
 #ifdef TOOLS_ENABLED
 		if (editor) {
+<<<<<<< HEAD
 			bool editor_embed_subwindows = EditorSettings::get_singleton()->get_setting(
 					SNAME("interface/editor/single_window_mode"));
+=======
+			bool editor_embed_subwindows = EDITOR_GET("interface/editor/single_window_mode");
+>>>>>>> e45cc68092906465df3ea9e820a7c77d602addb1
 
 			if (editor_embed_subwindows) {
 				sml->get_root()->set_embedding_subwindows(true);
 			}
-			restore_editor_window_layout = EditorSettings::get_singleton()->get_setting(SNAME("interface/editor/editor_screen")).operator int() == EditorSettings::InitialScreen::INITIAL_SCREEN_AUTO;
+			restore_editor_window_layout = EDITOR_GET("interface/editor/editor_screen").operator int() == EditorSettings::InitialScreen::INITIAL_SCREEN_AUTO;
 		}
 #endif
 
