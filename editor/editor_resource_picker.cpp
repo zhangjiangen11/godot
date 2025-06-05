@@ -470,8 +470,12 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 		case OBJ_MENU_PASTE:
 		case OBJ_MENU_PASTE_AS_UNIQUE: {
 			edited_resource = EditorSettings::get_singleton()->get_resource_clipboard();
+			Ref<Resource> resource = get_edited_resource();
+			if (resource.is_null()) {
+				return;
+			}
 			if (p_which == OBJ_MENU_PASTE_AS_UNIQUE ||
-					(EditorNode::get_singleton()->get_edited_scene() && edited_resource->is_built_in() && edited_resource->get_path().get_slice("::", 0) != EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path())) {
+					(EditorNode::get_singleton()->get_edited_scene() && resource->is_built_in() && resource->get_path().get_slice("::", 0) != EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path())) {
 				// Automatically make resource unique if it belongs to another scene,
 				// or if requested by the user with the Paste as Unique option.
 				if (p_which == OBJ_MENU_PASTE_AS_UNIQUE) {
