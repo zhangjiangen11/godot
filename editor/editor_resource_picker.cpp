@@ -69,7 +69,7 @@ void EditorResourcePicker::_update_resource() {
 			assign_button->set_modulate(Color(1, 0.5, 0.5));
 		} else {
 			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->(), SNAME("Object")));
-			if(resource.is_valid()) {
+			if (resource.is_valid()) {
 				if (!resource->get_name().is_empty()) {
 					assign_button->set_text(resource->get_name());
 				} else if (resource->get_path().is_resource_file()) {
@@ -85,21 +85,18 @@ void EditorResourcePicker::_update_resource() {
 
 				// Preview will override the above, so called at the end.
 				EditorResourcePreview::get_singleton()->queue_edited_resource_preview(resource, this, "_update_resource_preview", resource->get_instance_id());
-				
-			}
-			else
-			{
+
+			} else {
 				String name = class_name;
-				if(edited_resource.is_valid() && edited_resource->has_method("get_name")) {
+				if (edited_resource.is_valid() && edited_resource->has_method("get_name")) {
 					String nm = edited_resource->call("get_name");
-					if(!nm.is_empty()) {
+					if (!nm.is_empty()) {
 						name = nm;
 					}
-				}				
+				}
 				assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->(), SNAME("Object")));
 				assign_button->set_text(name);
 				assign_button->set_tooltip_text(TTR("Type:") + " " + class_name);
-
 			}
 		}
 	} else if (edited_resource.is_valid()) {
@@ -150,10 +147,10 @@ void EditorResourcePicker::_resource_selected() {
 	}
 
 	Ref<Resource> resource = edited_resource;
-	if(resource.is_valid()) {
+	if (resource.is_valid()) {
 		FileSystemDock::get_singleton()->navigate_to_path(resource->get_path());
 	}
-	emit_signal(SNAME("resource_selected"), edited_resource, false);		
+	emit_signal(SNAME("resource_selected"), edited_resource, false);
 }
 
 void EditorResourcePicker::_resource_changed() {
@@ -314,6 +311,7 @@ void EditorResourcePicker::_update_menu_items() {
 
 		if (paste_valid) {
 			edit_menu->add_item(TTR("Paste"), OBJ_MENU_PASTE);
+			edit_menu->add_item(TTRC("Paste as Unique"), OBJ_MENU_PASTE_AS_UNIQUE);
 		}
 	}
 
@@ -469,17 +467,20 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 			EditorSettings::get_singleton()->set_resource_clipboard(resource);
 		} break;
 
-		case OBJ_MENU_PASTE: {
-			Ref<Resource> resource = EditorSettings::get_singleton()->get_resource_clipboard();
-			if(resource.is_null()) {
-				return;
-			}
-
-			edited_resource = resource;
-			if (resource->is_built_in() && EditorNode::get_singleton()->get_edited_scene() &&
-					resource->get_path().get_slice("::", 0) != EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path()) {
-				// Automatically make resource unique if it belongs to another scene.
-				_edit_menu_cbk(OBJ_MENU_MAKE_UNIQUE);
+		case OBJ_MENU_PASTE:
+		case OBJ_MENU_PASTE_AS_UNIQUE: {
+			edited_resource = EditorSettings::get_singleton()->get_resource_clipboard();
+			if (p_which == OBJ_MENU_PASTE_AS_UNIQUE ||
+					(EditorNode::get_singleton()->get_edited_scene() && edited_resource->is_built_in() && edited_resource->get_path().get_slice("::", 0) != EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path())) {
+				// Automatically make resource unique if it belongs to another scene,
+				// or if requested by the user with the Paste as Unique option.
+				if (p_which == OBJ_MENU_PASTE_AS_UNIQUE) {
+					// Use the recursive version when using Paste as Unique.
+					// This will show up a dialog to select which resources to make unique.
+					_edit_menu_cbk(OBJ_MENU_MAKE_UNIQUE_RECURSIVE);
+				} else {
+					_edit_menu_cbk(OBJ_MENU_MAKE_UNIQUE);
+				}
 				return;
 			}
 			_resource_changed();
@@ -487,7 +488,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 
 		case OBJ_MENU_SHOW_IN_FILE_SYSTEM: {
 			Ref<Resource> resource = get_edited_resource();
-			if(resource.is_null()) {
+			if (resource.is_null()) {
 				return;
 			}
 			FileSystemDock::get_singleton()->navigate_to_path(resource->get_path());
@@ -503,7 +504,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 				int to_type = p_which - CONVERT_BASE_ID;
 
 				Ref<Resource> resource = edited_resource;
-				if(!resource.is_valid()) {
+				if (!resource.is_valid()) {
 					break;
 				}
 				Vector<Ref<EditorResourceConversionPlugin>> conversions = EditorNode::get_singleton()->find_resource_conversion_plugin_for_resource(edited_resource);
