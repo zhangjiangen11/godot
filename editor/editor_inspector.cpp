@@ -2022,8 +2022,9 @@ void EditorInspectorSection::_notification(int p_what) {
 
 				bool folded = (foldable || hide_feature) && !object->editor_is_section_unfolded(section);
 
+				String draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
 				if (folded && revertable_properties.size()) {
-					int label_width = theme_cache.bold_font->get_string_size(draw_label, HORIZONTAL_ALIGNMENT_LEFT, available, theme_cache.bold_font_size, TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_CONSTRAIN_ELLIPSIS).x;
+					int label_width = theme_cache.bold_font->get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, available, theme_cache.bold_font_size, TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_CONSTRAIN_ELLIPSIS).x;
 
 					// Can we fit the long version of the revertable count text?
 					num_revertable_str = vformat(TTRN("(%d change)", "(%d changes)", revertable_properties.size()), revertable_properties.size());
