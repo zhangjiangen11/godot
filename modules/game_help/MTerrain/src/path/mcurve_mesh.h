@@ -17,10 +17,9 @@
 
 #include <mutex>
 
-class MeshSlicedInfo : public RefCounted {
+class MeshSlicedInfo {
 public:
-	float length;
-	RID mesh_rid = RID(); // This used to detect the uniqueness
+	float lenght;
 	Ref<Material> material;
 	PackedVector3Array vertex;
 	PackedVector3Array normal;
@@ -31,13 +30,18 @@ public:
 	PackedInt32Array index;
 	Vector<float> sliced_pos;
 	Vector<Vector<int32_t>> sliced_info;
-	void merge_vertex_by_distance(float merge_distance = 0.0001f); // after calling this sliced_pos and slice_info are invalid and should be recalculate
+	void merge_vertex_by_distance(float merge_distance = 0.0001f); // after calling this sliced_pos and slice_info are invalide and should be recalculate
 	void clear();
 	int slice_count() const;
-	void get_color(int mesh_count, PackedColorArray &input);
-	void get_uv(int mesh_count, PackedVector2Array &input);
-	void get_uv2(int mesh_count, PackedVector2Array &input);
-	void get_index(int mesh_count, PackedInt32Array &input);
+	void get_color(int mesh_count, PackedColorArray &input) const;
+	void get_uv(int mesh_count, PackedVector2Array &input) const;
+	void get_uv2(int mesh_count, PackedVector2Array &input) const;
+	void get_index(int mesh_count, PackedInt32Array &input) const;
+};
+
+struct MeshSlicedInfoSurfaces : RefCounted {
+	RID mesh_rid = RID(); // This used to detect the uniqueness
+	Vector<MeshSlicedInfo> slice_info;
 };
 
 class MCurveMesh : public Node {
@@ -59,10 +63,10 @@ private:
 
 	struct MeshSlicedInfoArray {
 		// order of each mesh lod
-		Vector<Ref<MeshSlicedInfo>> meshes;
+		Vector<Ref<MeshSlicedInfoSurfaces>> meshes;
 		inline void resize(int new_size) { meshes.resize(new_size); }
-		inline void set(int index, Ref<MeshSlicedInfo> input) { meshes.set(index, input); }
-		inline Ref<MeshSlicedInfo> get(int index) const { return meshes[index]; }
+		inline void set(int index, Ref<MeshSlicedInfoSurfaces> input) { meshes.set(index, input); }
+		inline Ref<MeshSlicedInfoSurfaces> get(int index) const { return meshes[index]; }
 		inline int size() const { return meshes.size(); }
 	};
 
@@ -94,7 +98,7 @@ public:
 	void _generate_all_mesh_sliced_info();
 
 private:
-	Ref<MeshSlicedInfo> _generate_mesh_sliced_info(Ref<Mesh> mesh);
+	MeshSlicedInfo _generate_mesh_sliced_info(Ref<Mesh> mesh, int surface_index);
 
 public:
 	void _update_visibilty();

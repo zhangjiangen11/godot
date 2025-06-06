@@ -28,8 +28,6 @@ void MMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_set_surfaces", "surfaces"), &MMesh::_set_surfaces);
 	ClassDB::bind_method(D_METHOD("_get_surfaces"), &MMesh::_get_surfaces);
 	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "_surfaces", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_surfaces", "_get_surfaces");
-
-	ClassDB::bind_method(D_METHOD("debug_test"), &MMesh::debug_test);
 }
 
 void MMesh::_create_if_not_exist() {
@@ -337,6 +335,7 @@ Ref<ArrayMesh> MMesh::get_mesh() const {
 	ERR_FAIL_COND_V(materials_set.size() == 0, out);
 	for (int i = 0; i < _surfaces.size(); i++) {
 		out->surface_set_material(i, materials_set[0].get_material_no_user(i));
+		out->surface_set_name(i, surface_get_name(i));
 	}
 	return out;
 }
@@ -641,7 +640,7 @@ bool MMesh::_set(const StringName &p_name, const Variant &p_value) {
 	if (p_name.begins_with("materials/set_")) {
 		String mname = p_name.replace("materials/set_", "");
 		int e = mname.find("/");
-		int e2 = mname.find(" _");
+		int e2 = mname.find("_");
 		if (e == -1 || e2 == -1) {
 			return false;
 		}
@@ -701,16 +700,43 @@ String MMesh::_to_string() {
 	return String("<MMesh-,") + itos(get_instance_id()) + String(">");
 }
 
-void MMesh::debug_test() {
-	Ref<Material> mat;
-	mat.instantiate();
-	//UtilityFunctions::print("Debug test");
-	PackedStringArray _str_paths;
-	_str_paths.push_back("res://massets/meshes/3.res");
-	//_str_paths.push_back("res://massets/foo.res");
-	//_str_paths.push_back("res://loo.res");
-	MaterialSet ms(1);
-	ms.set_material(0, mat);
-	// UtilityFunctions::print(get_string_from_ascii(ms.surface_materials_paths));
-	//UtilityFunctions::print(ms.get_surface_materials_paths());
+RID MMesh::get_rid() const {
+	return mesh;
 }
+
+
+int32_t MMesh::surface_get_array_len(int32_t p_index) const {
+	ERR_FAIL_INDEX_V(p_index, surfaces.size(), 0);
+	return surfaces[p_index].array_length;
+}
+
+int32_t MMesh::surface_get_array_index_len(int32_t p_index) const {
+	ERR_FAIL_INDEX_V(p_index, surfaces.size(), 0);
+	return surfaces[p_index].index_array_length;
+}
+
+
+BitField<Mesh::ArrayFormat> MMesh::surface_get_format(int32_t p_index) const {
+	ERR_FAIL_INDEX_V(p_index, surfaces.size(), 0);
+	return surfaces[p_index].format;
+}
+
+Mesh::PrimitiveType MMesh::surface_get_primitive_type(int32_t p_index) const {
+	ERR_FAIL_INDEX_V(p_index, surfaces.size(), PRIMITIVE_POINTS);
+	return surfaces[p_index].primitive;
+}
+
+int32_t MMesh::get_blend_shape_count() const {
+	return 0;
+}
+
+/*
+void MMesh::_surface_set_material(int32_t p_index, const Ref<Material> &p_material){
+
+}
+
+Ref<Material> MMesh::_surface_get_material(int32_t p_index) const{
+
+}
+*/
+

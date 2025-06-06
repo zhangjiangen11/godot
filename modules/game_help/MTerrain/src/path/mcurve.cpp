@@ -8,7 +8,7 @@
 MOctree *MCurve::octree = nullptr;
 
 void MCurve::set_octree(MOctree *input) {
-	ERR_FAIL_COND_MSG(octree != nullptr, "Only one octree can update MPath");
+	ERR_FAIL_COND_MSG(octree != nullptr, "Only one octree can udpate MPath");
 	octree = input;
 }
 
@@ -36,7 +36,7 @@ void MCurve::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("connect_points", "p0", "p1", "conn_type"), &MCurve::connect_points);
 	ClassDB::bind_method(D_METHOD("disconnect_conn", "conn_id"), &MCurve::disconnect_conn);
 	ClassDB::bind_method(D_METHOD("disconnect_points", "p0", "p1"), &MCurve::disconnect_points);
-	ClassDB::bind_method(D_METHOD("remove_point_by_index", "point_index"), &MCurve::remove_point);
+	ClassDB::bind_method(D_METHOD("remove_point", "point_index"), &MCurve::remove_point);
 	ClassDB::bind_method(D_METHOD("clear_points"), &MCurve::clear_points);
 
 	ClassDB::bind_method(D_METHOD("get_conn_id", "p0", "p1"), &MCurve::get_conn_id);
@@ -70,8 +70,13 @@ void MCurve::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("commit_point_update", "p_index"), &MCurve::commit_point_update);
 	ClassDB::bind_method(D_METHOD("commit_conn_update", "conn_id"), &MCurve::commit_conn_update);
 
+	ClassDB::bind_method(D_METHOD("get_point_order_tangent", "point_a", "point_b", "t"), &MCurve::get_point_order_tangent);
+	ClassDB::bind_method(D_METHOD("get_conn_tangent", "conn_id", "t"), &MCurve::get_conn_tangent);
+	ClassDB::bind_method(D_METHOD("get_point_order_transform", "point_a", "point_b", "t", "tilt", "scale"), &MCurve::get_point_order_transform);
+	ClassDB::bind_method(D_METHOD("get_conn_transform", "conn_id", "t", "tilt", "scale"), &MCurve::get_conn_transform);
+
 	ClassDB::bind_method(D_METHOD("toggle_conn_type", "point", "conn_id"), &MCurve::toggle_conn_type);
-	ClassDB::bind_method(D_METHOD("validate_conn", "conn_id", "send_sig"), &MCurve::validate_conn, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("validate_conn", "conn_id"), &MCurve::validate_conn);
 	ClassDB::bind_method(D_METHOD("swap_points", "p_a", "p_b"), &MCurve::swap_points);
 	ClassDB::bind_method(D_METHOD("swap_points_with_validation", "p_a", "p_b"), &MCurve::swap_points_with_validation);
 	ClassDB::bind_method(D_METHOD("sort_from", "root_id", "increasing"), &MCurve::sort_from);
@@ -83,7 +88,6 @@ void MCurve::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_conn_aabb", "conn_id"), &MCurve::get_conn_aabb);
 	ClassDB::bind_method(D_METHOD("get_conns_aabb", "conn_ids"), &MCurve::get_conns_aabb);
 	ClassDB::bind_method(D_METHOD("get_closest_ratio_to_point", "conn_id", "pos"), &MCurve::get_closest_ratio_to_point);
-	ClassDB::bind_method(D_METHOD("get_conn_transform", "t", "conn_id", "apply_tilt", "apply_scale"), &MCurve::get_conn_transform);
 	ClassDB::bind_method(D_METHOD("get_conn_lenght", "conn_id"), &MCurve::get_conn_lenght);
 	ClassDB::bind_method(D_METHOD("get_conn_distance_ratio", "conn_id", "distance"), &MCurve::get_conn_distance_ratio);
 
@@ -108,7 +112,7 @@ void MCurve::_bind_methods() {
 }
 
 MCurve::Point::Point(Vector3 _position, Vector3 _in, Vector3 _out) :
-		in(_in), out(_out), position(_position) {
+		position(_position), out(_out), in(_in) {
 }
 
 MCurve::PointSave MCurve::Point::get_point_save() {
@@ -144,6 +148,9 @@ MCurve::MCurve() {
 }
 
 MCurve::~MCurve() {
+	if (octree) {
+		octree->remove_oct_id(oct_id);
+	}
 }
 
 int MCurve::get_points_count() {
@@ -157,7 +164,7 @@ void MCurve::_increase_points_buffer_size(size_t q) {
 	}
 	int64_t lsize = points_buffer.size();
 	Error err = points_buffer.resize(lsize + q);
-	ERR_FAIL_COND_MSG(err != OK, "Can't increase point buffer size, possible fragmentation error!");
+	ERR_FAIL_COND_MSG(err != Error::OK, "Can't increase point buffer size, possible fragmentation error!");
 	for (int64_t i = points_buffer.size() - 1; i >= lsize; i--) {
 		if (i == INVALID_POINT_INDEX) {
 			continue;
@@ -168,7 +175,7 @@ void MCurve::_increase_points_buffer_size(size_t q) {
 
 int32_t MCurve::get_curve_users_id() {
 	last_curve_id++;
-	curve_users.push_back(last_curve_id);
+	curve_users.insert(last_curve_id);
 	return last_curve_id;
 }
 void MCurve::remove_curve_user_id(int32_t user_id) {
@@ -368,7 +375,6 @@ void MCurve::remove_point(const int32_t point_index) {
 }
 
 void MCurve::clear_points() {
-	//VariantUtilityFunctions::print("Clear points ");
 	points_buffer.clear();
 	free_buffer_indicies.clear();
 	if (is_init_insert) {
@@ -385,7 +391,7 @@ void MCurve::init_insert() {
 	if (is_init_insert) {
 		return;
 	}
-	ERR_FAIL_COND_MSG(octree == nullptr, "No octree assigned to update curves, please assign a octree by calling enable_as_curve_updater and restart Godot");
+	ERR_FAIL_COND_MSG(octree == nullptr, "No octree asigned to update curves, please asign a octree by calling enable_as_curve_updater and restart Godot");
 	// inserting points into octree
 	PackedVector3Array positions;
 	PackedInt32Array ids;
@@ -410,7 +416,7 @@ void MCurve::_octree_update_finish() {
 	}
 	conn_update.clear();
 	point_update.clear();
-	//Point *ptrw = points_buffer.ptrw();
+	Point *ptrw = points_buffer.ptrw();
 	//HashSet<int32_t> updated_points;
 	Vector<int32_t> updated_points;
 	for (int i = 0; i < update_info.size(); i++) {
@@ -423,7 +429,7 @@ void MCurve::_octree_update_finish() {
 		PointUpdateInfo point_update_info;
 		if (update_info[i].lod > active_lod_limit) {
 			if (p->lod > active_lod_limit) {
-				continue; // Same as before was deactivate
+				continue; // Same as before was deactive
 			}
 			active_points.erase(update_info[i].id);
 			point_update_info.current_lod = -1;
@@ -445,14 +451,14 @@ void MCurve::_octree_update_finish() {
 		const Point *p = points_buffer.ptr() + cpoint;
 		for (int c = 0; c < MAX_CONN; c++) { // Here we really using c++
 			if (p->conn[c] != INVALID_POINT_INDEX) {
-				int32_t next_point_index = std::abs(p->conn[c]); // We don't care about conn type here! connection type is encode in positive and negetive of conn
+				int32_t next_point_index = std::abs(p->conn[c]); // We don't care about conn type here! conneciton type is encode in positive and negetive of conn
 				Conn conn(cpoint, next_point_index);
 				if (processed_conns.has(conn.id)) {
 					continue;
 				}
 				ERR_FAIL_COND(!has_point(next_point_index));
 				Point *next_point = points_buffer.ptrw() + next_point_index;
-				// below can be done considering the fact INVALID_POINT_LOD is a big number
+				// bellow can be done considering the fact INVALID_POINT_LOD is a big number
 				int8_t new_lod = p->lod < next_point->lod ? p->lod : next_point->lod;
 				int8_t last_lod = conn_list.has(conn.id) ? conn_list[conn.id] : INVALID_POINT_LOD;
 				conn_list.insert(conn.id, new_lod); // contain real lod without active_lod_limit
@@ -478,6 +484,7 @@ void MCurve::_octree_update_finish() {
 			}
 		}
 	}
+	processing_users = curve_users;
 	emit_signal("curve_updated");
 	is_waiting_for_user = true;
 	emit_signal("connection_updated");
@@ -581,8 +588,8 @@ PackedVector3Array MCurve::get_conn_baked_points(int64_t input_conn) {
 			b_control = b->out;
 		}
 	}
-	float length = get_length_between_basic(a, b, a_control, b_control);
-	int pcount = length / bake_interval; // This is only for middle points
+	float lenght = get_length_between_basic(a, b, a_control, b_control);
+	int pcount = lenght / bake_interval; // This is only for middle points
 	pcount = pcount == 0 ? 1 : pcount;
 	out.resize(pcount + 1); // including start and end pos
 	out.set(0, a->position);
@@ -1106,22 +1113,22 @@ Transform3D MCurve::get_point_order_transform(int32_t point_a, int32_t point_b, 
 		}
 	}
 	// See if is straight perpendiculare line which is not handled by _get_bezier_transform
-	Transform3D ptransform;
+	Transform3D ptrasform;
 	if (a->position.is_equal_approx(a_control) && b->position.is_equal_approx(b_control) && Math::is_equal_approx(a->position.x, b->position.x) && Math::is_equal_approx(a->position.z, b->position.z)) {
-		ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
+		ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
 	}
-	ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
+	ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
 	// Applying tilt
 	if (tilt) {
 		float current_tilt = Math::lerp(a->tilt, b->tilt, t);
-		ptransform.basis.rotate(ptransform.basis[0], current_tilt);
+		ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
 	}
 	// Applying scale
 	if (scale) {
 		float current_scale = Math::lerp(a->scale, b->scale, t);
-		ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+		ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
 	}
-	return ptransform;
+	return ptrasform;
 }
 
 Transform3D MCurve::get_conn_transform(int64_t conn_id, float t, bool apply_tilt, bool apply_scale) {
@@ -1140,20 +1147,20 @@ Transform3D MCurve::get_conn_transform(int64_t conn_id, float t, bool apply_tilt
 		}
 	}
 	// See if is straight perpendiculare line which is not handled by _get_bezier_transform
-	Transform3D ptransform;
+	Transform3D ptrasform;
 	if (a->position.is_equal_approx(a_control) && b->position.is_equal_approx(b_control) && Math::is_equal_approx(a->position.x, b->position.x) && Math::is_equal_approx(a->position.z, b->position.z)) {
-		ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
+		ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t);
 	}
-	ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
+	ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t);
 	if (apply_tilt) {
 		float current_tilt = Math::lerp(a->tilt, b->tilt, t);
-		ptransform.basis.rotate(ptransform.basis[0], current_tilt);
+		ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
 	}
 	if (apply_scale) {
 		float current_scale = Math::lerp(a->scale, b->scale, t);
-		ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+		ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
 	}
-	return ptransform;
+	return ptrasform;
 }
 
 void MCurve::get_conn_transforms(int64_t conn_id, const Vector<float> &t, Vector<Transform3D> &transforms, bool apply_tilt, bool apply_scale) {
@@ -1175,26 +1182,26 @@ void MCurve::get_conn_transforms(int64_t conn_id, const Vector<float> &t, Vector
 	// See if is straight perpendiculare line which is not handled by _get_bezier_transform
 	if (a->position.is_equal_approx(a_control) && b->position.is_equal_approx(b_control) && Math::is_equal_approx(a->position.x, b->position.x) && Math::is_equal_approx(a->position.z, b->position.z)) {
 		for (int i = 0; i < t.size(); i++) {
-			Transform3D ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t[i]);
+			Transform3D ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 0, 1), t[i]);
 			float current_tilt = Math::lerp(a->tilt, b->tilt, t[i]);
 			float current_scale = Math::lerp(a->scale, b->scale, t[i]);
-			ptransform.basis.rotate(ptransform.basis[0], current_tilt);
-			ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
-			transforms.set(i, ptransform);
+			ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
+			ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+			transforms.set(i, ptrasform);
 		}
 		return;
 	}
 	for (int i = 0; i < t.size(); i++) {
-		Transform3D ptransform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t[i]);
+		Transform3D ptrasform = _get_bezier_transform(a->position, b->position, a_control, b_control, Vector3(0, 1, 0), t[i]);
 		if (apply_tilt) {
 			float current_tilt = Math::lerp(a->tilt, b->tilt, t[i]);
-			ptransform.basis.rotate(ptransform.basis[0], current_tilt);
+			ptrasform.basis.rotate(ptrasform.basis[0], current_tilt);
 		}
 		if (apply_scale) {
 			float current_scale = Math::lerp(a->scale, b->scale, t[i]);
-			ptransform.basis.scale(Vector3(current_scale, current_scale, current_scale));
+			ptrasform.basis.scale(Vector3(current_scale, current_scale, current_scale));
 		}
-		transforms.set(i, ptransform);
+		transforms.set(i, ptrasform);
 	}
 }
 
@@ -1270,7 +1277,7 @@ Pair<int, int> MCurve::get_conn_distances_ratios(int64_t conn_id, const Vector<f
 	ERR_FAIL_COND_V(dis == nullptr, out);
 	float smallest_ratio = 10.0;
 	int smallest_ration_index = -1;
-	float biggest_ratio = 0.0;
+	float biggest_ratio = -10.0;
 	int biggest_ratio_index = -1;
 	for (int i = 0; i < distances.size(); i++) {
 		float ratio = _get_conn_distance_ratios(dis, distances[i]);
@@ -1328,7 +1335,7 @@ float MCurve::_get_conn_distance_ratios(const float *baked_dis, const float dist
 	float b;
 	float a_ratio;
 	/// Despite its name hight is the lower bound here
-	if (high < 0) { // is before point dis[0] and the zero length or start point
+	if (high < 0) { // is before point dis[0] and the zero lenght or start point
 		a = 0;
 		b = baked_dis[0];
 		a_ratio = 0.0f;
@@ -1350,7 +1357,7 @@ float MCurve::_get_conn_distance_ratios(const float *baked_dis, const float dist
 	if LENGTH_POINT_SAMPLE_COUNT = N
 	a.pos --------------------------- b.pos
 			0...1...2...3...,...,.....N-1
-	There is not baked distance at a.pos as it is always zero distance
+	There is not baked distnace at a.pos as it is always zero distance
 
 */
 _FORCE_INLINE_ float *MCurve::_bake_conn_distance(int64_t conn_id) {
@@ -1371,24 +1378,24 @@ _FORCE_INLINE_ float *MCurve::_bake_conn_distance(int64_t conn_id) {
 
 	ConnDistances conn_d;
 	float _interval = 1.0f / LENGTH_POINT_SAMPLE_COUNT;
-	float length = 0;
+	float lenght = 0;
 	Vector3 last_pos = a->position;
 	for (int i = 1; i < LENGTH_POINT_SAMPLE_COUNT; i++) {
 		Vector3 current_pos = a->position.bezier_interpolate(a_control, b_control, b->position, _interval * i);
-		length += last_pos.distance_to(current_pos);
+		lenght += last_pos.distance_to(current_pos);
 		last_pos = current_pos;
 		if (i % DISTANCE_BAKE_INTERVAL == 0) {
-			conn_d.dis[(i / DISTANCE_BAKE_INTERVAL) - 1] = length;
+			conn_d.dis[(i / DISTANCE_BAKE_INTERVAL) - 1] = lenght;
 		}
 	}
-	length += last_pos.distance_to(b->position);
-	conn_d.dis[DISTANCE_BAKE_TOTAL - 1] = length;
+	lenght += last_pos.distance_to(b->position);
+	conn_d.dis[DISTANCE_BAKE_TOTAL - 1] = lenght;
 	conn_distances.insert(conn_id, conn_d);
 	return conn_distances[conn_id].dis;
 }
 /*
-	below rename_ ... methods has only internal use and should not be called
-	for now it used for swapping two point
+	bellow rename_ ... methods has only internal use and should not be called
+	for now it used for swaping two point
 */
 void MCurve::toggle_conn_type(int32_t point, int64_t conn_id) {
 	ERR_FAIL_COND(!has_point(point));
@@ -1568,7 +1575,7 @@ int32_t MCurve::sort_from(int32_t root_point, bool increasing) {
 		int32_t sorted_pid = all_points_sorted[i];
 		if ((sorted_pid < pid && increasing) || (sorted_pid > pid && !increasing)) {
 			swap_points(pid, sorted_pid);
-			// swapping in all_point
+			// swaping in all_point
 			// as we pass this index we don't check it we need to only change other index
 			int oswap = all_points.find(sorted_pid);
 			ERR_FAIL_COND_V(oswap == -1, root_point);
@@ -1804,17 +1811,17 @@ int MCurve::get_active_lod_limit() {
 }
 
 float MCurve::get_length_between_basic(const Point *a, const Point *b, const Vector3 &a_control, const Vector3 &b_control) {
-	float length = 0;
+	float lenght = 0;
 	Vector3 last_position = a->position;
 	if (LENGTH_POINT_SAMPLE_COUNT_BASIC >= 1) {
 		float p_interval = 1.0 / LENGTH_POINT_SAMPLE_COUNT_BASIC;
 		for (int i = 1; i <= LENGTH_POINT_SAMPLE_COUNT_BASIC; i++) {
 			Vector3 current_position = a->position.bezier_interpolate(a_control, b_control, b->position, p_interval * i);
-			length += current_position.distance_to(last_position);
+			lenght += current_position.distance_to(last_position);
 			last_position = current_position;
 		}
 	}
-	length += b->position.distance_to(last_position);
+	lenght += b->position.distance_to(last_position);
 
-	return length;
+	return lenght;
 }

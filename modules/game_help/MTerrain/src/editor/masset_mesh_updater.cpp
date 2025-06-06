@@ -9,6 +9,7 @@
 #include "../mtool.h"
 #include "masset_table.h"
 
+#include "../hlod/mhlod_node3d.h"
 #include "masset_mesh.h"
 
 VSet<MAssetMeshUpdater *> MAssetMeshUpdater::asset_mesh_updater_list;
@@ -97,7 +98,10 @@ void MAssetMeshUpdater::_update_lod(int lod) {
 			continue;
 		}
 		if (cur_node->get("asset_mesh_updater").get_type() == Variant::Type::NIL) {
-			children.append_array(cur_node->get_children());
+			MHlodNode3D *packed_scene_asset = Object::cast_to<MHlodNode3D>(cur_node);
+			if (!packed_scene_asset) {
+				children.append_array(cur_node->get_children());
+			}
 		}
 		MAssetMesh *amesh = Object::cast_to<MAssetMesh>(cur_node);
 		if (amesh) {
@@ -105,7 +109,7 @@ void MAssetMeshUpdater::_update_lod(int lod) {
 				amesh->destroy_meshes();
 			} else {
 				uint16_t avariation_layer = amesh->has_meta("variation_layers") ? (int)amesh->get_meta("variation_layers") : 0;
-				if (avariation_layer == 0 || (avariation_layer & variation_layer) != 0) {
+				if ((avariation_layer == 0 || (avariation_layer & variation_layer) != 0) && amesh->is_visible_in_tree()) {
 					amesh->update_lod(lod);
 				} else {
 					amesh->update_lod(-1);
@@ -122,7 +126,7 @@ void MAssetMeshUpdater::_update_lod(int lod) {
 		}
 		MHlodScene *h = Object::cast_to<MHlodScene>(cur_node);
 		if (h) {
-			h->set_is_hidden(is_join_mesh);
+			h->set_is_hidden(is_join_mesh || !h->is_visible_in_tree());
 		}
 	}
 	if (show_boundary && MHlodScene::get_octree()) {

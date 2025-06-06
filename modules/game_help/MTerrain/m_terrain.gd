@@ -18,9 +18,6 @@ var gizmo_mpath
 var gizmo_masset_mesh
 
 var inspector_mpath
-
-var timer = Timer.new()
-var needs_restart = false
 	
 #var MLOD_Mesh_Importer
 var asset_browser
@@ -30,17 +27,6 @@ var loaded_scenes = []
 var gltf_extras_importer
 
 var asset_table:MAssetTable
-
-func check_restart():
-	
-	if GDExtensionManager.is_extension_loaded("res://addons/m_terrain/libs/MTerrain.gdextension"):
-		if needs_restart:
-			EditorInterface.restart_editor()
-		else: return true
-	else:
-		needs_restart = true
-		timer.start(0.5)
-		return false
 
 #region keyboard actions
 var default_keyboard_actions 
@@ -88,15 +74,8 @@ func _enter_tree():
 		version = get_plugin_version()
 		MTerrainSettings.add_projects_settings()
 		init_asset_table()
-		timer.one_shot = true
-		timer.timeout.connect(check_restart)
-		add_child(timer)
-		timer.start(0.5)
-		if not check_restart(): return
-			
 		var main_screen = EditorInterface.get_editor_main_screen()											
 		main_screen_changed.connect(_on_main_screen_changed)		
-	
 		tools = load("res://addons/m_terrain/gui/mtools.tscn").instantiate()		
 		tools.request_info_window.connect(show_info_window)
 		tools.request_import_window.connect(show_import_window)
@@ -145,8 +124,7 @@ func _enter_tree():
 				
 		add_keymap()				
 		
-		asset_browser = load("res://addons/m_terrain/asset_manager/Asset_Placer.tscn").instantiate()
-		asset_browser.ur = get_undo_redo()
+		asset_browser = load("res://addons/m_terrain/asset_manager/Asset_Placer.tscn").instantiate()		
 		#scene_closed.connect(Callable(asset_browser,"scene_closed"))
 		add_control_to_bottom_panel(asset_browser, "Assets")
 		
@@ -155,14 +133,15 @@ func _enter_tree():
 		add_inspector_plugin(asset_browser_inspector_plugin)
 		gltf_extras_importer = GLTFExtras.new()
 		GLTFDocument.register_gltf_document_extension(gltf_extras_importer)		
-	
+		init_import_info_settings()
+		MTool.enable_editor_plugin()
+		
 func _ready() -> void:	
 	EditorInterface.set_main_screen_editor("Script")
 	EditorInterface.set_main_screen_editor("3D")	
 	
 func _exit_tree():	
 	if Engine.is_editor_hint():				
-		timer.queue_free()
 		remove_keymap()	
 		remove_tool_menu_item("MTerrain import/export")
 		remove_tool_menu_item("MTerrain image create/remove")		
@@ -219,7 +198,7 @@ func _handles(object):
 	if not current_main_screen_name == "3D":
 		tools.request_hide()
 		return false
-	if asset_browser.need_editor_input:
+	if asset_browser.asset_place_control.need_editor_input:
 		return true
 	tsnap.visible = false
 	if tools.on_handles(object): 		
@@ -229,8 +208,8 @@ func _handles(object):
 func _forward_3d_gui_input(viewport_camera, event):
 	if not is_instance_valid(EditorInterface.get_edited_scene_root()): 
 		return AFTER_GUI_INPUT_PASS
-	if asset_browser.need_editor_input:
-		return asset_browser._forward_3d_gui_input(viewport_camera,event)
+	if asset_browser.asset_place_control.need_editor_input:
+		return asset_browser.asset_place_control._forward_3d_gui_input(viewport_camera,event)
 	
 	if tools.forward_3d_gui_input(viewport_camera, event):		
 		return AFTER_GUI_INPUT_STOP
@@ -332,3 +311,11 @@ func update_keymap(who, keycode, ctrl, alt, shift):
 			default_keyboard_actions[i].ctrl = ctrl
 			default_keyboard_actions[i].alt = alt
 			default_keyboard_actions[i].shift = shift			
+
+static func init_import_info_settings():	
+	var import_info = MAssetTable.get_singleton().import_info
+	if not import_info.has("__settings"):
+		import_info["__settings"] = {}
+	if not import_info["__settings"].has("Materials blend file"): 
+		import_info["__settings"]["Materials blend file"] = {"value": "", "type":TYPE_STRING, "hint":"path_global"}
+	MAssetTable.save()

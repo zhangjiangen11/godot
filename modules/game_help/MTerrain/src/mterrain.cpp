@@ -292,9 +292,8 @@ void MTerrain::create_grid() {
 			DirAccess::make_dir_recursive_absolute(layersDataDir);
 		}
 	}
-	_chunks = memnew(MChunks);
 	grid->update_renderer_info();
-	_chunks->create_chunks(size_list[min_size_index], size_list[max_size_index], h_scale_list[min_h_scale_index], h_scale_list[max_h_scale_index], size_info);
+	grid->_chunks.create_chunks(size_list[min_size_index], size_list[max_size_index], h_scale_list[min_h_scale_index], h_scale_list[max_h_scale_index], size_info);
 	grid->set_scenario(get_world_3d()->get_scenario());
 	grid->space = get_world_3d()->get_space();
 	grid->offset = offset;
@@ -328,7 +327,7 @@ void MTerrain::create_grid() {
 		grid->set_terrain_material(m);
 	}
 	grid->lod_distance = lod_distance;
-	grid->create(terrain_size.x, terrain_size.y, _chunks);
+	grid->create(terrain_size.x, terrain_size.y);
 	if (!grid->is_created()) {
 		return;
 	}
@@ -558,13 +557,13 @@ int MTerrain::get_image_id(String uniform_name) {
 
 void MTerrain::set_save_config(Ref<ConfigFile> conf) {
 	ERR_FAIL_COND(!grid);
-	Vector<String> sections = conf->get_sections();
-	for (const String &section : sections) {
+	PackedStringArray sections = conf->get_sections();
+	for (String section : sections) {
 		if (section == "heightmap") {
 			if (conf->has_section_key(section, "accuracy")) {
 				grid->save_config.accuracy = conf->get_value(section, "accuracy");
 			} else {
-				WARN_PRINT("Can not find accuracy in save config file");
+				WARN_PRINT("Can not find accuraccy in save config file");
 			}
 			if (conf->has_section_key(section, "file_compress")) {
 				grid->save_config.heightmap_file_compress = (MResource::FileCompress)((int)conf->get_value(section, "file_compress"));
@@ -647,7 +646,7 @@ void MTerrain::set_dataDir(String input) {
 	ERR_FAIL_COND_MSG(grid->is_created(), "Can not change dataDir after terrain is created!");
 	dataDir = input;
 	if (Engine::get_singleton()->is_editor_hint() && !dataDir.is_empty() && dataDir != String("res://") && dataDir.is_absolute_path() && layersDataDir.is_empty() && is_inside_tree()) {
-		// Setting automatically layer data directory
+		// Setting automaticly layer data directory
 		layersDataDir = dataDir.path_join("layers");
 	}
 }
@@ -1036,7 +1035,7 @@ bool MTerrain::_set(const StringName &_name, const Variant &p_value) {
 		brush_layers[index] = p_value;
 		return true;
 	}
-	/// Compatibility stuff
+	/// Compatibilty stuff
 	if (p_name == String("max_range")) {
 		set_max_range(p_value);
 		return true;

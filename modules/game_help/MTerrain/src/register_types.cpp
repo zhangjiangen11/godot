@@ -34,6 +34,7 @@
 #include "octmesh/moctmesh.h"
 
 #include "path/mcurve.h"
+#include "path/mcurve_instance.h"
 #include "path/mcurve_mesh.h"
 #include "path/mcurve_mesh_override.h"
 #include "path/mcurve_terrain.h"
@@ -85,6 +86,9 @@ void initialize_mterrain_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<MIntersection>();
 	ClassDB::register_class<MCurveMesh>();
 	ClassDB::register_class<MCurveMeshOverride>();
+	ClassDB::register_class<MCurveInstance>();
+	ClassDB::register_class<MCurveInstanceElement>();
+	ClassDB::register_class<MCurveInstanceOverride>();
 	ClassDB::register_class<MCurveTerrain>();
 
 	ClassDB::register_class<MHlod>();
@@ -96,7 +100,7 @@ void initialize_mterrain_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<MDecalInstance>();
 }
 
-void uninitialize_mterrain_module(ModuleInitializationLevel p_level) {
+void uninitialize_test_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
 	}
 }

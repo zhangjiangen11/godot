@@ -14,11 +14,10 @@
 
 #include "../octmesh/mmesh_lod.h"
 
-class MIntersectionInfo : public RefCounted {
+class MIntersectionInfo {
 public:
 	int num_sockts;
-	float length;
-	RID mesh_rid = RID();
+	float lenght;
 	Ref<Material> material;
 	PackedVector3Array vertex;
 	PackedVector3Array normal;
@@ -28,6 +27,11 @@ public:
 	PackedVector2Array uv2;
 	PackedInt32Array index;
 	PackedFloat32Array weights;
+};
+
+struct MIntersectionInfoSurfaces : public RefCounted {
+	RID mesh_rid = RID();
+	Vector<MIntersectionInfo> intersections;
 };
 
 class MIntersection : public Resource {
@@ -40,17 +44,17 @@ private:
 	bool _is_init = false;
 	Ref<MMeshLod> mesh;
 	TypedArray<Transform3D> sockets;
-	Vector<Ref<MIntersectionInfo>> mesh_info;
+	Vector<Ref<MIntersectionInfoSurfaces>> mesh_info;
 
 	Ref<ArrayMesh> debug_mesh;
 
 public:
 	bool is_init();
-	Ref<MIntersectionInfo> get_mesh_info(int lod);
+	Ref<MIntersectionInfoSurfaces> get_mesh_info(int lod);
 	void generate_mesh_info();
 
 private:
-	void _generate_mesh_info(Ref<Mesh> m, Ref<MIntersectionInfo> info);
+	MIntersectionInfo _generate_mesh_info(Ref<Mesh> m, int surface_index);
 
 public:
 	Ref<ArrayMesh> get_debug_mesh();

@@ -66,11 +66,11 @@ void MCurveTerrain::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("modify_grass", "conn_ids", "grass", "start_offset", "radius", "add"), &MCurveTerrain::modify_grass);
 }
 
-void MCurveTerrain::set_curve(Ref<MCurve> input) {
+void MCurveTerrain::set_curve(MCurve *input) {
 	curve = input;
 }
 
-Ref<MCurve> MCurveTerrain::get_curve() {
+MCurve *MCurveTerrain::get_curve() {
 	return curve;
 }
 
@@ -305,8 +305,8 @@ void MCurveTerrain::deform_on_conns(const PackedInt64Array &conn_ids) {
 				}
 				processed_px.insert(t_px);
 				float h = grid->get_height_by_pixel(t_px.x, t_px.y);
-				float _t = VariantUtilityFunctions::smoothstep(total_dis, _paint_radius, std::abs(side_dis));
-				h = (ppp.y - h) * _t + h;
+				float t = Math::smoothstep(total_dis, _paint_radius, std::abs(side_dis));
+				h = (ppp.y - h) * t + h;
 				grid->set_height_by_pixel(t_px.x, t_px.y, h);
 				side_dis += interval_meter;
 			}

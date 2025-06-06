@@ -193,7 +193,7 @@ void MRegion::create_physics() {
 	d["min_height"] = min_height;
 	d["max_height"] = max_height;
 	Vector3 _pos = world_pos + Vector3(grid->region_size_meter, 0, grid->region_size_meter) / 2;
-	Basis basis(Vector3(grid->_chunks->h_scale, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, grid->_chunks->h_scale));
+	Basis basis(Vector3(grid->_chunks.h_scale, 0, 0), Vector3(0, 1, 0), Vector3(0, 0, grid->_chunks.h_scale));
 	Transform3D transform(basis, _pos);
 	PhysicsServer3D::get_singleton()->shape_set_data(heightmap_shape, d);
 	PhysicsServer3D::get_singleton()->body_add_shape(physic_body, heightmap_shape);
@@ -280,7 +280,7 @@ void MRegion::set_height_by_pixel(const uint32_t x, const uint32_t y, const real
 real_t MRegion::get_closest_height(Vector3 _pos) {
 	_pos.x -= world_pos.x;
 	_pos.z -= world_pos.z;
-	_pos /= grid->_chunks->h_scale;
+	_pos /= grid->_chunks.h_scale;
 	uint32_t x = (uint32_t)round(_pos.x);
 	uint32_t y = (uint32_t)round(_pos.z);
 	return heightmap->get_pixel_RF(x, y);

@@ -1,9 +1,9 @@
 #pragma once
 
 #define MIN_OCTANT_EDGE_LENGTH 0.2
-#define EXTRA_BOUND_MARGIN 200U //This should be always some number bigger than zero, otherwise cause some points to not be inserted
-#define MAX_CAPACITY 10000U
-#define MIN_CAPACITY 10U
+#define EXTRA_BOUND_MARGIN 200 //This should be alway some number bigger than zero, otherwise cause some points to not be inserted
+#define MAX_CAPACITY 10000
+#define MIN_CAPACITY 10
 #define INVALID_OCT_POINT_ID -1
 #define MAX_LOD 125
 
@@ -220,7 +220,7 @@ public:
 	bool is_valid_octmesh_updater();
 	static void thread_update(void *instance);
 	void _notification(int p_what);
-	void process_tick();
+	void process(double delta) override;
 	void point_process_finished(int oct_id);
 	void check_point_process_finished();
 	inline void send_first_update_signal();

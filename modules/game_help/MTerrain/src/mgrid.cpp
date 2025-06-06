@@ -42,7 +42,7 @@ void MGrid::clear() {
 		memdelete_arr<MPoint>(points_row);
 		memdelete_arr<MPoint *>(points);
 		memdelete_arr<MRegion>(regions);
-		memdelete(_chunks);
+		_chunks.clear();
 	}
 	if (_terrain_material.is_valid()) {
 		_terrain_material->clear();
@@ -91,32 +91,31 @@ RID MGrid::get_scenario() {
 	return _scenario;
 }
 
-void MGrid::create(const int32_t width, const int32_t height, MChunks *chunks) {
+void MGrid::create(const int32_t width, const int32_t height) {
 	update_renderer_info();
 	if (width == 0 || height == 0) {
 		return;
 	}
-	_chunks = chunks;
 	_size.x = width;
 	_size.z = height;
 	// Not added to one because pixels start from zero
-	pixel_width = (uint32_t)(_size.x * _chunks->base_size_meter / _chunks->h_scale) + 1;
-	pixel_height = (uint32_t)(_size.z * _chunks->base_size_meter / _chunks->h_scale) + 1;
+	pixel_width = (uint32_t)(_size.x * _chunks.base_size_meter / _chunks.h_scale) + 1;
+	pixel_height = (uint32_t)(_size.z * _chunks.base_size_meter / _chunks.h_scale) + 1;
 	grid_pixel_region = MPixelRegion(pixel_width, pixel_height);
-	_size_meter.x = width * _chunks->base_size_meter;
-	_size_meter.z = height * _chunks->base_size_meter;
-	_vertex_size.x = (_size_meter.x / chunks->h_scale) + 1;
-	_vertex_size.z = (_size_meter.z / chunks->h_scale) + 1;
+	_size_meter.x = width * _chunks.base_size_meter;
+	_size_meter.z = height * _chunks.base_size_meter;
+	_vertex_size.x = (_size_meter.x / _chunks.h_scale) + 1;
+	_vertex_size.z = (_size_meter.z / _chunks.h_scale) + 1;
 	_region_grid_size.x = _size.x / region_size + _size.x % region_size;
 	_region_grid_size.z = _size.z / region_size + _size.z % region_size;
 	_region_grid_bound.right = _region_grid_size.x - 1;
 	_region_grid_bound.bottom = _region_grid_size.z - 1;
 	_regions_count = _region_grid_size.x * _region_grid_size.z;
-	region_size_meter = region_size * _chunks->base_size_meter;
-	rp = (region_size_meter / _chunks->h_scale);
+	region_size_meter = region_size * _chunks.base_size_meter;
+	rp = (region_size_meter / _chunks.h_scale);
 	region_pixel_size = rp + 1;
 	/// Checking if region pixel size is correct
-	/// Also grabbing the images name from the first terrain resource
+	/// Also grabing the images name from the first terrain resource
 	String first_res_path = dataDir.path_join("x0_y0.res");
 	Array images_names;
 	Ref<MResource> first_res;
@@ -170,7 +169,7 @@ void MGrid::create(const int32_t width, const int32_t height, MChunks *chunks) {
 	}
 	_all_image_list = _terrain_material->all_images;
 	_all_heightmap_image_list = _terrain_material->all_heightmap_images;
-	//Initilazing Heightmap layers visibility
+	//Initilazing Heightmap layers visibilty
 	heightmap_layers_visibility.clear();
 	heightmap_layers_visibility.resize(heightmap_layers.size());
 	for (int i = 0; i < heightmap_layers.size(); i++) {
@@ -198,18 +197,18 @@ void MGrid::update_all_image_list() {
 }
 
 Vector3 MGrid::get_world_pos(const int32_t x, const int32_t y, const int32_t z) {
-	return Vector3(x, y, z) * _chunks->base_size_meter + offset;
+	return Vector3(x, y, z) * _chunks.base_size_meter + offset;
 }
 
 Vector3 MGrid::get_world_pos(const MGridPos &pos) {
-	return Vector3(pos.x, pos.y, pos.z) * _chunks->base_size_meter + offset;
+	return Vector3(pos.x, pos.y, pos.z) * _chunks.base_size_meter + offset;
 }
 
-// Get point id non offset world posiotion useful for grass for now
+// Get point id non offset world posiotion usefull for grass for now
 // in a flat x z plane
 int MGrid::get_point_id_by_non_offs_ws(const Vector2 &input) {
-	int x = ((int)(input.x)) / _chunks->base_size_meter;
-	int z = ((int)(input.y)) / _chunks->base_size_meter;
+	int x = ((int)(input.x)) / _chunks.base_size_meter;
+	int z = ((int)(input.y)) / _chunks.base_size_meter;
 	return z * _size.z + x;
 }
 
@@ -219,10 +218,10 @@ int64_t MGrid::get_point_instance_id_by_point_id(int pid) {
 
 MGridPos MGrid::get_grid_pos(const Vector3 &pos) {
 	MGridPos p;
-	Vector3 _rp = pos - offset;
-	p.x = ((int32_t)(_rp.x)) / _chunks->base_size_meter;
-	p.y = ((int32_t)(_rp.y)) / _chunks->base_size_meter;
-	p.z = ((int32_t)(_rp.z)) / _chunks->base_size_meter;
+	Vector3 rp = pos - offset;
+	p.x = ((int32_t)(rp.x)) / _chunks.base_size_meter;
+	p.y = ((int32_t)(rp.y)) / _chunks.base_size_meter;
+	p.z = ((int32_t)(rp.z)) / _chunks.base_size_meter;
 	return p;
 }
 
@@ -279,10 +278,10 @@ int MGrid::get_region_id_by_world_pos(Vector3 world_pos) {
 Vector2 MGrid::get_point_region_offset_ratio(int32_t x, int32_t z) {
 	int ofsx = x % region_size;
 	int ofsz = z % region_size;
-	Vector2 _offset;
-	_offset.x = (double)(ofsx) / double(region_size);
-	_offset.y = (double)(ofsz) / double(region_size);
-	return _offset;
+	Vector2 offset;
+	offset.x = (double)(ofsx) / double(region_size);
+	offset.y = (double)(ofsz) / double(region_size);
+	return offset;
 }
 
 Vector3 MGrid::get_region_world_pos_by_point(int32_t x, int32_t z) {
@@ -300,7 +299,7 @@ int8_t MGrid::get_lod_by_distance(const int32_t dis) {
 			return i;
 		}
 	}
-	return _chunks->max_lod;
+	return _chunks.max_lod;
 }
 
 void MGrid::set_cam_pos(const Vector3 &cam_world_pos) {
@@ -320,7 +319,7 @@ void MGrid::update_search_bound() {
 }
 
 void MGrid::cull_out_of_bound() {
-	//RenderingServer *rs = RenderingServer::get_singleton();
+	RenderingServer *rs = RenderingServer::get_singleton();
 	for (int32_t z = _last_search_bound.top; z <= _last_search_bound.bottom; z++) {
 		for (int32_t x = _last_search_bound.left; x <= _last_search_bound.right; x++) {
 			if (!_search_bound.has_point(x, z)) {
@@ -354,7 +353,7 @@ void MGrid::update_lods() {
 	if (!_grid_bound.has_point(_cam_pos)) {
 		Vector3 closest_real = get_world_pos(closest);
 		Vector3 diff = _cam_pos_real - closest_real;
-		m.grow_when_outside(diff.x, diff.z, _cam_pos, _search_bound, _chunks->base_size_meter);
+		m.grow_when_outside(diff.x, diff.z, _cam_pos, _search_bound, _chunks.base_size_meter);
 		for (int32_t z = m.top; z <= m.bottom; z++) {
 			for (int32_t x = m.left; x <= m.right; x++) {
 				points[z][x].lod = current_lod;
@@ -367,7 +366,7 @@ void MGrid::update_lods() {
 	}
 	while (m.grow(_search_bound, 1, 1)) {
 		int8_t l;
-		if (current_lod != _chunks->max_lod) {
+		if (current_lod != _chunks.max_lod) {
 			MGridPos e = m.get_edge_point();
 			e = get_3d_grid_pos_by_middle_point(e);
 			int32_t dis = e.get_distance(_cam_pos);
@@ -382,7 +381,7 @@ void MGrid::update_lods() {
 			}
 			current_lod = l;
 		} else {
-			l = _chunks->max_lod;
+			l = _chunks.max_lod;
 		}
 		if (m.grow_left) {
 			for (int32_t z = m.top; z <= m.bottom; z++) {
@@ -423,8 +422,8 @@ void MGrid::merge_chunks() {
 			check_bigger_size(lod, 0, mb);
 			num_chunks += 1;
 #else
-			for (int8_t s = _chunks->max_size; s >= 0; s--) {
-				if (_chunks->sizes[s].lods[lod].meshes.size()) {
+			for (int8_t s = _chunks.max_size; s >= 0; s--) {
+				if (_chunks.sizes[s].lods[lod].meshes.size()) {
 					MBound test_bound = mb;
 					if (test_bound.grow_positive(pow(2, s) - 1, _search_bound)) {
 						if (check_bigger_size(lod, s, region_id, test_bound)) {
@@ -444,7 +443,7 @@ void MGrid::merge_chunks() {
 // OR on lod level up otherwise return false
 // Also if All condition are correct then we can merge to bigger size
 // So this will set the size of all points except the first one to -1
-// Also Here we should determine the edge of each mesh
+// Also Here we should detrmine the edge of each mesh
 bool MGrid::check_bigger_size(const int8_t lod, const int8_t size, const int32_t region_id, const MBound &bound) {
 	for (int32_t z = bound.top; z <= bound.bottom; z++) {
 		for (int32_t x = bound.left; x <= bound.right; x++) {
@@ -525,7 +524,7 @@ bool MGrid::check_bigger_size(const int8_t lod, const int8_t size, const int32_t
 			if (z == bound.top && x == bound.left) {
 				points[z][x].size = size;
 				int8_t edge_num = get_edge_num(left_edge, right_edge, top_edge, bottom_edge);
-				RID mesh = _chunks->sizes[size].lods[lod].meshes[edge_num];
+				RID mesh = _chunks.sizes[size].lods[lod].meshes[edge_num];
 				if (points[z][x].mesh != mesh) {
 					points[z][x].mesh = mesh;
 					if (points[z][x].has_instance) {
@@ -533,9 +532,9 @@ bool MGrid::check_bigger_size(const int8_t lod, const int8_t size, const int32_t
 						remove_instance_list.push_back(points[z][x].instance);
 						points[z][x].instance = RID();
 					}
-					int32_t _region_id = get_region_id_by_point(x, z);
+					int32_t region_id = get_region_id_by_point(x, z);
 					//MRegion* region = get_region_by_point(x,z);
-					points[z][x].create_instance(get_world_pos(x, 0, z), _scenario, regions[_region_id].get_material_rid(), is_visible);
+					points[z][x].create_instance(get_world_pos(x, 0, z), _scenario, regions[region_id].get_material_rid(), is_visible);
 					rs->instance_set_visible(points[z][x].instance, false);
 					rs->instance_set_base(points[z][x].instance, mesh);
 					/*
@@ -543,7 +542,7 @@ bool MGrid::check_bigger_size(const int8_t lod, const int8_t size, const int32_t
 					*/
 					MGridUpdateInfo update_info;
 					update_info.terrain_instance = points[z][x].instance;
-					update_info.region_id = _region_id;
+					update_info.region_id = region_id;
 					update_info.region_world_pos = get_region_world_pos_by_point(x, z);
 					update_info.region_offset_ratio = get_point_region_offset_ratio(x, z);
 					update_info.lod = lod;
@@ -600,8 +599,8 @@ int8_t MGrid::get_edge_num(const bool left, const bool right, const bool top, co
 	if (left && right && top && bottom) {
 		return M_LRTB;
 	}
-	VariantUtilityFunctions::_print("Error Can not find correct Edge");
-	VariantUtilityFunctions::_print(left, " ", right, " ", top, " ", bottom);
+	//UtilityFunctions::print("Error Can not find correct Edge");
+	//UtilityFunctions::print(left, " ", right, " ", top, " ", bottom);
 	return 0;
 }
 
@@ -612,7 +611,7 @@ void MGrid::create_ordered_instances_distance() {
 			if (points[z][x].has_instance) {
 				MGridPos pos3d = get_3d_grid_pos_by_middle_point(MGridPos(x, 0, z));
 				int distance = _cam_pos.get_distance(pos3d);
-				InstanceDistance ins_dis = { int64_t(points[z][x].instance.get_id()), distance };
+				InstanceDistance ins_dis = { points[z][x].instance.get_id(), distance };
 				instances_distance.ordered_insert(ins_dis);
 			}
 		}
@@ -629,9 +628,9 @@ Ref<MTerrainMaterial> MGrid::get_terrain_material() {
 }
 
 MGridPos MGrid::get_3d_grid_pos_by_middle_point(MGridPos input) {
-	//MRegion *r = get_region_by_point(input.x, input.z);
+	MRegion *r = get_region_by_point(input.x, input.z);
 	//Calculating middle point in chunks
-	real_t half = ((real_t)_chunks->base_size_meter) / 2;
+	real_t half = ((real_t)_chunks.base_size_meter) / 2;
 	Vector3 middle_point_chunk = get_world_pos(input) + Vector3(half, 0, half);
 	//middle_point_chunk.y = r->get_closest_height(middle_point_chunk);
 	return get_grid_pos(middle_point_chunk);
@@ -651,7 +650,7 @@ real_t MGrid::get_height(Vector3 pos) {
 		return 0.0;
 	}
 	pos -= offset;
-	pos = pos / _chunks->h_scale;
+	pos = pos / _chunks.h_scale;
 	if (pos.x < 0 || pos.z < 0) {
 		return 0.0;
 	}
@@ -932,9 +931,9 @@ void MGrid::set_pixel(uint32_t x, uint32_t y, const Color &col, const int32_t in
 	MRegion *r = get_region(rx, ry);
 	r->set_pixel(x, y, col, index);
 	// Take care of the edges
-	ex = (ex && int32_t(rx) != _region_grid_bound.right);
+	ex = (ex && rx != _region_grid_bound.right);
 	// Same for ey
-	ey = (ey && int32_t(ry) != _region_grid_bound.bottom);
+	ey = (ey && ry != _region_grid_bound.bottom);
 	if (ex && ey) {
 		MRegion *re = get_region(rx + 1, ry + 1);
 		re->set_pixel(0, 0, col, index);
@@ -962,9 +961,9 @@ void MGrid::set_pixel_by_pointer(uint32_t x, uint32_t y, uint8_t *ptr, const int
 	MRegion *r = get_region(rx, ry);
 	r->images[index]->set_pixel_by_data_pointer(x, y, ptr);
 	// Take care of the edges
-	ex = (ex && int32_t(rx) != _region_grid_bound.right);
+	ex = (ex && rx != _region_grid_bound.right);
 	// Same for ey
-	ey = (ey && int32_t(ry) != _region_grid_bound.bottom);
+	ey = (ey && ry != _region_grid_bound.bottom);
 	if (ex && ey) {
 		MRegion *re = get_region(rx + 1, ry + 1);
 		re->images[index]->set_pixel_by_data_pointer(0, 0, ptr);
@@ -1007,9 +1006,9 @@ void MGrid::set_height_by_pixel(uint32_t x, uint32_t y, const real_t value) {
 	r->set_height_by_pixel(x, y, value);
 	// Take care of the edges
 	// We dont want ex to be true at the edge of the terrain
-	ex = (ex && int32_t(rx) != _region_grid_bound.right);
+	ex = (ex && rx != _region_grid_bound.right);
 	// Same for ey
-	ey = (ey && int32_t(ry) != _region_grid_bound.bottom);
+	ey = (ey && ry != _region_grid_bound.bottom);
 	if (ex && ey) {
 		MRegion *re = get_region(rx + 1, ry + 1);
 		re->set_height_by_pixel(0, 0, value);
@@ -1060,7 +1059,7 @@ void MGrid::generate_normals(MPixelRegion pxr) {
 		for (uint32_t x = pxr.left; x <= pxr.right; x++) {
 			Vector2i px(x, y);
 			real_t h = get_height_by_pixel(x, y);
-			// Calculating face normals around point
+			// Caculating face normals around point
 			// and average them
 			// In total there are 8 face around each point
 			float heightL = _has_pixel(x - 1, y) ? get_height_by_pixel(x - 1, y) : h;
@@ -1109,7 +1108,7 @@ Vector3 MGrid::get_normal_accurate_by_pixel(uint32_t x, uint32_t y) {
 	Vector3 normal_vec;
 	Vector2i px(x, y);
 	real_t h = get_height_by_pixel(x, y);
-	// Calculating face normals around point
+	// Caculating face normals around point
 	// and average them
 	// In total there are 8 face around each point
 	for (int i = 0; i < nvec8.size() - 1; i++) {
@@ -1133,7 +1132,7 @@ Vector3 MGrid::get_normal_accurate_by_pixel(uint32_t x, uint32_t y) {
 
 Vector3 MGrid::get_normal(Vector3 world_pos) {
 	world_pos -= offset;
-	world_pos = world_pos / _chunks->h_scale;
+	world_pos = world_pos / _chunks.h_scale;
 	if (world_pos.x < 0 || world_pos.z < 0) {
 		return Vector3(0, 1, 0);
 	}
@@ -1152,7 +1151,7 @@ Vector3 MGrid::get_normal(Vector3 world_pos) {
 
 Vector3 MGrid::get_normal_accurate(Vector3 world_pos) {
 	world_pos -= offset;
-	world_pos = world_pos / _chunks->h_scale;
+	world_pos = world_pos / _chunks.h_scale;
 	if (world_pos.x < 0 || world_pos.z < 0) {
 		return Vector3(0, 1, 0);
 	}
@@ -1225,14 +1224,14 @@ void MGrid::save_all_dirty_images() {
 
 Vector2i MGrid::get_closest_pixel(Vector3 world_pos) {
 	world_pos -= offset;
-	world_pos = world_pos / _chunks->h_scale;
+	world_pos = world_pos / _chunks.h_scale;
 	return Vector2i(round(world_pos.x), round(world_pos.z));
 }
 
 Vector3 MGrid::get_pixel_world_pos(uint32_t x, uint32_t y) {
 	Vector3 out;
-	out.x = _chunks->h_scale * (real_t)x;
-	out.z = _chunks->h_scale * (real_t)y;
+	out.x = _chunks.h_scale * (real_t)x;
+	out.z = _chunks.h_scale * (real_t)y;
 	out += offset;
 	out.y = get_height_by_pixel(x, y);
 	return out;
@@ -1258,12 +1257,12 @@ void MGrid::draw_height(Vector3 brush_pos, real_t radius, int brush_id) {
 	ERR_FAIL_COND_EDMSG(active_heightmap_layer != 0 && heightmap_layers[active_heightmap_layer] != "holes" && brush->_get_name() == "Hole", "Only background layer or a layer with the name of holes support holes");
 	ERR_FAIL_COND_EDMSG(heightmap_layers[active_heightmap_layer] == "holes" && brush->_get_name() != "Hole", "In holes layer you can use only hole brush");
 	Vector2i bpxpos = get_closest_pixel(brush_pos);
-	if (bpxpos.x < 0 || bpxpos.y < 0 || bpxpos.x > int32_t(grid_pixel_region.right) || bpxpos.y > int32_t(grid_pixel_region.bottom)) {
+	if (bpxpos.x < 0 || bpxpos.y < 0 || bpxpos.x > grid_pixel_region.right || bpxpos.y > grid_pixel_region.bottom) {
 		return;
 	}
 	brush_px_pos_x = bpxpos.x;
 	brush_px_pos_y = bpxpos.y;
-	brush_px_radius = (uint32_t)(radius / _chunks->h_scale);
+	brush_px_radius = (uint32_t)(radius / _chunks.h_scale);
 	brush_world_pos = brush_pos;
 	brush_radius = radius;
 	// Setting left right top bottom
@@ -1275,15 +1274,15 @@ void MGrid::draw_height(Vector3 brush_pos, real_t radius, int brush_id) {
 	bottom = (bottom > grid_pixel_region.bottom) ? grid_pixel_region.bottom : bottom;
 	brush->set_grid(this);
 	brush->before_draw();
-	MPixelRegion _draw_pixel_region(left, right, top, bottom);
-	//ERR_FAIL_COND_MSG(_draw_pixel_region.width!=_draw_pixel_region.height,"Non square brush is not supported");
+	MPixelRegion draw_pixel_region(left, right, top, bottom);
+	//ERR_FAIL_COND_MSG(draw_pixel_region.width!=draw_pixel_region.height,"Non square brush is not supported");
 	MImage *draw_image = memnew(MImage);
 	{
-		draw_image->create(_draw_pixel_region.get_width(), _draw_pixel_region.get_height(), Image::Format::FORMAT_RF);
-		Vector<MPixelRegion> draw_pixel_regions = _draw_pixel_region.devide(4);
+		draw_image->create(draw_pixel_region.get_width(), draw_pixel_region.get_height(), Image::Format::FORMAT_RF);
+		Vector<MPixelRegion> draw_pixel_regions = draw_pixel_region.devide(4);
 		Vector<MPixelRegion> local_pixel_regions;
 		for (int i = 0; i < draw_pixel_regions.size(); i++) {
-			local_pixel_regions.append(_draw_pixel_region.get_local(draw_pixel_regions[i]));
+			local_pixel_regions.append(draw_pixel_region.get_local(draw_pixel_regions[i]));
 		}
 		Vector<std::thread *> threads_pull;
 		for (int i = 0; i < draw_pixel_regions.size(); i++) {
@@ -1298,8 +1297,8 @@ void MGrid::draw_height(Vector3 brush_pos, real_t radius, int brush_id) {
 	}
 	uint32_t local_x = 0;
 	uint32_t local_y = 0;
-	uint32_t x = _draw_pixel_region.left;
-	uint32_t y = _draw_pixel_region.top;
+	uint32_t x = draw_pixel_region.left;
+	uint32_t y = draw_pixel_region.top;
 	while (local_y < draw_image->height) {
 		while (local_x < draw_image->width) {
 			set_height_by_pixel(x, y, draw_image->get_pixel_RF(local_x, local_y));
@@ -1312,16 +1311,16 @@ void MGrid::draw_height(Vector3 brush_pos, real_t radius, int brush_id) {
 		y++;
 	}
 	memdelete(draw_image);
-	_draw_pixel_region.grow_all_side(grid_pixel_region);
-	generate_normals_thread(_draw_pixel_region);
+	draw_pixel_region.grow_all_side(grid_pixel_region);
+	generate_normals_thread(draw_pixel_region);
 	update_all_dirty_image_texture();
 }
 
-void MGrid::draw_height_region(MImage *img, MPixelRegion _draw_pixel_region, MPixelRegion local_pixel_region, MHeightBrush *brush) {
+void MGrid::draw_height_region(MImage *img, MPixelRegion draw_pixel_region, MPixelRegion local_pixel_region, MHeightBrush *brush) {
 	uint32_t local_x = local_pixel_region.left;
 	uint32_t local_y = local_pixel_region.top;
-	uint32_t x = _draw_pixel_region.left;
-	uint32_t y = _draw_pixel_region.top;
+	uint32_t x = draw_pixel_region.left;
+	uint32_t y = draw_pixel_region.top;
 	while (local_y <= local_pixel_region.bottom) {
 		while (local_x <= local_pixel_region.right) {
 			img->set_pixel_RF(local_x, local_y, brush->get_height(x, y));
@@ -1329,7 +1328,7 @@ void MGrid::draw_height_region(MImage *img, MPixelRegion _draw_pixel_region, MPi
 			x++;
 		}
 		local_x = local_pixel_region.left;
-		x = _draw_pixel_region.left;
+		x = draw_pixel_region.left;
 		local_y++;
 		y++;
 	}
@@ -1341,12 +1340,12 @@ void MGrid::draw_color(Vector3 brush_pos, real_t radius, MColorBrush *brush, int
 	Image::Format format = regions[0].images[index]->format;
 	current_paint_index = index;
 	Vector2i bpxpos = get_closest_pixel(brush_pos);
-	if (bpxpos.x < 0 || bpxpos.y < 0 || bpxpos.x > int32_t(grid_pixel_region.right) || bpxpos.y > int32_t(grid_pixel_region.bottom)) {
+	if (bpxpos.x < 0 || bpxpos.y < 0 || bpxpos.x > grid_pixel_region.right || bpxpos.y > grid_pixel_region.bottom) {
 		return;
 	}
 	brush_px_pos_x = bpxpos.x;
 	brush_px_pos_y = bpxpos.y;
-	brush_px_radius = (uint32_t)(radius / _chunks->h_scale);
+	brush_px_radius = (uint32_t)(radius / _chunks.h_scale);
 	brush_world_pos = brush_pos;
 	brush_radius = radius;
 	// Setting left right top bottom
@@ -1383,7 +1382,7 @@ void MGrid::draw_color(Vector3 brush_pos, real_t radius, MColorBrush *brush, int
 	uint32_t local_y = 0;
 	uint32_t x = draw_pixel_region.left;
 	uint32_t y = draw_pixel_region.top;
-	//int print_index = 0;
+	int print_index = 0;
 	while (local_y < draw_image->height) {
 		while (local_x < draw_image->width) {
 			uint32_t ofs = (local_x + local_y * draw_image->width) * draw_image->pixel_size;
@@ -1400,11 +1399,11 @@ void MGrid::draw_color(Vector3 brush_pos, real_t radius, MColorBrush *brush, int
 	memdelete(draw_image);
 	update_all_dirty_image_texture();
 }
-void MGrid::draw_color_region(MImage *img, MPixelRegion _draw_pixel_region, MPixelRegion local_pixel_region, MColorBrush *brush) {
+void MGrid::draw_color_region(MImage *img, MPixelRegion draw_pixel_region, MPixelRegion local_pixel_region, MColorBrush *brush) {
 	uint32_t local_x = local_pixel_region.left;
 	uint32_t local_y = local_pixel_region.top;
-	uint32_t x = _draw_pixel_region.left;
-	uint32_t y = _draw_pixel_region.top;
+	uint32_t x = draw_pixel_region.left;
+	uint32_t y = draw_pixel_region.top;
 	while (local_y <= local_pixel_region.bottom) {
 		while (local_x <= local_pixel_region.right) {
 			brush->set_color(local_x, local_y, x, y, img);
@@ -1412,7 +1411,7 @@ void MGrid::draw_color_region(MImage *img, MPixelRegion _draw_pixel_region, MPix
 			x++;
 		}
 		local_x = local_pixel_region.left;
-		x = _draw_pixel_region.left;
+		x = draw_pixel_region.left;
 		local_y++;
 		y++;
 	}
@@ -1527,7 +1526,7 @@ bool MGrid::is_layer_visible(const String &lname) {
 }
 
 float MGrid::get_h_scale() {
-	return _chunks->h_scale;
+	return _chunks.h_scale;
 }
 
 float MGrid::get_brush_mask_value(uint32_t x, uint32_t y) {

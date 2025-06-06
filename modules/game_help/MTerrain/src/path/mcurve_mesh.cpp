@@ -4,6 +4,7 @@
 #define RSS RenderingServer::get_singleton()
 
 Vector<MCurveMesh *> MCurveMesh::all_curve_mesh_nodes;
+
 void MCurveMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("_update_visibilty"), &MCurveMesh::_update_visibilty);
 	ClassDB::bind_method(D_METHOD("_on_connections_updated"), &MCurveMesh::_on_connections_updated);
@@ -55,6 +56,7 @@ TypedArray<MCurveMesh> MCurveMesh::get_all_curve_mesh_nodes() {
 
 // after calling this sliced_pos and slice_info are invalid and should be recalculate
 void MeshSlicedInfo::merge_vertex_by_distance(float merge_distance) {
+	return;
 	ERR_FAIL_COND_MSG(sliced_pos.size() > 0, "Can not merge vertecies slice_pos is already created!");
 	int32_t merge_index_first = -1;
 	int32_t merge_index_second = -1;
@@ -73,7 +75,6 @@ void MeshSlicedInfo::merge_vertex_by_distance(float merge_distance) {
 	if (merge_index_first == -1) {
 		return; // No more mergeable
 	}
-	//VariantUtilityFunctions::print(merge_index_first," Removing ",merge_index_second);
 	vertex.remove_at(merge_index_second);
 	if (normal.size() > 0) {
 		Vector3 first_normal = normal[merge_index_first] + normal[merge_index_second];
@@ -107,7 +108,7 @@ void MeshSlicedInfo::merge_vertex_by_distance(float merge_distance) {
 	if (uv2.size() > 0) {
 		uv2.remove_at(merge_index_second);
 	}
-	// correcting indices
+	// correcting indecies
 	for (int i = 0; i < index.size(); i++) {
 		if (index[i] > merge_index_second) {
 			index.set(i, index[i] - 1);
@@ -119,7 +120,6 @@ void MeshSlicedInfo::merge_vertex_by_distance(float merge_distance) {
 }
 
 void MeshSlicedInfo::clear() {
-	mesh_rid = RID();
 	vertex.clear();
 	normal.clear();
 	tangent.clear();
@@ -135,7 +135,7 @@ int MeshSlicedInfo::slice_count() const {
 	return sliced_pos.size();
 }
 
-void MeshSlicedInfo::get_color(int mesh_count, PackedColorArray &input) {
+void MeshSlicedInfo::get_color(int mesh_count, PackedColorArray &input) const {
 	if (color.size() == 0) {
 		input.resize(0);
 		return;
@@ -147,7 +147,7 @@ void MeshSlicedInfo::get_color(int mesh_count, PackedColorArray &input) {
 		memcpy(ptrw, color.ptr(), block_size);
 	}
 }
-void MeshSlicedInfo::get_uv(int mesh_count, PackedVector2Array &input) {
+void MeshSlicedInfo::get_uv(int mesh_count, PackedVector2Array &input) const {
 	if (uv.size() == 0) {
 		input.resize(0);
 		return;
@@ -159,7 +159,7 @@ void MeshSlicedInfo::get_uv(int mesh_count, PackedVector2Array &input) {
 		memcpy(ptrw, uv.ptr(), block_size);
 	}
 }
-void MeshSlicedInfo::get_uv2(int mesh_count, PackedVector2Array &input) {
+void MeshSlicedInfo::get_uv2(int mesh_count, PackedVector2Array &input) const {
 	if (uv2.size() == 0) {
 		input.resize(0);
 		return;
@@ -171,7 +171,7 @@ void MeshSlicedInfo::get_uv2(int mesh_count, PackedVector2Array &input) {
 		memcpy(ptrw, uv2.ptr(), block_size);
 	}
 }
-void MeshSlicedInfo::get_index(int mesh_count, PackedInt32Array &input) {
+void MeshSlicedInfo::get_index(int mesh_count, PackedInt32Array &input) const {
 	ERR_FAIL_COND(index.size() == 0);
 	input.resize(index.size() * mesh_count);
 	memcpy(input.ptrw(), index.ptr(), index.size() * sizeof(int32_t)); // copying first row as it does not change
@@ -227,7 +227,7 @@ void MCurveMesh::thread_update(void *input) {
 void MCurveMesh::_generate_all_mesh_sliced_info() {
 	meshlod_sliced_info.clear();
 	meshlod_sliced_info.resize(meshes.size());
-	HashMap<RID, Ref<MeshSlicedInfo>> mesh_to_mesh_slice;
+	HashMap<RID, Ref<MeshSlicedInfoSurfaces>> mesh_to_mesh_slice;
 	for (int i = 0; i < meshes.size(); i++) {
 		MeshSlicedInfoArray *info_array = meshlod_sliced_info.ptrw() + i;
 		Ref<MMeshLod> mesh_lod = meshes[i];
@@ -240,7 +240,7 @@ void MCurveMesh::_generate_all_mesh_sliced_info() {
 		for (int j = 0; j < p_meshes.size(); j++) {
 			Ref<Mesh> p_mesh = p_meshes[j];
 			if (p_mesh.is_null()) {
-				Ref<MeshSlicedInfo> empty;
+				Ref<MeshSlicedInfoSurfaces> empty;
 				info_array->set(j, empty);
 				continue;
 			}
@@ -248,41 +248,45 @@ void MCurveMesh::_generate_all_mesh_sliced_info() {
 				info_array->set(j, mesh_to_mesh_slice[p_mesh->get_rid()]);
 				continue;
 			}
-			Ref<MeshSlicedInfo> s = _generate_mesh_sliced_info(p_mesh);
-			info_array->set(j, s);
-			mesh_to_mesh_slice.insert(p_mesh->get_rid(), s);
+			int surface_count = p_mesh->get_surface_count();
+			Ref<MeshSlicedInfoSurfaces> slice_info_surfaces;
+			slice_info_surfaces.instantiate();
+			for (int c = 0; c < surface_count; c++) {
+				MeshSlicedInfo s = _generate_mesh_sliced_info(p_mesh, c);
+				slice_info_surfaces->slice_info.push_back(s);
+			}
+			slice_info_surfaces->mesh_rid = p_mesh->get_rid();
+			info_array->set(j, slice_info_surfaces);
+			mesh_to_mesh_slice.insert(p_mesh->get_rid(), slice_info_surfaces);
 		}
 	}
 }
 
-Ref<MeshSlicedInfo> MCurveMesh::_generate_mesh_sliced_info(Ref<Mesh> mesh) {
-	Ref<MeshSlicedInfo> s;
-	s.instantiate();
-	s->mesh_rid = mesh->get_rid();
-	s->material = mesh->surface_get_material(0);
-	ERR_FAIL_COND_V(mesh.is_null(), s);
-	Array mesh_data = mesh->surface_get_arrays(0);
-	s->vertex = mesh_data[Mesh::ARRAY_VERTEX];
-	s->normal = mesh_data[Mesh::ARRAY_NORMAL];
-	s->tangent = mesh_data[Mesh::ARRAY_TANGENT];
-	s->color = mesh_data[Mesh::ARRAY_COLOR];
-	s->uv = mesh_data[Mesh::ARRAY_TEX_UV];
-	s->uv2 = mesh_data[Mesh::ARRAY_TEX_UV2];
-	s->index = mesh_data[Mesh::ARRAY_INDEX];
-	ERR_FAIL_COND_V(s->vertex.size() < 3, s);
-	ERR_FAIL_COND_V(s->index.size() < 3, s);
-	ERR_FAIL_COND_V(s->vertex.size() != s->normal.size() && s->normal.size() != 0, s);
-	ERR_FAIL_COND_V(s->vertex.size() * 4 != s->tangent.size() && s->tangent.size() != 0, s);
-	ERR_FAIL_COND_V(s->vertex.size() != s->color.size() && s->color.size() != 0, s);
-	ERR_FAIL_COND_V(s->vertex.size() != s->uv.size() && s->uv.size() != 0, s);
-	ERR_FAIL_COND_V(s->vertex.size() != s->uv2.size() && s->uv2.size() != 0, s);
+MeshSlicedInfo MCurveMesh::_generate_mesh_sliced_info(Ref<Mesh> mesh, int surface_index) {
+	MeshSlicedInfo s;
+	s.material = mesh->surface_get_material(surface_index);
+	Array mesh_data = mesh->surface_get_arrays(surface_index);
+	s.vertex = mesh_data[Mesh::ARRAY_VERTEX];
+	s.normal = mesh_data[Mesh::ARRAY_NORMAL];
+	s.tangent = mesh_data[Mesh::ARRAY_TANGENT];
+	s.color = mesh_data[Mesh::ARRAY_COLOR];
+	s.uv = mesh_data[Mesh::ARRAY_TEX_UV];
+	s.uv2 = mesh_data[Mesh::ARRAY_TEX_UV2];
+	s.index = mesh_data[Mesh::ARRAY_INDEX];
+	ERR_FAIL_COND_V(s.vertex.size() < 3, s);
+	ERR_FAIL_COND_V(s.index.size() < 3, s);
+	ERR_FAIL_COND_V(s.vertex.size() != s.normal.size() && s.normal.size() != 0, s);
+	ERR_FAIL_COND_V(s.vertex.size() * 4 != s.tangent.size() && s.tangent.size() != 0, s);
+	ERR_FAIL_COND_V(s.vertex.size() != s.color.size() && s.color.size() != 0, s);
+	ERR_FAIL_COND_V(s.vertex.size() != s.uv.size() && s.uv.size() != 0, s);
+	ERR_FAIL_COND_V(s.vertex.size() != s.uv2.size() && s.uv2.size() != 0, s);
 	// Merging vertecies
-	s->merge_vertex_by_distance();
+	s.merge_vertex_by_distance();
 	// Creating slices
 	Vector<Pair<float, int>> sliced_pos_indicies;
-	float biggest_x = s->vertex[0].x;
-	for (int i = 0; i < s->vertex.size(); i++) {
-		Vector3 vec = s->vertex[i];
+	float biggest_x = s.vertex[0].x;
+	for (int i = 0; i < s.vertex.size(); i++) {
+		Vector3 vec = s.vertex[i];
 		if (vec.x > biggest_x) {
 			biggest_x = vec.x;
 		}
@@ -291,7 +295,7 @@ Ref<MeshSlicedInfo> MCurveMesh::_generate_mesh_sliced_info(Ref<Mesh> mesh) {
 			Pair<float, int> pi = sliced_pos_indicies[j];
 			//UtilityFunctions::print("checking-----", std::abs(pi.first - vec.x) < SLICE_EPSILONE);
 			if (std::abs(pi.first - vec.x) < SLICE_EPSILONE) {
-				Vector<int32_t> *s_ptrw = s->sliced_info.ptrw() + pi.second;
+				Vector<int32_t> *s_ptrw = s.sliced_info.ptrw() + pi.second;
 				s_ptrw->push_back(i); // pushing back vertex index
 				has_slice = true;
 				continue;
@@ -301,26 +305,29 @@ Ref<MeshSlicedInfo> MCurveMesh::_generate_mesh_sliced_info(Ref<Mesh> mesh) {
 			continue;
 		}
 		// Creating a new slice Vector
-		int slice_index = s->sliced_info.size();
-		s->sliced_info.resize(s->sliced_info.size() + 1);
-		s->sliced_pos.push_back(vec.x);
-		Vector<int32_t> *s_ptrw = s->sliced_info.ptrw() + slice_index;
+		int slice_index = s.sliced_info.size();
+		s.sliced_info.resize(s.sliced_info.size() + 1);
+		s.sliced_pos.push_back(vec.x);
+		Vector<int32_t> *s_ptrw = s.sliced_info.ptrw() + slice_index;
 		s_ptrw->push_back(i); // pushing back vertex index in newly created slice
 		Pair<float, int> p(vec.x, slice_index);
 		sliced_pos_indicies.push_back(p);
 	}
-	// setting the mesh length
-	s->length = biggest_x;
-	// setting vertex x pos to zero as we keep them inside s->sliced_pos
-	for (int i = 0; i < s->vertex.size(); i++) {
-		Vector3 vec = s->vertex[i];
+	// setting the mesh lenght
+	s.lenght = biggest_x;
+	// setting vertex x pos to zero as we keep them inside s.sliced_pos
+	for (int i = 0; i < s.vertex.size(); i++) {
+		Vector3 vec = s.vertex[i];
 		vec.x = 0;
-		s->vertex.set(i, vec);
+		s.vertex.set(i, vec);
 	}
 	return s;
 }
 
 void MCurveMesh::_update_visibilty() {
+	if (path == nullptr || curve.is_null()) {
+		return;
+	}
 	bool v = path->is_visible() && path->is_inside_tree() && is_inside_tree();
 	for (HashMap<int64_t, Instance>::Iterator it = curve_mesh_instances.begin(); it != curve_mesh_instances.end(); ++it) {
 		RSS->instance_set_visible(it->value.instance, v);
@@ -398,10 +405,10 @@ void MCurveMesh::reload() {
 void MCurveMesh::recreate() {
 	clear();
 	if (curve.is_valid()) {
-		PackedInt32Array appoints = curve->get_active_points();
+		PackedInt32Array apoints = curve->get_active_points();
 		PackedInt64Array aconns = curve->get_active_conns();
-		for (int i = 0; i < appoints.size(); i++) {
-			_point_force_update(appoints[i]);
+		for (int i = 0; i < apoints.size(); i++) {
+			_point_force_update(apoints[i]);
 		}
 		for (int i = 0; i < aconns.size(); i++) {
 			_connection_force_update(aconns[i]);
@@ -477,7 +484,9 @@ void MCurveMesh::_connection_remove(int64_t conn_id) {
 }
 
 void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info, bool immediate_update) {
-	ERR_FAIL_COND(meshlod_sliced_info.size() == 0);
+	if (meshlod_sliced_info.size() == 0) {
+		return;
+	}
 	int64_t cid = update_info.conn_id;
 	int lod = update_info.current_lod;
 	int last_lod = update_info.last_lod;
@@ -487,15 +496,15 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 		return;
 	}
 	/////////////////////////////////////////////////////
-	/////// Grabbing Correct MeshSliced //////////////////
+	/////// Grabing Correct MeshSliced //////////////////
 	/////////////////////////////////////////////////////
 	// mesh override
 	int mesh_slice_index = c_override.mesh > 0 && c_override.mesh < meshlod_sliced_info.size() ? c_override.mesh : 0;
 	MeshSlicedInfoArray mesh_slice_array = meshlod_sliced_info[mesh_slice_index];
 	ERR_FAIL_COND(mesh_slice_array.size() == 0);
 	lod = std::min(lod, mesh_slice_array.size() - 1);
-	Ref<MeshSlicedInfo> mesh_sliced = mesh_slice_array.get(lod);
-	if (mesh_sliced.is_null()) {
+	Ref<MeshSlicedInfoSurfaces> mesh_sliced_surfaces = mesh_slice_array.get(lod);
+	if (mesh_sliced_surfaces.is_null()) {
 		_remove_instance(cid);
 		return;
 	}
@@ -506,140 +515,168 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 		curve_mesh_instances.insert(cid, c_instance);
 	} else { // Checking the last generated mesh if is the same exiting unless force_update is true
 		MCurveMesh::Instance c_instance = curve_mesh_instances[cid];
-		if (c_instance.original_mesh_rid == mesh_sliced->mesh_rid) { /// is same
+		if (c_instance.original_mesh_rid == mesh_sliced_surfaces->mesh_rid) { /// is same
 			return;
 		}
 	}
-	ERR_FAIL_COND(mesh_sliced.is_null());
 	if (last_lod != -1) {
 		last_lod = std::min(last_lod, mesh_slice_array.size() - 1);
-		Ref<MeshSlicedInfo> last_mesh_sliced = mesh_slice_array.get(last_lod);
-		if (last_mesh_sliced.is_valid() && last_mesh_sliced->mesh_rid == mesh_sliced->mesh_rid) {
+		Ref<MeshSlicedInfoSurfaces> last_mesh_sliced_surfaces = mesh_slice_array.get(last_lod);
+		if (last_mesh_sliced_surfaces.is_valid() && last_mesh_sliced_surfaces->mesh_rid == mesh_sliced_surfaces->mesh_rid) {
 			return; // Mesh are same nothing to do here
 		}
 	}
-	ERR_FAIL_COND(mesh_sliced->vertex.size() < 3 || mesh_sliced->index.size() < 3 || mesh_sliced->slice_count() == 0);
-	/////////////////////////////////////////////////////
-	///////// Calculating transforms and mesh count /////
-	/////////////////////////////////////////////////////
-	int mesh_count = 0;
-	Vector<Transform3D> transforms;
-	{
-		Vector<float> slice_ratios;
-		Pair<float, float> c_t_limits = get_conn_ratio_limits(cid);
-		Pair<float, float> dis_limit = curve->conn_ratio_limit_to_dis_limit(cid, c_t_limits);
-		float curve_lenght = dis_limit.second - dis_limit.first;
-		mesh_count = round(curve_lenght / mesh_sliced->length);
-		if (mesh_count <= 0) {
-			mesh_count = 1;
+	MCurveMesh::Instance &ii = curve_mesh_instances.find(cid)->value;
+	RID mesh;
+	if (!immediate_update) {
+		mesh = RSS->mesh_create();
+		mesh_updated_list.push_back({ cid, mesh });
+	} else {
+		if (ii.mesh.is_valid()) {
+			RSS->mesh_clear(ii.mesh);
+		} else {
+			ii.mesh = RSS->mesh_create();
 		}
-		float mesh_curve_lenght = curve_lenght / ((float)mesh_count); // more accurate mesh length in this curve
-		float curve_lenght_ratio = mesh_curve_lenght / mesh_sliced->length;
-		Vector<float> slice_curve_pos;
-		slice_curve_pos.resize(mesh_sliced->slice_count());
-		for (int i = 0; i < mesh_sliced->slice_count(); i++) {
-			slice_curve_pos.set(i, mesh_sliced->sliced_pos[i] * curve_lenght_ratio);
-		}
-		Vector<float> slice_distances;
-		slice_distances.resize(mesh_sliced->slice_count() * mesh_count);
-		for (int i = 0; i < mesh_count; i++) {
-			for (int j = 0; j < mesh_sliced->slice_count(); j++) {
-				int s_index = i * mesh_sliced->slice_count() + j;
-				float s_distnace = i * mesh_curve_lenght + slice_curve_pos[j] + dis_limit.first;
-				slice_distances.set(s_index, s_distnace);
+		mesh = ii.mesh;
+		RSS->instance_set_base(ii.instance, ii.mesh);
+	}
+	ii.original_mesh_rid = mesh_sliced_surfaces->mesh_rid;
+	////////////////////////////////////////////////////////////////////////////
+	////////////// Surface LOOP START
+	////////////////////////////////////////////////////////////////////////////
+	int ss_index = 0;
+	for (int ss = 0; ss < mesh_sliced_surfaces->slice_info.size(); ss++) {
+		const MeshSlicedInfo &mesh_sliced = mesh_sliced_surfaces->slice_info[ss];
+		ERR_FAIL_COND(mesh_sliced.vertex.size() < 3 || mesh_sliced.index.size() < 3 || mesh_sliced.slice_count() == 0);
+		/////////////////////////////////////////////////////
+		///////// Calculating transforms and mesh count /////
+		/////////////////////////////////////////////////////
+		int mesh_count = 0;
+		Vector<Transform3D> transforms;
+		{
+			Vector<float> slice_ratios;
+			Pair<float, float> c_t_limits = get_conn_ratio_limits(cid);
+			Pair<float, float> dis_limit = curve->conn_ratio_limit_to_dis_limit(cid, c_t_limits);
+			float curve_lenght = dis_limit.second - dis_limit.first;
+			mesh_count = round(curve_lenght / mesh_sliced.lenght);
+			if (mesh_count <= 0) {
+				mesh_count = 1;
 			}
-		}
-		Pair<int, int> smallest_biggest = curve->get_conn_distances_ratios(cid, slice_distances, slice_ratios);
-		// Making sure cover entire connection without gap
-		slice_ratios.set(smallest_biggest.first, c_t_limits.first);
-		slice_ratios.set(smallest_biggest.second, c_t_limits.second);
-		// Correcting the start and end point
-		curve->get_conn_transforms(cid, slice_ratios, transforms);
-	}
-	/////////////////////////////////////////////////////
-	///////// Generating Mesh ///////////////////////////
-	/////////////////////////////////////////////////////
-	////// Creating the instance, mesh will be set during apply update
-	PackedVector3Array vertex;
-	PackedVector3Array normal;
-	PackedFloat32Array tangent;
-	PackedColorArray color;
-	PackedVector2Array uv;
-	PackedVector2Array uv2;
-	PackedInt32Array index;
-	// Getting some constant data with size of our mesh_count
-	mesh_sliced->get_color(mesh_count, color);
-	mesh_sliced->get_uv(mesh_count, uv);
-	mesh_sliced->get_uv2(mesh_count, uv2);
-	mesh_sliced->get_index(mesh_count, index);
-	// mesh_sliced ----- We need to calculate this part
-	vertex.resize(mesh_sliced->vertex.size() * mesh_count);
-	bool has_normal = false;
-	bool has_tangent = false;
-	if (mesh_sliced->normal.size() == mesh_sliced->vertex.size()) {
-		normal.resize(mesh_sliced->normal.size() * mesh_count);
-		has_normal = true;
-	}
-	if (mesh_sliced->tangent.size() == mesh_sliced->vertex.size() * 4) {
-		tangent.resize(mesh_sliced->tangent.size() * mesh_count);
-		has_tangent = true;
-	}
-
-	// Creating the mesh
-	ERR_FAIL_COND(transforms.size() != mesh_count * mesh_sliced->slice_count());
-	// Setting Vertex Positions
-	int vertex_count = mesh_sliced->vertex.size();
-	for (int mesh_index = 0; mesh_index < mesh_count; mesh_index++) {
-		for (int j = 0; j < mesh_sliced->slice_count(); j++) {
-			Transform3D transform = transforms[mesh_index * mesh_sliced->slice_count() + j];
-			/// Looping through this slice indices
-			int start_index = vertex_count * mesh_index;
-			for (int sindex = 0; sindex < mesh_sliced->sliced_info[j].size(); sindex++) {
-				int index_index = mesh_sliced->sliced_info[j][sindex];
-				int vindex = start_index + index_index;
-				vertex.set(vindex, transform.xform(mesh_sliced->vertex[index_index]));
-				if (has_normal) {
-					normal.set(vindex, transform.basis.xform(mesh_sliced->normal[index_index]));
-				}
-				if (has_tangent) {
-					// Tangent contain 4 float number first 3 is tangent and last one is binormal
-					// This is why its index is calculated like this
-					int torg_index = index_index * 4;
-					int tindex = vindex * 4;
-					Vector3 _t_(mesh_sliced->tangent[torg_index], mesh_sliced->tangent[torg_index + 1], mesh_sliced->tangent[torg_index + 2]);
-					float binormal = mesh_sliced->tangent[torg_index + 3];
-					_t_ = transform.basis.xform(_t_);
-					tangent.set(tindex, _t_.x);
-					tangent.set(tindex + 1, _t_.y);
-					tangent.set(tindex + 2, _t_.z);
-					tangent.set(tindex + 3, binormal);
+			float mesh_curve_lenght = curve_lenght / ((float)mesh_count); // more accurate mesh lenght in this curve
+			float curve_lenght_ratio = mesh_curve_lenght / mesh_sliced.lenght;
+			Vector<float> slice_curve_pos;
+			slice_curve_pos.resize(mesh_sliced.slice_count());
+			for (int i = 0; i < mesh_sliced.slice_count(); i++) {
+				slice_curve_pos.set(i, mesh_sliced.sliced_pos[i] * curve_lenght_ratio);
+			}
+			Vector<float> slice_distances;
+			slice_distances.resize(mesh_sliced.slice_count() * mesh_count);
+			for (int i = 0; i < mesh_count; i++) {
+				for (int j = 0; j < mesh_sliced.slice_count(); j++) {
+					int s_index = i * mesh_sliced.slice_count() + j;
+					float s_distnace = i * mesh_curve_lenght + slice_curve_pos[j] + dis_limit.first;
+					slice_distances.set(s_index, s_distnace);
 				}
 			}
+			Pair<int, int> smallest_biggest = curve->get_conn_distances_ratios(cid, slice_distances, slice_ratios);
+			// Making sure cover entire connection without gap
+			slice_ratios.set(smallest_biggest.first, c_t_limits.first);
+			slice_ratios.set(smallest_biggest.second, c_t_limits.second);
+			// Correcting the start and end point
+			curve->get_conn_transforms(cid, slice_ratios, transforms);
 		}
-	}
+		/////////////////////////////////////////////////////
+		///////// Generating Mesh ///////////////////////////
+		/////////////////////////////////////////////////////
+		////// Creating the instance, mesh will be set during apply update
+		PackedVector3Array vertex;
+		PackedVector3Array normal;
+		PackedFloat32Array tangent;
+		PackedColorArray color;
+		PackedVector2Array uv;
+		PackedVector2Array uv2;
+		PackedInt32Array index;
+		// Getting some constant data with size of our mesh_count
+		mesh_sliced.get_color(mesh_count, color);
+		mesh_sliced.get_uv(mesh_count, uv);
+		mesh_sliced.get_uv2(mesh_count, uv2);
+		mesh_sliced.get_index(mesh_count, index);
+		// mesh_sliced ----- We need to calculate this part
+		vertex.resize(mesh_sliced.vertex.size() * mesh_count);
+		bool has_normal = false;
+		bool has_tangent = false;
+		if (mesh_sliced.normal.size() == mesh_sliced.vertex.size()) {
+			normal.resize(mesh_sliced.normal.size() * mesh_count);
+			has_normal = true;
+		}
+		if (mesh_sliced.tangent.size() == mesh_sliced.vertex.size() * 4) {
+			tangent.resize(mesh_sliced.tangent.size() * mesh_count);
+			has_tangent = true;
+		}
 
-	Array mesh_data;
-	mesh_data.resize(RenderingServer::ARRAY_MAX);
-	mesh_data[RenderingServer::ARRAY_VERTEX] = vertex;
-	if (has_normal) {
-		mesh_data[RenderingServer::ARRAY_NORMAL] = normal;
-	}
-	if (has_tangent) {
-		mesh_data[RenderingServer::ARRAY_TANGENT] = tangent;
-	}
-	if (color.size() > 0) {
-		mesh_data[RenderingServer::ARRAY_COLOR] = color;
-	}
-	if (uv.size() > 0) {
-		mesh_data[RenderingServer::ARRAY_TEX_UV] = uv;
-	}
-	if (uv2.size() > 0) {
-		mesh_data[RenderingServer::ARRAY_TEX_UV2] = uv2;
-	}
-	mesh_data[RenderingServer::ARRAY_INDEX] = index;
+		// Creating the mesh
+		ERR_FAIL_COND(transforms.size() != mesh_count * mesh_sliced.slice_count());
+		// Setting Vertex Poistions
+		int vertex_count = mesh_sliced.vertex.size();
+		for (int mesh_index = 0; mesh_index < mesh_count; mesh_index++) {
+			for (int j = 0; j < mesh_sliced.slice_count(); j++) {
+				Transform3D transform = transforms[mesh_index * mesh_sliced.slice_count() + j];
+				/// Looping through this slice indices
+				int start_index = vertex_count * mesh_index;
+				for (int index = 0; index < mesh_sliced.sliced_info[j].size(); index++) {
+					int index_index = mesh_sliced.sliced_info[j][index];
+					int vindex = start_index + index_index;
+					vertex.set(vindex, transform.xform(mesh_sliced.vertex[index_index]));
+					if (has_normal) {
+						normal.set(vindex, transform.basis.xform(mesh_sliced.normal[index_index]));
+					}
+					if (has_tangent) {
+						// Tangent contain 4 float number first 3 is tangent and last one is binormal
+						// This is why its index is calculated like this
+						int torg_index = index_index * 4;
+						int tindex = vindex * 4;
+						Vector3 _t_(mesh_sliced.tangent[torg_index], mesh_sliced.tangent[torg_index + 1], mesh_sliced.tangent[torg_index + 2]);
+						float binormal = mesh_sliced.tangent[torg_index + 3];
+						_t_ = transform.basis.xform(_t_);
+						tangent.set(tindex, _t_.x);
+						tangent.set(tindex + 1, _t_.y);
+						tangent.set(tindex + 2, _t_.z);
+						tangent.set(tindex + 3, binormal);
+					}
+				}
+			}
+		}
 
+		Array mesh_data;
+		mesh_data.resize(RenderingServer::ARRAY_MAX);
+		mesh_data[RenderingServer::ARRAY_VERTEX] = vertex;
+		if (has_normal) {
+			mesh_data[RenderingServer::ARRAY_NORMAL] = normal;
+		}
+		if (has_tangent) {
+			mesh_data[RenderingServer::ARRAY_TANGENT] = tangent;
+		}
+		if (color.size() > 0) {
+			mesh_data[RenderingServer::ARRAY_COLOR] = color;
+		}
+		if (uv.size() > 0) {
+			mesh_data[RenderingServer::ARRAY_TEX_UV] = uv;
+		}
+		if (uv2.size() > 0) {
+			mesh_data[RenderingServer::ARRAY_TEX_UV2] = uv2;
+		}
+		mesh_data[RenderingServer::ARRAY_INDEX] = index;
+
+		RSS->mesh_add_surface_from_arrays(mesh, RenderingServer::PRIMITIVE_TRIANGLES, mesh_data);
+		if (mesh_sliced.material.is_valid()) {
+			RSS->mesh_surface_set_material(mesh, ss_index, mesh_sliced.material->get_rid());
+		}
+		ss_index++;
+	}
+	////////////////////////////////////////////////////////////////////////////
+	////////////// Surface LOOP END
+	////////////////////////////////////////////////////////////////////////////
 	bool is_material_set = false;
-	MCurveMesh::Instance ii = curve_mesh_instances[cid];
 	if (c_override.material >= 0 && c_override.material < materials.size()) {
 		Ref<Material> m_ov = materials[c_override.material];
 		if (m_ov.is_valid()) {
@@ -647,27 +684,6 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 			is_material_set = true;
 		}
 	}
-	if (!is_material_set) {
-		if (mesh_sliced->material.is_valid()) {
-			RSS->instance_geometry_set_material_override(ii.instance, mesh_sliced->material->get_rid());
-		}
-	}
-
-	if (immediate_update) {
-		if (!ii.mesh.is_valid()) {
-			ii.mesh = RSS->mesh_create();
-			RSS->instance_set_base(ii.instance, ii.mesh);
-		} else {
-			RSS->mesh_clear(ii.mesh);
-		}
-		RSS->mesh_add_surface_from_arrays(ii.mesh, RenderingServer::PRIMITIVE_TRIANGLES, mesh_data);
-	} else {
-		RID mesh = RSS->mesh_create();
-		RSS->mesh_add_surface_from_arrays(mesh, RenderingServer::PRIMITIVE_TRIANGLES, mesh_data);
-		mesh_updated_list.push_back({ cid, mesh });
-	}
-	ii.original_mesh_rid = mesh_sliced->mesh_rid;
-	curve_mesh_instances.insert(cid, ii);
 }
 
 void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_info, bool immediate_update) {
@@ -698,8 +714,8 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 		return;
 	}
 	lod = std::min(lod, finter->get_mesh_count() - 1);
-	Ref<MIntersectionInfo> inter_info = finter->get_mesh_info(lod);
-	if (inter_info.is_null()) {
+	Ref<MIntersectionInfoSurfaces> inter_info_surface = finter->get_mesh_info(lod);
+	if (inter_info_surface.is_null()) {
 		_remove_instance(point_id, true);
 		return;
 	}
@@ -710,7 +726,7 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 		curve_mesh_instances.insert(point_id, c_instance);
 	} else { // Checking the last generated mesh if is the same exiting unless force_update is true
 		MCurveMesh::Instance c_instance = curve_mesh_instances[point_id];
-		if (c_instance.original_mesh_rid == inter_info->mesh_rid) { /// is same
+		if (c_instance.original_mesh_rid == inter_info_surface->mesh_rid) { /// is same
 			return;
 		}
 	}
@@ -719,7 +735,6 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 	Vector<Transform3D> sockets = finter->_get_sockets();
 	Vector<Transform3D> point_start_transform;
 	point_start_transform.resize(connected_points.size());
-	//VariantUtilityFunctions::print("Connected points ",connected_points);
 	for (int i = 0; i < connected_points.size(); i++) {
 		Transform3D pt = curve->get_point_order_transform(point_id, connected_points[i], 0.0f, false, false);
 		point_start_transform.set(i, pt);
@@ -744,9 +759,7 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 				if (i == j) {
 					continue;
 				}
-				//VariantUtilityFunctions::print("Checking socket ---------- ====---------- ====---------- ==== ",j);
 				Vector3 gxdir = this_rot.xform(sockets[j].basis.get_column(0));
-				//VariantUtilityFunctions::print("x dir ",gxdir);
 				// Finding the best connected point match for this gl
 				// searching through connections
 				// except first connection as it already matched to i socket
@@ -756,15 +769,12 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 					if (this_conn_point_socket.has(connected_points[k])) {
 						continue; // Then this is already taken
 					}
-					//VariantUtilityFunctions::print("point ",connected_points[k], " dir x ",ktransform.basis[0]);
 					float gkdot = gxdir.dot(point_start_transform[k].basis.get_column(0));
-					//VariantUtilityFunctions::print(" dot ",gkdot);
 					if (gkdot > g_highest_dot_product) {
 						best_match = connected_points[k];
 						g_highest_dot_product = gkdot;
 					}
 				}
-				//VariantUtilityFunctions::print("Best match ",best_match, " dot ",g_highest_dot_product);
 				// j socket should have a connection pair otherwise error
 				ERR_FAIL_COND(best_match == 0);
 				this_conn_point_socket.insert(best_match, j);
@@ -776,7 +786,6 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 				conn_point_socket = this_conn_point_socket;
 				initial_rotation = this_rot;
 			}
-			//VariantUtilityFunctions::print(i , " sum dot ",this_sum_dot_product);
 		}
 	}
 	// This only use for finding a good position on curve
@@ -805,83 +814,11 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 		set_conn_ratio_limits(c.id, t, is_end);
 		t = is_end ? 1.0f - t : t;
 		Transform3D ctransform = curve->get_point_order_transform(point_id, pid, t, true, true);
-		//VariantUtilityFunctions::print("===================================!!!=================");
-		//VariantUtilityFunctions::print(point_id," , ",pid,ctransform);
-		//VariantUtilityFunctions::print("===================================!!!=================");
 		socket_transforms.ptrw()[sid] = ctransform * s.inverse();
 	}
-	//// Apply transform on vertex base on their weights
-	PackedVector3Array vertex = inter_info->vertex;
-	PackedVector3Array normal = inter_info->normal;
-	PackedFloat32Array tangents = inter_info->tangent;
-
-	for (int i = 0; i < inter_info->vertex.size(); i++) {
-		Vector3 total_pos(0.0f, 0.0f, 0.0f);
-		Vector3 total_normal(0.0f, 0.0f, 0.0f);
-		Vector3 total_tangent(0.0f, 0.0f, 0.0f);
-		int ft = i * 4;
-		int start_w = i * sockets.size();
-		for (int j = 0; j < socket_transforms.size(); j++) {
-			float w = inter_info->weights[start_w + j];
-			total_pos += socket_transforms[j].xform(vertex[i]) * w;
-			total_normal += socket_transforms[j].basis.xform(normal[i]) * w;
-			if (tangents.size() > 0) {
-				total_tangent += socket_transforms[j].basis.xform(Vector3(tangents[ft], tangents[ft + 1], tangents[ft + 2]));
-			}
-		}
-		vertex.set(i, total_pos);
-		normal.set(i, total_normal);
-		if (tangents.size() > 0) {
-			tangents.set(ft, total_tangent.x);
-			tangents.set(ft + 1, total_tangent.y);
-			tangents.set(ft + 2, total_tangent.z);
-			/// tangents.set(ft+3,SAME); // This one remain same
-		}
-	}
-
-	for (int i = 0; i < inter_info->vertex.size(); i++) {
-		Vector3 v_pos = vertex[i];
-		v_pos += point_pos;
-		//vertex.set(i,v_pos);
-	}
-
-	PackedColorArray vcolor;
-	vcolor.resize(vertex.size());
-	memcpy((void *)vcolor.ptrw(), (void *)inter_info->weights.ptr(), inter_info->weights.size() * sizeof(float));
-
-	Array data_arr;
-	data_arr.resize(Mesh::ARRAY_MAX);
-	data_arr[RenderingServer::ARRAY_VERTEX] = vertex;
-	data_arr[RenderingServer::ARRAY_NORMAL] = normal;
-	if (tangents.size() > 0) {
-		data_arr[RenderingServer::ARRAY_TANGENT] = tangents;
-	}
-	if (inter_info->color.size() > 0) {
-		data_arr[RenderingServer::ARRAY_COLOR] = inter_info->color;
-	}
-	if (inter_info->uv.size() > 0) {
-		data_arr[RenderingServer::ARRAY_TEX_UV] = inter_info->uv;
-	}
-	if (inter_info->uv2.size() > 0) {
-		data_arr[RenderingServer::ARRAY_TEX_UV2] = inter_info->uv2;
-	}
-	data_arr[RenderingServer::ARRAY_INDEX] = inter_info->index;
-
-	MCurveMesh::Instance ii = curve_mesh_instances[point_id];
-	bool is_material_set = false;
-	if (p_override.material >= 0 && p_override.material < materials.size()) {
-		Ref<Material> mat = materials[p_override.material];
-		if (mat.is_valid()) {
-			RSS->instance_geometry_set_material_override(ii.instance, mat->get_rid());
-			is_material_set = true;
-		}
-	}
-	if (!is_material_set) {
-		if (inter_info->material.is_valid()) {
-			RSS->instance_geometry_set_material_override(ii.instance, inter_info->material->get_rid());
-		}
-	}
-
+	MCurveMesh::Instance &ii = curve_mesh_instances.find(point_id)->value;
+	ii.original_mesh_rid = inter_info_surface->mesh_rid;
+	RID new_mesh;
 	if (immediate_update) {
 		if (!ii.mesh.is_valid()) {
 			ii.mesh = RSS->mesh_create();
@@ -889,14 +826,86 @@ void MCurveMesh::_generate_intersection(const MCurve::PointUpdateInfo &update_in
 		} else {
 			RSS->mesh_clear(ii.mesh);
 		}
-		RSS->mesh_add_surface_from_arrays(ii.mesh, RenderingServer::PRIMITIVE_TRIANGLES, data_arr);
+		new_mesh = ii.mesh;
 	} else {
-		RID new_mesh = RSS->mesh_create();
-		RSS->mesh_add_surface_from_arrays(new_mesh, RenderingServer::PRIMITIVE_TRIANGLES, data_arr);
+		new_mesh = RSS->mesh_create();
 		mesh_updated_list.push_back({ point_id, new_mesh });
 	}
-	ii.original_mesh_rid = inter_info->mesh_rid;
-	curve_mesh_instances.insert(point_id, ii);
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// START of Surface LOOPUtilityFunctions::print("Generating intersection!!! ",conn_count);//////////////////////////////////////////
+	int surface_count = inter_info_surface->intersections.size();
+	for (int ss = 0; ss < surface_count; ss++) {
+		const MIntersectionInfo inter_info = inter_info_surface->intersections[ss];
+		//// Apply transform on vertex base on their weights
+		PackedVector3Array vertex = inter_info.vertex;
+		PackedVector3Array normal = inter_info.normal;
+		PackedFloat32Array tangents = inter_info.tangent;
+
+		for (int i = 0; i < inter_info.vertex.size(); i++) {
+			Vector3 total_pos(0.0f, 0.0f, 0.0f);
+			Vector3 total_normal(0.0f, 0.0f, 0.0f);
+			Vector3 total_tangent(0.0f, 0.0f, 0.0f);
+			int ft = i * 4;
+			int start_w = i * sockets.size();
+			for (int j = 0; j < socket_transforms.size(); j++) {
+				float w = inter_info.weights[start_w + j];
+				total_pos += socket_transforms[j].xform(vertex[i]) * w;
+				total_normal += socket_transforms[j].basis.xform(normal[i]) * w;
+				if (tangents.size() > 0) {
+					total_tangent += socket_transforms[j].basis.xform(Vector3(tangents[ft], tangents[ft + 1], tangents[ft + 2]));
+				}
+			}
+			vertex.set(i, total_pos);
+			normal.set(i, total_normal);
+			if (tangents.size() > 0) {
+				tangents.set(ft, total_tangent.x);
+				tangents.set(ft + 1, total_tangent.y);
+				tangents.set(ft + 2, total_tangent.z);
+				/// tangents.set(ft+3,SAME); // This one remain same
+			}
+		}
+
+		for (int i = 0; i < inter_info.vertex.size(); i++) {
+			Vector3 v_pos = vertex[i];
+			v_pos += point_pos;
+			//vertex.set(i,v_pos);
+		}
+
+		PackedColorArray vcolor;
+		vcolor.resize(vertex.size());
+		memcpy(vcolor.ptrw(), inter_info.weights.ptr(), inter_info.weights.size() * sizeof(float));
+
+		Array data_arr;
+		data_arr.resize(Mesh::ARRAY_MAX);
+		data_arr[RenderingServer::ARRAY_VERTEX] = vertex;
+		data_arr[RenderingServer::ARRAY_NORMAL] = normal;
+		if (tangents.size() > 0) {
+			data_arr[RenderingServer::ARRAY_TANGENT] = tangents;
+		}
+		if (inter_info.color.size() > 0) {
+			data_arr[RenderingServer::ARRAY_COLOR] = inter_info.color;
+		}
+		if (inter_info.uv.size() > 0) {
+			data_arr[RenderingServer::ARRAY_TEX_UV] = inter_info.uv;
+		}
+		if (inter_info.uv2.size() > 0) {
+			data_arr[RenderingServer::ARRAY_TEX_UV2] = inter_info.uv2;
+		}
+		data_arr[RenderingServer::ARRAY_INDEX] = inter_info.index;
+		RSS->mesh_add_surface_from_arrays(new_mesh, RenderingServer::PRIMITIVE_TRIANGLES, data_arr);
+		if (inter_info.material.is_valid()) {
+			RSS->mesh_surface_set_material(new_mesh, ss, inter_info.material->get_rid());
+		}
+	}
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////// END of Surface LOOP
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	if (p_override.material >= 0 && p_override.material < materials.size()) {
+		Ref<Material> mat = materials[p_override.material];
+		if (mat.is_valid()) {
+			RSS->instance_geometry_set_material_override(ii.instance, mat->get_rid());
+		}
+	}
 }
 
 void MCurveMesh::_process_tick() {

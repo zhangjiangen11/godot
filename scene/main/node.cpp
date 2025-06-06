@@ -1837,7 +1837,9 @@ void Node::add_child(Node *p_child, bool p_force_readable_name, InternalMode p_i
 #ifdef DEBUG_ENABLED
 	ERR_FAIL_COND_MSG(p_child->is_ancestor_of(this), vformat("Can't add child '%s' to '%s' as it would result in a cyclic dependency since '%s' is already a parent of '%s'.", p_child->get_name(), get_name(), p_child->get_name(), get_name()));
 #endif
-	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, `add_child()` failed. Consider using `add_child.call_deferred(child)` instead.");
+	if (data.blocked > 0) {
+		ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, `add_child()` failed. Consider using `add_child.call_deferred(child)` instead.");
+	}
 
 	_validate_child_name(p_child, p_force_readable_name);
 
@@ -1866,7 +1868,9 @@ void Node::add_sibling(Node *p_sibling, bool p_force_readable_name) {
 void Node::remove_child(Node *p_child) {
 	ERR_FAIL_COND_MSG(data.tree && !Thread::is_main_thread(), "Removing children from a node inside the SceneTree is only allowed from the main thread. Use call_deferred(\"remove_child\",node).");
 	ERR_FAIL_NULL(p_child);
-	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy adding/removing children, `remove_child()` can't be called at this time. Consider using `remove_child.call_deferred(child)` instead.");
+	if (data.blocked > 0) {
+		ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy adding/removing children, `remove_child()` can't be called at this time. Consider using `remove_child.call_deferred(child)` instead.");
+	}
 	ERR_FAIL_COND(p_child->data.parent != this);
 
 	/**

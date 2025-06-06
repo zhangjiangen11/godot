@@ -20,7 +20,6 @@ private:
 	int32_t args[M_PACKED_SCENE_ARG_COUNT] = { 0 };
 	MHlodScene::GlobalItemID bind_items[M_PACKED_SCENE_BIND_COUNT];
 	MHlodScene::GlobalItemID global_id;
-	MHlodScene::PermanentItemID permanent_id;
 	MHlodScene::Proc *proc = nullptr;
 
 public:
@@ -29,9 +28,9 @@ public:
 	void _notify_update_lod(int _lod); // only called by MHlodScene
 	void _notify_before_remove();
 	int get_current_lod() const;
+	void set_arg(int idx, int32_t val);
 	int32_t get_arg(int idx) const;
 	int64_t get_global_id() const;
-	int64_t get_permanent_id() const;
 
 	//Bind Items
 	int64_t bind_item_get_global_id(int idx) const;

@@ -1029,7 +1029,7 @@ void MOctree::add_move_req(const PointMoveReq &mv_data) {
 	if (moves_req_cache.has(mv_data)) {
 		auto el = moves_req_cache.find(mv_data);
 		el->get().new_pos = mv_data.new_pos;
-		//auto el2 = moves_req_cache.find(mv_data);
+		auto el2 = moves_req_cache.find(mv_data);
 		//UtilityFunctions::print("2old ",el2->get().old_pos," new ",el2->get().new_pos);
 	} else {
 		moves_req_cache.insert(mv_data);
@@ -1252,7 +1252,7 @@ bool MOctree::is_valid_octmesh_updater() {
 	return is_octmesh_updater && MOctMesh::is_my_octree(this);
 }
 
-void MOctree::process_tick() {
+void MOctree::process(double delta) {
 	if (is_updating) {
 		if (WorkerThreadPool::get_singleton()->is_task_completed(tid)) {
 			is_updating = false;
@@ -1274,7 +1274,7 @@ void MOctree::process_tick() {
 			MOctMesh::update_tick();
 		}
 		if (is_hlod_updater) {
-			MHlodScene::update_tick();
+			MHlodScene::update_tick(delta);
 		}
 	}
 	if (is_first_update) {
@@ -1298,17 +1298,14 @@ void MOctree::process_tick() {
 void MOctree::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_PROCESS:
-			process_tick();
+			//process_tick();
 			break;
 		case NOTIFICATION_READY:
 			ERR_BREAK_MSG(!is_inside_tree(), "MOctree Condition ready with with not inside tree");
 			update_scenario();
 			is_ready = true;
 			if (!get_parent()->is_class("Window")) {
-				ERR_FAIL_EDMSG("MOctree should be added as singleton with active tool mode! Create a gdscript which inherit from MOctree with active tool mode and add that as singleton in project setting");
-			}
-			if (!MTool::is_editor_plugin_active() && Engine::get_singleton()->is_editor_hint()) {
-				ERR_FAIL_EDMSG("Make sure to activate MTerrain plugin otherwise gizmo selction will not work!");
+				ERR_FAIL_EDMSG("MOctree should be added as singlton with active tool mode! Create a gdscript which inherit from MOctree with active tool mode and add that as singlton in project setting");
 			}
 			if (debug_draw && debug_instance.is_valid()) {
 				RSS->instance_set_scenario(debug_instance, scenario);

@@ -1,6 +1,8 @@
 #include "mhlod.h"
 #include "../mtool.h"
 
+#include "../mtool.h"
+#include "mhlod_node3d.h"
 #ifdef DEBUG_ENABLED
 #include "../editor/masset_table.h"
 #include "../editor/mmesh_joiner.h"
@@ -49,7 +51,7 @@ void MHlod::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("shape_add_cylinder", "transform", "radius", "height", "layers", "body_id"), &MHlod::shape_add_cylinder);
 	ClassDB::bind_method(D_METHOD("shape_add_complex", "id", "transform", "layers", "body_id"), &MHlod::shape_add_complex);
 
-	ClassDB::bind_method(D_METHOD("packed_scene_add", "transform", "id", "arg0", "arg1", "arg2", "layers"), &MHlod::packed_scene_add);
+	ClassDB::bind_method(D_METHOD("packed_scene_add", "transform", "id", "arg0", "arg0", "arg2", "layers"), &MHlod::packed_scene_add);
 	ClassDB::bind_method(D_METHOD("packed_scene_set_bind_items", "packed_scene_item_id", "bind0", "bind1"), &MHlod::packed_scene_set_bind_items);
 
 	ClassDB::bind_method(D_METHOD("light_add", "light_node", "transform", "layers"), &MHlod::light_add);
@@ -57,7 +59,7 @@ void MHlod::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("_set_data", "input"), &MHlod::_set_data);
 	ClassDB::bind_method(D_METHOD("_get_data"), &MHlod::_get_data);
-	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "_data", PROPERTY_HINT_NONE, ""), "_set_data", "_get_data");
+	ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "_data", PROPERTY_HINT_NONE, ""), "_set_data", "_get_data");
 
 	ClassDB::bind_method(D_METHOD("set_baker_path", "input"), &MHlod::set_baker_path);
 	ClassDB::bind_method(D_METHOD("get_baker_path"), &MHlod::get_baker_path);
@@ -215,6 +217,7 @@ void MHlod::Item::clear() {
 			decal.~MHLodItemDecal();
 		default:
 			ERR_FAIL_MSG("Undefine Item Type!");
+			break;
 	}
 }
 
@@ -238,6 +241,25 @@ MHlod::Item::Item(const Item &other) {
 MHlod::Item &MHlod::Item::operator=(const Item &other) {
 	copy(other);
 	return *this;
+}
+
+MHlodNode3D *MHlod::Item::get_hlod_node3d() {
+	ERR_FAIL_COND_V(type != Type::PACKED_SCENE, nullptr);
+	Ref<PackedScene> pscene = packed_scene.get_packed_scene();
+	if (pscene.is_null()) {
+		return nullptr;
+	}
+	Node *node = pscene->instantiate();
+	ERR_FAIL_COND_V(node == nullptr, nullptr);
+	MHlodNode3D *hlod_node = Object::cast_to<MHlodNode3D>(node);
+	if (unlikely(hlod_node == nullptr)) {
+		node->queue_free();
+		ERR_FAIL_V_MSG(nullptr, "PackedScene should be type MHlodNode3D!");
+	}
+	for (int i = 0; i < M_PACKED_SCENE_ARG_COUNT; i++) {
+		hlod_node->set_arg(i, packed_scene.args[i]);
+	}
+	return hlod_node;
 }
 
 void MHlod::Item::set_header_data(const PackedByteArray &data) {
@@ -595,7 +617,7 @@ int32_t MHlod::get_mesh_id(int32_t item_id, bool current_lod, bool lowest_lod) c
 }
 
 int MHlod::shape_add_sphere(const Transform3D &_transform, float radius, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, String("Body Id can be bigger than ") + itos(std::numeric_limits<int16_t>::max()));
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
 	MHLodItemCollision mcol(MHLodItemCollision::Type::SPHERE);
 	mcol.set_param(radius);
 	mcol.set_body_id(body_id);
@@ -608,7 +630,7 @@ int MHlod::shape_add_sphere(const Transform3D &_transform, float radius, uint16_
 	return item_list.size() - 1;
 }
 int MHlod::shape_add_box(const Transform3D &_transform, const Vector3 &size, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
 	MHLodItemCollision mcol(MHLodItemCollision::Type::BOX);
 	mcol.set_param(size.x / 2, size.y / 2, size.z / 2);
 	mcol.set_body_id(body_id);
@@ -622,7 +644,7 @@ int MHlod::shape_add_box(const Transform3D &_transform, const Vector3 &size, uin
 }
 
 int MHlod::shape_add_capsule(const Transform3D &_transform, float radius, float height, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
 	MHLodItemCollision mcol(MHLodItemCollision::Type::CAPSULE);
 	mcol.set_param(radius, height);
 	mcol.set_body_id(body_id);
@@ -636,7 +658,7 @@ int MHlod::shape_add_capsule(const Transform3D &_transform, float radius, float 
 }
 
 int MHlod::shape_add_cylinder(const Transform3D &_transform, float radius, float height, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
 	MHLodItemCollision mcol(MHLodItemCollision::Type::CYLINDER);
 	mcol.set_param(radius, height);
 	mcol.set_body_id(body_id);
@@ -650,7 +672,7 @@ int MHlod::shape_add_cylinder(const Transform3D &_transform, float radius, float
 }
 
 int MHlod::shape_add_complex(const int32_t id, const Transform3D &_transform, uint16_t layers, int body_id) {
-	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + itos(std::numeric_limits<int16_t>::max()));
+	ERR_FAIL_COND_V_MSG(body_id > std::numeric_limits<int16_t>::max(), -1, "Body Id can be bigger than " + std::numeric_limits<int16_t>::max());
 	MHLodItemCollisionComplex mcol;
 	mcol.id = id;
 	mcol.static_body = body_id;
@@ -792,7 +814,7 @@ Ref<ArrayMesh> MHlod::get_joined_mesh(bool for_triangle_mesh, bool best_mesh_qua
 	Vector<Pair<Ref<MHlod>, Transform3D>> stack;
 	stack.push_back({ Ref<MHlod>(this), Transform3D() }); // is local so start from Transform3D()
 	Array meshes;
-	Array _transforms;
+	Array transforms_array;
 	PackedInt32Array materials;
 	while (stack.size() != 0) {
 		Ref<MHlod> current_hlod = stack[stack.size() - 1].first;
@@ -812,7 +834,7 @@ Ref<ArrayMesh> MHlod::get_joined_mesh(bool for_triangle_mesh, bool best_mesh_qua
 			Ref<MMesh> mmesh = RL::load(MHlod::get_mesh_path(mesh_id));
 			if (mmesh.is_valid()) {
 				meshes.push_back(mmesh);
-				_transforms.push_back(item_transform);
+				transforms_array.push_back(item_transform);
 				if (!for_triangle_mesh) {
 					int32_t mat_set = current_hlod->item_list[item_id].mesh.material_id;
 					// item id can be different than mesh id as we used get_mesh_id with lowest_lod=false
@@ -838,23 +860,23 @@ Ref<ArrayMesh> MHlod::get_joined_mesh(bool for_triangle_mesh, bool best_mesh_qua
 	if (!for_triangle_mesh) {
 		Ref<MMeshJoiner> mesh_joiner;
 		mesh_joiner.instantiate();
-		mesh_joiner->insert_mmesh_data(meshes, _transforms, materials);
+		mesh_joiner->insert_mmesh_data(meshes, transforms_array, materials);
 		out = mesh_joiner->join_meshes();
 		return out;
 	}
 	// No for triangle mesh
-	PackedVector3Array vertices;
+	PackedVector3Array verticies;
 	PackedInt32Array indices;
 	for (int i = 0; i < meshes.size(); i++) {
 		Ref<MMesh> mmesh = meshes[i];
-		Transform3D t = _transforms[i];
+		Transform3D t = transforms[i];
 		for (int s = 0; s < mmesh->get_surface_count(); s++) {
 			Array sinfo = mmesh->surface_get_arrays(s);
-			int32_t index_offset = vertices.size();
+			int32_t index_offset = verticies.size();
 			PackedVector3Array svert = sinfo[Mesh::ARRAY_VERTEX];
 			PackedInt32Array sind = sinfo[Mesh::ARRAY_INDEX];
 			for (const Vector3 &v : svert) {
-				vertices.push_back(t.xform(v));
+				verticies.push_back(t.xform(v));
 			}
 			for (const int32_t index : sind) {
 				indices.push_back(index + index_offset);
@@ -863,7 +885,7 @@ Ref<ArrayMesh> MHlod::get_joined_mesh(bool for_triangle_mesh, bool best_mesh_qua
 	}
 	Array sinfo;
 	sinfo.resize(Mesh::ARRAY_MAX);
-	sinfo[Mesh::ARRAY_VERTEX] = vertices;
+	sinfo[Mesh::ARRAY_VERTEX] = verticies;
 	sinfo[Mesh::ARRAY_INDEX] = indices;
 	out.instantiate();
 	out->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, sinfo);
@@ -872,6 +894,9 @@ Ref<ArrayMesh> MHlod::get_joined_mesh(bool for_triangle_mesh, bool best_mesh_qua
 #endif
 
 void MHlod::_set_data(const Array &data) {
+	if (data.is_empty()) {
+		return;
+	}
 	ERR_FAIL_COND(data.size() != ARRAY_DATA_MAX);
 	int version = data[ARRAY_DATA_VERSION];
 	ERR_FAIL_COND_MSG(version != MHLOD_DATA_VERSION, vformat("Current hlod version format is %d and data version is %d you need to rebake hlod", version, MHLOD_DATA_VERSION));

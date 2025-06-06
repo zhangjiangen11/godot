@@ -34,7 +34,7 @@ class MColorBrush;
 
 // size -1 means it has been merged
 // lod -1 means it is out of range
-// lod -2 means it should be dropped and never been drawn
+// lod -2 means it should be droped and never been drawn
 struct MPoint {
 	RID instance = RID();
 	RID mesh = RID();
@@ -108,7 +108,7 @@ struct MSaveConfig {
 class MGrid {
 	friend class MRegion;
 	friend class MTerrain;
-	friend struct MImage;
+	friend class MImage;
 
 private:
 	bool _is_opengl = false;
@@ -119,7 +119,7 @@ private:
 	bool current_update = true;
 	bool is_dirty = false;
 	bool is_visible = true;
-	MChunks *_chunks;
+	MChunks _chunks;
 	MGridPos _size;
 	MGridPos _size_meter;
 	MGridPos _vertex_size;
@@ -220,11 +220,11 @@ public:
 	MGridPos get_size();
 	void set_scenario(RID scenario);
 	RID get_scenario();
-	void create(const int32_t width, const int32_t height, MChunks *chunks);
+	void create(const int32_t width, const int32_t height);
 	void update_all_image_list();
 	Vector3 get_world_pos(const int32_t x, const int32_t y, const int32_t z);
 	Vector3 get_world_pos(const MGridPos &pos);
-	int get_point_id_by_non_offs_ws(const Vector2 &input); // Get point id non offset world posiotion useful for grass for now
+	int get_point_id_by_non_offs_ws(const Vector2 &input); // Get point id non offset world posiotion usefull for grass for now
 	int64_t get_point_instance_id_by_point_id(int pid);
 	MGridPos get_grid_pos(const Vector3 &pos);
 	int32_t get_regions_count();

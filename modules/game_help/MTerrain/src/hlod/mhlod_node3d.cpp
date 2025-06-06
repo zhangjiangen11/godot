@@ -14,7 +14,6 @@ void MHlodNode3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_current_lod"), &MHlodNode3D::get_current_lod);
 	ClassDB::bind_method(D_METHOD("get_arg", "idx"), &MHlodNode3D::get_arg);
 	ClassDB::bind_method(D_METHOD("get_global_id"), &MHlodNode3D::get_global_id);
-	ClassDB::bind_method(D_METHOD("get_permanent_id"), &MHlodNode3D::get_permanent_id);
 	// bind items
 	ClassDB::bind_method(D_METHOD("bind_item_get_global_id", "idx"), &MHlodNode3D::bind_item_get_global_id);
 	ClassDB::bind_method(D_METHOD("bind_item_get_transform", "idx"), &MHlodNode3D::bind_item_get_transform);
@@ -38,6 +37,9 @@ void MHlodNode3D::_bind_methods() {
 }
 
 MHlodNode3D::MHlodNode3D() {
+#if MHLODSCENE_DEBUG_COUNT
+	MHlodScene::total_packed_scene_count++;
+#endif
 	if (state_data.is_empty()) {
 		state_data.init_cache(state_data_get_cache_size());
 		state_data.set_invalid_data(Variant());
@@ -46,6 +48,9 @@ MHlodNode3D::MHlodNode3D() {
 
 MHlodNode3D::~MHlodNode3D() {
 	std::lock_guard<std::mutex> lock(MHlodScene::packed_scene_mutex);
+#if MHLODSCENE_DEBUG_COUNT
+	MHlodScene::total_packed_scene_count--;
+#endif
 	if (proc != nullptr) {
 		for (int i = 0; i < M_PACKED_SCENE_BIND_COUNT; i++) {
 			if (bind_items[i].is_valid()) {
@@ -70,15 +75,18 @@ void MHlodNode3D::_notify_before_remove() {
 int MHlodNode3D::get_current_lod() const {
 	return lod;
 }
+
+void MHlodNode3D::set_arg(int idx, int32_t val) {
+	ERR_FAIL_INDEX(idx, M_PACKED_SCENE_ARG_COUNT);
+	args[idx] = val;
+}
+
 int32_t MHlodNode3D::get_arg(int idx) const {
 	ERR_FAIL_INDEX_V_MSG(idx, M_PACKED_SCENE_ARG_COUNT, 0, "MHlodNode3D arg idx shoud be between 0 and " + itos(M_PACKED_SCENE_ARG_COUNT));
 	return args[idx];
 }
 int64_t MHlodNode3D::get_global_id() const {
 	return global_id.id;
-}
-int64_t MHlodNode3D::get_permanent_id() const {
-	return permanent_id.id;
 }
 
 // Bid Items
@@ -136,9 +144,9 @@ String MHlodNode3D::state_data_get_prop_name() {
 	return STATE_DATA_CACHE_PROP_NAME;
 }
 
-void MHlodNode3D::state_data_set(const Variant &_data) {
+void MHlodNode3D::state_data_set(const Variant &data) {
 	ERR_FAIL_COND(!global_id.is_valid());
-	state_data.insert(global_id.id, _data);
+	state_data.insert(global_id.id, data);
 }
 
 const Variant &MHlodNode3D::state_data_get() {
@@ -160,12 +168,12 @@ void MHlodNode3D::_set_args(const PackedInt32Array &input) {
 }
 
 PackedInt32Array MHlodNode3D::MHlodNode3D::_get_args() {
-	PackedInt32Array ret;
-	ret.resize(M_PACKED_SCENE_ARG_COUNT);
+	PackedInt32Array out;
+	out.resize(M_PACKED_SCENE_ARG_COUNT);
 	for (int i = 0; i < M_PACKED_SCENE_ARG_COUNT; i++) {
-		ret.write[i] = args[i];
+		out.write[i] = args[i];
 	}
-	return ret;
+	return out;
 }
 
 void MHlodNode3D::_notification(int32_t what) {

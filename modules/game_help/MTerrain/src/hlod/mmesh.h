@@ -7,25 +7,25 @@
 
 /*
 	If mesh come with only one material set then
-	the material will be applied on top of the mesh automatically
+	the material will be applied on top of the mesh automaticly
 */
 
-class MMesh : public Resource {
-	GDCLASS(MMesh, Resource);
+class MMesh : public Mesh {
+	GDCLASS(MMesh, Mesh);
 
 protected:
 	static void _bind_methods();
 
 	RID mesh;
 	AABB aabb;
-	// An array of materials overrides
+	// An array of materials ovverides
 
 private:
 	void _create_if_not_exist();
 	struct MaterialSet {
 		int type = 0;
 		int user_count = 0;
-		// Material Sets separated with ";" For less memory use it is converted to assci(PackedByteArray)
+		// Material Sets seperated with ";" For less memory use it is converted to assci(PackedByteArray)
 		PackedByteArray surface_materials_paths;
 		// in case user_count > 0 we have a cache
 		Vector<Ref<Material>> materials_cache;
@@ -54,9 +54,16 @@ private:
 		void add_user();
 		void remove_user();
 	};
-	// Surface names separated by ;
+	struct Surface {
+		uint64_t format = 0;
+		int array_length = 0;
+		int index_array_length = 0;
+		Mesh::PrimitiveType primitive = Mesh::PrimitiveType::PRIMITIVE_TRIANGLES;
+	};
+	// Surface names seperated by ;
 	PackedByteArray surfaces_names;
 	Vector<MaterialSet> materials_set;
+	Vector<Surface> surfaces;
 
 	void surfaces_set_names(const PackedStringArray &_surfaces_names);
 
@@ -67,7 +74,6 @@ public:
 	PackedStringArray surfaces_get_names() const;
 	void surface_set_name(int surface_index, const String &new_name);
 	String surface_get_name(int surface_index) const;
-	Array surface_get_arrays(int surface_index) const;
 
 	RID get_mesh_rid();
 	void create_from_mesh(Ref<Mesh> input);
@@ -75,7 +81,6 @@ public:
 
 	int get_surface_count() const;
 	AABB get_aabb() const;
-	int material_set_get_count() const;
 	PackedStringArray material_set_get(int set_id) const;
 	String material_get(int set_id, int surface_index) const;
 	void surface_set_material(int set_id, int surface_index, const String &path);
@@ -91,7 +96,6 @@ public:
 	void remove_user(int material_set_id);
 
 	bool is_same_mesh(Ref<MMesh> other);
-
 	// First element in array is material set
 	void _set_surfaces(Array _surfaces);
 	Array _get_surfaces() const;
@@ -101,5 +105,14 @@ public:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 	String _to_string();
 
-	void debug_test();
+	RID get_rid() const override;
+	int32_t surface_get_array_len(int32_t p_index) const override;
+	int32_t surface_get_array_index_len(int32_t p_index) const override;
+	Array surface_get_arrays(int32_t p_index) const override;
+	BitField<ArrayFormat> surface_get_format(int32_t p_index) const override;
+	PrimitiveType surface_get_primitive_type(int32_t p_index) const override;
+	int32_t get_blend_shape_count() const override;
+	int material_set_get_count() const;
+	//void _surface_set_material(int32_t p_index, const Ref<Material> &p_material) override;
+	//Ref<Material> _surface_get_material(int32_t p_index) const override;
 };
