@@ -14,11 +14,11 @@ void MMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_mesh"), &MMesh::get_mesh);
 
 	ClassDB::bind_method(D_METHOD("get_surface_count"), &MMesh::get_surface_count);
-	ClassDB::bind_method(D_METHOD("get_aabb"), &MMesh::get_aabb);
-	ClassDB::bind_method(D_METHOD("material_set_get_count"), &MMesh::material_set_get_count);
+	//ClassDB::bind_method(D_METHOD("get_aabb"), &MMesh::get_aabb);
+	//ClassDB::bind_method(D_METHOD("material_set_get_count"), &MMesh::material_set_get_count);
 	ClassDB::bind_method(D_METHOD("material_set_get", "set_id"), &MMesh::material_set_get);
 	ClassDB::bind_method(D_METHOD("material_get", "set_id", "surface_index"), &MMesh::material_get);
-	ClassDB::bind_method(D_METHOD("surface_set_material", "set_id", "surface_index", "material_path"), &MMesh::surface_set_material);
+	ClassDB::bind_method(D_METHOD("surfaceset_material", "set_id", "surface_index", "material_path"), &MMesh::surface_set_material);
 	ClassDB::bind_method(D_METHOD("add_material_set"), &MMesh::add_material_set);
 	ClassDB::bind_method(D_METHOD("material_set_resize", "size"), &MMesh::material_set_resize);
 	ClassDB::bind_method(D_METHOD("clear_material_set", "set_id"), &MMesh::clear_material_set);
@@ -253,7 +253,6 @@ RID MMesh::get_mesh_rid() {
 }
 
 void MMesh::create_from_mesh(Ref<Mesh> input) {
-	Array surfaces;
 	ERR_FAIL_COND(input.is_null());
 	int surface_count = input->get_surface_count();
 	ERR_FAIL_COND(surface_count == 0);
@@ -704,7 +703,6 @@ RID MMesh::get_rid() const {
 	return mesh;
 }
 
-
 int32_t MMesh::surface_get_array_len(int32_t p_index) const {
 	ERR_FAIL_INDEX_V(p_index, surfaces.size(), 0);
 	return surfaces[p_index].array_length;
@@ -714,7 +712,6 @@ int32_t MMesh::surface_get_array_index_len(int32_t p_index) const {
 	ERR_FAIL_INDEX_V(p_index, surfaces.size(), 0);
 	return surfaces[p_index].index_array_length;
 }
-
 
 BitField<Mesh::ArrayFormat> MMesh::surface_get_format(int32_t p_index) const {
 	ERR_FAIL_INDEX_V(p_index, surfaces.size(), 0);
@@ -739,4 +736,3 @@ Ref<Material> MMesh::_surface_get_material(int32_t p_index) const{
 
 }
 */
-

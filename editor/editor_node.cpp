@@ -891,7 +891,7 @@ void EditorNode::_notification(int p_what) {
 		case NOTIFICATION_APPLICATION_FOCUS_OUT: {
 			// Save on focus loss before applying the FPS limit to avoid slowing down the saving process.
 			if (EDITOR_GET("interface/editor/save_on_focus_loss")) {
-				_save_scene_silently();
+				//_save_scene_silently();
 			}
 
 			// Set a low FPS cap to decrease CPU/GPU usage while the editor is unfocused.
