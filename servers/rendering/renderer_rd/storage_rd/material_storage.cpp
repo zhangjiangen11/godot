@@ -2227,7 +2227,9 @@ void MaterialStorage::material_initialize(RID p_rid) {
 
 void MaterialStorage::material_free(RID p_rid) {
 	Material *material = material_owner.get_or_null(p_rid);
-	ERR_FAIL_NULL(material);
+	if (material == nullptr) {
+		return;
+	}
 
 	// Need to clear texture arrays to prevent spin locking of their RID's.
 	// This happens when the app is being closed.
@@ -2245,7 +2247,9 @@ void MaterialStorage::material_free(RID p_rid) {
 
 void MaterialStorage::material_set_shader(RID p_material, RID p_shader) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL(material);
+	if (material == nullptr) {
+		return;
+	}
 
 	if (material->data) {
 		memdelete(material->data);
@@ -2297,7 +2301,9 @@ MaterialStorage::ShaderData *MaterialStorage::material_get_shader_data(RID p_mat
 
 void MaterialStorage::material_set_param(RID p_material, const StringName &p_param, const Variant &p_value) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL(material);
+	if (material == nullptr) {
+		return;
+	}
 
 	if (p_value.get_type() == Variant::NIL) {
 		material->params.erase(p_param);
@@ -2316,7 +2322,9 @@ void MaterialStorage::material_set_param(RID p_material, const StringName &p_par
 
 Variant MaterialStorage::material_get_param(RID p_material, const StringName &p_param) const {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL_V(material, Variant());
+	if (material == nullptr) {
+		return Variant();
+	}
 	if (material->params.has(p_param)) {
 		return material->params[p_param];
 	} else {
@@ -2326,7 +2334,9 @@ Variant MaterialStorage::material_get_param(RID p_material, const StringName &p_
 
 void MaterialStorage::material_set_next_pass(RID p_material, RID p_next_material) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL(material);
+	if (material == nullptr) {
+		return;
+	}
 
 	if (material->next_pass == p_next_material) {
 		return;
@@ -2342,7 +2352,9 @@ void MaterialStorage::material_set_next_pass(RID p_material, RID p_next_material
 
 void MaterialStorage::material_set_render_priority(RID p_material, int priority) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL(material);
+	if (material == nullptr) {
+		return;
+	}
 	material->priority = priority;
 	if (material->data) {
 		material->data->set_render_priority(priority);
@@ -2352,7 +2364,9 @@ void MaterialStorage::material_set_render_priority(RID p_material, int priority)
 
 bool MaterialStorage::material_is_animated(RID p_material) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL_V(material, false);
+	if (material == nullptr) {
+		return false;
+	}
 	if (material->shader && material->shader->data) {
 		if (material->shader->data->is_animated()) {
 			return true;
@@ -2365,7 +2379,9 @@ bool MaterialStorage::material_is_animated(RID p_material) {
 
 bool MaterialStorage::material_casts_shadows(RID p_material) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL_V(material, true);
+	if (material == nullptr) {
+		return false;
+	}
 	if (material->shader && material->shader->data) {
 		if (material->shader->data->casts_shadows()) {
 			return true;
@@ -2396,7 +2412,9 @@ RS::CullMode RendererRD::MaterialStorage::material_get_cull_mode(RID p_material)
 
 void MaterialStorage::material_get_instance_shader_parameters(RID p_material, List<InstanceShaderParam> *r_parameters) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL(material);
+	if (material == nullptr) {
+		return;
+	}
 	if (material->shader && material->shader->data) {
 		material->shader->data->get_instance_param_list(r_parameters);
 
@@ -2408,7 +2426,9 @@ void MaterialStorage::material_get_instance_shader_parameters(RID p_material, Li
 
 void MaterialStorage::material_update_dependency(RID p_material, DependencyTracker *p_instance) {
 	Material *material = material_owner.get_or_null(p_material);
-	ERR_FAIL_NULL(material);
+	if (material == nullptr) {
+		return;
+	}
 	p_instance->update_dependency(&material->dependency);
 	if (material->next_pass.is_valid()) {
 		material_update_dependency(material->next_pass, p_instance);
