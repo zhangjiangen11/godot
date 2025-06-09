@@ -59,7 +59,6 @@
 #include "scene/resources/mesh.h"
 #include "scene/resources/style_box_flat.h"
 #include "scene/resources/visual_shader_nodes.h"
-#include "scene/resources/style_box_flat.h"
 
 static Mutex enum_property_name_list;
 static StringName get_object_enum_property_name_list(const StringName &_property) {
@@ -4166,7 +4165,6 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			// math types
 
 		case Variant::VECTOR2: {
-<<<<<<< HEAD
 			if (p_hint == PROPERTY_HINT_RANGE) {
 				PackedStringArray range_hint = p_hint_text.split(",");
 				float min = range_hint[0].to_float();
@@ -4184,16 +4182,9 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			} else {
 				EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
 				EditorPropertyVector2 *editor = memnew(EditorPropertyVector2(p_wide));
-				editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix);
+				editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix, hint.radians_as_degrees);
 				return editor;
 			}
-=======
-			EditorPropertyVector2 *editor = memnew(EditorPropertyVector2(p_wide));
-
-			EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
-			editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, p_hint == PROPERTY_HINT_LINK, hint.suffix, hint.radians_as_degrees);
-			return editor;
->>>>>>> 9e0219429742e8bf1d7ad3f171c7d2bdcb9adcd4
 
 		} break;
 		case Variant::VECTOR2I: {
