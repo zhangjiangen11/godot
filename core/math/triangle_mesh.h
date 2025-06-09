@@ -99,7 +99,7 @@ public:
 
 	const Vector<Triangle> &get_triangles() const { return triangles; }
 	const Vector<Vector3> &get_vertices() const { return vertices; }
-	const Vector<Vector2> &get_vertices_xz() const {
+	Vector<Vector2> get_vertices_xz() const {
 		Vector<Vector2> ret;
 		ret.resize(vertices.size());
 		Vector2 *dest = ret.ptrw();
@@ -110,7 +110,7 @@ public:
 		}
 		return ret;
 	}
-	const Vector<Vector2> &get_vertices_xy() const {
+	Vector<Vector2> get_vertices_xy() const {
 		Vector<Vector2> ret;
 		ret.resize(vertices.size());
 		Vector2 *dest = ret.ptrw();
