@@ -253,6 +253,7 @@ private:
 		bool ready_notified : 1;
 		bool ready_first : 1;
 		bool is_dotnt_saved : 1;
+		bool is_manual_thread : 1;
 
 		mutable bool is_auto_translating : 1;
 		mutable bool is_auto_translate_dirty : 1;

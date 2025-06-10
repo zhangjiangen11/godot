@@ -4109,6 +4109,7 @@ Node::Node() {
 	data.ready_notified = false; // This is a small hack, so if a node is added during _ready() to the tree, it correctly gets the _ready() notification.
 	data.ready_first = true;
 	data.is_dotnt_saved = false;
+	data.is_manual_thread = false;
 
 	data.auto_translate_mode = AUTO_TRANSLATE_MODE_INHERIT;
 	data.is_auto_translating = true;
