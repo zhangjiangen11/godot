@@ -71,7 +71,7 @@ struct MGridUpdateInfo {
 };
 
 struct InstanceDistance {
-	int64_t id = 0;
+	uint64_t id = 0;
 	int distance = 0;
 	friend bool operator<(const InstanceDistance &c1, const InstanceDistance &c2) {
 		return c1.distance < c2.distance;
@@ -108,7 +108,7 @@ struct MSaveConfig {
 class MGrid {
 	friend class MRegion;
 	friend class MTerrain;
-	friend class MImage;
+	friend struct MImage;
 
 private:
 	bool _is_opengl = false;

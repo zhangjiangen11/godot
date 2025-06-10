@@ -10,30 +10,30 @@
 #endif
 
 
-RID MChunks::get_mesh(int32_t size_meter, real_t h_scale, int8_t edge, const Ref<Material> &_material) {
-	String skey = itos(size_meter) + "_" + rtos(h_scale) + "_" + itos(edge);
+RID MChunks::get_mesh(int32_t size_meter, real_t _h_scale, int8_t edge, const Ref<Material> &_material) {
+	String skey = itos(size_meter) + "_" + rtos(_h_scale) + "_" + itos(edge);
 	int64_t key = skey.hash();
 	Ref<Mesh> mesh;
 	if (edge == M_MAIN) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, false, false, false, false);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, false, false, false, false);
 	} else if (edge == M_L) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, true, false, false, false);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, true, false, false, false);
 	} else if (edge == M_R) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, false, true, false, false);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, false, true, false, false);
 	} else if (edge == M_T) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, false, false, true, false);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, false, false, true, false);
 	} else if (edge == M_B) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, false, false, false, true);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, false, false, false, true);
 	} else if (edge == M_LT) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, true, false, true, false);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, true, false, true, false);
 	} else if (edge == M_RT) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, false, true, true, false);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, false, true, true, false);
 	} else if (edge == M_LB) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, true, false, false, true);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, true, false, false, true);
 	} else if (edge == M_RB) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, false, true, false, true);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, false, true, false, true);
 	} else if (edge == M_LRTB) {
-		mesh = MChunkGenerator::generate(size_meter, h_scale, true, true, true, true);
+		mesh = MChunkGenerator::generate(size_meter, _h_scale, true, true, true, true);
 	}
 	if (_material.is_valid()) {
 		mesh->surface_set_material(0, _material);

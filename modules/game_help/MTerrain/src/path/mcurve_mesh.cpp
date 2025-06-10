@@ -56,7 +56,6 @@ TypedArray<MCurveMesh> MCurveMesh::get_all_curve_mesh_nodes() {
 
 // after calling this sliced_pos and slice_info are invalid and should be recalculate
 void MeshSlicedInfo::merge_vertex_by_distance(float merge_distance) {
-	return;
 	ERR_FAIL_COND_MSG(sliced_pos.size() > 0, "Can not merge vertecies slice_pos is already created!");
 	int32_t merge_index_first = -1;
 	int32_t merge_index_second = -1;
@@ -595,12 +594,12 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 		PackedColorArray color;
 		PackedVector2Array uv;
 		PackedVector2Array uv2;
-		PackedInt32Array index;
+		PackedInt32Array index_list;
 		// Getting some constant data with size of our mesh_count
 		mesh_sliced.get_color(mesh_count, color);
 		mesh_sliced.get_uv(mesh_count, uv);
 		mesh_sliced.get_uv2(mesh_count, uv2);
-		mesh_sliced.get_index(mesh_count, index);
+		mesh_sliced.get_index(mesh_count, index_list);
 		// mesh_sliced ----- We need to calculate this part
 		vertex.resize(mesh_sliced.vertex.size() * mesh_count);
 		bool has_normal = false;
@@ -665,7 +664,7 @@ void MCurveMesh::_generate_connection(const MCurve::ConnUpdateInfo &update_info,
 		if (uv2.size() > 0) {
 			mesh_data[RenderingServer::ARRAY_TEX_UV2] = uv2;
 		}
-		mesh_data[RenderingServer::ARRAY_INDEX] = index;
+		mesh_data[RenderingServer::ARRAY_INDEX] = index_list;
 
 		RSS->mesh_add_surface_from_arrays(mesh, RenderingServer::PRIMITIVE_TRIANGLES, mesh_data);
 		if (mesh_sliced.material.is_valid()) {

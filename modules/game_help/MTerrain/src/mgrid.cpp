@@ -924,8 +924,8 @@ void MGrid::set_pixel(uint32_t x, uint32_t y, const Color &col, const int32_t in
 	}
 	bool ex = (x % rp == 0 && x != 0);
 	bool ey = (y % rp == 0 && y != 0);
-	uint32_t rx = (x / rp) - (uint32_t)ex;
-	uint32_t ry = (y / rp) - (uint32_t)ey;
+	int32_t rx = (x / rp) - (int32_t)ex;
+	int32_t ry = (y / rp) - (int32_t)ey;
 	x -= rp * rx;
 	y -= rp * ry;
 	MRegion *r = get_region(rx, ry);
@@ -998,8 +998,8 @@ void MGrid::set_height_by_pixel(uint32_t x, uint32_t y, const real_t value) {
 	}
 	bool ex = (x % rp == 0 && x != 0);
 	bool ey = (y % rp == 0 && y != 0);
-	uint32_t rx = (x / rp) - (uint32_t)ex;
-	uint32_t ry = (y / rp) - (uint32_t)ey;
+	int32_t rx = (x / rp) - (int32_t)ex;
+	int32_t ry = (y / rp) - (int32_t)ey;
 	x -= rp * rx;
 	y -= rp * ry;
 	MRegion *r = get_region(rx, ry);
@@ -1274,15 +1274,15 @@ void MGrid::draw_height(Vector3 brush_pos, real_t radius, int brush_id) {
 	bottom = (bottom > grid_pixel_region.bottom) ? grid_pixel_region.bottom : bottom;
 	brush->set_grid(this);
 	brush->before_draw();
-	MPixelRegion draw_pixel_region(left, right, top, bottom);
+	MPixelRegion _draw_pixel_region(left, right, top, bottom);
 	//ERR_FAIL_COND_MSG(draw_pixel_region.width!=draw_pixel_region.height,"Non square brush is not supported");
 	MImage *draw_image = memnew(MImage);
 	{
-		draw_image->create(draw_pixel_region.get_width(), draw_pixel_region.get_height(), Image::Format::FORMAT_RF);
-		Vector<MPixelRegion> draw_pixel_regions = draw_pixel_region.devide(4);
+		draw_image->create(_draw_pixel_region.get_width(), _draw_pixel_region.get_height(), Image::Format::FORMAT_RF);
+		Vector<MPixelRegion> draw_pixel_regions = _draw_pixel_region.devide(4);
 		Vector<MPixelRegion> local_pixel_regions;
 		for (int i = 0; i < draw_pixel_regions.size(); i++) {
-			local_pixel_regions.append(draw_pixel_region.get_local(draw_pixel_regions[i]));
+			local_pixel_regions.append(_draw_pixel_region.get_local(draw_pixel_regions[i]));
 		}
 		Vector<std::thread *> threads_pull;
 		for (int i = 0; i < draw_pixel_regions.size(); i++) {
@@ -1297,8 +1297,8 @@ void MGrid::draw_height(Vector3 brush_pos, real_t radius, int brush_id) {
 	}
 	uint32_t local_x = 0;
 	uint32_t local_y = 0;
-	uint32_t x = draw_pixel_region.left;
-	uint32_t y = draw_pixel_region.top;
+	uint32_t x = _draw_pixel_region.left;
+	uint32_t y = _draw_pixel_region.top;
 	while (local_y < draw_image->height) {
 		while (local_x < draw_image->width) {
 			set_height_by_pixel(x, y, draw_image->get_pixel_RF(local_x, local_y));
@@ -1306,13 +1306,13 @@ void MGrid::draw_height(Vector3 brush_pos, real_t radius, int brush_id) {
 			x++;
 		}
 		local_x = 0;
-		x = draw_pixel_region.left;
+		x = _draw_pixel_region.left;
 		local_y++;
 		y++;
 	}
 	memdelete(draw_image);
-	draw_pixel_region.grow_all_side(grid_pixel_region);
-	generate_normals_thread(draw_pixel_region);
+	_draw_pixel_region.grow_all_side(grid_pixel_region);
+	generate_normals_thread(_draw_pixel_region);
 	update_all_dirty_image_texture();
 }
 
