@@ -13,7 +13,7 @@ void MMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_mesh_rid"), &MMesh::get_mesh_rid);
 	ClassDB::bind_method(D_METHOD("get_mesh"), &MMesh::get_mesh);
 
-	ClassDB::bind_method(D_METHOD("get_surface_count"), &MMesh::get_surface_count);
+	//ClassDB::bind_method(D_METHOD("get_surface_count"), &MMesh::get_surface_count);
 	//ClassDB::bind_method(D_METHOD("get_aabb"), &MMesh::get_aabb);
 	//ClassDB::bind_method(D_METHOD("material_set_get_count"), &MMesh::material_set_get_count);
 	ClassDB::bind_method(D_METHOD("material_set_get", "set_id"), &MMesh::material_set_get);
