@@ -38,6 +38,7 @@
 #include "core/math/plane.h"
 #include "core/math/projection.h"
 #include "core/math/quaternion.h"
+#include "core/math/random_pcg.h"
 #include "core/math/rect2.h"
 #include "core/math/rect2i.h"
 #include "core/math/transform_2d.h"
@@ -55,7 +56,7 @@
 #include "core/templates/pair.h"
 #include "core/templates/rid.h"
 #include "core/typedefs.h"
-#include "core/math/random_pcg.h"
+#include "core/variant/callable.h"
 
 #ifdef _MSC_VER
 #include <intrin.h> // Needed for `__umulh` below.
@@ -343,6 +344,7 @@ struct HashMapHasherDefault {
 	static _FORCE_INLINE_ uint32_t hash(const StringName &p_string_name) { return p_string_name.hash(); }
 	static _FORCE_INLINE_ uint32_t hash(const NodePath &p_path) { return p_path.hash(); }
 	static _FORCE_INLINE_ uint32_t hash(const ObjectID &p_id) { return hash_one_uint64(p_id); }
+	static _FORCE_INLINE_ uint32_t hash(const Callable &p_callable) { return p_callable.hash(); }
 
 	static _FORCE_INLINE_ uint32_t hash(const uint64_t p_int) { return hash_one_uint64(p_int); }
 	static _FORCE_INLINE_ uint32_t hash(const int64_t p_int) { return hash_one_uint64(uint64_t(p_int)); }
@@ -613,7 +615,7 @@ inline constexpr uint64_t hash_table_size_primes_inv[HASH_TABLE_SIZE_MAX] = {
  * Faster Remainder by Direct Computation: Applications to Compilers and Software Libraries
  * https://arxiv.org/abs/1902.01961
  */
-static _FORCE_INLINE_ uint32_t fastmod(const uint32_t& n, const uint64_t& c, const uint32_t& d) {
+static _FORCE_INLINE_ uint32_t fastmod(const uint32_t &n, const uint64_t &c, const uint32_t &d) {
 #if defined(_MSC_VER)
 	// Returns the upper 64 bits of the product of two 64-bit unsigned integers.
 	// This intrinsic function is required since MSVC does not support unsigned 128-bit integers.
