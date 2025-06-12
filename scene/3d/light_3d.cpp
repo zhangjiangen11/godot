@@ -46,25 +46,19 @@ void Light3D::set_param(Param p_param, real_t p_value) {
 		}
 	}
 
-	if(p_param == PARAM_SHADOW_SPLIT_1_OFFSET) {
+	if (p_param == PARAM_SHADOW_SPLIT_1_OFFSET) {
 		param[PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * p_value;
-	}
-	else if(p_param == PARAM_SHADOW_SPLIT_2_OFFSET) {
+	} else if (p_param == PARAM_SHADOW_SPLIT_2_OFFSET) {
 		param[PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * p_value;
-	}
-	else if(p_param == PARAM_SHADOW_SPLIT_3_OFFSET) {
+	} else if (p_param == PARAM_SHADOW_SPLIT_3_OFFSET) {
 		param[PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * p_value;
-	}
-	else if(p_param == PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET) {
+	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET) {
 		param[PARAM_SHADOW_SPLIT_1_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
-	}
-	else if(p_param == PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET) {
+	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET) {
 		param[PARAM_SHADOW_SPLIT_2_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
-	}
-	else if(p_param == PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET) {
+	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET) {
 		param[PARAM_SHADOW_SPLIT_3_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
-	}
-	else if(p_param == PARAM_SHADOW_MAX_DISTANCE) {
+	} else if (p_param == PARAM_SHADOW_MAX_DISTANCE) {
 		param[PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * param[PARAM_SHADOW_SPLIT_1_OFFSET];
 		param[PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * param[PARAM_SHADOW_SPLIT_2_OFFSET];
 		param[PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * param[PARAM_SHADOW_SPLIT_3_OFFSET];
@@ -565,14 +559,14 @@ DirectionalLight3D::SkyMode DirectionalLight3D::get_sky_mode() const {
 }
 
 void DirectionalLight3D::_validate_property(PropertyInfo &p_property) const {
-	if (shadow_mode == SHADOW_ORTHOGONAL && (p_property.name == "directional_shadow_split_1" || p_property.name == "directional_shadow_blend_splits" || p_property.name == "directional_shadow_split_distance_1" )) {
+	if (shadow_mode == SHADOW_ORTHOGONAL && (p_property.name == "directional_shadow_split_1" || p_property.name == "directional_shadow_blend_splits" || p_property.name == "directional_shadow_split_distance_1")) {
 		// Split 2 and split blending are only used with the PSSM 2 Splits and PSSM 4 Splits shadow modes.
-		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
+		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 
-	if ((shadow_mode == SHADOW_ORTHOGONAL || shadow_mode == SHADOW_PARALLEL_2_SPLITS) && (p_property.name == "directional_shadow_split_2" || p_property.name == "directional_shadow_split_3" || p_property.name == "directional_shadow_split_distance_2" || p_property.name == "directional_shadow_split_distance_3" )) {
+	if ((shadow_mode == SHADOW_ORTHOGONAL || shadow_mode == SHADOW_PARALLEL_2_SPLITS) && (p_property.name == "directional_shadow_split_2" || p_property.name == "directional_shadow_split_3" || p_property.name == "directional_shadow_split_distance_2" || p_property.name == "directional_shadow_split_distance_3")) {
 		// Splits 3 and 4 are only used with the PSSM 4 Splits shadow mode.
-		p_property.usage = PROPERTY_USAGE_NO_EDITOR;
+		p_property.usage = PROPERTY_USAGE_NONE;
 	}
 
 	if (p_property.name == "light_size" || p_property.name == "light_projector") {
