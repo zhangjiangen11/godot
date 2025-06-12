@@ -135,6 +135,7 @@ public:
 
 	virtual void set_path(const String &p_path, bool p_take_over = false);
 	String get_path() const;
+	String get_base_file_name();
 	virtual void set_path_cache(const String &p_path); // Set raw path without involving resource cache.
 	_FORCE_INLINE_ bool is_built_in() const { return path_cache.is_empty() || path_cache.contains("::") || path_cache.begins_with("local://"); }
 
@@ -201,7 +202,7 @@ class ResourceCache {
 public:
 	static bool has(const String &p_path);
 	static Ref<Resource> get_ref(const String &p_path);
-	static void set_ref(const String& p_path, Resource* r_res);
+	static void set_ref(const String &p_path, Resource *r_res);
 	static void get_cached_resources(List<Ref<Resource>> *p_resources);
 	static int get_cached_resource_count();
 };

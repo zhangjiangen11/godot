@@ -109,6 +109,9 @@ void Resource::set_path(const String &p_path, bool p_take_over) {
 String Resource::get_path() const {
 	return path_cache;
 }
+String Resource::get_base_file_name() {
+	return path_cache.get_file().get_basename();
+}
 
 void Resource::set_path_cache(const String &p_path) {
 	path_cache = p_path;
@@ -702,6 +705,7 @@ void Resource::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_path", "path"), &Resource::_set_path);
 	ClassDB::bind_method(D_METHOD("take_over_path", "path"), &Resource::_take_over_path);
 	ClassDB::bind_method(D_METHOD("get_path"), &Resource::get_path);
+	ClassDB::bind_method(D_METHOD("get_base_file_name"), &Resource::get_base_file_name);
 	ClassDB::bind_method(D_METHOD("set_path_cache", "path"), &Resource::set_path_cache);
 	ClassDB::bind_method(D_METHOD("set_name", "name"), &Resource::set_name);
 	ClassDB::bind_method(D_METHOD("get_name"), &Resource::get_name);
