@@ -3870,7 +3870,7 @@ void Animation::set_track_info(const TypedArray<StringName> &p_track_info) {
 TypedArray<StringName> Animation::get_track_info() const {
 	TypedArray<StringName> ret;
 	for (int i = 0; i < tracks.size(); i++) {
-		ret.push_back(StringName(tracks[i]->path));
+		ret.push_back(StringName(tracks[i]->path.operator String()));
 	}
 	return ret;
 }

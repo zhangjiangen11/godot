@@ -90,7 +90,7 @@ CharacterPrefabProcessPanel::CharacterPrefabProcessPanel() {
 	property_preview_mesh_path = memnew(EditorPropertyPath);
 	property_preview_mesh_path->set_label(L"選擇预制件：");
 	property_preview_mesh_path->set_object_and_property(this, SNAME("preview_mesh_path"));
-	property_preview_mesh_path->setup({ "*.fbx", "*.gltf", "*.glb" }, false, false);
+	property_preview_mesh_path->setup({ "*.fbx", "*.gltf", "*.glb" }, false, false, false);
 	property_preview_mesh_path->set_h_size_flags(SIZE_EXPAND_FILL);
 	property_preview_mesh_path->set_custom_property(true);
 	property_preview_mesh_path->update_property();
@@ -162,7 +162,7 @@ CharacterPrefabProcessPanel::CharacterPrefabProcessPanel() {
 			multe_path->set_label(L"选择文件夹");
 			multe_path->set_object_and_property(this, "multe_charcter_prefab_file_path");
 			multe_path->set_h_size_flags(SIZE_EXPAND_FILL);
-			multe_path->setup(Vector<String>(), true, false);
+			multe_path->setup(Vector<String>(), true, false, false);
 			multe_path->set_custom_property(true);
 			vb->add_child(multe_path);
 

@@ -58,7 +58,7 @@ static String get_string_from_ascii(const PackedByteArray &p_buffer) {
 	if (p_buffer.size() > 0) {
 		const uint8_t *r = p_buffer.ptr();
 		CharString cs;
-		cs.resize(p_buffer.size() + 1);
+		cs.resize_uninitialized(p_buffer.size() + 1);
 		memcpy(cs.ptrw(), r, p_buffer.size());
 		cs[(int)p_buffer.size()] = 0;
 

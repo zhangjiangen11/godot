@@ -78,7 +78,7 @@ public:
 		return data->hash_cache;
 	}
 
-	explicit operator String() const;
+	operator String() const;
 	bool is_empty() const;
 
 	bool operator==(const NodePath &p_path) const;

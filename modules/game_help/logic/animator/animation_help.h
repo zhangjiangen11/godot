@@ -116,7 +116,7 @@ class AnimationManager : public Object {
 				return;
 			}
 			if (animationLibrary.is_null()) {
-				animationLibrary = ResourceLoader::load(initAnimationLibraryPath, NodePath("AnimationLibrary"));
+				animationLibrary = ResourceLoader::load(initAnimationLibraryPath, String("AnimationLibrary"));
 				if (animationLibrary.is_null()) {
 					is_error = true;
 					ERR_FAIL_MSG(vformat("AnimationLibrary not fund : \"%s\".", initAnimationLibraryPath));

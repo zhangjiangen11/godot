@@ -1756,7 +1756,7 @@ static void remove_mult_ampersand(const char32_t *p_string, char32_t *p_out_stri
 // 刪除注釋
 String String::remove_annotate() const {
 	String ret;
-	ret.resize(size());
+	ret.resize_uninitialized(size());
 	int code_size = size();
 	const char32_t *p_source_code = ptr();
 	char32_t *code = ret.ptrw();
