@@ -340,7 +340,10 @@ public:
 	float get_end_offset(int64_t conn_id, int element_index) const;
 	void set_rand_remove(int64_t conn_id, int element_index, float val);
 	float get_rand_remove(int64_t conn_id, int element_index) const;
+
 	// Data
+	void  set_override_entry(int64_t id, PackedByteArray input_data);
+	PackedByteArray get_override_entry(int64_t id) const;
 	void set_data(const PackedByteArray &input);
 	PackedByteArray get_data() const;
 };

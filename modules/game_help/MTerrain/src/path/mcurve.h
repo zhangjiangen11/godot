@@ -5,6 +5,10 @@
 #define MAX_CONN 4
 #define conn_DEFAULT_VALUE { 0, 0, 0, 0 }
 
+#define CONN_ADDITIONAL_POINT_COUNT 8 // additional point for calculting better LOD
+#define CONN_ADDITIONAL_POINT_LOD { -1, -1, -1, -1, -1, -1, -1, -1 } // correct accordingly base on CONN_ADDITIONAL_POINT_COUNT
+#define CONN_ADDITIONAL_POINT_INTERVAL_RATIO (1.0f / (CONN_ADDITIONAL_POINT_COUNT + 1)) // Also start point
+
 #define INIT_POINTS_BUFFER_SIZE 10
 #define INC_POINTS_BUFFER_SIZE 10
 #define INVALID_POINT_INDEX 0
@@ -22,11 +26,54 @@
 #include "core/templates/hash_map.h"
 #include "core/templates/hash_set.h"
 #include "core/templates/vector.h"
+#include "core/templates/vmap.h"
+#include "core/templates/vset.h"
 #include "core/variant/variant_utility.h"
 
 #include "../moctree.h"
 
-class MPath;
+class MCurve;
+
+class MCurveConnCollision : public RefCounted {
+	friend MCurve;
+	GDCLASS(MCurveConnCollision, RefCounted);
+	bool _is_col = false;
+	float _ratio;
+	int64_t _conn_id;
+
+protected:
+	static void _bind_methods();
+
+public:
+	bool is_collided() const;
+	float get_collision_ratio() const;
+	int64_t get_conn_id() const;
+};
+
+/**
+ * use set_override_entry and get_override_entry for setting and getting MCurveOverrideData
+ * use get_point_conns_override_entries to get all override data for connection connected to a point
+ *
+ * usefull for things like copying override data and undo a redo
+ * Only run-time for temporary stuff not save or ...
+ *
+ * set_override_entry, get_override_entry id can be id of conn or point
+ * as id of conn or point will never collide
+ */
+class MCurveOverrideData : public RefCounted {
+	GDCLASS(MCurveOverrideData, RefCounted);
+
+protected:
+	static void _bind_methods() {}
+
+public:
+	struct Entry {
+		int user_id;
+		Node *node;
+		PackedByteArray data;
+	};
+	Vector<Entry> entries;
+};
 /*
 	Each point has int32_t id
 	Each has an array of next conn in conn!
@@ -66,6 +113,23 @@ public:
 		Point() = default;
 		Point(Vector3 _position, Vector3 _in, Vector3 _out);
 		PointSave get_point_save();
+		inline bool is_connected_to(int32_t p_id) const {
+			for (int i = 0; i < MAX_CONN; i++) {
+				if (conn[i] != 0 && std::abs(conn[i]) == p_id) {
+					return true;
+				}
+			}
+			return false;
+		}
+		inline int get_conn_count() const {
+			int count = 0;
+			for (int i = 0; i < MAX_CONN; i++) {
+				if (conn[i] != 0) {
+					count++;
+				}
+			}
+			return count;
+		}
 	};
 
 	union Conn {
@@ -82,8 +146,35 @@ public:
 		inline bool is_connection() {
 			return p.b != 0;
 		}
+		inline String str() {
+			return String("Conn(") + itos(p.a) + " , " + itos(p.b) + ")";
+		}
 	};
 
+private:
+	/**
+	 * ConnData contain additional point for sending to octree for more accurate LOD calculation
+	 * octree id of each point will be calculated base on ConnData position in array and CONN_ADDITIONAL_POINT_COUNT
+	 * octree_id = -(CONN_ADDITIONAL_POINT_COUNT*conn_id + i)
+	 * Also octree_id of each point is negetive to not collide with point IDs
+	 *
+	 * additional point in octree is -> (conn_id32*CONN_ADDITIONAL_POINT_COUNT) + additonal_index;
+	 * additonal_index is between [0,CONN_ADDITIONAL_POINT_COUNT-1]
+	 */
+	struct ConnAdditionalPoints {
+		Vector3 positions[CONN_ADDITIONAL_POINT_COUNT]; // points to send to octree
+		inline void update_positions(const Vector3 &a, const Vector3 &b, const Vector3 &a_control, const Vector3 &b_control);
+	};
+	/**
+	 * Keep the lod and conn_id of ConnAdditionalPoints with the same index in data
+	 * seperated as accessing each one require at different time and there is no need to both loaded at the same time
+	 */
+	struct ConnAdditional {
+		int8_t lod[CONN_ADDITIONAL_POINT_COUNT] = CONN_ADDITIONAL_POINT_LOD;
+		int64_t conn_id;
+	};
+
+public:
 	enum ConnType {
 		CONN_NONE = 0,
 		OUT_IN = 1,
@@ -137,15 +228,31 @@ private:
 	uint16_t oct_id = 0;
 	PackedInt32Array free_buffer_indicies;
 	void _increase_points_buffer_size(size_t q);
+	/// Conn additional points
+	void _increase_conn_data_buffer_size(size_t q);
+	/////////////////// _init_conn_additional_points for init_insert
+	///////// Warning _init_conn_additional_points do the least error checking
+	/// use for start to at load time and it assume that conn_addition_point does not exist and it is empty
+	/// conn_id must exist it will not check if it exist or not
+	_FORCE_INLINE_ void _init_conn_additional_points(const int64_t conn_id, PackedVector3Array &positions, PackedInt32Array &ids);
+	/// this will not use at load time it should be called at each connection modification
+	/// it is not inlined and optimized as usually use for editor during curve modification and will be called for few connection each time
+	/// IMPORTANT: this will asume you calculate point LOD before calling this and this will take care of conn_list and active_conn
+	void _update_conn_additional_points(const int64_t conn_id);
 	//PackedInt32Array root_ids;
 	static MOctree *octree;
 	int32_t last_curve_id = 0;
-	VSet<int32_t> curve_users;
+	VMap<int32_t, Node *> curve_users;
 	VSet<int32_t> processing_users;
 	VSet<int32_t> active_points;
 	VSet<int64_t> active_conn;
 	//Vector<int32_t> force_reupdate_points;
+	HashMap<int64_t, int32_t> conn_id32;
+	Vector<int32_t> conn_free_id32;
+	Vector<ConnAdditionalPoints> conn_additional_points;
+	Vector<ConnAdditional> conn_additional;
 	HashMap<int64_t, int8_t> conn_list; // Key -> conn, Value -> LOD
+	HashMap<int64_t, AABB> conn_aabb; // Cached conn aabb
 	HashMap<int64_t, ConnDistances> conn_distances;
 
 	float bake_interval = 0.2;
@@ -163,16 +270,22 @@ public:
 	Vector<MCurve::Point> points_buffer;
 	MCurve();
 	~MCurve();
-
+	void set_override_entry(int64_t id, Ref<MCurveOverrideData> override_data);
+	Ref<MCurveOverrideData> get_override_entry(int64_t id) const;
 	int get_points_count();
 	// Users
-	int32_t get_curve_users_id();
+	int32_t get_curve_users_id(Node *node);
 	void remove_curve_user_id(int32_t user_id);
 
 	// In case prev_conn = -1 this will insert as root node and if a root node exist this will give an error
-	int32_t add_point(const Vector3 &position, const Vector3 &in, const Vector3 &out, const int32_t prev_conn);
-	int32_t add_point_conn_point(const Vector3 &position, const Vector3 &in, const Vector3 &out, const Array &conn_types, const PackedInt32Array &conn_points);
-	bool connect_points(int32_t p0, int32_t p1, ConnType con_type = CONN_NONE);
+	int32_t add_point(const Vector3 &position, const Vector3 &in, const Vector3 &out, const int32_t prev_conn, Ref<MCurveOverrideData> point_override_data, Ref<MCurveOverrideData> conn_override_data);
+	int32_t add_point_conn_point(const Vector3 &position, const Vector3 &in, const Vector3 &out, const Array &conn_types, const PackedInt32Array &conn_points, Ref<MCurveOverrideData> point_override = nullptr, TypedArray<MCurveOverrideData> conn_overrides = TypedArray<MCurveOverrideData>());
+	// important this should be called when conn change or remove
+	void clear_conn_cache_data(int64_t conn_id);
+	/// break a connection into two connection by adding a point on top of that
+	/// t is ratio
+	int32_t add_point_conn_split(int64_t conn_id, float t);
+	bool connect_points(int32_t p0, int32_t p1, ConnType con_type = CONN_NONE, Ref<MCurveOverrideData> conn_ov_data = nullptr);
 	bool disconnect_conn(int64_t conn_id);
 	bool disconnect_points(int32_t p0, int32_t p1);
 	void remove_point(const int32_t point_index);
@@ -183,6 +296,7 @@ public:
 
 public:
 	int64_t get_conn_id(int32_t p0, int32_t p1);
+	PackedInt32Array get_conn_points(int64_t conn_id);
 	PackedInt64Array get_conn_ids_exist(const PackedInt32Array points);
 	int8_t get_conn_lod(int64_t conn_id);
 	int8_t get_point_lod(int64_t p_id);
@@ -194,23 +308,55 @@ public:
 
 public:
 	void toggle_conn_type(int32_t point, int64_t conn_id);
-	void validate_conn(int64_t conn_id, bool send_signal = true);
+	//void validate_conn(int64_t conn_id,bool send_signal=true);
+private:
+	/// Return zero if not exist
+	_FORCE_INLINE_ int32_t _get_conn_id32(int64_t conn_id) const;
+	/// Will remove if cid32 is zero
+	_FORCE_INLINE_ void _set_conn_id32(int64_t conn_id, int32_t cid32);
+	_FORCE_INLINE_ int8_t _calculate_conn_lod(const int64_t conn_id) const;
+	void _validate_points(const VSet<int32_t> &points);
+	/// if conn is removed handle it!
+	/// recalculate LOD base on conn points and update conn_list and active_conn accordingly
+	void _validate_conns(const VSet<int64_t> &conns);
+	void _swap_points(const int32_t p_a, const int32_t p_b, VSet<int64_t> &affected_conns);
+
+public:
 	void swap_points(const int32_t p_a, const int32_t p_b);
-	void swap_points_with_validation(const int32_t p_a, const int32_t p_b);
+	/**
+		sort increasing or decreasing
+		if _selected_points is empty it will sort in all points
+		this will return new root point as that will change during sorting
+	*/
 	int32_t sort_from(int32_t root_point, bool increasing);
 	void move_point(int p_index, const Vector3 &pos);
 	void move_point_in(int p_index, const Vector3 &pos);
 	void move_point_out(int p_index, const Vector3 &pos);
 
 	bool has_point(int p_index) const;
-	bool has_conn(int64_t conn_id);
+	bool has_conn(int64_t conn_id) const;
+	bool is_point_connected(int32_t pa, int32_t pb) const;
 	ConnType get_conn_type(int64_t conn_id) const;
 	Array get_point_conn_types(int32_t p_index) const;
 	int get_point_conn_count(int32_t p_index) const;
 	PackedInt32Array get_point_conn_points_exist(int32_t p_index) const;
 	PackedInt32Array get_point_conn_points(int32_t p_index) const;
-	PackedInt32Array get_point_conn_points_recursive(int32_t p_index) const;
+	TypedArray<MCurveOverrideData> get_point_conn_overrides(int32_t p_index) const;
+	/*
+		output is in order of IDs
+	*/
+	VSet<int32_t> get_point_conn_points_recursive(int32_t p_index) const;
+	/*
+		Above function for gdscript as gdscript not recognize VSet<int32_t>
+	*/
+	PackedInt32Array get_point_conn_points_recursive_gd(int32_t p_index) const;
 	PackedInt64Array get_point_conns(int32_t p_index) const;
+	/// Return OverrideData which can be set by set_override_entry
+	/// p_index is point index
+	/// Dictionary key is conn_id connected to point
+	/// Dictionary value is OverrideData
+	/// For grabing single OverrideData data for point or conn use get_override_entry
+	Dictionary get_point_conns_override_entries(int32_t p_index) const;
 	PackedInt64Array get_point_conns_inc_neighbor_points(int32_t p_index) const;
 	PackedInt64Array growed_conn(PackedInt64Array conn_ids) const;
 	Vector3 get_point_position(int p_index);
@@ -228,7 +374,9 @@ public:
 	Vector3 get_conn_position(int64_t conn_id, float t);
 	AABB get_conn_aabb(int64_t conn_id);
 	AABB get_conns_aabb(const PackedInt64Array &conn_ids);
-	float get_closest_ratio_to_point(int64_t conn_id, Vector3 pos);
+	float get_closest_ratio_to_point(int64_t conn_id, Vector3 pos) const;
+	/// first is ratio and second is distance
+	float get_closest_ratio_to_line(int64_t conn_id, Vector3 line_pos, Vector3 line_dir) const;
 	Vector3 get_point_order_tangent(int32_t point_a, int32_t point_b, float t);
 	Vector3 get_conn_tangent(int64_t conn_id, float t);
 	Transform3D get_point_order_transform(int32_t point_a, int32_t point_b, float t, bool tilt = true, bool scale = true);
@@ -247,6 +395,7 @@ private:
 	// End of thread safe
 public:
 	int32_t ray_active_point_collision(const Vector3 &org, Vector3 dir, float threshold); // Maybe later optmize this
+	Ref<MCurveConnCollision> ray_active_conn_collision(const Vector3 &org, Vector3 dir, float threshold);
 	void _set_data(const PackedByteArray &input);
 	PackedByteArray _get_data();
 
@@ -261,6 +410,12 @@ private:
 #define BEZIER_EPSILON 0.1f
 	_FORCE_INLINE_ Vector3 _get_bezier_extreme_t(const Vector3 &a, const Vector3 &b, const Vector3 &a_control, const Vector3 &b_control) {
 		return (2 * a_control - (b_control + a)) / (b - a + 3 * (a_control - b_control));
+	}
+	/// Return the second derivative of bezier curve (not normlized)
+	/// not used in _get_bezier_transform, as it can create problems
+	_FORCE_INLINE_ Vector3 _get_bezier_normal(const Vector3 &a, const Vector3 &b, const Vector3 &a_control, const Vector3 &b_control, const float t) {
+		float u = 1 - t;
+		return 6 * (u * (b_control - 2 * a_control + a) + t * (b - 2 * b_control + a_control));
 	}
 	_FORCE_INLINE_ Vector3 _get_bezier_tangent(const Vector3 &a, const Vector3 &b, const Vector3 &a_control, const Vector3 &b_control, const float t) {
 		float u = 1 - t;

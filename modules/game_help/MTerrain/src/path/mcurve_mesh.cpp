@@ -1043,7 +1043,7 @@ void MCurveMesh::_on_curve_changed() {
 		}
 		curve = new_curve;
 		if (curve.is_valid()) {
-			curve_user_id = curve->get_curve_users_id();
+			curve_user_id = curve->get_curve_users_id(this);
 			curve->connect("connection_updated", Callable(this, "_on_connections_updated"));
 			curve->connect("force_update_point", Callable(this, "_point_force_update"));
 			curve->connect("force_update_connection", Callable(this, "_connection_force_update"));

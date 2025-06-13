@@ -38,6 +38,11 @@ public:
 	void clear_override(int64_t id);
 	void clear();
 
+	/// These are really usefull when we want to backup override data in run-time somwhere
+	/// for example in split connection or undo redo stuff, or copy paste overrides
+	void set_override_entry(int64_t id, PackedByteArray data_input);
+	PackedByteArray get_override_entry(int64_t id) const;
+
 	void set_data(const PackedByteArray &input);
 	PackedByteArray get_data();
 };
