@@ -997,7 +997,7 @@ void Skeleton3D::clear_bones() {
 
 // Posing api
 
-void Skeleton3D::set_bone_pose(int p_bone, const Transform3D &p_pose) {
+void Skeleton3D::set_bone_pose(int p_bone, const Transform3D &p_pose, bool p_notify ) {
 	const int bone_size = bones.size();
 	ERR_FAIL_INDEX(p_bone, bone_size);
 
@@ -1006,41 +1006,49 @@ void Skeleton3D::set_bone_pose(int p_bone, const Transform3D &p_pose) {
 	bones[p_bone].pose_scale = p_pose.basis.get_scale();
 	bones[p_bone].pose_cache_dirty = true;
 	if (is_inside_tree()) {
-		_make_dirty();
+		if (p_notify) {
+			_make_dirty();
+		}
 		_make_bone_global_pose_subtree_dirty(p_bone);
 	}
 }
 
-void Skeleton3D::set_bone_pose_position(int p_bone, const Vector3 &p_position) {
+void Skeleton3D::set_bone_pose_position(int p_bone, const Vector3 &p_position, bool p_notify) {
 	const int bone_size = bones.size();
 	ERR_FAIL_INDEX(p_bone, bone_size);
 
 	bones[p_bone].pose_position = p_position;
 	bones[p_bone].pose_cache_dirty = true;
 	if (is_inside_tree()) {
-		_make_dirty();
+		if (p_notify) {
+			_make_dirty();
+		}
 		_make_bone_global_pose_subtree_dirty(p_bone);
 	}
 }
-void Skeleton3D::set_bone_pose_rotation(int p_bone, const Quaternion &p_rotation) {
+void Skeleton3D::set_bone_pose_rotation(int p_bone, const Quaternion &p_rotation, bool p_notify) {
 	const int bone_size = bones.size();
 	ERR_FAIL_INDEX(p_bone, bone_size);
 
 	bones[p_bone].pose_rotation = p_rotation;
 	bones[p_bone].pose_cache_dirty = true;
 	if (is_inside_tree()) {
-		_make_dirty();
+		if (p_notify) {
+			_make_dirty();
+		}
 		_make_bone_global_pose_subtree_dirty(p_bone);
 	}
 }
-void Skeleton3D::set_bone_pose_scale(int p_bone, const Vector3 &p_scale) {
+void Skeleton3D::set_bone_pose_scale(int p_bone, const Vector3 &p_scale, bool p_notify) {
 	const int bone_size = bones.size();
 	ERR_FAIL_INDEX(p_bone, bone_size);
 
 	bones[p_bone].pose_scale = p_scale;
 	bones[p_bone].pose_cache_dirty = true;
 	if (is_inside_tree()) {
-		_make_dirty();
+		if (p_notify) {
+			_make_dirty();
+		}
 		_make_bone_global_pose_subtree_dirty(p_bone);
 	}
 }
@@ -1439,10 +1447,10 @@ void Skeleton3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("clear_bones"), &Skeleton3D::clear_bones);
 
 	ClassDB::bind_method(D_METHOD("get_bone_pose", "bone_idx"), &Skeleton3D::get_bone_pose);
-	ClassDB::bind_method(D_METHOD("set_bone_pose", "bone_idx", "pose"), &Skeleton3D::set_bone_pose);
-	ClassDB::bind_method(D_METHOD("set_bone_pose_position", "bone_idx", "position"), &Skeleton3D::set_bone_pose_position);
-	ClassDB::bind_method(D_METHOD("set_bone_pose_rotation", "bone_idx", "rotation"), &Skeleton3D::set_bone_pose_rotation);
-	ClassDB::bind_method(D_METHOD("set_bone_pose_scale", "bone_idx", "scale"), &Skeleton3D::set_bone_pose_scale);
+	ClassDB::bind_method(D_METHOD("set_bone_pose", "bone_idx", "pose", "notify"), &Skeleton3D::set_bone_pose, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("set_bone_pose_position", "bone_idx", "position", "notify"), &Skeleton3D::set_bone_pose_position, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("set_bone_pose_rotation", "bone_idx", "rotation", "notify"), &Skeleton3D::set_bone_pose_rotation, DEFVAL(true));
+	ClassDB::bind_method(D_METHOD("set_bone_pose_scale", "bone_idx", "scale", "notify"), &Skeleton3D::set_bone_pose_scale, DEFVAL(true));
 
 	ClassDB::bind_method(D_METHOD("get_bone_pose_position", "bone_idx"), &Skeleton3D::get_bone_pose_position);
 	ClassDB::bind_method(D_METHOD("get_bone_pose_rotation", "bone_idx"), &Skeleton3D::get_bone_pose_rotation);

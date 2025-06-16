@@ -379,10 +379,10 @@ public:
 	Quaternion get_bone_pose_rotation(int p_bone) const;
 	Vector3 get_bone_pose_scale(int p_bone) const;
 	bool is_human_bone(int p_bone) const;
-	void set_bone_pose(int p_bone, const Transform3D &p_pose);
-	void set_bone_pose_position(int p_bone, const Vector3 &p_position);
-	void set_bone_pose_rotation(int p_bone, const Quaternion &p_rotation);
-	void set_bone_pose_scale(int p_bone, const Vector3 &p_scale);
+	void set_bone_pose(int p_bone, const Transform3D &p_pose,bool p_notify = true);
+	void set_bone_pose_position(int p_bone, const Vector3 &p_position, bool p_notify = true);
+	void set_bone_pose_rotation(int p_bone, const Quaternion &p_rotation, bool p_notify = true);
+	void set_bone_pose_scale(int p_bone, const Vector3 &p_scale, bool p_notify = true);
 	void set_human_bone(int p_bone, bool p_is_human_bone);
 
 	Transform3D get_bone_global_pose(int p_bone) const;

@@ -228,7 +228,7 @@ struct HumanSkeleton {
 				if (bone_blend_weight.has(it.key)) {
 					weight = bone_blend_weight[it.key];
 				}
-				p_skeleton->set_bone_pose_rotation(bone_index, p_skeleton->get_bone_pose_rotation(bone_index).slerp(it.value, p_weight * weight));
+				p_skeleton->set_bone_pose_rotation(bone_index, p_skeleton->get_bone_pose_rotation(bone_index).slerp(it.value, p_weight * weight),false);
 			}
 		}
 	}

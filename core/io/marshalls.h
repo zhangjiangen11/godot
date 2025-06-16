@@ -104,6 +104,42 @@ static inline unsigned int encode_float(float p_float, uint8_t *p_arr) {
 
 	return sizeof(uint32_t);
 }
+static inline unsigned int encode_transform(const Transform3D& p_mtx, uint8_t *p_arr) {
+	uint8_t *p_arr_address = p_arr;
+	encode_float(p_mtx.basis.rows[0][0], p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[1][0], p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[2][0], p_arr_address);
+	p_arr_address += 4;
+	encode_float(0, p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[0][1], p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[1][1], p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[2][1], p_arr_address);
+	p_arr_address += 4;
+	encode_float(0, p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[0][2], p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[1][2], p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.basis.rows[2][2], p_arr_address);
+	p_arr_address += 4;
+	encode_float(0, p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.origin.x, p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.origin.y, p_arr_address);
+	p_arr_address += 4;
+	encode_float(p_mtx.origin.z, p_arr_address);
+	p_arr_address += 4;
+	encode_float(1, p_arr_address);
+
+	return sizeof(uint32_t) * 16;
+}
 
 static inline unsigned int encode_uint64(uint64_t p_uint, uint8_t *p_arr) {
 	for (int i = 0; i < 8; i++) {

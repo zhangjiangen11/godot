@@ -1132,6 +1132,12 @@ struct _VariantCall {
 		uint8_t *w = p_instance->ptrw();
 		encode_float(p_value, &w[p_offset]);
 	}
+	static void func_PackedByteArray_encode_transform(PackedByteArray *p_instance, int64_t p_offset, const Transform3D &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 16);
+		uint8_t *w = p_instance->ptrw();
+		encode_transform(p_value, &w[p_offset]);
+	}
 	static void func_PackedByteArray_encode_double(PackedByteArray *p_instance, int64_t p_offset, double p_value) {
 		uint64_t size = p_instance->size();
 		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 8);
@@ -2636,6 +2642,7 @@ static void _register_variant_builtin_methods_array() {
 	bind_functionnc(PackedByteArray, encode_s64, _VariantCall::func_PackedByteArray_encode_s64, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_half, _VariantCall::func_PackedByteArray_encode_half, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_float, _VariantCall::func_PackedByteArray_encode_float, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_transform, _VariantCall::func_PackedByteArray_encode_transform, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_double, _VariantCall::func_PackedByteArray_encode_double, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_var, _VariantCall::func_PackedByteArray_encode_var, sarray("byte_offset", "value", "allow_objects"), varray(false));
 
