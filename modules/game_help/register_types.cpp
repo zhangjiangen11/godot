@@ -82,6 +82,8 @@
 #include "modules/game_help/logic/data_table_manager.h"
 #include "modules/game_help/logic/debug_show.h"
 #include "modules/game_help/logic/path_manager.h"
+#include "modules/game_help/logic/scene/Tree3D.h"
+#include "modules/game_help/logic/scene/ivy.h"
 
 #include "modules/game_help/unity/unity_link_server.h"
 
@@ -269,6 +271,8 @@ void initialize_game_help_module(ModuleInitializationLevel p_level) {
 		ClassDB::register_class<CharacterAI_Inductor>();
 		ClassDB::register_class<CharacterAI_Brain>();
 		ClassDB::register_class<CharacterAI>();
+
+		ClassDB::register_class<Tree3D>();
 
 		ClassDB::register_class<Blackboard>();
 		ClassDB::register_class<BlackboardPlan>();

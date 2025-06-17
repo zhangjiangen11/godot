@@ -26,53 +26,56 @@
 #include "core/string/ustring.h"
 
 #include "core/object/ref_counted.h"
+#include "scene/3d/node_3d.h"
 
 #include <vector>
 
-/** an ivy node */
+/** 一个常春藤节点 */
 class IvyNode {
 public:
 	IvyNode() :
 			length(0.0f), floatingLength(0.0f), climb(false) {}
 
-	/** node position */
+	/** 节点位置 */
 	Vector3 pos = Vector3(0.0f, 0.0f, 0.0f);
 
-	/** primary grow direction, a weighted sum of the previous directions */
+	/** 主要生长方向，是先前方向的加权和 */
 	Vector3 primaryDir = Vector3(0, 0, 1);
 
-	/** adhesion vector as a result from other scene objects */
+	/** 由其他场景对象产生的附着向量 */
 	Vector3 adhesionVector = Vector3(0.0f, 0.0f, 0.0f);
 
-	/** a smoothed adhesion vector computed and used during the birth phase,
-	   since the ivy leaves are align by the adhesion vector, this smoothed vector
-	   allows for smooth transitions of leaf alignment */
+	/** 在生成阶段计算和使用的平滑附着向量，
+	   由于常春藤叶子通过附着向量对齐，这个平滑向量
+	   允许叶子对齐的平滑过渡 */
 	Vector3 smoothAdhesionVector;
 
-	/** length of the associated ivy branch at this node */
+	/** 此节点处相关常春藤分支的长度 */
 	float length = 0.0001;
 
-	/** length at the last node that was climbing */
+	/** 最后一个处于攀爬状态节点的长度 */
 	float floatingLength = 0;
 
 	float adhesionLength = 0.0f;
 
-	/** climbing state */
+	/** 攀爬状态 */
 	bool climb = true;
 };
 
-/** an ivy root point */
+/** 一个常春藤根点 */
 class IvyRoot {
 public:
-	/** a number of nodes */
+	/** 多个节点 */
 	std::vector<IvyNode> nodes;
 
-	/** alive state */
+	/** 存活状态 */
 	bool alive = true;
 
-	/** number of parents, represents the level in the root hierarchy */
+	/** 父节点数量，表示根层次结构中的级别 */
 	int parents = 0;
 };
+
+/** 基本三角形 */
 class BasicTriangle {
 public:
 	BasicTriangle() {}
@@ -109,7 +112,8 @@ public:
 
 	Vector3 norm;
 };
-/** a simple material containing only a single texture */
+
+/** 仅包含单一纹理的简单材质 */
 class BasicMaterial {
 public:
 	BasicMaterial() :
@@ -123,6 +127,8 @@ public:
 
 	unsigned int texObj;
 };
+
+/** 基本网格 */
 class BasicMesh {
 public:
 	BasicMesh() {
@@ -155,9 +161,9 @@ public:
 		boundingSpherePos = Vector3(0.0f, 0.0f, 0.0f);
 	}
 
-	/** setup the triangles pointer to their vertices, normals, texCoords, and materials; computes the bounding sphere */
+	/** 设置三角形指向其顶点、法线、纹理坐标和材质的指针；计算包围球 */
 	void prepareData() {
-		//update pointers of triangle
+		// 更新三角形指针
 		for (std::vector<BasicTriangle>::iterator t = triangles.begin(); t != triangles.end(); ++t) {
 			t->v0 = vertices[t->v0id - 1];
 			t->v1 = vertices[t->v1id - 1];
@@ -186,7 +192,7 @@ public:
 			//if (t->matid != 0) t->mat = materials[t->matid - 1];
 		}
 
-		//compute bounding sphere
+		// 计算包围球
 		boundingSpherePos = Vector3(0.0f, 0.0f, 0.0f);
 
 		for (std::vector<Vector3>::iterator v = vertices.begin(); v != vertices.end(); ++v) {
@@ -202,14 +208,14 @@ public:
 		}
 	}
 
-	/** computes the vertex normals */
+	/** 计算顶点法线 */
 	void calculateVertexNormals() {
 		normals.clear();
 
 		normals.resize(vertices.size());
 	}
 
-	/** flips the vertex normals */
+	/** 翻转顶点法线 */
 	void flipNormals() {
 	}
 
@@ -235,64 +241,70 @@ public:
 	unsigned int displayListObj;
 };
 
-/** the ivy itself, derived from basic mesh that allows to handle the final ivy mesh as a drawable object */
-class Ivy : public BasicMesh {
+/** 常春藤本身，继承自基本网格，允许将最终的常春藤网格作为可绘制对象处理 */
+class IvyMesh : public BasicMesh {
 public:
-	Ivy();
+	IvyMesh();
 
 	void resetSettings();
 
-	/** initialize a new ivy root */
+	/** 初始化一个新的常春藤根 */
 	void seed(const Vector3 &seedPos);
 
-	/** one single grow iteration */
+	/** 一次单独的生长迭代 */
 	void grow();
 
-	/** compute the adhesion of scene objects at a point pos*/
+	/** 计算场景对象在点pos处的附着力 */
 	Vector3 computeAdhesion(const Vector3 &pos);
 
-	/** computes the collision detection for an ivy segment oldPos->newPos, newPos will be modified if necessary */
+	/** 计算常春藤段oldPos->newPos的碰撞检测，如有必要将修改newPos */
 	bool computeCollision(const Vector3 &oldPos, Vector3 &newPos, bool &climbingState);
 
-	/** creates the ivy triangle mesh */
+	/** 创建常春藤三角形网格 */
 	void birth();
 
-	/** the ivy roots */
+	/** 常春藤根 */
 	std::vector<IvyRoot> roots;
 
 public:
 	LocalVector<Ref<TriangleMesh>> meshList;
-	/** the ivy size factor, influences the grow behavior [0..0,1] */
+	/** 常春藤大小因子，影响生长行为 [0..0,1] */
 	float ivySize;
 
-	/** leaf size factor [0..0,1] */
+	/** 叶子大小因子 [0..0,1] */
 	float ivyLeafSize;
 
-	/** branch size factor [0..0,1] */
+	/** 分支大小因子 [0..0,1] */
 	float ivyBranchSize;
 
-	/** maximum length of an ivy branch segment that is freely floating [0..1] */
+	/** 自由漂浮的常春藤分支段的最大长度 [0..1] */
 	float maxFloatLength;
 
-	/** maximum distance for adhesion of scene object [0..1] */
+	/** 场景对象附着的最大距离 [0..1] */
 	float maxAdhesionDistance;
 
-	/** weight for the primary grow vector [0..1] */
+	/** 主要生长向量的权重 [0..1] */
 	float primaryWeight;
 
-	/** weight for the random influence vector [0..1] */
+	/** 随机影响向量的权重 [0..1] */
 	float randomWeight;
 
-	/** weight for the gravity vector [0..1] */
+	/** 重力向量的权重 [0..1] */
 	float gravityWeight;
 
-	/** weight for the adhesion vector [0..1] */
+	/** 附着向量的权重 [0..1] */
 	float adhesionWeight;
 
-	/** the probability of producing a new ivy root per iteration [0..1]*/
+	/** 每次迭代产生新常春藤根的概率 [0..1]*/
 	float branchingProbability;
 
-	/** the probability of creating a new ivy leaf [0..1] */
+	/** 创建新常春藤叶子的概率 [0..1] */
 	float leafProbability;
 	float maxLength = 0.0f;
+};
+class Ivy : public Node3D {
+	GDCLASS(Ivy,Node3D);
+
+public:
+	Ref<IvyMesh> ivyMesh;
 };
