@@ -17,34 +17,6 @@ Ref<PackedScene> PathScene3D::get_scene() const {
 	return scene;
 }
 
-void PathScene3D::set_path_3d(Path3D *p_path) {
-	if (p_path != path3d) {
-		if (path3d != nullptr && path3d->is_connected("curve_changed", callable_mp(this, &PathScene3D::_on_curve_changed))) {
-			path3d->disconnect("curve_changed", callable_mp(this, &PathScene3D::_on_curve_changed));
-		}
-		path3d = p_path;
-		if (path3d != nullptr) {
-			path3d->connect("curve_changed", callable_mp(this, &PathScene3D::_on_curve_changed));
-		}
-		_on_curve_changed();
-	}
-}
-
-Path3D *PathScene3D::get_path_3d() const {
-	return path3d;
-}
-
-void PathScene3D::set_scene_transform(const SceneTransform p_transform) {
-	if (scene_transform != p_transform) {
-		scene_transform = p_transform;
-		queue_rebuild();
-	}
-}
-
-PathScene3D::SceneTransform PathScene3D::get_scene_transform() const {
-	return scene_transform;
-}
-
 void PathScene3D::set_distribution(Distribution p_distribution) {
 	if (distribution != p_distribution) {
 		distribution = p_distribution;
@@ -124,10 +96,6 @@ bool PathScene3D::get_sample_cubic() const {
 	return sample_cubic;
 }
 
-void PathScene3D::queue_rebuild() {
-	dirty = true;
-}
-
 TypedArray<Node3D> PathScene3D::bake_instances() {
 	TypedArray<Node3D> out;
 	for (Node3D *instance : instances) {
@@ -143,20 +111,13 @@ TypedArray<Node3D> PathScene3D::bake_instances() {
 }
 
 void PathScene3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("queue_rebuild"), &PathScene3D::queue_rebuild);
+	PATH_TOOL_BINDS(PathScene3D, scene, SCENE)
+
 	ClassDB::bind_method(D_METHOD("bake_instances"), &PathScene3D::bake_instances);
 
 	ClassDB::bind_method(D_METHOD("set_scene", "scene"), &PathScene3D::set_scene);
 	ClassDB::bind_method(D_METHOD("get_scene"), &PathScene3D::get_scene);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "scene", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene"), "set_scene", "get_scene");
-
-	ClassDB::bind_method(D_METHOD("set_path_3d", "path"), &PathScene3D::set_path_3d);
-	ClassDB::bind_method(D_METHOD("get_path_3d"), &PathScene3D::get_path_3d);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "path_3d", PROPERTY_HINT_NODE_TYPE, "Path3D"), "set_path_3d", "get_path_3d");
-
-	ClassDB::bind_method(D_METHOD("set_scene_transform", "transform"), &PathScene3D::set_scene_transform);
-	ClassDB::bind_method(D_METHOD("get_scene_transform"), &PathScene3D::get_scene_transform);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "scene_transform", PROPERTY_HINT_ENUM, "Transform Scene Local,Transform Scene to Path Node"), "set_scene_transform", "get_scene_transform");
 
 	ClassDB::bind_method(D_METHOD("set_distribution", "distribution"), &PathScene3D::set_distribution);
 	ClassDB::bind_method(D_METHOD("get_distribution"), &PathScene3D::get_distribution);
@@ -178,19 +139,16 @@ void PathScene3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_rotation_mode"), &PathScene3D::get_rotation_mode);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "rotation_mode", PROPERTY_HINT_ENUM, "Fixed,Path,Random"), "set_rotation_mode", "get_rotation_mode");
 
-	ClassDB::bind_method(D_METHOD("set_mesh_rotation", "rotation"), &PathScene3D::set_rotation);
-	ClassDB::bind_method(D_METHOD("get_mesh_rotation"), &PathScene3D::get_rotation);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "rotation", PROPERTY_HINT_RANGE, "0.0,360.0,0.01,radians_as_degrees"), "set_mesh_rotation", "get_mesh_rotation");
+	ClassDB::bind_method(D_METHOD("set_rotation", "rotation"), &PathScene3D::set_rotation);
+	ClassDB::bind_method(D_METHOD("get_rotation"), &PathScene3D::get_rotation);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "rotation", PROPERTY_HINT_RANGE, "0.0,360.0,0.01,radians_as_degrees"), "set_rotation", "get_rotation");
 
 	ClassDB::bind_method(D_METHOD("set_sample_cubic", "sample_cubic"), &PathScene3D::set_sample_cubic);
 	ClassDB::bind_method(D_METHOD("get_sample_cubic"), &PathScene3D::get_sample_cubic);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sample_cubic"), "set_sample_cubic", "get_sample_cubic");
 
 	ADD_SIGNAL(MethodInfo("scene_changed"));
-	ADD_SIGNAL(MethodInfo("curve_changed"));
 
-	BIND_ENUM_CONSTANT(TRANSFORM_SCENE_LOCAL);
-	BIND_ENUM_CONSTANT(TRANSFORM_SCENE_PATH_NODE);
 	BIND_ENUM_CONSTANT(DISTRIBUTE_BY_COUNT);
 	BIND_ENUM_CONSTANT(DISTRIBUTE_BY_DISTANCE);
 	BIND_ENUM_CONSTANT(DISTRIBUTE_MAX);
@@ -208,17 +166,12 @@ void PathScene3D::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
 			set_process_internal(true);
+			_rebuild_mesh();
 		} break;
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
-			bool local_transform_dirty = local_transform != get_global_transform();
-			bool path_transform_dirty = path3d != nullptr && path3d->get_global_transform() != path_transform;
-			bool transform_dirty = scene_transform == TRANSFORM_SCENE_PATH_NODE && (local_transform_dirty || path_transform_dirty);
-
-			dirty |= transform_dirty;
-
-			if (dirty) {
-				_rebuild_scene();
+			if (_pop_is_dirty()) {
+				_rebuild_mesh();
 			}
 		} break;
 	}
@@ -259,18 +212,7 @@ void PathScene3D::_on_scene_changed() {
 	emit_signal("scene_changed");
 }
 
-void PathScene3D::_on_curve_changed() {
-	queue_rebuild();
-	emit_signal("curve_changed");
-}
-
-void PathScene3D::_rebuild_scene() {
-	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || scene.is_null() || !dirty) {
-		return;
-	}
-
-	dirty = false;
-
+void PathScene3D::_rebuild_mesh() {
 	for (Node3D *child : instances) {
 		if (child != nullptr) {
 			remove_child(child);
@@ -278,6 +220,10 @@ void PathScene3D::_rebuild_scene() {
 		}
 	}
 	instances.clear();
+
+	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || scene.is_null()) {
+		return;
+	}
 
 	if (!scene->can_instantiate()) {
 		return;
@@ -288,9 +234,7 @@ void PathScene3D::_rebuild_scene() {
 	}
 	tmp->queue_free();
 
-	local_transform = get_global_transform();
-	path_transform = path3d->get_global_transform();
-	Transform3D mod_transform = local_transform.affine_inverse() * path_transform;
+	Transform3D mod_transform = _get_relative_transform();
 
 	Ref<Curve3D> curve = path3d->get_curve();
 	if (curve->get_point_count() < 2) {
@@ -354,7 +298,9 @@ void PathScene3D::_rebuild_scene() {
 				ERR_FAIL();
 		}
 
-		if (scene_transform == TRANSFORM_SCENE_PATH_NODE) {
+		transform *= _sample_3d_modifiers_at(offset / baked_l);
+
+		if (relative_transform == TRANSFORM_SCENE_PATH_NODE) {
 			transform = mod_transform * transform;
 		}
 
@@ -364,7 +310,7 @@ void PathScene3D::_rebuild_scene() {
 		}
 		add_child(instance, false, InternalMode::INTERNAL_MODE_BACK);
 		instance->set_transform(transform);
-		instances.write[i] = instance;
+		instances[i] = instance;
 
 		offset += separation;
 	}
@@ -378,13 +324,7 @@ PathScene3D::~PathScene3D() {
 		scene.unref();
 	}
 
-	if (path3d != nullptr) {
-		if (ObjectDB::get_instance(path3d->get_instance_id()) &&
-				path3d->is_connected("curve_changed", callable_mp(this, &PathScene3D::_on_curve_changed))) {
-			path3d->disconnect("curve_changed", callable_mp(this, &PathScene3D::_on_curve_changed));
-		}
-		path3d = nullptr;
-	}
+	PATH_TOOL_DESTRUCTOR(PathScene3D);
 
 	instances.clear();
 }

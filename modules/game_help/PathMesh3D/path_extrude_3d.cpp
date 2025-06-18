@@ -7,26 +7,6 @@
 
 //using namespace godot;
 
-void PathExtrude3D::set_path_3d(Path3D *p_path) {
-	if (p_path != path3d) {
-		if (path3d != nullptr && path3d->is_connected("curve_changed", callable_mp(this, &PathExtrude3D::_on_curve_changed))) {
-			path3d->disconnect("curve_changed", callable_mp(this, &PathExtrude3D::_on_curve_changed));
-		}
-
-		path3d = p_path;
-
-		if (path3d != nullptr && !path3d->is_connected("curve_changed", callable_mp(this, &PathExtrude3D::_on_curve_changed))) {
-			path3d->connect("curve_changed", callable_mp(this, &PathExtrude3D::_on_curve_changed));
-		}
-
-		_on_curve_changed();
-	}
-}
-
-Path3D *PathExtrude3D::get_path_3d() const {
-	return path3d;
-}
-
 void PathExtrude3D::set_profile(const Ref<PathExtrudeProfileBase> &p_profile) {
 	if (p_profile != profile) {
 		if (profile.is_valid() && profile->is_connected("changed", callable_mp(this, &PathExtrude3D::_on_profile_changed))) {
@@ -44,17 +24,6 @@ void PathExtrude3D::set_profile(const Ref<PathExtrudeProfileBase> &p_profile) {
 
 Ref<PathExtrudeProfileBase> PathExtrude3D::get_profile() const {
 	return profile;
-}
-
-void PathExtrude3D::set_mesh_transform(const MeshTransform p_transform) {
-	if (mesh_transform != p_transform) {
-		mesh_transform = p_transform;
-		queue_rebuild();
-	}
-}
-
-PathExtrude3D::MeshTransform PathExtrude3D::get_mesh_transform() const {
-	return mesh_transform;
 }
 
 void PathExtrude3D::set_tessellation_max_stages(const int32_t p_tesselation_max_stages) {
@@ -86,7 +55,7 @@ void PathExtrude3D::set_end_cap_mode(const BitField<EndCaps> p_end_cap_mode) {
 	}
 }
 
-BitField<PathExtrude3D::EndCaps> PathExtrude3D::get_end_cap_mode() const {
+auto PathExtrude3D::get_end_cap_mode() const -> BitField<EndCaps> {
 	return end_cap_mode;
 }
 
@@ -153,104 +122,36 @@ uint64_t PathExtrude3D::get_triangle_count() const {
 	return n_tris;
 }
 
-Node *PathExtrude3D::create_trimesh_collision_node() {
-	return _setup_collision_node(generated_mesh->create_trimesh_shape());
-}
-
-void PathExtrude3D::create_trimesh_collision() {
-	_add_child_collision_node(create_trimesh_collision_node());
-}
-
-Node *PathExtrude3D::create_convex_collision_node(bool p_clean, bool p_simplify) {
-	return _setup_collision_node(generated_mesh->create_convex_shape(p_clean, p_simplify));
-}
-
-void PathExtrude3D::create_convex_collision(bool p_clean, bool p_simplify) {
-	_add_child_collision_node(create_convex_collision_node(p_clean, p_simplify));
-}
-
-Node *PathExtrude3D::create_multiple_convex_collision_node(const Ref<MeshConvexDecompositionSettings> &p_settings) {
-	Ref<MeshConvexDecompositionSettings> settings = p_settings;
-	if (settings.is_null()) {
-		settings.instantiate();
-	}
-
-	// # TODO: GDExtension doesn't have API parity here...
-	Vector<Ref<Shape3D>> shapes; // = generated_mesh->convex_decompose(settings);
-	if (shapes.is_empty()) {
-		return nullptr;
-	}
-
-	StaticBody3D *static_body = memnew(StaticBody3D);
-	for (int i = 0; i < shapes.size(); ++i) {
-		CollisionShape3D *cshape = memnew(CollisionShape3D);
-		cshape->set_shape(shapes[i]);
-		static_body->add_child(cshape, true);
-	}
-	return static_body;
-}
-
-void PathExtrude3D::create_multiple_convex_collision(const Ref<MeshConvexDecompositionSettings> &p_settings) {
-	StaticBody3D *static_body = Object::cast_to<StaticBody3D>(create_multiple_convex_collision_node(p_settings));
-	ERR_FAIL_NULL(static_body);
-	static_body->set_name(String(get_name()) + "Collision");
-
-	add_child(static_body, true);
-	if (get_owner() != nullptr) {
-		static_body->set_owner(get_owner());
-		int count = static_body->get_child_count();
-		for (int i = 0; i < count; ++i) {
-			CollisionShape3D *cshape = Object::cast_to<CollisionShape3D>(static_body->get_child(i));
-			cshape->set_owner(get_owner());
-		}
-	}
-}
-
-void PathExtrude3D::queue_rebuild() {
-	dirty = true;
-}
-
 PathExtrude3D::PathExtrude3D() {
 	generated_mesh.instantiate();
 	set_base(generated_mesh->get_rid());
 }
 
 PathExtrude3D::~PathExtrude3D() {
+	PATH_TOOL_DESTRUCTOR(PathExtrude3D)
+
 	if (profile.is_valid()) {
 		if (profile->is_connected("changed", callable_mp(this, &PathExtrude3D::_on_profile_changed))) {
 			profile->disconnect("changed", callable_mp(this, &PathExtrude3D::_on_profile_changed));
 		}
 		profile.unref();
 	}
-	if (path3d != nullptr) {
-		if (ObjectDB::get_instance(path3d->get_instance_id()) &&
-				path3d->is_connected("curve_changed", callable_mp(this, &PathExtrude3D::_on_curve_changed))) {
-			path3d->disconnect("curve_changed", callable_mp(this, &PathExtrude3D::_on_curve_changed));
-		}
-		path3d = nullptr;
+	if (collision_node != nullptr) {
+		collision_node->queue_free();
+		collision_node = nullptr;
 	}
 	generated_mesh->clear_surfaces();
 	generated_mesh.unref();
 }
 
 void PathExtrude3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("queue_rebuild"), &PathExtrude3D::queue_rebuild);
-	ClassDB::bind_method(D_METHOD("get_baked_mesh"), &PathExtrude3D::get_baked_mesh);
-	ClassDB::bind_method(D_METHOD("create_trimesh_collision"), &PathExtrude3D::create_trimesh_collision);
-	ClassDB::bind_method(D_METHOD("create_convex_collision", "clean", "simplify"), &PathExtrude3D::create_convex_collision);
-	ClassDB::bind_method(D_METHOD("create_multiple_convex_collision", "settings"), &PathExtrude3D::create_multiple_convex_collision);
+	PATH_TOOL_BINDS(PathExtrude3D, mesh, MESH)
 
-	ClassDB::bind_method(D_METHOD("set_path_3d", "path"), &PathExtrude3D::set_path_3d);
-	ClassDB::bind_method(D_METHOD("get_path_3d"), &PathExtrude3D::get_path_3d);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "path_3d", PROPERTY_HINT_NODE_TYPE, "Path3D"), "set_path_3d", "get_path_3d");
+	ClassDB::bind_method(D_METHOD("get_baked_mesh"), &PathExtrude3D::get_baked_mesh);
 
 	ClassDB::bind_method(D_METHOD("set_profile", "profile"), &PathExtrude3D::set_profile);
 	ClassDB::bind_method(D_METHOD("get_profile"), &PathExtrude3D::get_profile);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "profile", PROPERTY_HINT_RESOURCE_TYPE, "PathExtrudeProfileBase"), "set_profile", "get_profile");
-
-	ClassDB::bind_method(D_METHOD("set_mesh_transform", "transform"), &PathExtrude3D::set_mesh_transform);
-	ClassDB::bind_method(D_METHOD("get_mesh_transform"), &PathExtrude3D::get_mesh_transform);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "mesh_transform", PROPERTY_HINT_ENUM, "Transform Mesh Local,Transform Mesh to Path Node"), "set_mesh_transform", "get_mesh_transform");
 
 	ClassDB::bind_method(D_METHOD("set_tessellation_max_stages", "tessellation_max_stages"), &PathExtrude3D::set_tessellation_max_stages);
 	ClassDB::bind_method(D_METHOD("get_tessellation_max_stages"), &PathExtrude3D::get_tessellation_max_stages);
@@ -287,11 +188,9 @@ void PathExtrude3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_triangle_count"), &PathExtrude3D::get_triangle_count);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "triangle_count", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY), "", "get_triangle_count");
 
-	ADD_SIGNAL(MethodInfo("profile_changed"));
-	ADD_SIGNAL(MethodInfo("curve_changed"));
+	PATH_MESH_WITH_COLLISION_BINDS(PathExtrude3D)
 
-	BIND_ENUM_CONSTANT(TRANSFORM_MESH_LOCAL);
-	BIND_ENUM_CONSTANT(TRANSFORM_MESH_PATH_NODE);
+	ADD_SIGNAL(MethodInfo("profile_changed"));
 
 	BIND_BITFIELD_FLAG(END_CAPS_NONE);
 	BIND_BITFIELD_FLAG(END_CAPS_START);
@@ -303,60 +202,31 @@ void PathExtrude3D::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
 			set_process_internal(true);
+			_rebuild_mesh();
 		} break;
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
-			bool dirty_local_transform = local_transform != get_global_transform();
-			bool dirty_path_transform = path3d != nullptr && path3d->get_global_transform() != path_transform;
-			bool dirty_transform = mesh_transform == TRANSFORM_MESH_PATH_NODE && (dirty_local_transform || dirty_path_transform);
-
-			bool dirty_profile = profile.is_valid() && profile->_regen_if_dirty();
-
-			dirty = dirty || dirty_transform || dirty_profile;
-
-			if (dirty) {
+			if ((profile.is_valid() && profile->regen_if_dirty()) || _pop_is_dirty()) {
 				_rebuild_mesh();
+			} else if (collision_dirty) {
+				_rebuild_collision_node();
 			}
 		} break;
-	}
-}
-
-Node *PathExtrude3D::_setup_collision_node(const Ref<Shape3D> &shape) {
-	StaticBody3D *static_body = memnew(StaticBody3D);
-	CollisionShape3D *cshape = memnew(CollisionShape3D);
-	cshape->set_shape(shape);
-	static_body->add_child(cshape, true);
-	return static_body;
-}
-
-void PathExtrude3D::_add_child_collision_node(Node *p_node) {
-	if (p_node != nullptr) {
-		add_child(p_node, true);
-		if (get_owner() != nullptr) {
-			CollisionShape3D *cshape = Object::cast_to<CollisionShape3D>(p_node->get_child(0));
-			p_node->set_owner(get_owner());
-			if (cshape != nullptr) {
-				cshape->set_owner(get_owner());
-			}
-		}
 	}
 }
 
 void PathExtrude3D::_rebuild_mesh() {
-	if (!dirty) {
-		return;
-	}
-	dirty = false;
-
 	generated_mesh->clear_surfaces();
+	if (nullptr != collision_node) {
+		remove_child(collision_node);
+		collision_node->queue_free();
+		collision_node = nullptr;
+	}
 	n_tris = 0;
 
 	if (profile.is_null() || path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree()) {
 		return;
 	}
-
-	local_transform = get_global_transform();
-	path_transform = path3d->get_global_transform();
 
 	Ref<Curve3D> curve = path3d->get_curve();
 	if (curve->get_point_count() < 2) {
@@ -378,10 +248,10 @@ void PathExtrude3D::_rebuild_mesh() {
 	uint64_t n_vertices = cross_section.size();
 	ERR_FAIL_COND_MSG(n_vertices < 2, "Number of vertices provided in cross section < 2.");
 
-	Vector<bool> has_column;
+	LocalVector<bool> has_column;
 	has_column.resize(Mesh::ARRAY_MAX);
 	for (int idx_type = 0; idx_type < Mesh::ARRAY_MAX; ++idx_type) {
-		has_column.write[idx_type] = arrays.size() > idx_type && arrays[idx_type].get_type() != Variant::NIL;
+		has_column[idx_type] = arrays.size() > idx_type && arrays[idx_type].get_type() != Variant::NIL;
 	}
 
 #define MAKE_OLD_ARRAY(m_type, m_name, m_index) \
@@ -413,17 +283,22 @@ void PathExtrude3D::_rebuild_mesh() {
 		norm.y = tmp.y;
 	}
 
-	Vector<Transform3D> transforms;
+	LocalVector<Transform3D> transforms;
 	transforms.resize(n_slices);
+	LocalVector<Transform2D> uv_transforms;
+	uv_transforms.resize(n_slices);
 	for (uint64_t idx_slice = 0; idx_slice < n_slices; ++idx_slice) {
-		transforms.write[idx_slice] = curve->sample_baked_with_rotation(
-				curve->get_closest_offset(tessellated_points[idx_slice]), sample_cubic, tilt);
+		float _offset = curve->get_closest_offset(tessellated_points[idx_slice]);
+		transforms[idx_slice] = curve->sample_baked_with_rotation(_offset, sample_cubic, tilt) *
+				_sample_3d_modifiers_at(_offset / baked_l);
+
+		uv_transforms[idx_slice] = _sample_uv_modifiers_at(_offset / baked_l);
 	}
 
-	if (mesh_transform == TRANSFORM_MESH_PATH_NODE) {
-		Transform3D transform = local_transform.affine_inverse() * path_transform;
+	if (relative_transform == TRANSFORM_MESH_PATH_NODE) {
+		Transform3D transform = _get_relative_transform();
 		for (uint64_t idx_slice = 0; idx_slice < n_slices; ++idx_slice) {
-			transforms.write[idx_slice] = transform * transforms[idx_slice];
+			transforms[idx_slice] = transform * transforms[idx_slice];
 		}
 	}
 
@@ -480,6 +355,8 @@ void PathExtrude3D::_rebuild_mesh() {
 	for (uint64_t idx_slice = 0; idx_slice < n_slices - 1; ++idx_slice) {
 		const Transform3D &this_transform = transforms[idx_slice];
 		const Transform3D &next_transform = transforms[idx_slice + 1];
+		const Transform2D &this_uv_transform = uv_transforms[idx_slice];
+		const Transform2D &next_uv_transform = uv_transforms[idx_slice + 1];
 
 		double this_u = curve->get_closest_offset(tessellated_points[idx_slice]) / baked_l;
 		double next_u = curve->get_closest_offset(tessellated_points[idx_slice + 1]) / baked_l;
@@ -564,26 +441,26 @@ void PathExtrude3D::_rebuild_mesh() {
 			if (has_column[Mesh::ARRAY_TEX_UV]) {
 				double v1 = CLAMP(old_v1[idx_seg] / 2.0, 0.0, 0.5);
 				double v2 = CLAMP(old_v1[idx_seg + 1] / 2.0, 0.0, 0.5);
-				new_uv1.write[k] = Vector2(this_u, v1);
-				new_uv1.write[k + 1] = Vector2(this_u, v2);
-				new_uv1.write[k + 2] = Vector2(next_u, v1);
-				new_uv1.write[k + 3] = Vector2(this_u, v2);
-				new_uv1.write[k + 4] = Vector2(next_u, v2);
-				new_uv1.write[k + 5] = Vector2(next_u, v1);
+				new_uv1.write[k] = this_uv_transform.xform(Vector2(this_u, v1));
+				new_uv1.write[k + 1] = this_uv_transform.xform(Vector2(this_u, v2));
+				new_uv1.write[k + 2] = next_uv_transform.xform(Vector2(next_u, v1));
+				new_uv1.write[k + 3] = this_uv_transform.xform(Vector2(this_u, v2));
+				new_uv1.write[k + 4] = next_uv_transform.xform(Vector2(next_u, v2));
+				new_uv1.write[k + 5] = next_uv_transform.xform(Vector2(next_u, v1));
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV2]) {
 				double v1 = CLAMP(old_v2[idx_seg] / 2.0, 0.0, 0.5);
 				double v2 = CLAMP(old_v2[idx_seg + 1] / 2.0, 0.0, 0.5);
-				new_uv2.write[k] = Vector2(this_u, v1);
-				new_uv2.write[k + 1] = Vector2(this_u, v2);
-				new_uv2.write[k + 2] = Vector2(next_u, v1);
-				new_uv2.write[k + 3] = Vector2(this_u, v2);
-				new_uv2.write[k + 4] = Vector2(next_u, v2);
-				new_uv2.write[k + 5] = Vector2(next_u, v1);
+				new_uv2.write[k] = this_uv_transform.xform(Vector2(this_u, v1));
+				new_uv2.write[k + 1] = this_uv_transform.xform(Vector2(this_u, v2));
+				new_uv2.write[k + 2] = next_uv_transform.xform(Vector2(next_u, v1));
+				new_uv2.write[k + 3] = this_uv_transform.xform(Vector2(this_u, v2));
+				new_uv2.write[k + 4] = next_uv_transform.xform(Vector2(next_u, v2));
+				new_uv2.write[k + 5] = next_uv_transform.xform(Vector2(next_u, v1));
 			}
 
-			Vector<std::pair<uint64_t, uint64_t>> idx_verts{
+			const LocalVector<std::pair<uint64_t, uint64_t>> idx_verts{
 				{ k, idx_seg },
 				{ k + 1, idx_seg + 1 },
 				{ k + 2, idx_seg },
@@ -597,7 +474,7 @@ void PathExtrude3D::_rebuild_mesh() {
 		for (const std::pair<uint64_t, uint64_t> &idx_vert : idx_verts) { \
 			const uint64_t tmp_k = idx_vert.first;                        \
 			const uint64_t i = idx_vert.second;                           \
-			m_new.write[tmp_k] = m_old[i];                                \
+			m_new.write[tmp_k] = m_old[i];                                      \
 		}                                                                 \
 	}
 
@@ -642,59 +519,59 @@ void PathExtrude3D::_rebuild_mesh() {
 		if (end_cap_mode & END_CAPS_START) {
 			const Transform3D &this_transform = transforms[0];
 			new_vertices.resize(new_vertices.size() + cap.size());
-			uint64_t tmp_k = k;
+			uint64_t tmp_kv = k;
 			for (const int &i : cap) {
-				new_vertices.write[tmp_k] = this_transform.xform(Vector3(cross_section[i].x, cross_section[i].y, 0.0));
-				tmp_k++;
+				new_vertices.write[tmp_kv] = this_transform.xform(Vector3(cross_section[i].x, cross_section[i].y, 0.0));
+				tmp_kv++;
 			}
 
 			if (has_column[Mesh::ARRAY_NORMAL]) {
 				new_normals.resize(new_normals.size() + cap.size());
-				uint64_t _tmp_k = k;
-				for (int i = 0; i < cap.size(); ++i) {
-					new_normals.write[_tmp_k] = this_transform.basis.xform(cap_normal);
-					_tmp_k++;
+				uint64_t tmp_k = k;
+				for (const int &i : cap) {
+					new_normals.write[tmp_k] = this_transform.basis.xform(cap_normal);
+					tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TANGENT]) {
 				new_tangents.resize(new_tangents.size() + cap.size() * 4);
-				uint64_t _tmp_k = k * 4;
-				for (int i = 0; i < cap.size(); ++i) {
+				uint64_t tmp_k = k * 4;
+				for (const int &i : cap) {
 					Vector3 tang = this_transform.basis.xform(Vector3(old_tang[4 * i], old_tang[4 * i + 1], old_tang[4 * i + 2]));
-					new_tangents.write[_tmp_k] = tang.x;
-					new_tangents.write[_tmp_k + 1] = tang.y;
-					new_tangents.write[_tmp_k + 2] = tang.z;
-					new_tangents.write[_tmp_k + 3] = old_tang[4 * i + 3];
-					_tmp_k += 4;
+					new_tangents.write[tmp_k] = tang.x;
+					new_tangents.write[tmp_k + 1] = tang.y;
+					new_tangents.write[tmp_k + 2] = tang.z;
+					new_tangents.write[tmp_k + 3] = old_tang[4 * i + 3];
+					tmp_k += 4;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV]) {
 				new_uv1.resize(new_uv1.size() + cap.size());
-				uint64_t _tmp_k = k;
-				for (int i = 0; i < cap.size(); ++i) {
-					new_uv1.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
-					_tmp_k++;
+				uint64_t tmp_k = k;
+				for (const int &i : cap) {
+					new_uv1.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
+					tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV2]) {
 				new_uv1.resize(new_uv2.size() + cap.size());
-				uint64_t _tmp_k = k;
-				for (int i = 0; i < cap.size(); ++i) {
-					new_uv2.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
-					_tmp_k++;
+				uint64_t tmp_k = k;
+				for (const int &i : cap) {
+					new_uv2.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.0, 0.5); // start cap covers bottom left of UV space
+					tmp_k++;
 				}
 			}
 
 #define ADD_CAP_ARRAY(m_new, m_old, m_idx)       \
 	if (has_column[m_idx]) {                     \
 		m_new.resize(m_new.size() + cap.size()); \
-		uint64_t _tmp_k = k;                     \
-		for (int i = 0; i < cap.size(); ++i) {   \
-			m_new.write[_tmp_k] = m_old[i];      \
-			_tmp_k++;                            \
+		uint64_t tmp_k = k;                      \
+		for (const int &i : cap) {               \
+			m_new.write[tmp_k] = m_old[i];       \
+			tmp_k++;                             \
 		}                                        \
 	}
 			ADD_CAP_ARRAY(new_colors, old_colors, Mesh::ARRAY_COLOR);
@@ -714,59 +591,59 @@ void PathExtrude3D::_rebuild_mesh() {
 			const Transform3D &this_transform = transforms[transforms.size() - 1];
 
 			new_vertices.resize(new_vertices.size() + cap.size());
-			uint64_t tmp_k = k;
+			uint64_t tmp_kv = k;
 			for (const int &i : cap) {
-				new_vertices.write[tmp_k] = this_transform.xform(Vector3(cross_section[i].x, cross_section[i].y, 0.0));
-				tmp_k++;
+				new_vertices.write[tmp_kv] = this_transform.xform(Vector3(cross_section[i].x, cross_section[i].y, 0.0));
+				tmp_kv++;
 			}
 
 			if (has_column[Mesh::ARRAY_NORMAL]) {
 				new_normals.resize(new_normals.size() + cap.size());
-				uint64_t _tmp_k = k;
-				for (int i = 0; i < cap.size(); ++i) {
-					new_normals.write[_tmp_k] = this_transform.basis.xform(cap_normal);
-					_tmp_k++;
+				uint64_t tmp_k = k;
+				for (const int &i : cap) {
+					new_normals.write[tmp_k] = this_transform.basis.xform(cap_normal);
+					tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TANGENT]) {
 				new_tangents.resize(new_tangents.size() + cap.size() * 4);
-				uint64_t _tmp_k = k * 4;
-				for (int i = 0; i < cap.size(); ++i) {
+				uint64_t tmp_k = k * 4;
+				for (const int &i : cap) {
 					Vector3 tang = this_transform.basis.xform(Vector3(old_tang[4 * i], old_tang[4 * i + 1], old_tang[4 * i + 2]));
-					new_tangents.write[_tmp_k] = tang.x;
-					new_tangents.write[_tmp_k + 1] = tang.y;
-					new_tangents.write[_tmp_k + 2] = tang.z;
-					new_tangents.write[_tmp_k + 3] = old_tang[4 * i + 3];
-					_tmp_k += 4;
+					new_tangents.write[tmp_k] = tang.x;
+					new_tangents.write[tmp_k + 1] = tang.y;
+					new_tangents.write[tmp_k + 2] = tang.z;
+					new_tangents.write[tmp_k + 3] = old_tang[4 * i + 3];
+					tmp_k += 4;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV]) {
 				new_uv1.resize(new_uv1.size() + cap.size());
-				uint64_t _tmp_k = k;
-				for (int i = 0; i < cap.size(); ++i) {
-					new_uv1.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
-					_tmp_k++;
+				uint64_t tmp_k = k;
+				for (const int &i : cap) {
+					new_uv1.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
+					tmp_k++;
 				}
 			}
 
 			if (has_column[Mesh::ARRAY_TEX_UV2]) {
 				new_uv1.resize(new_uv2.size() + cap.size());
-				uint64_t _tmp_k = k;
-				for (int i = 0; i < cap.size(); ++i) {
-					new_uv2.write[_tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
-					_tmp_k++;
+				uint64_t tmp_k = k;
+				for (const int &i : cap) {
+					new_uv2.write[tmp_k] = cap_uv[i] / 2.0 + Vector2(0.5, 0.5); // end cap covers bottom right of UV space
+					tmp_k++;
 				}
 			}
 
 #define ADD_CAP_ARRAY(m_new, m_old, m_idx)       \
 	if (has_column[m_idx]) {                     \
 		m_new.resize(m_new.size() + cap.size()); \
-		uint64_t _tmp_k = k;                     \
-		for (int i = 0; i < cap.size(); ++i) {   \
-			m_new.write[_tmp_k] = m_old[i];      \
-			_tmp_k++;                            \
+		uint64_t tmp_k = k;                      \
+		for (const int &i : cap) {               \
+			m_new.write[tmp_k] = m_old[i];             \
+			tmp_k++;                             \
 		}                                        \
 	}
 			ADD_CAP_ARRAY(new_colors, old_colors, Mesh::ARRAY_COLOR);
@@ -801,14 +678,11 @@ void PathExtrude3D::_rebuild_mesh() {
 	generated_mesh->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
 	generated_mesh->surface_set_material(0, material);
 
+	_rebuild_collision_node();
+
 	n_tris = new_vertices.size() / 3;
 }
 
 void PathExtrude3D::_on_profile_changed() {
 	emit_signal("profile_changed");
-}
-
-void PathExtrude3D::_on_curve_changed() {
-	queue_rebuild();
-	emit_signal("curve_changed");
 }

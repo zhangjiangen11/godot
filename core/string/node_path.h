@@ -80,6 +80,7 @@ public:
 
 	operator String() const;
 	bool is_empty() const;
+	bool is_valid() const;
 
 	bool operator==(const NodePath &p_path) const;
 	bool operator!=(const NodePath &p_path) const;

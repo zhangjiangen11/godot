@@ -15,7 +15,7 @@ public:
 	bool get_flip_normals() const;
 
 	void queue_update();
-	bool _regen_if_dirty();
+	bool regen_if_dirty();
 
 	GDVIRTUAL0R(Array, _generate_cross_section)
 

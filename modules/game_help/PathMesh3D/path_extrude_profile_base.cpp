@@ -1,6 +1,5 @@
 #include "path_extrude_profile_base.hpp"
 
-
 Array PathExtrudeProfileBase::get_mesh_arrays() const {
 	return mesh_array.duplicate();
 }
@@ -22,9 +21,10 @@ bool PathExtrudeProfileBase::get_flip_normals() const {
 
 void PathExtrudeProfileBase::queue_update() {
 	dirty = true;
+	emit_changed();
 }
 
-bool PathExtrudeProfileBase::_regen_if_dirty() {
+bool PathExtrudeProfileBase::regen_if_dirty() {
 	bool r_value = dirty;
 
 	if (dirty) {
@@ -34,10 +34,10 @@ bool PathExtrudeProfileBase::_regen_if_dirty() {
 			return false;
 		}
 
-		Vector<bool> has_column;
+		LocalVector<bool> has_column;
 		has_column.resize(Mesh::ARRAY_MAX);
 		for (int idx_type = 0; idx_type < Mesh::ARRAY_MAX; ++idx_type) {
-			has_column.write[idx_type] = new_mesh_array.size() > idx_type && new_mesh_array[idx_type].get_type() != Variant::NIL;
+			has_column[idx_type] = new_mesh_array.size() > idx_type && new_mesh_array[idx_type].get_type() != Variant::NIL;
 		}
 
 		PackedVector2Array vertices = new_mesh_array[Mesh::ARRAY_VERTEX];
@@ -100,7 +100,6 @@ bool PathExtrudeProfileBase::_regen_if_dirty() {
 #undef MAKE_NEW_ARRAY
 
 		mesh_array = new_mesh_array;
-		emit_changed();
 	}
 
 	return r_value;
@@ -115,11 +114,11 @@ PackedFloat64Array PathExtrudeProfileBase::_generate_v(const PackedVector2Array 
 	}
 
 	v.write[0] = 0.0;
-	for (uint64_t i = 1; i < p_vertices.size(); ++i) {
-		v.write[i] = v[i - 1] + p_vertices[i].distance_to(p_vertices[i - 1]);
+	for (int64_t i = 1; i < p_vertices.size(); ++i) {
+		v.write[i] = v.write[i - 1] + p_vertices[i].distance_to(p_vertices[i - 1]);
 	}
-	for (uint64_t i = 1; i < v.size() - 1; ++i) {
-		v.write[i] /= v[v.size() - 1];
+	for (int64_t i = 1; i < v.size() - 1; ++i) {
+		v.write[i] /= v.write[v.size() - 1];
 	}
 	v.write[v.size() - 1] = 1.0;
 

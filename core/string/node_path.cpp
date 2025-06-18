@@ -331,7 +331,10 @@ NodePath NodePath::get_as_property_path() const {
 }
 
 bool NodePath::is_empty() const {
-	return !data;
+	return !data || data->path.size() == 0;
+}
+bool NodePath::is_valid() const {
+	return data && data->path.size() > 0;
 }
 
 void NodePath::simplify() {

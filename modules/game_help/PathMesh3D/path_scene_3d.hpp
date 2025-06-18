@@ -5,17 +5,14 @@
 #include "scene/resources/multimesh.h"
 #include "scene/resources/packed_scene.h"
 
+#include "path_tool.hpp"
 //namespace godot {
 
 class PathScene3D : public Node3D {
 	GDCLASS(PathScene3D, Node3D)
+	PATH_TOOL(PathScene3D, SCENE)
 
 public:
-	enum SceneTransform {
-		TRANSFORM_SCENE_LOCAL,
-		TRANSFORM_SCENE_PATH_NODE,
-		TRANSFORM_SCENE_MAX,
-	};
 	enum Distribution {
 		DISTRIBUTE_BY_COUNT = 0,
 		DISTRIBUTE_BY_DISTANCE = 1,
@@ -36,13 +33,6 @@ public:
 
 	void set_scene(const Ref<PackedScene> &p_scene);
 	Ref<PackedScene> get_scene() const;
-
-	void set_path_3d(Path3D *p_path);
-	Path3D *get_path_3d() const;
-
-	void set_scene_transform(const SceneTransform p_transform);
-
-	SceneTransform get_scene_transform() const;
 
 	void set_distribution(Distribution p_distribution);
 	Distribution get_distribution() const;
@@ -65,8 +55,6 @@ public:
 	void set_sample_cubic(bool p_cubic);
 	bool get_sample_cubic() const;
 
-	void queue_rebuild();
-
 	TypedArray<Node3D> bake_instances();
 
 	PackedStringArray get_configuration_warnings() const override;
@@ -75,13 +63,10 @@ public:
 
 protected:
 	static void _bind_methods();
-	void _notification(int p_what);
 	void _validate_property(PropertyInfo &property) const;
 
 private:
 	Ref<PackedScene> scene;
-	Path3D *path3d = nullptr;
-	SceneTransform scene_transform = TRANSFORM_SCENE_LOCAL;
 	Distribution distribution = DISTRIBUTE_BY_COUNT;
 	Alignment alignment = ALIGN_FROM_START;
 	uint64_t count = 1;
@@ -89,20 +74,13 @@ private:
 	Rotation rotation_mode = ROTATE_PATH;
 	Vector3 rotation = Vector3();
 	bool sample_cubic = false;
-	bool dirty = true;
 
-	Vector<Node3D *> instances;
-	Transform3D local_transform = Transform3D();
-	Transform3D path_transform = Transform3D();
+	LocalVector<Node3D *> instances;
 
 	void _on_scene_changed();
-	void _on_curve_changed();
-	void _rebuild_scene();
 };
 
-//}
-
-VARIANT_ENUM_CAST(PathScene3D::SceneTransform);
-VARIANT_ENUM_CAST(PathScene3D::Distribution);
-VARIANT_ENUM_CAST(PathScene3D::Rotation);
-VARIANT_ENUM_CAST(PathScene3D::Alignment);
+VARIANT_ENUM_CAST(PathScene3D::RelativeTransform)
+VARIANT_ENUM_CAST(PathScene3D::Distribution)
+VARIANT_ENUM_CAST(PathScene3D::Rotation)
+VARIANT_ENUM_CAST(PathScene3D::Alignment)

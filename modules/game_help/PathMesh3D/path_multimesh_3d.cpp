@@ -1,3 +1,5 @@
+
+
 #include "path_multimesh_3d.hpp"
 
 void PathMultiMesh3D::set_multi_mesh(const Ref<MultiMesh> &p_multi_mesh) {
@@ -22,37 +24,6 @@ void PathMultiMesh3D::set_multi_mesh(const Ref<MultiMesh> &p_multi_mesh) {
 
 Ref<MultiMesh> PathMultiMesh3D::get_multi_mesh() const {
 	return multi_mesh;
-}
-
-void PathMultiMesh3D::set_path_3d(Path3D *p_path) {
-	if (p_path != path3d) {
-		if (path3d != nullptr && path3d->is_connected("curve_changed", callable_mp(this, &PathMultiMesh3D::_on_curve_changed))) {
-			path3d->disconnect("curve_changed", callable_mp(this, &PathMultiMesh3D::_on_curve_changed));
-		}
-
-		path3d = p_path;
-
-		if (path3d != nullptr) {
-			path3d->connect("curve_changed", callable_mp(this, &PathMultiMesh3D::_on_curve_changed));
-		}
-
-		_on_curve_changed();
-	}
-}
-
-Path3D *PathMultiMesh3D::get_path_3d() const {
-	return path3d;
-}
-
-void PathMultiMesh3D::set_mesh_transform(MeshTransform p_transform) {
-	if (mesh_transform != p_transform) {
-		mesh_transform = p_transform;
-		queue_rebuild();
-	}
-}
-
-PathMultiMesh3D::MeshTransform PathMultiMesh3D::get_mesh_transform() const {
-	return mesh_transform;
 }
 
 void PathMultiMesh3D::set_distribution(Distribution p_distribution) {
@@ -140,24 +111,12 @@ bool PathMultiMesh3D::get_sample_cubic() const {
 	return sample_cubic;
 }
 
-void PathMultiMesh3D::queue_rebuild() {
-	dirty = true;
-}
-
 void PathMultiMesh3D::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("queue_rebuild"), &PathMultiMesh3D::queue_rebuild);
+	PATH_TOOL_BINDS(PathMultiMesh3D, mesh, MESH)
 
 	ClassDB::bind_method(D_METHOD("set_multi_mesh", "multi_mesh"), &PathMultiMesh3D::set_multi_mesh);
 	ClassDB::bind_method(D_METHOD("get_multi_mesh"), &PathMultiMesh3D::get_multi_mesh);
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "multi_mesh", PROPERTY_HINT_RESOURCE_TYPE, "MultiMesh"), "set_multi_mesh", "get_multi_mesh");
-
-	ClassDB::bind_method(D_METHOD("set_path_3d", "path"), &PathMultiMesh3D::set_path_3d);
-	ClassDB::bind_method(D_METHOD("get_path_3d"), &PathMultiMesh3D::get_path_3d);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "path_3d", PROPERTY_HINT_NODE_TYPE, "Path3D"), "set_path_3d", "get_path_3d");
-
-	ClassDB::bind_method(D_METHOD("set_mesh_transform", "transform"), &PathMultiMesh3D::set_mesh_transform);
-	ClassDB::bind_method(D_METHOD("get_mesh_transform"), &PathMultiMesh3D::get_mesh_transform);
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "mesh_transform", PROPERTY_HINT_ENUM, "Transform Mesh Local,Transform Mesh to Path Node"), "set_mesh_transform", "get_mesh_transform");
 
 	ClassDB::bind_method(D_METHOD("set_distribution", "distribution"), &PathMultiMesh3D::set_distribution);
 	ClassDB::bind_method(D_METHOD("get_distribution"), &PathMultiMesh3D::get_distribution);
@@ -179,19 +138,16 @@ void PathMultiMesh3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_rotation_mode"), &PathMultiMesh3D::get_rotation_mode);
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "rotation_mode", PROPERTY_HINT_ENUM, "Fixed,Path,Random"), "set_rotation_mode", "get_rotation_mode");
 
-	ClassDB::bind_method(D_METHOD("set_mesh_rotation", "rotation"), &PathMultiMesh3D::set_rotation);
-	ClassDB::bind_method(D_METHOD("get_mesh_rotation"), &PathMultiMesh3D::get_rotation);
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "mesh_rotation", PROPERTY_HINT_RANGE, "0.0,360.0,0.01,radians_as_degrees"), "set_mesh_rotation", "get_mesh_rotation");
+	ClassDB::bind_method(D_METHOD("set_rotation", "rotation"), &PathMultiMesh3D::set_rotation);
+	ClassDB::bind_method(D_METHOD("get_rotation"), &PathMultiMesh3D::get_rotation);
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "rotation", PROPERTY_HINT_RANGE, "0.0,360.0,0.01,radians_as_degrees"), "set_rotation", "get_rotation");
 
 	ClassDB::bind_method(D_METHOD("set_sample_cubic", "sample_cubic"), &PathMultiMesh3D::set_sample_cubic);
 	ClassDB::bind_method(D_METHOD("get_sample_cubic"), &PathMultiMesh3D::get_sample_cubic);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "sample_cubic"), "set_sample_cubic", "get_sample_cubic");
 
 	ADD_SIGNAL(MethodInfo("mesh_changed"));
-	ADD_SIGNAL(MethodInfo("curve_changed"));
 
-	BIND_ENUM_CONSTANT(TRANSFORM_MESH_LOCAL);
-	BIND_ENUM_CONSTANT(TRANSFORM_MESH_PATH_NODE);
 	BIND_ENUM_CONSTANT(DISTRIBUTE_BY_COUNT);
 	BIND_ENUM_CONSTANT(DISTRIBUTE_BY_DISTANCE);
 	BIND_ENUM_CONSTANT(DISTRIBUTE_MAX);
@@ -209,12 +165,11 @@ void PathMultiMesh3D::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
 			set_process_internal(true);
+			_rebuild_mesh();
 		} break;
 
 		case NOTIFICATION_INTERNAL_PROCESS: {
-			dirty |= mesh_transform == TRANSFORM_MESH_PATH_NODE &&
-					(local_transform != get_global_transform() || (path3d != nullptr && path3d->get_global_transform() != path_transform));
-			if (dirty) {
+			if (_pop_is_dirty()) {
 				_rebuild_mesh();
 			}
 		} break;
@@ -238,21 +193,14 @@ void PathMultiMesh3D::_on_mesh_changed() {
 	queue_rebuild();
 }
 
-void PathMultiMesh3D::_on_curve_changed() {
-	emit_signal("curve_changed");
-	queue_rebuild();
-}
-
 void PathMultiMesh3D::_rebuild_mesh() {
-	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || multi_mesh == nullptr || !dirty) {
+	multi_mesh->set_instance_count(0);
+
+	if (path3d == nullptr || path3d->get_curve().is_null() || !path3d->is_inside_tree() || multi_mesh.is_null()) {
 		return;
 	}
 
-	dirty = false;
-
-	local_transform = get_global_transform();
-	path_transform = path3d->get_global_transform();
-	Transform3D mod_transform = local_transform.affine_inverse() * path_transform;
+	Transform3D mod_transform = _get_relative_transform();
 
 	Ref<Curve3D> curve = path3d->get_curve();
 	if (curve->get_point_count() < 2) {
@@ -297,7 +245,6 @@ void PathMultiMesh3D::_rebuild_mesh() {
 		}
 	}
 
-	multi_mesh->set_instance_count(0);
 	multi_mesh->set_transform_format(MultiMesh::TRANSFORM_3D);
 	multi_mesh->set_instance_count(n_instances);
 
@@ -314,13 +261,15 @@ void PathMultiMesh3D::_rebuild_mesh() {
 			} break;
 			case ROTATE_RANDOM: {
 				transform = curve->sample_baked_with_rotation(offset, sample_cubic, true);
-				transform.basis.rotate(Vector3(0.0, 1.0, 0.0), Math::random(0.0, Math::TAU));
+				transform.basis.rotate(Vector3(0.0, 1.0, 0.0), Math::randfn(0.0f, Math::TAU));
 			} break;
 			default:
 				ERR_FAIL();
 		}
 
-		if (mesh_transform == TRANSFORM_MESH_PATH_NODE) {
+		transform *= _sample_3d_modifiers_at(offset / baked_l);
+
+		if (relative_transform == TRANSFORM_MESH_PATH_NODE) {
 			transform = mod_transform * transform;
 		}
 
@@ -330,17 +279,12 @@ void PathMultiMesh3D::_rebuild_mesh() {
 }
 
 PathMultiMesh3D::~PathMultiMesh3D() {
+	PATH_TOOL_DESTRUCTOR(PathMultiMesh3D)
+
 	if (multi_mesh.is_valid()) {
 		if (multi_mesh->is_connected("changed", callable_mp(this, &PathMultiMesh3D::_on_mesh_changed))) {
 			multi_mesh->disconnect("changed", callable_mp(this, &PathMultiMesh3D::_on_mesh_changed));
 		}
 		multi_mesh.unref();
-	}
-	if (path3d != nullptr) {
-		if (ObjectDB::get_instance(path3d->get_instance_id()) &&
-				path3d->is_connected("curve_changed", callable_mp(this, &PathMultiMesh3D::_on_curve_changed))) {
-			path3d->disconnect("curve_changed", callable_mp(this, &PathMultiMesh3D::_on_curve_changed));
-		}
-		path3d = nullptr;
 	}
 }

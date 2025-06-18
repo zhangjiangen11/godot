@@ -5,17 +5,18 @@
 #include "scene/resources/3d/concave_polygon_shape_3d.h"
 #include "scene/resources/3d/convex_polygon_shape_3d.h"
 
+#include "path_collision_tool.hpp"
+#include "path_extrude_profile_base.hpp"
+#include "path_tool.hpp"
+#include "path_mesh_3d.hpp"
 //namespace godot {
 
 class PathMesh3D : public GeometryInstance3D {
 	GDCLASS(PathMesh3D, GeometryInstance3D)
+	PATH_TOOL(PathMesh3D, MESH)
+	PATH_MESH_WITH_COLLISION(generated_mesh)
 
 public:
-	enum MeshTransform {
-		TRANSFORM_MESH_LOCAL,
-		TRANSFORM_MESH_PATH_NODE,
-		TRANSFORM_MESH_MAX,
-	};
 	enum Distribution {
 		DISTRIBUTE_BY_MODEL_LENGTH,
 		DISTRIBUTE_BY_COUNT,
@@ -29,14 +30,8 @@ public:
 		ALIGN_MAX
 	};
 
-	void set_path_3d(Path3D *p_path);
-	Path3D *get_path_3d() const;
-
 	void set_mesh(const Ref<Mesh> &p_mesh);
 	Ref<Mesh> get_mesh() const;
-
-	void set_mesh_transform(MeshTransform p_transform);
-	MeshTransform get_mesh_transform() const;
 
 	void set_tile_rotation(uint64_t p_surface_idx, Vector3 p_rotation);
 	Vector3 get_tile_rotation(uint64_t p_surface_idx) const;
@@ -65,28 +60,16 @@ public:
 	void set_offset(uint64_t p_surface_idx, Vector2 p_offset);
 	Vector2 get_offset(uint64_t p_surface_idx) const;
 
-	void queue_rebuild();
-
 	Ref<ArrayMesh> get_baked_mesh() const;
 
 	uint64_t get_triangle_count(uint64_t p_surface_idx) const;
 	uint64_t get_total_triangle_count() const;
-
-	Node *create_trimesh_collision_node();
-	void create_trimesh_collision();
-
-	Node *create_convex_collision_node(bool p_clean = true, bool p_simplify = false);
-	void create_convex_collision(bool p_clean = true, bool p_simplify = false);
-
-	Node *create_multiple_convex_collision_node(const Ref<MeshConvexDecompositionSettings> &p_settings = nullptr);
-	void create_multiple_convex_collision(const Ref<MeshConvexDecompositionSettings> &p_settings = nullptr);
 
 	PathMesh3D();
 	~PathMesh3D() override;
 
 protected:
 	static void _bind_methods();
-	void _notification(int p_what);
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 	bool _property_can_revert(const StringName &p_name) const;
 	bool _property_get_revert(const StringName &p_name, Variant &r_property) const;
@@ -96,11 +79,6 @@ protected:
 private:
 	Ref<Mesh> source_mesh;
 	Ref<ArrayMesh> generated_mesh;
-	Path3D *path3d = nullptr;
-
-	MeshTransform mesh_transform = TRANSFORM_MESH_LOCAL;
-
-	bool dirty = false;
 	struct SurfaceData {
 		Vector3 tile_rotation = Vector3();
 		EulerOrder tile_rotation_order = EulerOrder::YXZ;
@@ -113,20 +91,15 @@ private:
 		Vector2 offset = Vector2();
 		uint64_t n_tris = 0;
 	};
-	Vector<SurfaceData> surfaces;
-	Transform3D local_transform = Transform3D();
-	Transform3D path_transform = Transform3D();
+	LocalVector<SurfaceData> surfaces;
 
-	void _rebuild_mesh();
-	Node *_setup_collision_node(const Ref<Shape3D> &shape);
-	void _add_child_collision_node(Node *p_node);
 	Pair<uint64_t, String> _decode_dynamic_propname(const StringName &p_name) const;
 	double _get_mesh_length() const;
 	uint64_t _get_max_count() const;
 	void _on_mesh_changed();
-	void _on_curve_changed();
 };
 
-VARIANT_ENUM_CAST(PathMesh3D::MeshTransform);
-VARIANT_ENUM_CAST(PathMesh3D::Distribution);
-VARIANT_ENUM_CAST(PathMesh3D::Alignment);
+VARIANT_ENUM_CAST(PathMesh3D::RelativeTransform)
+VARIANT_ENUM_CAST(PathMesh3D::Distribution)
+VARIANT_ENUM_CAST(PathMesh3D::Alignment)
+VARIANT_ENUM_CAST(PathMesh3D::CollisionMode)
