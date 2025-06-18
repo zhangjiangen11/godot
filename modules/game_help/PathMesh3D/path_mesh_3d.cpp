@@ -301,7 +301,7 @@ bool PathMesh3D::_property_can_revert(const StringName &p_name) const {
 bool PathMesh3D::_property_get_revert(const StringName &p_name, Variant &r_property) const {
 	if (p_name.begins_with("surface_")) {
 		Pair<uint64_t, String> subprop = _decode_dynamic_propname(p_name);
-		uint64_t surf_idx = subprop.first;
+		//uint64_t surf_idx = subprop.first;
 		String sub_name = subprop.second;
 		if (sub_name == "distribution") {
 			r_property = Distribution::DISTRIBUTE_BY_MODEL_LENGTH;
@@ -453,7 +453,7 @@ void PathMesh3D::_rebuild_mesh() {
 
 		// Transform the mesh according to user settings
 		double pos_z = -INFINITY;
-		for (uint64_t idx = 0; idx < old_verts.size(); ++idx) {
+		for (int64_t idx = 0; idx < old_verts.size(); ++idx) {
 			Vector3 vert = old_verts[idx];
 
 			Basis rot = Basis::from_euler(surf.tile_rotation, surf.tile_rotation_order);
@@ -554,7 +554,7 @@ void PathMesh3D::_rebuild_mesh() {
 						_sample_3d_modifiers_at(z / baked_l);
 			}
 
-			for (uint64_t idx_vert = 0; idx_vert < old_verts.size(); ++idx_vert) {
+			for (int64_t idx_vert = 0; idx_vert < old_verts.size(); ++idx_vert) {
 				Vector3 vertex;
 				if (surf.warp_along_curve) {
 					double z_offset = z - z_stretch * old_verts[idx_vert].z;

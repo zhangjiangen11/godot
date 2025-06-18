@@ -241,13 +241,13 @@ private:                                                          \
 		ClassDB::bind_method(D_METHOD("get_distance"), &m_class::get_distance);                                                                       \
 		ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "distance", PROPERTY_HINT_RANGE, "0.01,1000.0,0.01,or_greater"), "set_distance", "get_distance");   \
                                                                                                                                                       \
-		ClassDB::bind_method(D_METHOD("set_rotation_mode", "rotation_mode"), &m_class::set_rotation_mode);                                            \
-		ClassDB::bind_method(D_METHOD("get_rotation_mode"), &m_class::get_rotation_mode);                                                             \
+		ClassDB::bind_method(D_METHOD("set_mesh_rotation_mode", "rotation_mode"), &m_class::set_rotation_mode);                                            \
+		ClassDB::bind_method(D_METHOD("get_mesh_rotation_mode"), &m_class::get_rotation_mode);                                                             \
 		ADD_PROPERTY(PropertyInfo(Variant::INT, "rotation_mode", PROPERTY_HINT_ENUM, "Fixed,Path"), "set_rotation_mode", "get_rotation_mode");        \
                                                                                                                                                       \
-		ClassDB::bind_method(D_METHOD("set_rotation", "rotation"), &m_class::set_rotation);                                                           \
-		ClassDB::bind_method(D_METHOD("get_rotation"), &m_class::get_rotation);                                                                       \
-		ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "rotation"), "set_rotation", "get_rotation");                                                     \
+		ClassDB::bind_method(D_METHOD("set_mesh_rotation", "rotation"), &m_class::set_rotation);                                                           \
+		ClassDB::bind_method(D_METHOD("get_mesh_rotation"), &m_class::get_rotation);                                                                       \
+		ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "mesh_rotation"), "set_rotation", "get_rotation");                                                     \
                                                                                                                                                       \
 		ClassDB::bind_method(D_METHOD("set_sample_cubic", "cubic"), &m_class::set_sample_cubic);                                                      \
 		ClassDB::bind_method(D_METHOD("get_sample_cubic"), &m_class::get_sample_cubic);                                                               \
