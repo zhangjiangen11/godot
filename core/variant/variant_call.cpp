@@ -1134,7 +1134,7 @@ struct _VariantCall {
 	}
 	static void func_PackedByteArray_encode_transform(PackedByteArray *p_instance, int64_t p_offset, const Transform3D &p_value) {
 		uint64_t size = p_instance->size();
-		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 16);
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 64);
 		uint8_t *w = p_instance->ptrw();
 		encode_transform(p_value, &w[p_offset]);
 	}
