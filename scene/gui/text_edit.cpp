@@ -6356,7 +6356,9 @@ int TextEdit::get_line_wrap_count(int p_line) const {
 int TextEdit::get_line_wrap_index_at_column(int p_line, int p_column) const {
 	ERR_FAIL_INDEX_V(p_line, text.size(), 0);
 	ERR_FAIL_COND_V(p_column < 0, 0);
-	ERR_FAIL_COND_V(p_column > text[p_line].length(), 0);
+	if (p_column > text[p_line].length()) {
+		return 0;
+	}
 
 	if (!is_line_wrapped(p_line)) {
 		return 0;
