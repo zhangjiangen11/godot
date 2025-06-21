@@ -116,3 +116,25 @@ public:
 
 	Transform2D get_transform() const override;
 };
+// 多材质2d节点渲染
+class Node2DMultiMaterial : public Node2D {
+	GDCLASS(Node2DMultiMaterial, Node2D);
+
+public:
+	void add_item(RID p_owenr, const Ref<Material> &p_material, const Rect2i &p_rect);
+	void set_item_material(RID p_owenr, const Ref<Material> &p_material);
+	void set_item_rect(RID p_owenr, const Rect2 &p_rect);
+	void remove_item(RID p_owenr);
+	void clear();
+
+protected:
+	static void _bind_methods();
+
+protected:
+	struct Data {
+		RID owner;
+		RID canvas_item;
+		Ref<Material> material;
+	};
+	LocalVector<Data> items;
+};

@@ -510,3 +510,83 @@ void Node2D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "global_skew", PROPERTY_HINT_NONE, "radians_as_degrees", PROPERTY_USAGE_NONE), "set_global_skew", "get_global_skew");
 	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM2D, "global_transform", PROPERTY_HINT_NONE, "suffix:px", PROPERTY_USAGE_NONE), "set_global_transform", "get_global_transform");
 }
+
+////////////////////////////////////////////////////////////////////////////////////////Node2DMultiMaterial///////////////////////////////////////////////////////////////////////////////////////
+
+void Node2DMultiMaterial::add_item(RID p_owenr, const Ref<Material> &p_material, const Rect2i &p_rect) {
+	for (uint32_t i = 0; i < items.size(); i++) {
+		if (items[i].owner == p_owenr) {
+			items[i].material = p_material;
+			RenderingServer::get_singleton()->canvas_item_set_material(items[i].canvas_item, p_material->get_rid());
+			RenderingServer::get_singleton()->canvas_item_clear(items[i].canvas_item);
+			RenderingServer::get_singleton()->canvas_item_add_rect(items[i].canvas_item, p_rect,Color(1.0,1.0,1.0,1.0));
+			return;
+		}
+	}
+
+	Data item;
+	item.owner = p_owenr;
+	item.material = p_material;
+	item.canvas_item = RenderingServer::get_singleton()->canvas_item_create();
+	RenderingServer::get_singleton()->canvas_item_set_parent(item.canvas_item, get_canvas_item());
+	RenderingServer::get_singleton()->canvas_item_set_material(item.canvas_item, p_material->get_rid());
+	items.push_back(item);
+}
+void Node2DMultiMaterial::set_item_material(RID p_owenr, const Ref<Material> &p_material) {
+	for (uint32_t i = 0; i < items.size(); i++) {
+		if (items[i].owner == p_owenr) {
+			items[i].material = p_material;
+			RenderingServer::get_singleton()->canvas_item_set_material(items[i].canvas_item, p_material->get_rid());
+			return;
+		}
+	}
+	Data item;
+	item.owner = p_owenr;
+	item.material = p_material;
+	item.canvas_item = RenderingServer::get_singleton()->canvas_item_create();
+	RenderingServer::get_singleton()->canvas_item_set_parent(item.canvas_item, get_canvas_item());
+	RenderingServer::get_singleton()->canvas_item_set_material(item.canvas_item, p_material->get_rid());
+	items.push_back(item);
+}
+void Node2DMultiMaterial::set_item_rect(RID p_owenr, const Rect2 &p_rect) {
+	for (uint32_t i = 0; i < items.size(); i++) {
+		if (items[i].owner == p_owenr) {
+			RenderingServer::get_singleton()->canvas_item_clear(items[i].canvas_item);
+			RenderingServer::get_singleton()->canvas_item_add_rect(items[i].canvas_item, p_rect, Color(1.0, 1.0, 1.0, 1.0));
+			return;
+		}
+	}
+	Data item;
+	item.owner = p_owenr;
+	item.canvas_item = RenderingServer::get_singleton()->canvas_item_create();
+	RenderingServer::get_singleton()->canvas_item_set_parent(item.canvas_item, get_canvas_item());
+	RenderingServer::get_singleton()->canvas_item_add_rect(item.canvas_item, p_rect, Color(1.0, 1.0, 1.0, 1.0));
+	items.push_back(item);
+}
+void Node2DMultiMaterial::remove_item(RID p_owenr) {
+	for (uint32_t i = 0; i < items.size(); i++) {
+		if (items[i].owner == p_owenr) {
+			if (items[i].canvas_item.is_valid()) {
+				RenderingServer::get_singleton()->free(items[i].canvas_item);
+			}
+			items.remove_at(i);
+			break;
+		}
+	}
+}
+void Node2DMultiMaterial::clear() {
+	for (uint32_t i = 0; i < items.size(); i++) {
+		if (items[i].canvas_item.is_valid()) {
+			RenderingServer::get_singleton()->free(items[i].canvas_item);
+		}
+	}
+	items.clear();
+}
+
+void Node2DMultiMaterial::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("add_item", "owner", "material", "rect"), &Node2DMultiMaterial::add_item);
+	ClassDB::bind_method(D_METHOD("set_item_material", "owner", "material"), &Node2DMultiMaterial::set_item_material);
+	ClassDB::bind_method(D_METHOD("set_item_rect", "owner", "rect"), &Node2DMultiMaterial::set_item_rect);
+	ClassDB::bind_method(D_METHOD("remove_item", "owner"), &Node2DMultiMaterial::remove_item);
+	ClassDB::bind_method(D_METHOD("clear"), &Node2DMultiMaterial::clear);
+}
