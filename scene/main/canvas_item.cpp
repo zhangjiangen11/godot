@@ -132,6 +132,10 @@ CanvasItem *CanvasItem::get_current_item_drawn() {
 }
 
 void CanvasItem::_redraw_callback() {
+	// 手动刷新直接返回
+	if (manual_redraw) {
+		return;
+	}
 	if (!is_inside_tree()) {
 		pending_update = false;
 		return;
@@ -452,6 +456,9 @@ void CanvasItem::_window_visibility_changed() {
 }
 
 void CanvasItem::queue_redraw() {
+	if (manual_redraw) {
+		return;
+	}
 	ERR_THREAD_GUARD; // Calling from thread is safe.
 	if (!is_inside_tree()) {
 		return;
@@ -1026,6 +1033,20 @@ void CanvasItem::draw_char_outline(const Ref<Font> &p_font, const Point2 &p_pos,
 	p_font->draw_char_outline(canvas_item, p_pos, p_char[0], p_font_size, p_size, p_modulate, p_oversampling);
 }
 
+void CanvasItem::manual_redraw_begin() {
+	if (!manual_redraw) {
+		ERR_FAIL_COND_MSG(!drawing, L"请先调用set_manual_redraw(true)。");
+	}
+	drawing = true;
+	RID ci = get_canvas_item();
+	RenderingServer::get_singleton()->canvas_item_clear(ci);
+}
+void CanvasItem::manual_redraw_end() {
+	if (!manual_redraw) {
+		ERR_FAIL_COND_MSG(!drawing, L"请先调用set_manual_redraw(true)。");
+	}
+	drawing = false;
+}
 void CanvasItem::_notify_transform_deferred() {
 	if (is_inside_tree() && notify_transform && !xform_change.in_list()) {
 		get_tree()->xform_change_list.add(&xform_change);
@@ -1396,6 +1417,11 @@ void CanvasItem::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_canvas_layer_node"), &CanvasItem::get_canvas_layer_node);
 	ClassDB::bind_method(D_METHOD("get_world_2d"), &CanvasItem::get_world_2d);
 	//ClassDB::bind_method(D_METHOD("get_viewport"),&CanvasItem::get_viewport);
+
+	ClassDB::bind_method(D_METHOD("set_manual_redraw", "enable"), &CanvasItem::set_manual_redraw);
+	ClassDB::bind_method(D_METHOD("is_manual_redraw_enabled"), &CanvasItem::is_manual_redraw_enabled);
+	ClassDB::bind_method(D_METHOD("manual_redraw_begin"), &CanvasItem::manual_redraw_begin);
+	ClassDB::bind_method(D_METHOD("manual_redraw_end"), &CanvasItem::manual_redraw_end);
 
 	ClassDB::bind_method(D_METHOD("set_material", "material"), &CanvasItem::set_material);
 	ClassDB::bind_method(D_METHOD("get_material"), &CanvasItem::get_material);

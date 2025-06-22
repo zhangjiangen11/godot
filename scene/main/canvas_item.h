@@ -105,6 +105,7 @@ private:
 	bool notify_local_transform = false;
 	bool notify_transform = false;
 	bool hide_clip_children = false;
+	bool manual_redraw = false;
 
 	ClipChildrenMode clip_children_mode = CLIP_CHILDREN_DISABLED;
 
@@ -332,6 +333,12 @@ public:
 	void draw_set_transform_matrix(const Transform2D &p_matrix);
 	void draw_animation_slice(double p_animation_length, double p_slice_begin, double p_slice_end, double p_offset = 0);
 	void draw_end_animation();
+
+	// 手动刷新接口类
+	void set_manual_redraw(bool p_enable) { manual_redraw = p_enable; }
+	bool is_manual_redraw_enabled() const { return manual_redraw; }
+	void manual_redraw_begin();
+	void manual_redraw_end();
 
 	static CanvasItem *get_current_item_drawn();
 
