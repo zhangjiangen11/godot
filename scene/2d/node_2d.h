@@ -121,10 +121,12 @@ class Node2DMultiMaterial : public Node2D {
 	GDCLASS(Node2DMultiMaterial, Node2D);
 
 public:
-	void add_item(RID p_owenr, const Ref<Material> &p_material, const Rect2i &p_rect);
-	void set_item_material(RID p_owenr, const Ref<Material> &p_material);
-	void set_item_rect(RID p_owenr, const Rect2 &p_rect);
-	void remove_item(RID p_owenr);
+	RID add_item(uint64_t p_owenr, const Ref<Material> &p_material, const Rect2i &p_rect);
+	RID set_item_material(uint64_t p_owenr, const Ref<Material> &p_material);
+	RID set_item_rect(uint64_t p_owenr, const Rect2 &p_rect);
+	RID set_item_transform(uint64_t p_owenr, const Transform2D &p_transform);
+	RID set_item_visible(uint64_t p_owenr, bool p_visible); // visible
+	void remove_item(uint64_t p_owenr);
 	void clear();
 
 protected:
@@ -132,9 +134,9 @@ protected:
 
 protected:
 	struct Data {
-		RID owner;
+		uint64_t owner;
 		RID canvas_item;
 		Ref<Material> material;
 	};
-	LocalVector<Data> items;
+	List<Data> items;
 };
