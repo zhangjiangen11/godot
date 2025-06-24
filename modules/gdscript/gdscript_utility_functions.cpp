@@ -349,13 +349,9 @@ struct GDScriptUtilityFunctionsDefinitions {
 			s += p_args[i]->operator String();
 		}
 
-		if (Thread::get_caller_id() == Thread::get_main_id()) {
-			ScriptLanguage *script = GDScriptLanguage::get_singleton();
-			if (script->debug_get_stack_level_count() > 0) {
-				s += "\n   At: " + script->debug_get_stack_level_source(0) + ":" + itos(script->debug_get_stack_level_line(0)) + ":" + script->debug_get_stack_level_function(0) + "()";
-			}
-		} else {
-			s += "\n   At: Cannot retrieve debug info outside the main thread. Thread ID: " + itos(Thread::get_caller_id());
+		ScriptLanguage *script = GDScriptLanguage::get_singleton();
+		if (script->debug_get_stack_level_count() > 0) {
+			s += "\n   At: " + script->debug_get_stack_level_source(0) + ":" + itos(script->debug_get_stack_level_line(0)) + ":" + script->debug_get_stack_level_function(0) + "()";
 		}
 
 		print_line(s);
@@ -366,15 +362,9 @@ struct GDScriptUtilityFunctionsDefinitions {
 		DEBUG_VALIDATE_ARG_COUNT(0, 0);
 
 		String msg;
-		if (Thread::get_caller_id() != Thread::get_main_id()) {
-			msg = ("Cannot retrieve debug info outside the main thread. Thread ID: " + itos(Thread::get_caller_id()));
-		}
-		else
-		{
-			ScriptLanguage* script = GDScriptLanguage::get_singleton();
-			for (int i = 0; i < script->debug_get_stack_level_count(); i++) {
-				msg += ("Frame " + itos(i) + " - " + script->debug_get_stack_level_source(i) + ":" + itos(script->debug_get_stack_level_line(i)) + " in function '" + script->debug_get_stack_level_function(i) + "'\n");
-			}
+		ScriptLanguage *script = GDScriptLanguage::get_singleton();
+		for (int i = 0; i < script->debug_get_stack_level_count(); i++) {
+			msg += ("Frame " + itos(i) + " - " + script->debug_get_stack_level_source(i) + ":" + itos(script->debug_get_stack_level_line(i)) + " in function '" + script->debug_get_stack_level_function(i) + "'\n");
 		}
 
 		print_line(msg);
@@ -383,11 +373,6 @@ struct GDScriptUtilityFunctionsDefinitions {
 
 	static inline void get_stack(Variant *r_ret, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
 		DEBUG_VALIDATE_ARG_COUNT(0, 0);
-
-		if (Thread::get_caller_id() != Thread::get_main_id()) {
-			*r_ret = TypedArray<Dictionary>();
-			return;
-		}
 
 		ScriptLanguage *script = GDScriptLanguage::get_singleton();
 		TypedArray<Dictionary> ret;
