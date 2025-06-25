@@ -537,6 +537,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 
 			RefCounted *resp = Object::cast_to<RefCounted>(obj);
 			ERR_BREAK(!resp);
+			resp->set_path(_get_owner_path() + "::" + resp->generate_scene_unique_id()); // Assign a base path for built-in Resources.
 
 			Ref<Resource> resource = Ref<RefCounted>(resp);
 			if (resource.is_valid()) {
