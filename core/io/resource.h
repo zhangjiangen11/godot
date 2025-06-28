@@ -109,6 +109,7 @@ protected:
 	void _unblock_emit_changed();
 
 	void _set_path(const String &p_path);
+	void _take_over_path(const String& p_path);
 
 	virtual void reset_local_to_scene();
 	GDVIRTUAL0(_setup_local_to_scene);
