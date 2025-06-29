@@ -100,6 +100,8 @@ public:
 	void set_polygon(const Vector<Vector2> &p_polygon);
 	Vector<Vector2> get_polygon() const;
 
+	Dictionary get_mesh_data() const;
+
 	void set_internal_vertex_count(int p_count);
 	int get_internal_vertex_count() const;
 

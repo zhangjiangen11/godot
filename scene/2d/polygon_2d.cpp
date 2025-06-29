@@ -406,6 +406,249 @@ void Polygon2D::_notification(int p_what) {
 	}
 }
 
+/*************  ✨ Windsurf Command 🌟  *************/
+Dictionary Polygon2D::get_mesh_data() const {
+	Dictionary ret;
+	/*******  900c2a11-309e-40e9-b74b-0b455516a3c3  *******/
+	if (polygon.size() < 3) {
+		return ret;
+	}
+
+	Skeleton2D *skeleton_node = nullptr;
+	if (has_node(skeleton)) {
+		skeleton_node = Object::cast_to<Skeleton2D>(get_node(skeleton));
+	}
+
+	Vector<Vector2> points;
+	Vector<Vector2> uvs;
+	Vector<int> bones;
+	Vector<float> weights;
+
+	int len = polygon.size();
+	if ((invert || polygons.is_empty()) && internal_vertices > 0) {
+		//if no polygons are around, internal vertices must not be drawn, else let them be
+		len -= internal_vertices;
+	}
+
+	if (len <= 0) {
+		return ret;
+	}
+	points.resize(len);
+
+	{
+		const Vector2 *polyr = polygon.ptr();
+		for (int i = 0; i < len; i++) {
+			points.write[i] = polyr[i] + offset;
+		}
+	}
+
+	if (invert) {
+		Rect2 bounds;
+		int highest_idx = -1;
+		real_t highest_y = -1e20;
+		real_t sum = 0.0;
+
+		for (int i = 0; i < len; i++) {
+			if (i == 0) {
+				bounds.position = points[i];
+			} else {
+				bounds.expand_to(points[i]);
+			}
+			if (points[i].y > highest_y) {
+				highest_idx = i;
+				highest_y = points[i].y;
+			}
+			int ni = (i + 1) % len;
+			sum += (points[ni].x - points[i].x) * (points[ni].y + points[i].y);
+		}
+
+		bounds = bounds.grow(invert_border);
+
+		Vector2 ep[7] = {
+			Vector2(points[highest_idx].x, points[highest_idx].y + invert_border),
+			Vector2(bounds.position + bounds.size),
+			Vector2(bounds.position + Vector2(bounds.size.x, 0)),
+			Vector2(bounds.position),
+			Vector2(bounds.position + Vector2(0, bounds.size.y)),
+			Vector2(points[highest_idx].x - CMP_EPSILON, points[highest_idx].y + invert_border),
+			Vector2(points[highest_idx].x - CMP_EPSILON, points[highest_idx].y),
+		};
+
+		if (sum > 0) {
+			SWAP(ep[1], ep[4]);
+			SWAP(ep[2], ep[3]);
+			SWAP(ep[5], ep[0]);
+			SWAP(ep[6], points.write[highest_idx]);
+		}
+
+		points.resize(points.size() + 7);
+		for (int i = points.size() - 1; i >= highest_idx + 7; i--) {
+			points.write[i] = points[i - 7];
+		}
+
+		for (int i = 0; i < 7; i++) {
+			points.write[highest_idx + i + 1] = ep[i];
+		}
+
+		len = points.size();
+	}
+
+	if (texture.is_valid()) {
+		Transform2D texmat(tex_rot, tex_ofs);
+		texmat.scale(tex_scale);
+		Size2 tex_size = texture->get_size();
+
+		uvs.resize(len);
+
+		if (points.size() == uv.size()) {
+			const Vector2 *uvr = uv.ptr();
+
+			for (int i = 0; i < len; i++) {
+				uvs.write[i] = texmat.xform(uvr[i]) / tex_size;
+			}
+
+		} else {
+			for (int i = 0; i < len; i++) {
+				uvs.write[i] = texmat.xform(points[i]) / tex_size;
+			}
+		}
+	}
+
+	if (skeleton_node && !invert && bone_weights.size()) {
+		//a skeleton is set! fill indices and weights
+		int vc = len;
+		bones.resize(vc * 4);
+		weights.resize(vc * 4);
+
+		int *bonesw = bones.ptrw();
+		float *weightsw = weights.ptrw();
+
+		for (int i = 0; i < vc * 4; i++) {
+			bonesw[i] = 0;
+			weightsw[i] = 0;
+		}
+
+		for (int i = 0; i < bone_weights.size(); i++) {
+			if (bone_weights[i].weights.size() != points.size()) {
+				continue; //different number of vertices, sorry not using.
+			}
+			if (!skeleton_node->has_node(bone_weights[i].path)) {
+				continue; //node does not exist
+			}
+			Bone2D *bone = Object::cast_to<Bone2D>(skeleton_node->get_node(bone_weights[i].path));
+			if (!bone) {
+				continue;
+			}
+
+			int bone_index = bone->get_index_in_skeleton();
+			const float *r = bone_weights[i].weights.ptr();
+			for (int j = 0; j < vc; j++) {
+				if (r[j] == 0.0) {
+					continue; //weight is unpainted, skip
+				}
+				//find an index with a weight
+				for (int k = 0; k < 4; k++) {
+					if (weightsw[j * 4 + k] < r[j]) {
+						//this is less than this weight, insert weight!
+						for (int l = 3; l > k; l--) {
+							weightsw[j * 4 + l] = weightsw[j * 4 + l - 1];
+							bonesw[j * 4 + l] = bonesw[j * 4 + l - 1];
+						}
+						weightsw[j * 4 + k] = r[j];
+						bonesw[j * 4 + k] = bone_index;
+						break;
+					}
+				}
+			}
+		}
+
+		//normalize the weights
+		for (int i = 0; i < vc; i++) {
+			real_t tw = 0.0;
+			for (int j = 0; j < 4; j++) {
+				tw += weightsw[i * 4 + j];
+			}
+			if (tw == 0) {
+				continue; //unpainted, do nothing
+			}
+
+			//normalize
+			for (int j = 0; j < 4; j++) {
+				weightsw[i * 4 + j] /= tw;
+			}
+		}
+	}
+
+	Vector<Color> colors;
+	colors.resize(len);
+
+	if (vertex_colors.size() == points.size()) {
+		const Color *color_r = vertex_colors.ptr();
+		for (int i = 0; i < len; i++) {
+			colors.write[i] = color_r[i];
+		}
+	} else {
+		for (int i = 0; i < len; i++) {
+			colors.write[i] = color;
+		}
+	}
+
+	Vector<int> index_array;
+
+	if (invert || polygons.is_empty()) {
+		index_array = Geometry2D::triangulate_polygon(points);
+	} else {
+		//draw individual polygons
+		for (int i = 0; i < polygons.size(); i++) {
+			Vector<int> src_indices = polygons[i];
+			int ic = src_indices.size();
+			if (ic < 3) {
+				continue;
+			}
+			const int *r = src_indices.ptr();
+
+			Vector<Vector2> tmp_points;
+			tmp_points.resize(ic);
+
+			for (int j = 0; j < ic; j++) {
+				int idx = r[j];
+				ERR_CONTINUE(idx < 0 || idx >= points.size());
+				tmp_points.write[j] = points[r[j]];
+			}
+			Vector<int> indices = Geometry2D::triangulate_polygon(tmp_points);
+			int ic2 = indices.size();
+			const int *r2 = indices.ptr();
+
+			int bic = index_array.size();
+			index_array.resize(bic + ic2);
+			int *w2 = index_array.ptrw();
+
+			for (int j = 0; j < ic2; j++) {
+				w2[j + bic] = r[r2[j]];
+			}
+		}
+	}
+
+	if (index_array.size()) {
+		ret[RS::ARRAY_VERTEX] = points;
+		if (uvs.size() == points.size()) {
+			ret[RS::ARRAY_TEX_UV] = uvs;
+		}
+		if (colors.size() == points.size()) {
+			ret[RS::ARRAY_COLOR] = colors;
+		}
+
+		if (bones.size() == points.size() * 4) {
+			ret[RS::ARRAY_BONES] = bones;
+			ret[RS::ARRAY_WEIGHTS] = weights;
+		}
+
+		ret[RS::ARRAY_INDEX] = index_array;
+	}
+
+	return ret;
+}
+
 void Polygon2D::set_polygon(const Vector<Vector2> &p_polygon) {
 	polygon = p_polygon;
 	rect_cache_dirty = true;
@@ -696,6 +939,8 @@ void Polygon2D::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("_set_bones", "bones"), &Polygon2D::_set_bones);
 	ClassDB::bind_method(D_METHOD("_get_bones"), &Polygon2D::_get_bones);
+
+	ClassDB::bind_method(D_METHOD("get_mesh_data"), &Polygon2D::get_mesh_data);
 
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "color"), "set_color", "get_color");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "offset"), "set_offset", "get_offset");
