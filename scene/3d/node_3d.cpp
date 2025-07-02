@@ -1033,6 +1033,7 @@ void Node3D::set_as_top_level(bool p_enabled) {
 		}
 	}
 	data.top_level = p_enabled;
+	reset_physics_interpolation();
 }
 
 void Node3D::set_as_top_level_keep_local(bool p_enabled) {
@@ -1042,6 +1043,7 @@ void Node3D::set_as_top_level_keep_local(bool p_enabled) {
 	}
 	data.top_level = p_enabled;
 	_propagate_transform_changed(this);
+	reset_physics_interpolation();
 }
 
 bool Node3D::is_set_as_top_level() const {
