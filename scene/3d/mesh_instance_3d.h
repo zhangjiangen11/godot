@@ -97,6 +97,8 @@ public:
 	int get_surface_override_material_count() const;
 	void set_surface_override_material(int p_surface, const Ref<Material> &p_material);
 	Ref<Material> get_surface_override_material(int p_surface) const;
+	Array get_surface_override_materials() const;
+	void set_surface_override_materials(const Array &p_materials);
 	Ref<Material> get_active_material(int p_surface) const;
 
 #ifndef PHYSICS_3D_DISABLED

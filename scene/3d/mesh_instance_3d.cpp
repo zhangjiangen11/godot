@@ -374,6 +374,19 @@ Ref<Material> MeshInstance3D::get_surface_override_material(int p_surface) const
 	return surface_override_materials[p_surface];
 }
 
+Array MeshInstance3D::get_surface_override_materials() const {
+	Array arr;
+	for (int i = 0; i < surface_override_materials.size(); i++) {
+		arr.push_back(surface_override_materials[i]);
+	}
+	return arr;
+}
+void MeshInstance3D::set_surface_override_materials(const Array &p_materials) {
+	ERR_FAIL_COND(p_materials.size() != surface_override_materials.size());
+	for (int i = 0; i < p_materials.size(); i++) {
+		set_surface_override_material(i, p_materials[i]);
+	}
+}
 Ref<Material> MeshInstance3D::get_active_material(int p_surface) const {
 	Ref<Material> mat_override = get_material_override();
 	if (mat_override.is_valid()) {
@@ -897,6 +910,9 @@ void MeshInstance3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_surface_override_material", "surface", "material"), &MeshInstance3D::set_surface_override_material);
 	ClassDB::bind_method(D_METHOD("get_surface_override_material", "surface"), &MeshInstance3D::get_surface_override_material);
 	ClassDB::bind_method(D_METHOD("get_active_material", "surface"), &MeshInstance3D::get_active_material);
+
+	ClassDB::bind_method(D_METHOD("get_surface_override_materials"), &MeshInstance3D::get_surface_override_materials);
+	ClassDB::bind_method(D_METHOD("set_surface_override_materials", "surfaces"), &MeshInstance3D::set_surface_override_materials);
 
 #ifndef PHYSICS_3D_DISABLED
 	ClassDB::bind_method(D_METHOD("create_trimesh_collision"), &MeshInstance3D::create_trimesh_collision);

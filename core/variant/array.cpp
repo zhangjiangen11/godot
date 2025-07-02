@@ -283,6 +283,9 @@ void Array::push_back(const Variant &p_value) {
 }
 
 void Array::append_array(const Array &p_array) {
+	if (p_array._p == nullptr) {
+		return;
+	}
 	ERR_FAIL_COND_MSG(_p->read_only, "Array is in read-only state.");
 
 	if (!is_typed() || _p->typed.can_reference(p_array._p->typed)) {
