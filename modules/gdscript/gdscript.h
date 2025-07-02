@@ -487,7 +487,6 @@ public:
 		if (!track_call_stack) {
 			//return;
 		}
-#endif
 
 #ifdef DEBUG_ENABLED
 		ScriptDebugger *script_debugger = EngineDebugger::get_script_debugger();
