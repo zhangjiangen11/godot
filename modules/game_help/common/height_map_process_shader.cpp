@@ -119,6 +119,7 @@ void HeightMapProcessShader::_bind_methods() {
 }
 void HeightMapProcessShader::init(const Ref<HeightMapTemplateShader> &p_template_shader, const String &p_code_file_path) {
 	is_only_process = false;
+	is_error = false;
 	if (template_shader.is_valid()) {
 		template_shader->remove_using_process_shader(get_instance_id());
 	}
