@@ -1,10 +1,10 @@
 #pragma once
 
 #include "editor/editor_node.h"
-#include "editor/editor_properties.h"
-#include "editor/editor_resource_picker.h"
+#include "editor/inspector/editor_properties.h"
+#include "editor/inspector/editor_resource_picker.h"
 #include "editor/gui/editor_bottom_panel.h"
-#include "editor/inspector_dock.h"
+#include "editor/docks/inspector_dock.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/check_button.h"
 #include "scene/gui/separator.h"

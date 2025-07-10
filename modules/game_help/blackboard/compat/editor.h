@@ -13,8 +13,8 @@
 
 #ifdef TOOLS_ENABLED
 
-#include <editor/editor_file_system.h>
-#include <editor/editor_interface.h>
+#include "editor/file_system/editor_file_system.h"
+#include "editor/editor_interface.h"
 #define EDITOR_FILE_SYSTEM() (EditorFileSystem::get_singleton())
 
 // Shared.

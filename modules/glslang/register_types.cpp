@@ -56,7 +56,8 @@ Vector<uint8_t> compile_glslang_shader(RenderingDeviceCommons::ShaderStage p_sta
 	glslang::TShader shader(stages[p_stage]);
 
 	String code = p_source_code.remove_annotate();
-
+	String device_api_defines = RD::get_singleton()->get_device_api_name().to_upper();
+	code += "\n#define RENDER_API_" + device_api_defines + "\n";
 	CharString cs = code.ascii();
 	const char *cs_strings = cs.get_data();
 	std::string preamble = "";
@@ -106,18 +107,15 @@ Vector<uint8_t> compile_glslang_shader(RenderingDeviceCommons::ShaderStage p_sta
 	spv::SpvBuildLogger logger;
 	glslang::SpvOptions spvOptions;
 
-	if (Engine::get_singleton()->is_generate_spirv_debug_info_enabled()) {		
+	if (Engine::get_singleton()->is_generate_spirv_debug_info_enabled()) {
 		spvOptions.disableOptimizer = true;
 		spvOptions.generateDebugInfo = true;
 		spvOptions.emitNonSemanticShaderDebugInfo = true;
 		spvOptions.emitNonSemanticShaderDebugSource = true;
-	}
-	else
-	{
+	} else {
 		spvOptions.disableOptimizer = false;
 		//spvOptions.stripDebugInfo = true;
 		//spvOptions.optimizeSize = true;
-
 	}
 
 	glslang::GlslangToSpv(*program.getIntermediate(stages[p_stage]), SpirV, &logger, &spvOptions);

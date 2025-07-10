@@ -20,17 +20,17 @@
 #include "condition_editor.h"
 
 #if TOOLS_ENABLED
-#include "editor/dependency_editor.h"
-#include "editor/editor_file_system.h"
+#include "editor/file_system/dependency_editor.h"
+#include "editor/file_system/editor_file_system.h"
 #include "editor/editor_log.h"
 #include "editor/editor_node.h"
-#include "editor/editor_properties.h"
-#include "editor/editor_properties_array_dict.h"
-#include "editor/editor_settings.h"
+#include "editor/inspector/editor_properties.h"
+#include "editor/inspector/editor_properties_array_dict.h"
+#include "editor/settings/editor_settings.h"
 
-#include "editor/editor_inspector.h"
+#include "editor/inspector/editor_inspector.h"
 #include "editor/plugins/editor_plugin.h"
-#include "editor/plugins/skeleton_3d_editor_plugin.h"
+#include "editor/scene/3d/skeleton_3d_editor_plugin.h"
 
 #include "../unity/unity_link_server.h"
 #include "animator_node_editor.h"

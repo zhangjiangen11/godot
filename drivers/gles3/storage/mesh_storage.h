@@ -234,6 +234,7 @@ public:
 		SkeletonShaderGLES3 shader;
 		RID shader_version;
 	} skeleton_shader;
+
 	/* Mesh */
 
 	mutable RID_Owner<Mesh, true> mesh_owner;
@@ -509,7 +510,7 @@ public:
 	virtual void _multimesh_instance_set_transform(RID p_multimesh, int p_index, const Transform3D &p_transform) override;
 	virtual void _multimesh_instance_set_transform_2d(RID p_multimesh, int p_index, const Transform2D &p_transform) override;
 	virtual void _multimesh_instance_set_color(RID p_multimesh, int p_index, const Color &p_color) override;
-	virtual void _multimesh_instance_set_custom_data(RID p_multimesh, int p_index, const Color &p_color) override;	
+	virtual void _multimesh_instance_set_custom_data(RID p_multimesh, int p_index, const Color &p_color) override;
 	virtual Ref<RDMultimeshUpdate> _multimesh_instance_get_update(RID p_multimesh) override;
 
 	virtual RID _multimesh_get_mesh(RID p_multimesh) const override;

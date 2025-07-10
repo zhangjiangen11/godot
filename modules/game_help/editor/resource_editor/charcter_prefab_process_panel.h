@@ -2,8 +2,8 @@
 
 #include "../../logic/character_manager.h"
 #include "../../logic/character_shape/character_body_prefab.h"
-#include "editor/editor_properties.h"
-#include "editor/editor_resource_picker.h"
+#include "editor/inspector/editor_properties.h"
+#include "editor/inspector/editor_resource_picker.h"
 #include "resource_editor_tool_item.h"
 #include "scene/gui/box_container.h"
 #include "scene_view_panel.h"

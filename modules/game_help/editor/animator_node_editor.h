@@ -1,6 +1,6 @@
 #include "animator_node_preview.h"
 #include "body_main_editor.h"
-#include "editor/editor_resource_picker.h"
+#include "editor/inspector/editor_resource_picker.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/3d/light_3d.h"
 #include "scene/main/viewport.h"

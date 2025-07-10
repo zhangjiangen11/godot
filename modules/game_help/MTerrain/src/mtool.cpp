@@ -7,7 +7,7 @@
 
 #if TOOLS_ENABLED
 #include "editor/editor_interface.h"
-#include "editor/editor_script.h"
+#include "editor/script/editor_script.h"
 #endif
 
 bool MTool::editor_plugin_active = false;

@@ -14,7 +14,7 @@
 
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
-#include "editor/plugins/script_editor_plugin.h"
+#include "editor/script/script_editor_plugin.h"
 
 void SHOW_BUILTIN_DOC(const String &p_topic) {
 	ScriptEditor::get_singleton()->goto_help(p_topic);

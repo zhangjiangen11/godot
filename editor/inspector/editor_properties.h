@@ -31,6 +31,7 @@
 #pragma once
 
 #include "editor/inspector/editor_inspector.h"
+#include "core/math/expression.h"
 
 class CheckBox;
 class ColorPickerButton;

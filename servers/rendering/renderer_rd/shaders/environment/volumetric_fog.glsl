@@ -2,7 +2,9 @@
 
 #version 450
 
+#ifdef RENDER_API_VULKAN
 #pragma use_vulkan_memory_model
+#endif
 
 #VERSION_DEFINES
 
@@ -39,7 +41,7 @@ params;
 #ifdef NO_IMAGE_ATOMICS
 layout(set = 1, binding = 1) volatile buffer emissive_only_map_buffer {
 	uint emissive_only_map[];
-};
+}
 #else
 layout(r32ui, set = 1, binding = 1) uniform volatile uimage3D emissive_only_map;
 #endif
@@ -69,10 +71,10 @@ scene_params;
 #ifdef NO_IMAGE_ATOMICS
 layout(set = 1, binding = 3) volatile buffer density_only_map_buffer {
 	uint density_only_map[];
-};
+}
 layout(set = 1, binding = 4) volatile buffer light_only_map_buffer {
 	uint light_only_map[];
-};
+}
 #else
 layout(r32ui, set = 1, binding = 3) uniform volatile uimage3D density_only_map;
 layout(r32ui, set = 1, binding = 4) uniform volatile uimage3D light_only_map;

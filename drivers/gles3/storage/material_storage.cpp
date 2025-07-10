@@ -1034,7 +1034,7 @@ void MaterialData::update_textures(const HashMap<StringName, Variant> &p_paramet
 					roughness_detect_texture->detect_roughness_callback(roughness_detect_texture->detect_roughness_callback_ud, normal_detect_texture->path, roughness_channel);
 				}
 #endif
-				if(RD::get_singleton()->texture_is_valid(textures[j])) {
+				if (RD::get_singleton()->texture_is_valid(textures[j])) {
 					gl_texture = textures[j];
 				}
 				p_textures[k++] = gl_texture;
@@ -2483,7 +2483,6 @@ void MaterialStorage::material_set_param(RID p_material, const StringName &p_par
 						material->uniform_dirty = true;
 					}
 				}
-
 			}
 		}
 		_material_queue_update(material, !is_texture, is_texture);

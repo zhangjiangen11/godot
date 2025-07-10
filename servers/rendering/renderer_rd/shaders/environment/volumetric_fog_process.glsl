@@ -1,8 +1,9 @@
 #[compute]
 
 #version 450
-
+#ifdef RENDER_API_VULKAN
 #pragma use_vulkan_memory_model
+#endif
 
 #VERSION_DEFINES
 
@@ -186,13 +187,13 @@ layout(set = 0, binding = 15) uniform texture3D prev_density_texture;
 #ifdef NO_IMAGE_ATOMICS
 layout(set = 0, binding = 16) buffer density_only_map_buffer {
 	uint density_only_map[];
-};
+}
 layout(set = 0, binding = 17) buffer light_only_map_buffer {
 	uint light_only_map[];
-};
+}
 layout(set = 0, binding = 18) buffer emissive_only_map_buffer {
 	uint emissive_only_map[];
-};
+}
 #else
 layout(r32ui, set = 0, binding = 16) uniform uimage3D density_only_map;
 layout(r32ui, set = 0, binding = 17) uniform uimage3D light_only_map;

@@ -16,7 +16,7 @@
 
 #include "../blackboard/blackboard_plan.h"
 
-#include "editor/editor_inspector.h"
+#include "editor/inspector/editor_inspector.h"
 #include "scene/gui/button.h"
 #include "scene/gui/line_edit.h"
 

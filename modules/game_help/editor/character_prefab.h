@@ -1,6 +1,6 @@
 #include "../logic/character_shape/character_body_prefab.h"
 #include "body_main_editor.h"
-#include "editor/plugins/mesh_editor_plugin.h"
+#include "editor/scene/3d/mesh_editor_plugin.h"
 
 class CharacterPrefabSection : public LogicSectionBase {
 	GDCLASS(CharacterPrefabSection, LogicSectionBase);

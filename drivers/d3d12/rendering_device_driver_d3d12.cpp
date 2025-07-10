@@ -5336,9 +5336,7 @@ void RenderingDeviceDriverD3D12::timestamp_query_pool_get_results(QueryPoolID p_
 
 	void *results_buffer_data = nullptr;
 	results_buffer->Map(0, &VOID_RANGE, &results_buffer_data);
-	if (results_buffer_data != nullptr) {
-		memcpy(r_results, results_buffer_data, sizeof(uint64_t) * p_query_count);
-	}
+	memcpy(r_results, results_buffer_data, sizeof(uint64_t) * p_query_count);
 	results_buffer->Unmap(0, &VOID_RANGE);
 }
 

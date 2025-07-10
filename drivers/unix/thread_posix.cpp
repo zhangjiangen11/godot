@@ -44,7 +44,7 @@ void init_thread_posix() {
 #include <pthread_np.h>
 #endif
 
-static Error set_name(const String &p_name,uint64_t handle) {
+static Error set_name(const String &p_name, uint64_t handle) {
 #ifdef PTHREAD_NO_RENAME
 	return ERR_UNAVAILABLE;
 

@@ -12,7 +12,7 @@
 #ifndef COMPAT_EDITOR_SETTINGS_H
 #define COMPAT_EDITOR_SETTINGS_H
 
-#include "editor/editor_settings.h"
+#include "editor/settings/editor_settings.h"
 
 #define EDITOR_SETTINGS() (EditorSettings::get_singleton())
 

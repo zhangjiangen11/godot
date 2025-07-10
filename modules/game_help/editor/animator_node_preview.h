@@ -1,8 +1,8 @@
 #pragma once
 
-#include "editor/editor_properties.h"
-#include "editor/editor_resource_picker.h"
-#include "editor/filesystem_dock.h"
+#include "editor/inspector/editor_properties.h"
+#include "editor/inspector/editor_resource_picker.h"
+#include "editor/docks/filesystem_dock.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/3d/light_3d.h"
 #include "scene/gui/subviewport_container.h"

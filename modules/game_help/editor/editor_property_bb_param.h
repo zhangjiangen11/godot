@@ -16,7 +16,7 @@
 
 #include "../blackboard/compat/forward_decl.h"
 
-#include "editor/editor_inspector.h"
+#include "editor/inspector/editor_inspector.h"
 
 class EditorPropertyVariableName;
 class BBParam;

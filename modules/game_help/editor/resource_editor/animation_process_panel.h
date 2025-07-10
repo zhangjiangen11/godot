@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../logic/character_manager.h"
-#include "editor/editor_properties.h"
-#include "editor/editor_resource_picker.h"
+#include "editor/inspector/editor_properties.h"
+#include "editor/inspector/editor_resource_picker.h"
 #include "resource_editor_tool_item.h"
 #include "scene/gui/box_container.h"
 
