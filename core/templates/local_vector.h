@@ -241,6 +241,16 @@ public:
 			data[i] = v;
 		}
 	}
+	/// Construct element at the back of the array
+	template <class... A>
+	inline T &emplace_back(A &&...inValue) {
+		U s = size();
+		resize_uninitialized(s + 1);
+
+		T *element = data + s;
+		new (element) T(std::forward<A>(inValue)...);
+		return *element;
+	}
 
 	struct Iterator {
 		_FORCE_INLINE_ T &operator*() const {
@@ -254,6 +264,12 @@ public:
 		_FORCE_INLINE_ Iterator &operator--() {
 			elem_ptr--;
 			return *this;
+		}
+
+		_FORCE_INLINE_ Iterator &operator+(U p_offset) const {
+			Iterator it = *this;
+			it.elem_ptr += p_offset;
+			return it;
 		}
 
 		_FORCE_INLINE_ bool operator==(const Iterator &b) const { return elem_ptr == b.elem_ptr; }
@@ -279,6 +295,11 @@ public:
 		_FORCE_INLINE_ ConstIterator &operator--() {
 			elem_ptr--;
 			return *this;
+		}
+		_FORCE_INLINE_ ConstIterator &operator+(U p_offset) const {
+			ConstIterator it = *this;
+			it.elem_ptr += p_offset;
+			return it;
 		}
 
 		_FORCE_INLINE_ bool operator==(const ConstIterator &b) const { return elem_ptr == b.elem_ptr; }
@@ -316,6 +337,15 @@ public:
 				data[i] = std::move(data[i - 1]);
 			}
 			data[p_pos] = std::move(p_val);
+		}
+	}
+	/**
+	 * Insert [first, last) at the back of this array.
+	 */
+	template <typename IT>
+	void insert(IT first, IT last) {
+		for (Iterator p = first; p != last; ++p) {
+			this->push_back(*p);
 		}
 	}
 
@@ -469,9 +499,9 @@ public:
 		p_from.count = 0;
 		p_from.capacity = 0;
 	}
-	inline void operator=(const std::initializer_list<T>& p_init) {
+	inline void operator=(const std::initializer_list<T> &p_init) {
 		reserve(p_init.size());
-		for (const T& element : p_init) {
+		for (const T &element : p_init) {
 			push_back(element);
 		}
 	}
@@ -485,6 +515,56 @@ public:
 	_FORCE_INLINE_ ~LocalVector() {
 		if (data) {
 			reset();
+		}
+	}
+};
+template <typename T, size_t N>
+class ConstLocalVector {
+	T data[N];
+
+public:
+	_FORCE_INLINE_ T& operator[](int index) {
+		CRASH_BAD_UNSIGNED_INDEX(index, N);
+		return data[index];
+	}
+	_FORCE_INLINE_ const T& operator[](int index) const {
+		CRASH_BAD_UNSIGNED_INDEX(index, N);
+		return data[index];
+	}
+	_FORCE_INLINE_ ConstLocalVector& operator=(const ConstLocalVector& p_from) {
+		for (int i = 0; i < N; i++) {
+			data[i] = p_from.data[i];
+		}
+		return *this;
+	}
+	_FORCE_INLINE_ void operator=(const std::initializer_list<T>& p_init) {
+		int count = p_init.size();
+		if (count > N) {
+			count = N;
+		}
+		int index = 0;
+		for (const T& element : p_init) {
+			data[index++] = element;
+		}
+	}
+	_FORCE_INLINE_ ConstLocalVector() {
+		for (int i = 0; i < N; i++) {
+			data[i] = T();
+		}
+	}
+	_FORCE_INLINE_ ConstLocalVector(const ConstLocalVector& p_from) {
+		for (int i = 0; i < N; i++) {
+			data[i] = p_from.data[i];
+		}
+	}
+	_FORCE_INLINE_ ConstLocalVector(const std::initializer_list<T>& p_init) {
+		int count = p_init.size();
+		if (count > N) {
+			count = N;
+		}
+		int index = 0;
+		for (const T& element : p_init) {
+			data[index++] = element;
 		}
 	}
 };

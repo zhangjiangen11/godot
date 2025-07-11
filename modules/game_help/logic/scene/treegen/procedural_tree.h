@@ -16,6 +16,7 @@
 #include "core/math/vector2.h"
 #include "core/math/vector3.h"
 #include "core/variant/typed_array.h"
+#include "scene/main/node.h"
 #include <algorithm>
 #include <random>
 
@@ -25,10 +26,10 @@ struct Pipe : public RenderData {
 	Pipe() :
 			RenderData(GL_TRIANGLES) {}
 
-	Pipe(const Array<Vector3> &points, float radius, int n_slices = 32) :
+	Pipe(const LocalVector<Vector3> &points, float radius, int n_slices = 32) :
 			RenderData(GL_TRIANGLES),
-			points_(points),
-			radius_(points.size(), radius) {
+			points_(points) {
+		radius_.assign(points.size(), radius);
 		////CHECK(radius > 0.0f);
 
 		Initialize(n_slices);
@@ -37,7 +38,7 @@ struct Pipe : public RenderData {
 	/**
 	 * Construct pipe with different radius at each vertex.
 	 */
-	Pipe(const Array<Vector3> &points, const Array<float> &radius,
+	Pipe(const LocalVector<Vector3> &points, const LocalVector<float> &radius,
 			int n_slices = 32) :
 			RenderData(GL_TRIANGLES),
 			points_(points),
@@ -52,8 +53,8 @@ struct Pipe : public RenderData {
 	 */
 	Pipe(const Vector3 &p1, const Vector3 &p2, float radius,
 			int n_slices = 32) :
-			points_({ p1, p2 }),
-			radius_(2, radius) {
+			points_({ p1, p2 }) {
+		radius_.assign(2, radius);
 		////CHECK(radius > 0.0f);
 
 		Initialize(n_slices);
@@ -93,7 +94,7 @@ private:
 				const Vector3 &p1 = points_[j];
 
 				Vector3 v1 = p0 - p1;
-				float norm = v1.norm();
+				float norm = v1.length();
 				if (norm <= FLT_EPSILON) {
 					continue;
 				}
@@ -103,7 +104,7 @@ private:
 				if (j + 1 < points_.size()) {
 					const Vector3 &p2 = points_[j + 1];
 					Vector3 v2 = p2 - p1;
-					float norm = v2.norm();
+					float norm = v2.length();
 					if (norm > FLT_EPSILON) {
 						v2 *= 1.0f / norm;
 
@@ -132,15 +133,15 @@ private:
 				Vector3 v1 = ps[prev] - ps[i];
 				Vector3 v2 = ps[next] - ps[i];
 				Vector3 v = -(v1 + v2);
-				normals.push_back(v.Normalize());
+				normals.push_back(v.normalized());
 			}
 
 			if (j > 0 && j + 1 < points_.size()) {
 				int offset = vertices.size() - ps.size();
 				vertices.insert(vertices.begin() + offset,
-						vertices.begin() + offset + ps.size());
+						vertices.begin() + (offset + ps.size()));
 				normals.insert(normals.begin() + offset,
-						normals.begin() + offset + ps.size());
+						normals.begin() + (offset + ps.size()));
 			}
 		}
 
@@ -201,6 +202,11 @@ private:
  *     Cambridge.
  */
 class ProceduralTree : public Node {
+	GDCLASS(ProceduralTree, Node);
+	static void _bind_methods() {
+	}
+
+public:
 	/**
 	 * Enum to refer to branching modes.
 	 */
@@ -260,8 +266,8 @@ class ProceduralTree : public Node {
 		 * Roll this stem around orientation.
 		 */
 		void Roll(float degree) {
-			Basis rot(orientation, DegreeToRadian(degree));
-			face_orientation = rot * face_orientation;
+			Basis rot(orientation, Math::deg_to_rad(degree));
+			face_orientation = rot.xform(face_orientation);
 		}
 
 		/**
@@ -270,8 +276,8 @@ class ProceduralTree : public Node {
 		void GlobalRoll(float degree) {
 			Basis rot(Vector3(0.0f, 0.0f, 1.0f),
 					Math::deg_to_rad(degree));
-			orientation = rot * orientation;
-			face_orientation = rot * face_orientation;
+			orientation = rot.xform(orientation);
+			face_orientation = rot.xform(face_orientation);
 		}
 
 		/**
@@ -280,8 +286,8 @@ class ProceduralTree : public Node {
 		void Pitch(float degree) {
 			Vector3 v = orientation.cross(face_orientation);
 			Basis rot(v, Math::deg_to_rad(degree));
-			orientation = rot * orientation;
-			face_orientation = rot * face_orientation;
+			orientation = rot.xform(orientation);
+			face_orientation = rot.xform(face_orientation);
 		}
 	};
 
@@ -299,10 +305,10 @@ public:
 			uniform_random1_(-1.0f, 1.0f),
 			uniform_random2_(0.0f, 1.0f),
 			random_engine_(seed) {
-		leaf_material_.ao = 1.0f;
-		leaf_material_.albedo = leaf_color_;
-		leaf_material_.metallic = 0.2f;
-		leaf_material_.roughness = 0.8f;
+		//leaf_material_.ao = 1.0f;
+		//leaf_material_.albedo = leaf_color_;
+		//leaf_material_.metallic = 0.2f;
+		//leaf_material_.roughness = 0.8f;
 		//leaves_node_.set_material(&leaf_material_);
 		//this->AddNode(&leaves_node_);
 
@@ -312,7 +318,7 @@ public:
 	/**
 	 * Re-generate a tree model according to the given parameters.
 	 */
-	void Generate(const ProceduralTreeParameter &parameter) {
+	void Generate(const Ref<ProceduralTreeParameter> &parameter) {
 		parameter_ = parameter;
 
 		n_branches_ = 0;
@@ -331,7 +337,7 @@ public:
 	/**
 	 * Set leaf color.
 	 */
-	void set_leaf_color(const RGB32Color &color) {
+	void set_leaf_color(const Color &color) {
 		leaf_color_ = color;
 	}
 
@@ -396,35 +402,35 @@ private:
 		tree_.clear();
 		leaves_.clear();
 
-		if (parameter_.branches[0] == 0) {
+		if (parameter_->branches[0] == 0) {
 			return;
 		}
 
-		std::uniform_real_distribution<float> uniform(0.0f, float(M_PI) * 2.0f);
+		std::uniform_real_distribution<float> uniform(0.0f, float(Math::PI) * 2.0f);
 
 		// Calculate Poissonly distributed points for stem start points.
 		LocalVector<Vector3> roots;
-		if (parameter_.branches[0] == 1) {
+		if (parameter_->branches[0] == 1) {
 			roots.push_back(Vector3(0.0f, 0.0f, 0.0f));
 		} else {
 			// Calculate approximation spacing radius for dummy stem.
-			tree_scale_ = parameter_.scale + parameter_.scale_v;
+			tree_scale_ = parameter_->scale + parameter_->scale_v;
 
 			Stem temp_stem;
 			temp_stem.length = StemLength(temp_stem);
-			float radius = 2.5f * temp_stem.length * parameter_.ratio *
-					parameter_.radius_modify[0];
+			float radius = 2.5f * temp_stem.length * parameter_->ratio *
+					parameter_->radius_modify[0];
 
 			// Generate root points.
-			for (int i = 0; i < parameter_.branches[0]; ++i) {
+			for (int i = 0; i < parameter_->branches[0]; ++i) {
 				bool point_ok = false;
 				while (!point_ok) {
 					// Distance from center proportional for number of splits,
 					// tree scale and stem radius.
 					float dis = std::sqrt(GetRandomNumber2() *
-							parameter_.branches[0] / 2.5f *
-							parameter_.scale *
-							parameter_.ratio);
+							parameter_->branches[0] / 2.5f *
+							parameter_->scale *
+							parameter_->ratio);
 
 					// Angle random in circle.
 					float theta = uniform(random_engine_);
@@ -435,7 +441,7 @@ private:
 					// will not intersect.
 					bool flag = true;
 					for (const Vector3 &p : roots) {
-						if (Distance(p, pos) < radius) {
+						if (p.distance_to(pos) < radius) {
 							flag = false;
 							break;
 						}
@@ -449,19 +455,19 @@ private:
 		}
 
 		for (const Vector3 &root : roots) {
-			tree_scale_ = GetRandom(parameter_.scale, parameter_.scale_v);
+			tree_scale_ = GetRandom(parameter_->scale, parameter_->scale_v);
 
 			Stem stem;
 			stem.length = StemLength(stem);
 			stem.parent_length = stem.length;
 			stem.max_length = GetMaxLength(0);
-			stem.radius = stem.length * parameter_.ratio *
-					parameter_.radius_modify[0];
+			stem.radius = stem.length * parameter_->ratio *
+					parameter_->radius_modify[0];
 			stem.radius_limit = FLT_MAX;
 			stem.orientation = Vector3(0.0f, 0.0f, 1.0f);
 			stem.root = root;
 			if (roots.size() > 1) {
-				stem.face_orientation = root.ToVector().Normalize();
+				stem.face_orientation = root.normalized();
 				float angle = GetRandomNumber1() * 30.0f;
 				stem.Roll(angle);
 			} else {
@@ -471,7 +477,7 @@ private:
 						0.0f);
 			}
 
-			split_num_error_.assign(parameter_.levels, 0.0f);
+			split_num_error_.assign(parameter_->levels, 0.0f);
 			MakeStem(0, 1.0f, 1.0f, &stem);
 			tree_.push_back(stem);
 		}
@@ -488,13 +494,15 @@ private:
 
 		SetupLeafNode();
 
-		float bend = parameter_.leaf_bend;
+		float bend = parameter_->leaf_bend;
 		for (const LeafBlossom &l : leaves_) {
 			Transform3D transform;
 			transform.origin = Vector3(l.position);
-			Basis q(Vector3(0.0f, 0.0f, 1.0f), l.orientation);
-			Vector3 v = q * Vector3(0.0f, 1.0f, 0.0f);
-			Basis q1(Vector3(0.0f, 0.0f, 1.0f), l.face_orientation);
+			Basis q;
+			q.rotate_to_align(Vector3(0.0f, 0.0f, 1.0f), l.orientation);
+			Vector3 v = q.xform(Vector3(0.0f, 1.0f, 0.0f));
+			Basis q1;
+			q1.rotate_to_align(Vector3(0.0f, 0.0f, 1.0f), l.face_orientation);
 			Transform3D transform1;
 			transform1.basis = q1 * q;
 
@@ -502,12 +510,13 @@ private:
 				float theta_pos = std::atan2(l.position.y, l.position.x);
 				float theta_bend = theta_pos - std::atan2(l.face_orientation.y, l.face_orientation.x);
 				//FQuaternion q2(Vector3(0.0f, 0.0f, 1.0f), theta_bend * bend);
-				Basis q2(Vector3(0.0f, 0.0f, 1.0f), l.face_orientation);
+				Basis q2;
+				q2.rotate_to_align(Vector3(0.0f, 0.0f, 1.0f), l.face_orientation);
 				Transform3D transform2;
 				transform2.basis = (q2);
-				//leaves_node_.AddInstance(transform * transform2 * transform1);
+				leaves_node_.AddInstance(transform * transform2 * transform1);
 			} else {
-				//leaves_node_.AddInstance(transform * transform1);
+				leaves_node_.AddInstance(transform * transform1);
 			}
 		}
 	}
@@ -518,7 +527,7 @@ private:
 	void SetupLeafNode() {
 		LeafGenerator leaf_generator;
 		RenderData leaf_render_data;
-		switch (parameter_.leaf_shape) {
+		switch (parameter_->leaf_shape) {
 			case 1:
 				leaf_generator.OctaveLeaf(&leaf_render_data);
 				break;
@@ -560,14 +569,14 @@ private:
 				break;
 		}
 
-		float scale = parameter_.leaf_scale * tree_scale_ / parameter_.scale;
-		float scale_x = parameter_.leaf_scale_x;
+		float scale = parameter_->leaf_scale * tree_scale_ / parameter_->scale;
+		float scale_x = parameter_->leaf_scale_x;
 		for (Vector3 &p : leaf_render_data.vertices) {
 			p *= scale;
 			p.x *= scale_x;
 		}
 
-		//leaves_node_.Reset(leaf_render_data);
+		leaves_node_.Reset(leaf_render_data);
 	}
 
 	/**
@@ -593,9 +602,9 @@ private:
 				if (branches_in_group == 1) {
 					angle = 0.0f;
 				} else {
-					angle = (parameter_.rotation[depth_1] *
+					angle = (parameter_->rotation[depth_1] *
 									((branch_index / (branches_in_group - 1.0f)) - 0.5f)) +
-							GetRandomNumber1() * parameter_.rotation_v[depth_1];
+							GetRandomNumber1() * parameter_->rotation_v[depth_1];
 				}
 				p_euler.y = (angle);
 				radius_limit = 0.0f;
@@ -603,14 +612,14 @@ private:
 			case WHORLED:
 				angle = stem->prev_rotation_angle +
 						(360.0f * branch_index / branches_in_group) +
-						GetRandomNumber1() * parameter_.rotation_v[depth_1];
+						GetRandomNumber1() * parameter_->rotation_v[depth_1];
 				p_euler.z = (angle);
 				radius_limit = CalculateRadius(*stem, stem_offset / stem->length);
 
 				break;
 			case ALTERNATE_OR_OPPOSITE:
 				angle = GetRotateAngle(depth_1, stem->prev_rotation_angle);
-				if (parameter_.rotation[depth_1] >= 0.0f) {
+				if (parameter_->rotation[depth_1] >= 0.0f) {
 					stem->prev_rotation_angle = angle;
 				} else {
 					stem->prev_rotation_angle = -stem->prev_rotation_angle;
@@ -632,13 +641,13 @@ private:
 		branch.max_length = GetMaxLength(depth_1);
 		branch.length = StemLength(branch);
 		branch.radius_limit = radius_limit;
-		branch.radius = parameter_.radius_modify[depth_1] *
+		branch.radius = parameter_->radius_modify[depth_1] *
 				stem->radius *
 				std::pow(branch.length / branch.parent_length,
-						parameter_.ratio_power);
+						parameter_->ratio_power);
 		branch.radius = CLAMP(branch.radius, 0.005f, radius_limit);
-		branch.orientation = transform * stem->orientation;
-		branch.face_orientation = transform * stem->face_orientation;
+		branch.orientation = transform.xform(stem->orientation);
+		branch.face_orientation = transform.xform(stem->face_orientation);
 		branch.root = start_point + (end_point - start_point) * offset +
 				radius_limit * branch.orientation;
 
@@ -650,7 +659,7 @@ private:
 			if (leaf.face_orientation.z < 0.0f) {
 				leaf.face_orientation = -leaf.face_orientation;
 			}
-			leaf.face_orientation.Normalize();
+			leaf.face_orientation.normalized();
 			leaves_.push_back(leaf);
 		} else {
 			MakeStem(0, 1.0f, 1.0f, &branch);
@@ -666,7 +675,7 @@ private:
 			float clone_probability,
 			float n_branches_factor,
 			Stem *stem) {
-		if (start >= parameter_.curve_resolution[stem->depth]) {
+		if (start >= parameter_->curve_resolution[stem->depth]) {
 			return;
 		}
 
@@ -678,13 +687,13 @@ private:
 
 		// Parameters.
 		int depth = stem->depth;
-		int curve_res = parameter_.curve_resolution[depth];
-		float taper = parameter_.taper[depth];
+		int curve_res = parameter_->curve_resolution[depth];
+		float taper = parameter_->taper[depth];
 		int base_segment_index =
-				static_cast<int>(std::ceil(parameter_.base_size[0] *
+				static_cast<int>(std::ceil(parameter_->base_size[0] *
 						curve_res));
-		int base_splits = parameter_.base_splits;
-		float seg_splits = parameter_.segment_splits[depth];
+		int base_splits = parameter_->base_splits;
+		float seg_splits = parameter_->segment_splits[depth];
 		float seg_length = stem->length / curve_res;
 
 		LocalVector<Vector3> vertices;
@@ -698,8 +707,8 @@ private:
 
 		float branch_count = 0.0f;
 		float leaf_count = 0.0f;
-		if (depth == parameter_.levels - 1 && depth > 0 &&
-				parameter_.n_leaves != 0) {
+		if (depth == parameter_->levels - 1 && depth > 0 &&
+				parameter_->n_leaves != 0) {
 			// Calculate base leave count.
 			leaf_count = CalculateLeafCount(*stem);
 			// Correct leaf count for start position along stem.
@@ -721,7 +730,7 @@ private:
 		// Decide on start rotation for branches/leaves.
 		stem->prev_rotation_angle = 0.0f;
 		std::uniform_real_distribution<float> uniform(0.0f, 360.0f);
-		if (parameter_.rotation[NextDepth(depth)] >= 0.0f) {
+		if (parameter_->rotation[NextDepth(depth)] >= 0.0f) {
 			// Start at random rotation.
 			stem->prev_rotation_angle = uniform(random_engine_);
 		} else {
@@ -772,8 +781,8 @@ private:
 			// Perform spliting if needed.
 			float split_corr_angle = 0.0f;
 			if (n_splits > 0) {
-				float declination = Degree(stem->orientation,
-						Vector3(0.0f, 0.0f, 1.0f));
+				float declination = Math::rad_to_deg(stem->orientation.angle_to(
+						Vector3(0.0f, 0.0f, 1.0f)));
 				float spl_angle = GetSplitAngle(depth, declination);
 				float spr_angle = GetSpreadAngle(declination);
 				split_corr_angle = spl_angle / (curve_res - i);
@@ -835,7 +844,7 @@ private:
 			// draw leaves.
 			int branches_on_segment = 0;
 			int leaves_on_segment = 0;
-			if (branch_count != 0.0f && depth < parameter_.levels - 1) {
+			if (branch_count != 0.0f && depth < parameter_->levels - 1) {
 				if (branch_count < 0.0f) {
 					// Fan branches.
 					if (i + 1 == curve_res) {
@@ -917,9 +926,9 @@ private:
 		}
 
 		int depth_1 = NextDepth(stem->depth);
-		float base_length = stem->length * parameter_.base_size[stem->depth];
-		float branch_dist = parameter_.branch_dist[depth_1];
-		int curve_res = parameter_.curve_resolution[stem->depth];
+		float base_length = stem->length * parameter_->base_size[stem->depth];
+		float branch_dist = parameter_->branch_dist[depth_1];
+		int curve_res = parameter_->curve_resolution[stem->depth];
 
 		if (branch_dist > 1.0f) {
 			// Whorled branches.
@@ -956,7 +965,7 @@ private:
 				}
 
 				// Rotate start angle for next whorl.
-				stem->prev_rotation_angle += parameter_.rotation[depth_1];
+				stem->prev_rotation_angle += parameter_->rotation[depth_1];
 			}
 		} else {
 			// Alternate or opposite branches.
@@ -989,7 +998,7 @@ private:
 	 * See reference [1] for more details.
 	 */
 	float CalculateRadius(const Stem &stem, float z_norm) const {
-		float n_taper = parameter_.taper[stem.depth];
+		float n_taper = parameter_->taper[stem.depth];
 
 		float unit_taper = 0.0f;
 		if (n_taper < 1.0f) {
@@ -1031,7 +1040,7 @@ private:
 
 		if (stem.depth == 0) {
 			float y_val = std::max(0.0f, 1.0f - 8.0f * z_norm);
-			float flare = parameter_.flare *
+			float flare = parameter_->flare *
 							((std::pow(100.0f, y_val) - 1.0f) / 100.0f) +
 					1.0f;
 			radius *= flare;
@@ -1047,11 +1056,11 @@ private:
 
 		float result = 0.0f;
 		if (stem.depth == 0) {
-			base_length = stem.length * parameter_.base_size[0];
+			base_length = stem.length * parameter_->base_size[0];
 			result = tree_scale_ * GetMaxLength(0);
 		} else if (stem.depth == 1) {
 			result = stem.parent_length * stem.max_length *
-					ShapeRatio(parameter_.shape,
+					ShapeRatio(parameter_->shape,
 							(stem.parent_length - stem.offset) /
 									(stem.parent_length - base_length));
 
@@ -1069,9 +1078,9 @@ private:
 	float ShapeRatio(int shape, float ratio) const {
 		switch (shape) {
 			case 1: // spherical
-				return 0.2f + 0.8f * std::sin(float(M_PI) * ratio);
+				return 0.2f + 0.8f * std::sin(float(Math::PI) * ratio);
 			case 2: // hemispherical
-				return 0.2f + 0.8f * std::sin(float(M_PI_2) * ratio);
+				return 0.2f + 0.8f * std::sin(float(Math::PI * 2.0) * ratio);
 			case 3: // cylindrical
 				return 1.0f;
 			case 4: // tapered cylindrical
@@ -1086,13 +1095,13 @@ private:
 			case 8: // envelope
 				if (ratio < 0.0f || ratio > 1.0f) {
 					return 0.0f;
-				} else if (ratio < 1.0f - parameter_.prune_width_peak) {
-					return std::pow(ratio / (1.0f - parameter_.prune_width_peak),
-							parameter_.prune_power_high);
+				} else if (ratio < 1.0f - parameter_->prune_width_peak) {
+					return std::pow(ratio / (1.0f - parameter_->prune_width_peak),
+							parameter_->prune_power_high);
 				} else {
 					return std::pow((1.0f - ratio) /
-									(1.0f - parameter_.prune_width_peak),
-							parameter_.prune_power_low);
+									(1.0f - parameter_->prune_width_peak),
+							parameter_->prune_power_low);
 				}
 			default: // conical (0)
 				return 0.2f + 0.8f * ratio;
@@ -1103,18 +1112,19 @@ private:
 	 * Apply tropism to stem.
 	 */
 	void ApplyTropism(Stem *stem) {
-		Vector3 v = parameter_.tropism;
+		Vector3 v = Vector3(parameter_->tropism[0], parameter_->tropism[1],
+				parameter_->tropism[2]);
 		if (stem->depth <= 1) {
 			v.z = 0.0f;
 		}
 
 		if (v.x != 0.0f || v.y != 0.0f || v.z != 0.0f) {
-			Vector3 v2 = CrossProduct(stem->orientation, v);
-			float alpha = v2.norm() * 10.0f;
+			Vector3 v2 = stem->orientation.cross(v);
+			float alpha = v2.length() * 10.0f;
 
-			FQuaternion rot(v2, DegreeToRadian(alpha));
-			stem->orientation = rot * stem->orientation;
-			stem->face_orientation = rot * stem->face_orientation;
+			Basis rot(v2, Math::deg_to_rad(alpha));
+			stem->orientation = rot.xform(stem->orientation);
+			stem->face_orientation = rot.xform(stem->face_orientation);
 		}
 	}
 
@@ -1122,10 +1132,10 @@ private:
 	 * Calculate curve angle for index-th segment on a stem.
 	 */
 	float CalculateCurveAngle(int depth, int index) const {
-		float curve = parameter_.curve[depth];
-		float curve_back = parameter_.curve_back[depth];
-		int curve_res = parameter_.curve_resolution[depth];
-		float curve_v = parameter_.curve_v[depth];
+		float curve = parameter_->curve[depth];
+		float curve_back = parameter_->curve_back[depth];
+		int curve_res = parameter_->curve_resolution[depth];
+		float curve_v = parameter_->curve_v[depth];
 
 		float curve_angle = 0.0f;
 		if (curve_back == 0) {
@@ -1147,32 +1157,32 @@ private:
 		float result = 0.0f;
 
 		if (stem.depth == 0) {
-			result = parameter_.branches[depth_1] *
+			result = parameter_->branches[depth_1] *
 					(GetRandomNumber2() * 0.2f + 0.9f);
-		} else if (parameter_.branches[depth_1] < 0) {
-			result = static_cast<float>(parameter_.branches[depth_1]);
+		} else if (parameter_->branches[depth_1] < 0) {
+			result = static_cast<float>(parameter_->branches[depth_1]);
 		} else if (stem.depth == 1) {
-			result = parameter_.branches[depth_1] *
+			result = parameter_->branches[depth_1] *
 					(0.2f + 0.8f * (stem.length / stem.parent_length) / stem.max_length);
 		} else {
-			result = parameter_.branches[depth_1] *
+			result = parameter_->branches[depth_1] *
 					(1.0f - 0.5f * stem.offset / stem.parent_length);
 		}
 
-		return result / (1.0f - parameter_.base_size[stem.depth]);
+		return result / (1.0f - parameter_->base_size[stem.depth]);
 	}
 
 	/**
 	 * Calculate leaf count of this stem.
 	 */
 	float CalculateLeafCount(const Stem &stem) const {
-		if (parameter_.n_leaves >= 0) {
+		if (parameter_->n_leaves >= 0) {
 			// Scale number of leaves to match global scale and taper.
-			float n = parameter_.n_leaves * tree_scale_ / parameter_.scale;
+			float n = parameter_->n_leaves * tree_scale_ / parameter_->scale;
 			return n * (stem.length / (stem.max_length * stem.length));
 		}
 
-		return static_cast<float>(parameter_.n_leaves);
+		return static_cast<float>(parameter_->n_leaves);
 	}
 
 	/**
@@ -1180,10 +1190,10 @@ private:
 	 */
 	float GetRotateAngle(int n, float prev_angle) const {
 		float r_angle;
-		if (parameter_.rotation[n] >= 0.0f) {
-			r_angle = prev_angle + GetRandom(parameter_.rotation[n], parameter_.rotation_v[n]);
+		if (parameter_->rotation[n] >= 0.0f) {
+			r_angle = prev_angle + GetRandom(parameter_->rotation[n], parameter_->rotation_v[n]);
 		} else {
-			r_angle = prev_angle * (180.0f + GetRandom(parameter_.rotation[n], parameter_.rotation_v[n]));
+			r_angle = prev_angle * (180.0f + GetRandom(parameter_->rotation[n], parameter_->rotation_v[n]));
 		}
 		r_angle = std::fmod(r_angle, 360.0f);
 		if (r_angle < 0.0f) {
@@ -1198,14 +1208,14 @@ private:
 	float GetDownAngle(const Stem &stem, float stem_offset) const {
 		int depth_1 = NextDepth(stem.depth);
 		float d_angle = 0.0f;
-		if (parameter_.down_angle_v[depth_1] >= 0.0f) {
-			d_angle = GetRandom(parameter_.down_angle[depth_1],
-					parameter_.down_angle_v[depth_1]);
+		if (parameter_->down_angle_v[depth_1] >= 0.0f) {
+			d_angle = GetRandom(parameter_->down_angle[depth_1],
+					parameter_->down_angle_v[depth_1]);
 		} else {
-			float base_size = parameter_.base_size[stem.depth];
+			float base_size = parameter_->base_size[stem.depth];
 			float ratio = ShapeRatio(0, (stem.length - stem_offset) / (stem.length * (1.0f - base_size)));
-			d_angle = parameter_.down_angle[depth_1] +
-					parameter_.down_angle_v[depth_1] * (1.0f - 2.0f * ratio);
+			d_angle = parameter_->down_angle[depth_1] +
+					parameter_->down_angle_v[depth_1] * (1.0f - 2.0f * ratio);
 		}
 
 		// Introduce some variance to improve visual result.
@@ -1216,17 +1226,17 @@ private:
 	 * Get the maximum length of the n-th level branch.
 	 */
 	float GetMaxLength(int n) const {
-		return GetRandom(parameter_.length[n], parameter_.length_v[n]);
+		return GetRandom(parameter_->length[n], parameter_->length_v[n]);
 	}
 
 	/**
 	 * Get the split angle.
 	 */
 	float GetSplitAngle(int n, float declination) const {
-		//CHECK(n >= 0 && n < parameter_.levels);
+		//CHECK(n >= 0 && n < parameter_->levels);
 
-		float angle = GetRandom(std::abs(parameter_.split_angle[n]),
-				parameter_.split_angle_v[n]);
+		float angle = GetRandom(std::abs(parameter_->split_angle[n]),
+				parameter_->split_angle_v[n]);
 		return std::max(0.0f, angle - declination);
 	}
 
@@ -1242,9 +1252,9 @@ private:
 	 */
 	float GetEffectSpreadAngle(int depth, int i, int n_splits) const {
 		//CHECK(i >= 0 && i < n_splits);
-		//CHECK(depth >= 0 && depth < parameter_.levels);
+		//CHECK(depth >= 0 && depth < parameter_->levels);
 
-		return (i + 1) * 360.0f / (n_splits + 1) + GetRandomNumber1() * parameter_.split_angle_v[depth];
+		return (i + 1) * 360.0f / (n_splits + 1) + GetRandomNumber1() * parameter_->split_angle_v[depth];
 	}
 
 	/**
@@ -1253,10 +1263,10 @@ private:
 	 * each segment.
 	 */
 	float GetBendv(int n) const {
-		//CHECK(n >= 0 && n < parameter_.levels);
+		//CHECK(n >= 0 && n < parameter_->levels);
 
-		return GetRandomNumber1() * parameter_.bend_v[n] /
-				parameter_.curve_resolution[n];
+		return GetRandomNumber1() * parameter_->bend_v[n] /
+				parameter_->curve_resolution[n];
 	}
 
 	/**
@@ -1302,7 +1312,7 @@ private:
 	//RenderObject stem_object_;
 
 	// ProceduralTreeParameter for generating tree.
-	ProceduralTreeParameter parameter_;
+	Ref<ProceduralTreeParameter> parameter_;
 
 	// Current scale of the tree.
 	float tree_scale_;
@@ -1323,7 +1333,7 @@ private:
 	InstanceNode leaves_node_;
 
 	// Material for leaves.
-	Material leaf_material_;
+	//Material leaf_material_;
 
 	// Color of leaves.
 	Color leaf_color_ = Color(90, 170, 20);

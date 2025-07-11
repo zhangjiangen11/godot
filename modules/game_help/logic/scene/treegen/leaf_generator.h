@@ -14,58 +14,96 @@
 /**
  * 过程式树木模型的参数。
  */
-struct ProceduralTreeParameter : public Resource {
+#define DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(type, name) \
+	void set_##name##_0(const type &v) {               \
+		name[0] = v;                                   \
+	}                                                  \
+	const type &get_##name##_0() const {               \
+		return name[0];                                \
+	}                                                  \
+	void set_##name##_1(const type &v) {               \
+		name[1] = v;                                   \
+	}                                                  \
+	const type &get_##name##_1() const {               \
+		return name[1];                                \
+	}                                                  \
+	void set_##name##_2(const type &v) {               \
+		name[2] = v;                                   \
+	}                                                  \
+	const type &get_##name##_2() const {               \
+		return name[2];                                \
+	}                                                  \
+	void set_##name##_3(const type &v) {               \
+		name[3] = v;                                   \
+	}                                                  \
+	const type &get_##name##_3() const {               \
+		return name[3];                                \
+	}                                                  \
+	ConstLocalVector<type, 4> name
+#define ADD_SIMPLE_MEMBER_PROPERTY_ARRAY4(type, name, index, min, max)                                                                                                                     \
+	{                                                                                                                                                                                      \
+		ClassDB::bind_method(D_METHOD("set_" #name "_" #index, #name), &self_type::set_##name##_##index);                                                                                  \
+		ClassDB::bind_method(D_METHOD("get_" #name "_" #index), &self_type::get_##name##_##index);                                                                                         \
+		type __temp_name = type();                                                                                                                                                         \
+		ADD_PROPERTY(PropertyInfo(Variant(__temp_name).get_type(), "_" #index "_" #name, PROPERTY_HINT_RANGE, #min "," #max ",0.0001"), "set_" #name "_" #index, "get_" #name "_" #index); \
+	}
+class ProceduralTreeParameter : public Resource {
+	GDCLASS(ProceduralTreeParameter, Resource);
+	static void _bind_methods();
+
+public:
 	// 整数0-8，通过改变第一层分支长度控制树的形状。
 	// 预定义选项分别为圆锥形、球形、半球形、圆柱形、锥形圆柱、火焰形、倒锥形、趋向火焰形和自定义。
 	// 自定义使用prune_*参数定义的包络直接控制树的形状，而不是通过修剪。
-	int shape;
+	DECL_SIMPLE_MEMBER_PROPERTY(int, shape) = 7;
 
 	// 整棵树的缩放比例。
-	float scale;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, scale) = 13;
 
 	// 缩放比例的最大变化量。
-	float scale_v;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, scale_v) = 3;
 
 	// 分支的级数，通常为3或4。
-	int levels;
+	DECL_SIMPLE_MEMBER_PROPERTY(int, levels) = 3;
 
 	// 树干长度与半径的比例。
-	float ratio;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, ratio) = 0.015f;
 
 	// 分支半径在不同级别之间减少的幅度。
-	float ratio_power;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, ratio_power) = 1.2f;
 
 	// 树干基部半径增加的比例，以树干半径的分数表示。
-	float flare;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, flare) = 0.6f;
 
 	// 树干基部高度处分叉的数量，如果为负数，则分叉数量将随机选择，最大为|base_splits|。
-	int base_splits = 0;
+	DECL_SIMPLE_MEMBER_PROPERTY(int, base_splits) = 0;
 
+public:
 	// 控制子分支（第n级）相对于其父分支（第n-1级）的向下角度。
-	float down_angle[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, down_angle);
 
 	// down_angle[n]的最大变化量，如果<0，则down_angle_v[n]的值沿父分支分布。
-	float down_angle_v[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, down_angle_v);
 
 	// 分支上不生成子分支/叶子的比例。
-	float base_size[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, base_size);
 
 	// 每个子分支围绕父分支（第n-1级）的角度。
 	// 如果<0，则子分支在其父局部坐标系中从向下方向旋转rotate[n]度。
 	// 对于扇形分支，扇形将展开总角度rotate[n]；对于轮生分支，每个轮生将旋转rotate[n]。
-	float rotation[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, rotation);
 
 	// rotate_angle[n]的最大变化量。对于扇形和轮生分支，每个分支的角度将变化rotate_v[n]。
-	float rotation_v[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, rotation_v);
 
 	// 第n级每个父茎上的最大子分支数量。
-	int branches[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(int, branches);
 
 	// 第n级分支长度相对于其父分支长度的比例。
-	float length[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, length);
 
 	// length[n]的最大变化量。
-	float length_v[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, length_v);
 
 	// 控制每个分支半径沿其长度的渐缩方式。
 	//
@@ -76,69 +114,97 @@ struct ProceduralTreeParameter : public Resource {
 	// 2   -  渐缩为球形末端
 	// 2~3 -  导致周期性渐缩，半径的最大变化量等于基部半径的值−2
 	// 3   -  一系列相邻的球体
-	float taper[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, taper);
 
 	// 每个分支段的最大二分支数量，小数值使用类似于Floyd-Steinberg误差扩散的方法沿茎分布。
-	float segment_splits[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, segment_splits);
 
 	// 二分支之间的角度。
-	float split_angle[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, split_angle);
 
 	// split_angle[n]的最大变化量。
-	float split_angle_v[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, split_angle_v);
 
 	// 每个分支（茎）中的段数。
-	int curve_resolution[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(int, curve_resolution);
 
 	// 茎的方向从起点到终点绕其局部x轴旋转的角度。
-	float curve[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, curve);
 
 	// curve[n]的最大变化量。在每个段随机应用。
-	float curve_v[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, curve_v);
 
 	// 茎在中途沿相反方向弯曲的角度，形成S形分支。
-	float curve_back[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, curve_back);
 
 	// 茎的方向从起点到终点绕其局部y轴可能变化的最大角度。
 	// 在每个段随机应用。
-	float bend_v[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, bend_v);
 
 	// 控制分支沿其父茎的分布。
 	// 0表示完全互生分支，插值到1时表示完全对生分支。
 	// 值>1表示轮生分支，每个轮生中有n+1个分支。小数值导致每个轮生中有四舍五入的整数个分支，差异使用类似于Floyd-Steinberg误差扩散的方法传播。
-	float branch_dist[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, branch_dist);
 
 	// 修改分支的基部半径，仅用于特殊情况，如垂柳，其中标准半径模型不足。
-	float radius_modify[4];
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, radius_modify);
+	// 对树在x、y和z方向生长方向的影响，z元素仅适用于第二级及以上的分支（n >= 2）。
+	DECL_SIMPLE_MEMBER_PROPERTY_ARRAY4(float, tropism);
 
+public:
 	// 每个最深层分支上的叶子或花的数量。
-	int n_leaves = 0;
+	DECL_SIMPLE_MEMBER_PROPERTY(int, n_leaves) = 0;
 
 	// 预定义的叶子形状。
-	int leaf_shape = 0;
+	DECL_SIMPLE_MEMBER_PROPERTY(int, leaf_shape) = 0;
 
 	// 叶子的缩放比例。
-	float leaf_scale = 1.0f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, leaf_scale) = 1.0f;
 
 	// 叶子在x方向的缩放比例。
-	float leaf_scale_x = 1.0f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, leaf_scale_x) = 1.0f;
 
 	// 叶子重新定向以面向光线（向上和向外）的比例。
-	float leaf_bend = 0.0f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, leaf_bend) = 0.0f;
 
-	// 对树在x、y和z方向生长方向的影响，z元素仅适用于第二级及以上的分支（n >= 2）。
-	Vector3 tropism = Vector3(0.0f, 0.0f, 0.0f);
-
+public:
 	// 修剪包络峰值宽度出现的位置，以从修剪底部向上的分数距离表示。
-	float prune_width_peak = 0.5f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, prune_width_peak) = 0.5f;
 
 	// 修剪包络下部的曲率。
 	// < 1导致凸形，> 1导致凹形。
-	float prune_power_low = 0.5f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, prune_power_low) = 0.5f;
 
 	// 修剪包络上部的曲率。
 	// < 1导致凸形，> 1导致凹形。
-	float prune_power_high = 0.5f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, prune_power_high) = 0.5f;
+
+public:
+	ProceduralTreeParameter() {
+		reset();
+	}
+	void reset() {
+		down_angle = { 0, 60, 45, 45 };
+		down_angle_v = { 0, -50, 10, 10 };
+		base_size = { 0.3, 0.02, 0.02, 0.02 };
+		rotation = { 0, 140, 140, 77 };
+		rotation_v = { 0, 0, 0, 0 };
+		branches = { 1, 50, 30, 1 };
+		length = { 1, 0.3, 0.6, 0 };
+		length_v = { 0, 0, 0, 0 };
+		taper = { 1, 1, 1, 1 };
+		segment_splits = { 0, 0, 0, 0 };
+		split_angle = { 40, 0, 0, 0 };
+		split_angle_v = { 5, 0, 0, 0 };
+		curve_resolution = { 5, 5, 3, 1 };
+		curve = { 0, -40, -40, 0 };
+		curve_v = { 20, 50, 75, 0 };
+		curve_back = { 0, 0, 0, 0 };
+		bend_v = { 0, 50, 0, 0 };
+		branch_dist = { 0, 0, 0, 0 };
+		radius_modify = { 1, 1, 1, 1 };
+		tropism = { 0, 0, 0.5, 0 };
+	}
 };
 
 struct RenderData {
@@ -149,7 +215,7 @@ struct RenderData {
 	};
 	// Type of render data. Should be one of the following value: GL_TRIANGLES,
 	// GL_LINES, and GL_POINTS.
-	int type;
+	int type = GL_TRIANGLES;
 
 	// Vertex position.
 	LocalVector<Vector3> vertices;
@@ -172,6 +238,14 @@ struct RenderData {
 	bool empty() const {
 		return vertices.is_empty();
 	}
+	void SetRenderData(const RenderData &data) {
+		type = data.type;
+		vertices = data.vertices;
+		colors = data.colors;
+		normals = data.normals;
+		texture_coords = data.texture_coords;
+		indices = data.indices;
+	}
 
 	void clear() {
 		vertices.clear();
@@ -181,7 +255,74 @@ struct RenderData {
 		indices.clear();
 	}
 };
+/**
+ * Instance node is a lot of models where each model contain the same set of
+ * vertex data.
+ */
+class InstanceNode {
+public:
+	InstanceNode(const std::string &name = "") {
+	}
 
+	virtual ~InstanceNode() {
+	}
+
+	/**
+	 * Clear the instances.
+	 */
+	void ClearInstances() {
+		n_instances_ = 0;
+		transforms_.clear();
+		bounding_box_ = AABB();
+		modified_ = true;
+	}
+
+	/**
+	 * Reset the instance model.
+	 */
+	void Reset(const RenderData &instance) {
+		n_instances_ = 0;
+		transforms_.clear();
+		instance_.SetRenderData(instance);
+		modified_ = true;
+	}
+
+	/**
+	 * Add an instance.
+	 */
+	void AddInstance(const Transform3D &transform) {
+		++n_instances_;
+		transforms_.push_back(transform);
+		modified_ = true;
+	}
+
+	virtual AABB GetBoundingBox() const {
+		return bounding_box_;
+	}
+
+	/**
+	 * Return the number of instances.
+	 */
+	int n_instances() const {
+		return n_instances_;
+	}
+
+private:
+	// Instance and transforms modified or not.
+	bool modified_ = true;
+
+	// Number of instances.
+	int n_instances_ = 0;
+
+	// Instance model.
+	RenderData instance_;
+
+	// Transform for each instance.
+	LocalVector<Transform3D> transforms_;
+
+	// Bounding box of this node.
+	AABB bounding_box_;
+};
 class LeafGenerator {
 public:
 	// 扇形索引緩衝到三角形緩衝
@@ -652,7 +793,8 @@ public:
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
 
-		data->indices = { 0,
+		data->indices = {
+			0,
 			1,
 			2,
 			1,

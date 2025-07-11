@@ -4083,7 +4083,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 				EditorPropertyInteger *editor = memnew(EditorPropertyInteger);
 
 				EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, 1, true);
-				editor->setup(hint.min, hint.max, hint.step, hint.hide_slider, hint.or_greater, hint.or_less, hint.suffix);
+				editor->setup(hint.min, hint.max, MIN(hint.step, 1), hint.hide_slider, hint.or_greater, hint.or_less, hint.suffix);
 
 				return editor;
 			}
