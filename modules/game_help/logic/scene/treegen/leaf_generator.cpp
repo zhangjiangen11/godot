@@ -90,3 +90,4 @@ void ProceduralTreeParameter::_bind_methods() {
 	// 修剪包络上部的曲率。
 	// < 1导致凸形，> 1导致凹形。
 	ADD_SIMPLE_RANGE_MEMBER_PROPERTY(float, prune_power_high, -200, 200);
+}
