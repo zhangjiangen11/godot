@@ -16,6 +16,7 @@ env_game_help.add_source_files(env.modules_sources, "common/*.cpp")
 
 env_game_help.add_source_files(env.modules_sources, "beehave/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/scene/*.cpp")
+env_game_help.add_source_files(env.modules_sources, "logic/scene/treegen/*.cpp")
 
 env_game_help.add_source_files(env.modules_sources, "logic/character_ai/*.cpp")
 env_game_help.add_source_files(env.modules_sources, "logic/character_ai/condition/*.cpp")

@@ -173,7 +173,7 @@ MCurve::Conn::Conn(int64_t _id) :
 }
 
 void MCurve::ConnAdditionalPoints::update_positions(const Vector3 &a, const Vector3 &b, const Vector3 &a_control, const Vector3 &b_control) {
-	float current_ratio;
+	float current_ratio = 0;
 	for (int i = 0; i < CONN_ADDITIONAL_POINT_COUNT; i++) {
 		current_ratio += CONN_ADDITIONAL_POINT_INTERVAL_RATIO;
 		positions[i] = a.bezier_interpolate(a_control, b_control, b, current_ratio);
@@ -285,8 +285,8 @@ void MCurve::_init_conn_additional_points(const int64_t conn_id, PackedVector3Ar
 	bool is_connected = false;
 	const Point &a = points_buffer[conn.p.a];
 	const Point &b = points_buffer[conn.p.b];
-	const Vector3 *a_control;
-	const Vector3 *b_control;
+	const Vector3 *a_control = nullptr;
+	const Vector3 *b_control = nullptr;
 	for (int i = 0; i < MAX_CONN; i++) {
 		if (std::abs(a.conn[i]) == conn.p.b) {
 			// means not negated a.conn[i]==conn.p.b

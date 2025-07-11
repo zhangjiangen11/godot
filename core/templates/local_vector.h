@@ -217,17 +217,29 @@ public:
 	}
 
 	_FORCE_INLINE_ const T &front() const {
-		return operator[](0);
+		CRASH_BAD_UNSIGNED_INDEX(0, count);
+		return data[0];
 	}
 	_FORCE_INLINE_ T &front() {
-		return operator[](0);
+		CRASH_BAD_UNSIGNED_INDEX(0, count);
+		return data[0];
 	}
 
 	_FORCE_INLINE_ const T &back() const {
-		return operator[](size() - 1);
+		CRASH_BAD_UNSIGNED_INDEX(size() - 1, count);
+		return data[size() - 1];
 	}
 	_FORCE_INLINE_ T &back() {
-		return operator[](size() - 1);
+		CRASH_BAD_UNSIGNED_INDEX(size() - 1, count);
+		return data[size() - 1];
+	}
+	void assign(U p_size, const T &v) {
+		U s = size();
+		U ns = s + p_size;
+		resize_uninitialized(ns);
+		for (U i = s; s < ns; ++i) {
+			data[i] = v;
+		}
 	}
 
 	struct Iterator {
@@ -456,6 +468,12 @@ public:
 		p_from.data = nullptr;
 		p_from.count = 0;
 		p_from.capacity = 0;
+	}
+	inline void operator=(const std::initializer_list<T>& p_init) {
+		reserve(p_init.size());
+		for (const T& element : p_init) {
+			push_back(element);
+		}
 	}
 	inline void operator=(Vector<T> &&p_from) {
 		resize(p_from.size());

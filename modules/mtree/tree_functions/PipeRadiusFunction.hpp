@@ -6,25 +6,21 @@
 // #include "modules/game_help/mtree/utilities/GeometryUtilities.hpp"
 #include "Property.hpp"
 
+namespace Mtree {
+class PipeRadiusFunction : public TreeFunction {
+	GDCLASS(PipeRadiusFunction, TreeFunction);
+	static void _bind_methods();
 
-namespace Mtree
-{
-	class PipeRadiusFunction : public TreeFunction
-	{
-		GDCLASS(PipeRadiusFunction, TreeFunction);
-		static void _bind_methods()
-		{
-		
-		}
-	private:
+private:
+	void update_radius_rec(TreeNode &node);
 
-        void update_radius_rec(TreeNode& node);
+public:
+	DECL_SIMPLE_MEMBER_PROPERTY(float, power) = 2.5f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, end_radius) = .005f;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, constant_growth) = .01f;
 
-	public:
-		float power = 2.f;
-		float end_radius = .01f;
-		float constant_growth = .01f;
-		void execute(std::vector<Stem>& stems, int id, int parent_id) override;
-	};
+public:
+	void execute(std::vector<Stem> &stems, int id, int parent_id) override;
+};
 
-}
+} //namespace Mtree

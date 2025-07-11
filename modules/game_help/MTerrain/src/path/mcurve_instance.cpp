@@ -1,6 +1,6 @@
 #include "mcurve_instance.h"
 #include "core/math/random_number_generator.h"
-#define RS RenderingServer::get_singleton()
+#define RSS RenderingServer::get_singleton()
 #define PS PhysicsServer3D::get_singleton()
 
 void MCurveInstanceElement::_generate_transforms() {
@@ -1083,9 +1083,9 @@ void MCurveInstance::_generate_connection(const MCurve::ConnUpdateInfo &update_i
 				instance.ensure_render_instance_exist(path->get_scenario(), element->render_layers, element->shadow_setting);
 				instance.count = item_count;
 				ERR_FAIL_COND(!instance.mesh_rid.is_valid());
-				RS->multimesh_set_mesh(instance.multimesh, instance.mesh_rid);
-				RS->multimesh_allocate_data(instance.multimesh, item_count, RenderingServer::MULTIMESH_TRANSFORM_3D, false, false);
-				RS->multimesh_set_buffer(instance.multimesh, multimesh_buffer);
+				RSS->multimesh_set_mesh(instance.multimesh, instance.mesh_rid);
+				RSS->multimesh_allocate_data(instance.multimesh, item_count, RenderingServer::MULTIMESH_TRANSFORM_3D, false, false);
+				RSS->multimesh_set_buffer(instance.multimesh, multimesh_buffer);
 			}
 		}
 		//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1109,7 +1109,7 @@ void MCurveInstance::_update_visibilty() {
 		Instances &instances = it->value;
 		for (int j = 0; j < M_CURVE_CONNECTION_INSTANCE_COUNT; j++) {
 			if (instances[j].instance.is_valid()) {
-				RS->instance_set_visible(instances[j].instance, v);
+				RSS->instance_set_visible(instances[j].instance, v);
 			}
 		}
 	}
@@ -1159,11 +1159,11 @@ void MCurveInstance::_remove_instance(int64_t conn_id, int instance_index, bool 
 	Instances &instances = it->value;
 	if (instance_index != -1) {
 		if (instances[instance_index].multimesh.is_valid()) {
-			RS->free(instances[instance_index].multimesh);
+			RSS->free(instances[instance_index].multimesh);
 			instances[instance_index].multimesh = RID();
 		}
 		if (instances[instance_index].instance.is_valid()) {
-			RS->free(instances[instance_index].instance);
+			RSS->free(instances[instance_index].instance);
 			instances[instance_index].instance = RID();
 		}
 		if (instances[instance_index].body.is_valid()) {
@@ -1178,10 +1178,10 @@ void MCurveInstance::_remove_instance(int64_t conn_id, int instance_index, bool 
 	} else {
 		for (int i = 0; i < M_CURVE_CONNECTION_INSTANCE_COUNT; i++) {
 			if (instances[i].multimesh.is_valid()) {
-				RS->free(instances[i].multimesh);
+				RSS->free(instances[i].multimesh);
 			}
 			if (instances[i].instance.is_valid()) {
-				RS->free(instances[i].instance);
+				RSS->free(instances[i].instance);
 			}
 			if (instances[i].body.is_valid()) {
 				PS->free(instances[i].body);
@@ -1198,10 +1198,10 @@ void MCurveInstance::_remove_all_instance() {
 		Instances &instances = it->value;
 		for (int i = 0; i < M_CURVE_CONNECTION_INSTANCE_COUNT; i++) {
 			if (instances[i].multimesh.is_valid()) {
-				RS->free(instances[i].multimesh);
+				RSS->free(instances[i].multimesh);
 			}
 			if (instances[i].instance.is_valid()) {
-				RS->free(instances[i].instance);
+				RSS->free(instances[i].instance);
 			}
 		}
 	}

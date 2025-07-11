@@ -176,6 +176,27 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD(#bt_name "_call"), &class_name::bt_name);                                    \
 	ADD_PROPERTY(PropertyInfo(Variant::INT, #bt_name, PROPERTY_HINT_BUTTON, "#F622AA;" lable_name ";" #bt_name "_call()", PROPERTY_USAGE_EDITOR), "_set_" #bt_name "_property", "_get_" #bt_name "_property");
 
+#define DECL_SIMPLE_MEMBER_PROPERTY(type, name) \
+	void set_##name(const type &v) {}           \
+	const type &get_##name() const {            \
+		return name;                            \
+	}                                           \
+	type name
+#define ADD_SIMPLE_MEMBER_PROPERTY(type, name)                                                          \
+	{                                                                                                   \
+		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                    \
+		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                           \
+		type __temp_name = type();                                                                      \
+		ADD_PROPERTY(PropertyInfo(Variant(__temp_name).get_type(), #name), "set_" #name, "get_" #name); \
+	}
+
+#define ADD_SIMPLE_RANGE_MEMBER_PROPERTY(type, name, min, max)                                                                                      \
+	{                                                                                                                                               \
+		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                                                                \
+		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                                                                       \
+		type __temp_name = type();                                                                                                                  \
+		ADD_PROPERTY(PropertyInfo(Variant(__temp_name).get_type(), #name, PROPERTY_HINT_RANGE, #min "," #max ",0.01"), "set_" #name, "get_" #name); \
+	}
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
 	String name;

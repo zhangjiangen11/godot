@@ -144,9 +144,9 @@ String MHlodNode3D::state_data_get_prop_name() {
 	return STATE_DATA_CACHE_PROP_NAME;
 }
 
-void MHlodNode3D::state_data_set(const Variant &data) {
+void MHlodNode3D::state_data_set(const Variant &p_data) {
 	ERR_FAIL_COND(!global_id.is_valid());
-	state_data.insert(global_id.id, data);
+	state_data.insert(global_id.id, p_data);
 }
 
 const Variant &MHlodNode3D::state_data_get() {
