@@ -1,5 +1,5 @@
 #include "leaf_generator.h"
-
+#include "scene/resources/surface_tool.h"
 void ProceduralTreeParameter::_bind_methods() {
 	ADD_GROUP(L"树干整体参数", "");
 	ADD_SIMPLE_ENUM_MEMBER_PROPERTY(int, shape, "圆锥形,球形,半球形,圆柱形,锥型圆柱形,火焰,反向圆锥,趋向火焰,自定义形状");
@@ -69,7 +69,7 @@ void ProceduralTreeParameter::_bind_methods() {
 	ADD_SIMPLE_RANGE_MEMBER_PROPERTY(int, n_leaves, -1000, 3000);
 
 	// 预定义的叶子形状。
-	ADD_SIMPLE_ENUM_MEMBER_PROPERTY(int, leaf_shape, "卵型,茅草叶,红薯叶,枫叶,棕榈,尖刺橡树,圆橡木,椭圆,矩形,三角形,樱花,橘子花,木兰花");
+	ADD_SIMPLE_ENUM_MEMBER_PROPERTY(int, leaf_shape, "卵型,茅草叶,红薯叶,枫叶,棕榈,尖刺橡树,圆橡木,椭圆,矩形,三角形");
 
 	// 叶子的缩放比例。
 	ADD_SIMPLE_RANGE_MEMBER_PROPERTY(float, leaf_scale, 0.001, 1000);
@@ -79,6 +79,12 @@ void ProceduralTreeParameter::_bind_methods() {
 
 	// 叶子重新定向以面向光线（向上和向外）的比例。
 	ADD_SIMPLE_RANGE_MEMBER_PROPERTY(float, leaf_bend, 0, 1);
+
+	ADD_GROUP(L"花", "");
+	// 花的参数
+	ADD_SIMPLE_ENUM_MEMBER_PROPERTY(int, blossom_shape, "樱花,橘子花,木兰花");
+	ADD_SIMPLE_RANGE_MEMBER_PROPERTY(float, blossom_scale, 0, 1);
+	ADD_SIMPLE_RANGE_MEMBER_PROPERTY(float, blossom_rate, 0, 1);
 
 	ADD_GROUP(L"自定义形状", "");
 	// 修剪包络峰值宽度出现的位置，以从修剪底部向上的分数距离表示。
@@ -90,4 +96,37 @@ void ProceduralTreeParameter::_bind_methods() {
 	// 修剪包络上部的曲率。
 	// < 1导致凸形，> 1导致凹形。
 	ADD_SIMPLE_RANGE_MEMBER_PROPERTY(float, prune_power_high, -200, 200);
+}
+
+// 生成小花的UV
+void LeafGenerator::blossom_uv(ProceduralTreeRenderData *data) const {
+	Ref<SurfaceTool> surftool = memnew(SurfaceTool);
+	surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
+	for (int i = 0; i < data->vertices.size(); i++) {
+		surftool->add_vertex(data->vertices[i]);
+	}
+
+	for (int i = 0; i < data->indices.size(); i++) {
+		surftool->add_index(data->indices[i]);
+	}
+
+	surftool->generate_normals();
+	surftool->generate_tangents();
+	Ref<ArrayMesh> mesh = surftool->commit();
+	mesh->lightmap_unwrap();
+	const Vector2 *uv2 = (const Vector2 *)mesh->get_vertex_array_data_ptr(0, ArrayMesh::ARRAY_TEX_UV2);
+	data->texture_coords.resize_uninitialized(data->vertices.size());
+	for (int i = 0; i < data->vertices.size(); i++) {
+		data->texture_coords[i] = uv2[i];
+	}
+	const Vector3 *face_normals = (const Vector3 *)mesh->get_vertex_array_data_ptr(0, ArrayMesh::ARRAY_NORMAL);
+	data->normals.resize_uninitialized(data->vertices.size());
+
+	// 生成法线,中心点法线向上,边缘处法线朝外,中心法线和边缘法线混合
+	data->normals[0] = Vector3(0.0f, 1.0f, 0.0f);
+	for (int i = 1; i < data->vertices.size(); i++) {
+		float length = data->vertices[i].length();
+		Vector3 normal = data->vertices[i] / length;
+		data->normals[i] = face_normals[i].lerp(normal, MIN(1.0, length * length));
+	}
 }

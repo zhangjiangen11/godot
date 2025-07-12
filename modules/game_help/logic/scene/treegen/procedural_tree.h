@@ -5,9 +5,7 @@
 //
 // This file is part of the Code Library.
 //
-
-#ifndef CODELIBRARY_WORLD_TREE_PROCEDURAL_TREE_H_
-#define CODELIBRARY_WORLD_TREE_PROCEDURAL_TREE_H_
+#pragma once
 
 #include "core/math/color.h"
 #include "core/math/plane.h"
@@ -22,12 +20,10 @@
 
 #include "leaf_generator.h"
 
-struct Pipe : public RenderData {
-	Pipe() :
-			RenderData(GL_TRIANGLES) {}
+struct Pipe : public ProceduralTreeRenderData {
+	Pipe() {}
 
 	Pipe(const LocalVector<Vector3> &points, float radius, int n_slices = 32) :
-			RenderData(GL_TRIANGLES),
 			points_(points) {
 		radius_.assign(points.size(), radius);
 		////CHECK(radius > 0.0f);
@@ -40,7 +36,6 @@ struct Pipe : public RenderData {
 	 */
 	Pipe(const LocalVector<Vector3> &points, const LocalVector<float> &radius,
 			int n_slices = 32) :
-			RenderData(GL_TRIANGLES),
 			points_(points),
 			radius_(radius) {
 		////CHECK(points.size() == radius.size());
@@ -319,6 +314,9 @@ public:
 	 * Re-generate a tree model according to the given parameters.
 	 */
 	void Generate(const Ref<ProceduralTreeParameter> &parameter) {
+		if (parameter.is_null()) {
+			return;
+		}
 		parameter_ = parameter;
 
 		n_branches_ = 0;
@@ -386,11 +384,11 @@ private:
 		}
 
 		//stem_object_.Add(stem.trunk);
-		for (const Stem &stem : stem.sub_stems) {
+		for (const Stem &_stem : stem.sub_stems) {
 			AddStems(stem);
 		}
-		for (const Stem &stem : stem.branches) {
-			AddStems(stem);
+		for (const Stem &_stem : stem.branches) {
+			AddStems(_stem);
 		}
 	}
 
@@ -495,6 +493,8 @@ private:
 		SetupLeafNode();
 
 		float bend = parameter_->leaf_bend;
+		Transform3D leaf_transform;
+		Transform3D transform2;
 		for (const LeafBlossom &l : leaves_) {
 			Transform3D transform;
 			transform.origin = Vector3(l.position);
@@ -505,18 +505,21 @@ private:
 			q1.rotate_to_align(Vector3(0.0f, 0.0f, 1.0f), l.face_orientation);
 			Transform3D transform1;
 			transform1.basis = q1 * q;
-
 			if (bend > 0.0f) {
 				float theta_pos = std::atan2(l.position.y, l.position.x);
 				float theta_bend = theta_pos - std::atan2(l.face_orientation.y, l.face_orientation.x);
 				//FQuaternion q2(Vector3(0.0f, 0.0f, 1.0f), theta_bend * bend);
 				Basis q2;
 				q2.rotate_to_align(Vector3(0.0f, 0.0f, 1.0f), l.face_orientation);
-				Transform3D transform2;
 				transform2.basis = (q2);
-				leaves_node_.AddInstance(transform * transform2 * transform1);
+				leaf_transform = (transform * transform2 * transform1);
 			} else {
-				leaves_node_.AddInstance(transform * transform1);
+				leaf_transform = (transform * transform1);
+			}
+			if (parameter_->blossom_rate > 0.0f && parameter_->blossom_scale > 0.0f && GetRandomNumber2() < parameter_->blossom_rate) {
+				blossom_node_.AddInstance(leaf_transform);
+			} else {
+				leaves_node_.AddInstance(leaf_transform);
 			}
 		}
 	}
@@ -526,7 +529,8 @@ private:
 	 */
 	void SetupLeafNode() {
 		LeafGenerator leaf_generator;
-		RenderData leaf_render_data;
+		ProceduralTreeRenderData leaf_render_data;
+		ProceduralTreeRenderData blossom_render_data;
 		switch (parameter_->leaf_shape) {
 			case 1:
 				leaf_generator.OctaveLeaf(&leaf_render_data);
@@ -558,14 +562,16 @@ private:
 			case 10:
 				leaf_generator.TriangleLeaf(&leaf_render_data);
 				break;
-			case 11:
-				leaf_generator.CherryLeaf(&leaf_render_data);
+		}
+		switch (parameter_->blossom_shape) {
+			case 1:
+				leaf_generator.CherryLeaf(&blossom_render_data);
 				break;
-			case 12:
-				leaf_generator.OrangeLeaf(&leaf_render_data);
+			case 2:
+				leaf_generator.OrangeLeaf(&blossom_render_data);
 				break;
-			case 13:
-				leaf_generator.MagnoliaLeaf(&leaf_render_data);
+			case 3:
+				leaf_generator.MagnoliaLeaf(&blossom_render_data);
 				break;
 		}
 
@@ -575,8 +581,12 @@ private:
 			p *= scale;
 			p.x *= scale_x;
 		}
-
+		scale = parameter_->blossom_scale * tree_scale_ / parameter_->scale;
+		for (Vector3 &p : blossom_render_data.vertices) {
+			p *= scale;
+		}
 		leaves_node_.Reset(leaf_render_data);
+		blossom_node_.Reset(blossom_render_data);
 	}
 
 	/**
@@ -659,7 +669,7 @@ private:
 			if (leaf.face_orientation.z < 0.0f) {
 				leaf.face_orientation = -leaf.face_orientation;
 			}
-			leaf.face_orientation.normalized();
+			leaf.face_orientation.normalize();
 			leaves_.push_back(leaf);
 		} else {
 			MakeStem(0, 1.0f, 1.0f, &branch);
@@ -1331,12 +1341,13 @@ private:
 
 	// Instance leaves node.
 	InstanceNode leaves_node_;
+	InstanceNode blossom_node_;
 
 	// Material for leaves.
 	//Material leaf_material_;
 
 	// Color of leaves.
-	Color leaf_color_ = Color(90, 170, 20);
+	Color leaf_color_ = Color(90.0f / 255.0f, 170.0f / 255.0f, 20.0f / 255.0f);
 
 	// Generate numbers from -1 to 1.
 	mutable std::uniform_real_distribution<float> uniform_random1_;
@@ -1347,5 +1358,3 @@ private:
 	// Random engine.
 	mutable std::mt19937 random_engine_;
 };
-
-#endif // CODELIBRARY_WORLD_TREE_PROCEDURAL_TREE_H_

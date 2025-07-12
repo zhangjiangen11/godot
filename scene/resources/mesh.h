@@ -403,6 +403,13 @@ public:
 	virtual RID get_rid() const override;
 
 	void regen_normal_maps();
+	const void *get_vertex_array_data_ptr(int p_surface, ArrayType p_type) const {
+		Array arrays = surface_get_arrays(p_surface);
+		if (arrays[Mesh::ARRAY_TEX_UV2].get_type() != Variant::NIL) {
+			return arrays[Mesh::ARRAY_TEX_UV2].operator Vector<Vector2>().ptr();
+		}
+		return nullptr;
+	}
 
 	Error lightmap_unwrap(const Transform3D &p_base_transform = Transform3D(), float p_texel_size = 0.05);
 	Error lightmap_unwrap_cached(const Transform3D &p_base_transform, float p_texel_size, const Vector<uint8_t> &p_src_cache, Vector<uint8_t> &r_dst_cache, bool p_generate_cache = true);

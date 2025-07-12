@@ -5,9 +5,7 @@
 //
 // This file is part of the Code Library.
 //
-
-#ifndef CODELIBRARY_WORLD_TREE_TREE_FACTORY_H_
-#define CODELIBRARY_WORLD_TREE_TREE_FACTORY_H_
+#pragma once
 
 #include <map>
 
@@ -18,24 +16,24 @@
  */
 class TreeFactory {
 	TreeFactory() {
-		function_map_["Acer"] = &TreeFactory::Acer;
-		function_map_["Apple"] = &TreeFactory::Apple;
-		function_map_["Balsam fir"] = &TreeFactory::BalsamFir;
-		function_map_["Bamboo"] = &TreeFactory::Bamboo;
-		function_map_["Black oak"] = &TreeFactory::BlackOak;
-		function_map_["Black tupelo"] = &TreeFactory::BlackTupelo;
-		function_map_["Cambridge oak"] = &TreeFactory::CambridgeOak;
-		function_map_["Douglas fir"] = &TreeFactory::DouglasFir;
-		function_map_["European larch"] = &TreeFactory::EuropeanLarch;
-		function_map_["Fan palm"] = &TreeFactory::FanPalm;
-		function_map_["Hill cherry"] = &TreeFactory::HillCherry;
-		function_map_["Lombardy poplar"] = &TreeFactory::LombardyPoplar;
-		function_map_["Palm"] = &TreeFactory::Palm;
-		function_map_["Quaking aspen"] = &TreeFactory::QuakingAspen;
-		function_map_["Sassafras"] = &TreeFactory::Sassafras;
-		function_map_["Silver birch"] = &TreeFactory::SilverBirch;
-		function_map_["Small pine"] = &TreeFactory::SmallPine;
-		function_map_["Weeping willow"] = &TreeFactory::WeepingWillow;
+		function_map_["枫树"] = &TreeFactory::Acer;
+		function_map_["苹果树"] = &TreeFactory::Apple;
+		function_map_["香脂冷杉"] = &TreeFactory::BalsamFir;
+		function_map_["竹子"] = &TreeFactory::Bamboo;
+		function_map_["黑橡木"] = &TreeFactory::BlackOak;
+		function_map_["黑色沼泽树"] = &TreeFactory::BlackTupelo;
+		function_map_["剑桥橡木"] = &TreeFactory::CambridgeOak;
+		function_map_["花旗松"] = &TreeFactory::DouglasFir;
+		function_map_["欧洲落叶松"] = &TreeFactory::EuropeanLarch;
+		function_map_["扇形棕榈"] = &TreeFactory::FanPalm;
+		function_map_["山樱桃"] = &TreeFactory::HillCherry;
+		function_map_["伦巴第杨树"] = &TreeFactory::LombardyPoplar;
+		function_map_["棕榈"] = &TreeFactory::Palm;
+		function_map_["颤杨"] = &TreeFactory::QuakingAspen;
+		function_map_["黄樟树"] = &TreeFactory::Sassafras;
+		function_map_["银桦树"] = &TreeFactory::SilverBirch;
+		function_map_["小松树"] = &TreeFactory::SmallPine;
+		function_map_["垂柳"] = &TreeFactory::WeepingWillow;
 	}
 
 	using Parameter = Ref<ProceduralTreeParameter>;
@@ -128,6 +126,9 @@ public:
 		param->leaf_shape = 0;
 		param->leaf_scale = 0.17f;
 		param->leaf_bend = 0.5f;
+		param->blossom_rate = 0.35f;
+		param->blossom_scale = 0.08f;
+		param->blossom_shape = 1;
 		param->tropism = { 0.0f, 0.0f, 2.0f };
 
 		return param;
@@ -404,7 +405,7 @@ public:
 
 		return param;
 	}
-
+	// 扇形棕榈
 	Parameter FanPalm() {
 		Parameter param;
 		param.instantiate();
@@ -475,13 +476,16 @@ public:
 		param->branch_dist = { 0.0f, 0.0f, 0.0f, 0.0f };
 		param->radius_modify = { 1.0f, 1.0f, 1.0f, 1.0f };
 		param->tropism = { 0.0f, 0.0f, -1.0f };
+		param->blossom_rate = 1.0f;
+		param->blossom_scale = 0.1f;
+		param->blossom_shape = 1;
 		param->prune_width_peak = 0.5f;
 		param->prune_power_low = 0.2f;
 		param->prune_power_high = 0.5f;
 
 		return param;
 	}
-
+	// 罗马棕榈
 	Parameter LombardyPoplar() {
 		Parameter param;
 		param.instantiate();
@@ -758,10 +762,7 @@ public:
 		return param;
 	}
 
-
 private:
 	// Map from name to the function.
 	std::map<std::string, Func> function_map_;
 };
-
-#endif // CODELIBRARY_WORLD_TREE_TREE_FACTORY_H_

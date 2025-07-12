@@ -5,9 +5,7 @@
 //
 // This file is part of the Code Library.
 //
-
-#ifndef CODELIBRARY_WORLD_TREE_LEAF_GENERATOR_H_
-#define CODELIBRARY_WORLD_TREE_LEAF_GENERATOR_H_
+#pragma once
 
 #include "core/io/resource.h"
 #include "core/templates/local_vector.h"
@@ -40,6 +38,7 @@
 		return name[3];                                \
 	}                                                  \
 	ConstLocalVector<type, 4> name
+
 #define ADD_SIMPLE_MEMBER_PROPERTY_ARRAY4(type, name, index, min, max)                                                                                                                     \
 	{                                                                                                                                                                                      \
 		ClassDB::bind_method(D_METHOD("set_" #name "_" #index, #name), &self_type::set_##name##_##index);                                                                                  \
@@ -49,6 +48,8 @@
 	}
 class ProceduralTreeParameter : public Resource {
 	GDCLASS(ProceduralTreeParameter, Resource);
+
+public:
 	static void _bind_methods();
 
 public:
@@ -168,6 +169,12 @@ public:
 	DECL_SIMPLE_MEMBER_PROPERTY(float, leaf_bend) = 0.0f;
 
 public:
+	// 花的参数
+	DECL_SIMPLE_MEMBER_PROPERTY(int, blossom_shape) = 1;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, blossom_scale) = 0;
+	DECL_SIMPLE_MEMBER_PROPERTY(float, blossom_rate) = 0;
+
+public:
 	// 修剪包络峰值宽度出现的位置，以从修剪底部向上的分数距离表示。
 	DECL_SIMPLE_MEMBER_PROPERTY(float, prune_width_peak) = 0.5f;
 
@@ -207,53 +214,27 @@ public:
 	}
 };
 
-struct RenderData {
-	enum {
-		GL_TRIANGLES = 0,
-		GL_LINES = 1,
-		GL_POINTS = 2
-	};
-	// Type of render data. Should be one of the following value: GL_TRIANGLES,
-	// GL_LINES, and GL_POINTS.
-	int type = GL_TRIANGLES;
-
-	// Vertex position.
+struct ProceduralTreeRenderData {
 	LocalVector<Vector3> vertices;
-
-	// Color for each vertex.
-	LocalVector<Color> colors;
-
-	// Normal vector for each vertex.
 	LocalVector<Vector3> normals;
-
-	// Texture coordinate for each vertex.
 	LocalVector<Vector2> texture_coords;
-
-	// Element indices.
+	LocalVector<Color> colors;
 	LocalVector<int> indices;
 
-	RenderData(int t = GL_TRIANGLES) :
-			type(t) {}
-
-	bool empty() const {
-		return vertices.is_empty();
+	void SetRenderData(const ProceduralTreeRenderData& data) {
+	vertices = data.vertices;
+	colors = data.colors;
+	normals = data.normals;
+	texture_coords = data.texture_coords;
+	indices = data.indices;
 	}
-	void SetRenderData(const RenderData &data) {
-		type = data.type;
-		vertices = data.vertices;
-		colors = data.colors;
-		normals = data.normals;
-		texture_coords = data.texture_coords;
-		indices = data.indices;
-	}
-
 	void clear() {
-		vertices.clear();
-		colors.clear();
-		normals.clear();
-		texture_coords.clear();
-		indices.clear();
-	}
+	vertices.clear();
+	colors.clear();
+	normals.clear();
+	texture_coords.clear();
+	indices.clear();
+}
 };
 /**
  * Instance node is a lot of models where each model contain the same set of
@@ -280,7 +261,7 @@ public:
 	/**
 	 * Reset the instance model.
 	 */
-	void Reset(const RenderData &instance) {
+	void Reset(const ProceduralTreeRenderData &instance) {
 		n_instances_ = 0;
 		transforms_.clear();
 		instance_.SetRenderData(instance);
@@ -315,7 +296,7 @@ private:
 	int n_instances_ = 0;
 
 	// Instance model.
-	RenderData instance_;
+	ProceduralTreeRenderData instance_;
 
 	// Transform for each instance.
 	LocalVector<Transform3D> transforms_;
@@ -330,17 +311,39 @@ public:
 		if (indices.size() < 3) {
 			return;
 		}
-		for (int i = 2; i < indices.size(); i += 3) {
+		for (uint32_t i = 2; i < indices.size(); i += 3) {
 			out_indices.push_back(indices[0]);
 			out_indices.push_back(indices[i - 1]);
 			out_indices.push_back(indices[i]);
 		}
 	}
+	void leaf_uv(ProceduralTreeRenderData *data) const {
+		float max_value = 0.0f;
 
-	void OctaveLeaf(RenderData *data) const {
+		for (uint32_t i = 0; i < data->vertices.size(); i++) {
+			max_value = MAX(max_value, data->vertices[i].x);
+			max_value = MAX(max_value, data->vertices[i].z);
+		}
+		if (max_value == 0.0f) {
+			max_value = 1.0f;
+		}
+		float scale = 1.0f / max_value;
+		for (int i = 0; i < data->vertices.size(); i++) {
+			data->texture_coords.push_back(Vector2(data->vertices[i].x * scale, data->vertices[i].z * scale));
+		}
+		data->normals.resize_uninitialized(data->vertices.size());
+		// 生成中心点向外扩散的法线
+		data->normals[0] = Vector3(0.0f, 1.0f, 0.0f);
+		for (int i = 1; i < data->vertices.size(); i++) {
+			float length = data->vertices[i].length();
+			Vector3 normal = data->vertices[i] / length;
+			data->normals[i] = data->normals[0].lerp(normal, MIN(1.0, length * length));
+		}
+	}
+
+	void OctaveLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0.005f, 0.0f, 0.0f },
 			{ 0.005f, 0.0f, 0.1f },
@@ -357,14 +360,14 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = { 0, 1, 9, 0, 9, 10, 1, 2, 3, 1, 3, 4, 4, 5, 6,
 			6, 7, 8, 6, 8, 9, 4, 6, 9, 4, 9, 1 };
 	}
 
-	void LinearLeaf(RenderData *data) const {
+	void LinearLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0.005f, 0.0f, 0.0f },
 			{ 0.005f, 0.0f, 0.1f },
@@ -378,14 +381,14 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = { 0, 1, 7, 0, 7, 8, 1, 2, 3, 3, 4, 5, 5, 6, 7,
 			1, 3, 5, 1, 5, 7 };
 	}
 
-	void CordateLeaf(RenderData *data) const {
+	void CordateLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0.005f, 0.0f, 0.0f },
 			{ 0.01f, 0.0f, 0.2f },
@@ -403,15 +406,15 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = { 0, 1, 11, 0, 11, 12, 1, 2, 3, 1, 3, 4,
 			11, 10, 9, 11, 9, 8, 11, 1, 4, 11, 4, 8,
 			8, 7, 6, 8, 6, 5, 8, 5, 4 };
 	}
 
-	void MapleLeaf(RenderData *data) const {
+	void MapleLeaf(ProceduralTreeRenderData *data) const {
 		////CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 
 			{ 0.005, 0, 0 },
@@ -453,10 +456,9 @@ public:
 		to_triangle_list({ 1, 11, 12, 13, 23 }, data->indices);
 	}
 
-	void PalmateLeaf(RenderData *data) const {
+	void PalmateLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0.005f, 0.0f, 0.0f },
 			{ 0.005f, 0.0f, 0.1f },
@@ -472,6 +474,7 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = {
 			0, 1, 9, 0, 9, 10,
 			1, 2, 3, 1, 3, 4,
@@ -480,10 +483,9 @@ public:
 		};
 	}
 
-	void RoundOakLeaf(RenderData *data) const {
+	void RoundOakLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0.005f, 0.0f, 0.0f },
 			{ 0.005f, 0.0f, 0.1f },
@@ -522,6 +524,7 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = {
 			0, 1, 33, 0, 33, 34,
 			1, 2, 3,
@@ -540,10 +543,9 @@ public:
 		};
 	}
 
-	void SpikyOakLeaf(RenderData *data) const {
+	void SpikyOakLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0.005f, 0.0f, 0.0f },
 			{ 0.005f, 0.0f, 0.1f },
@@ -573,6 +575,7 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = {
 			0, 1, 23, 0, 23, 24,
 			1, 2, 3, 3, 4, 5, 5, 6, 7, 7, 8, 9, 9, 10, 11,
@@ -582,10 +585,9 @@ public:
 		};
 	}
 
-	void EllipticLeaf(RenderData *data) const {
+	void EllipticLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0.005f, 0.0f, 0.0f },
 			{ 0.005f, 0.0f, 0.1f },
@@ -601,15 +603,15 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = { 0, 1, 9, 0, 9, 10, 1, 2, 3, 1, 3, 4,
 			4, 5, 6, 6, 7, 8, 6, 8, 9,
 			4, 6, 9, 4, 9, 1 };
 	}
 
-	void RectLeaf(RenderData *data) const {
+	void RectLeaf(ProceduralTreeRenderData *data) const {
 		//CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ -0.5, 0, 0 },
 			{ -0.5, 0, 1 },
@@ -618,13 +620,13 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = { 0, 1, 2, 0, 2, 3 };
 	}
 
-	void TriangleLeaf(RenderData *data) const {
+	void TriangleLeaf(ProceduralTreeRenderData *data) const {
 		////CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ -0.5f, 0.0f, 0.0f },
 			{ 0.0f, 0.0f, 1.0f },
@@ -632,26 +634,28 @@ public:
 		};
 		data->normals.assign(data->vertices.size(),
 				Vector3(0.0f, 1.0f, 0.0f));
+		leaf_uv(data);
 		data->indices = { 0, 1, 2 };
 	}
+	// 生成小花的UV
+	void blossom_uv(ProceduralTreeRenderData *data) const;
 
 	// 樱花
-	void CherryLeaf(RenderData *data) const {
+	void CherryLeaf(ProceduralTreeRenderData *data) const {
 		////CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 
-			{ 0, 0, 0 },
-			{ 0.33, 0.45, 0.45 },
-			{ 0.25, 0.6, 0.6 },
-			{ 0, 0.7, 0.7 },
-			{ -0.25, 0.6, 0.6 },
-			{ -0.33, 0.45, 0.45 },
-			{ 0.49, 0.42, 0.6 },
-			{ 0.67, 0.22, 0.7 },
-			{ 0.65, -0.05, 0.6 },
-			{ 0.53, -0.17, 0.45 },
+			{ 0, 0, 0 }, //0
+			{ 0.33, 0.45, 0.45 }, //1
+			{ 0.25, 0.6, 0.6 }, //2
+			{ 0, 0.7, 0.7 }, //3
+			{ -0.25, 0.6, 0.6 }, //4
+			{ -0.33, 0.45, 0.45 }, //5
+			{ 0.49, 0.42, 0.6 }, //6
+			{ 0.67, 0.22, 0.7 }, //7
+			{ 0.65, -0.05, 0.6 }, //8
+			{ 0.53, -0.17, 0.45 }, //9
 			{ 0.55, -0.33, 0.6 },
 			{ 0.41, -0.57, 0.7 },
 			{ 0.15, -0.63, 0.6 },
@@ -677,12 +681,12 @@ public:
 		to_triangle_list({ 0, 15, 16, 17 }, data->indices);
 		to_triangle_list({ 0, 17, 18, 19 }, data->indices);
 		to_triangle_list({ 0, 19, 20, 5 }, data->indices);
+		blossom_uv(data);
 	}
 	// 橙子
-	void OrangeLeaf(RenderData *data) const {
+	void OrangeLeaf(ProceduralTreeRenderData *data) const {
 		////CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0, 0, 0 },
 			{ -0.055, 0.165, 0.11 },
@@ -732,13 +736,13 @@ public:
 		to_triangle_list({ 0, 27, 28 }, data->indices);
 		to_triangle_list({ 0, 28, 29 }, data->indices);
 		to_triangle_list({ 0, 29, 26 }, data->indices);
+		blossom_uv(data);
 	}
 
 	// 木兰
-	void MagnoliaLeaf(RenderData *data) const {
+	void MagnoliaLeaf(ProceduralTreeRenderData *data) const {
 		////CHECK(data);
 
-		data->type = RenderData::GL_TRIANGLES;
 		data->vertices = {
 			{ 0, 0, 0 },
 			{ 0.19, -0.19, 0.06 },
@@ -939,6 +943,6 @@ public:
 			48,
 			0,
 		};
+		blossom_uv(data);
 	}
 };
-#endif
