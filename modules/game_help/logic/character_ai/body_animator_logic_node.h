@@ -1,4 +1,0 @@
-#ifndef _BODY_ANIMATOR_LOGIC_NODE_H_
-#define _BODY_ANIMATOR_LOGIC_NODE_H_
-
-#endif
