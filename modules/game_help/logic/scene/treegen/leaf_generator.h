@@ -221,20 +221,20 @@ struct ProceduralTreeRenderData {
 	LocalVector<Color> colors;
 	LocalVector<int> indices;
 
-	void SetRenderData(const ProceduralTreeRenderData& data) {
-	vertices = data.vertices;
-	colors = data.colors;
-	normals = data.normals;
-	texture_coords = data.texture_coords;
-	indices = data.indices;
+	void SetRenderData(const ProceduralTreeRenderData &data) {
+		vertices = data.vertices;
+		colors = data.colors;
+		normals = data.normals;
+		texture_coords = data.texture_coords;
+		indices = data.indices;
 	}
 	void clear() {
-	vertices.clear();
-	colors.clear();
-	normals.clear();
-	texture_coords.clear();
-	indices.clear();
-}
+		vertices.clear();
+		colors.clear();
+		normals.clear();
+		texture_coords.clear();
+		indices.clear();
+	}
 };
 /**
  * Instance node is a lot of models where each model contain the same set of
@@ -271,9 +271,10 @@ public:
 	/**
 	 * Add an instance.
 	 */
-	void AddInstance(const Transform3D &transform) {
+	void AddInstance(const Transform3D &transform, float length) {
 		++n_instances_;
 		transforms_.push_back(transform);
+		instance_length.push_back(length);
 		modified_ = true;
 	}
 
@@ -300,6 +301,7 @@ private:
 
 	// Transform for each instance.
 	LocalVector<Transform3D> transforms_;
+	LocalVector<float> instance_length;
 
 	// Bounding box of this node.
 	AABB bounding_box_;
@@ -328,13 +330,13 @@ public:
 			max_value = 1.0f;
 		}
 		float scale = 1.0f / max_value;
-		for (int i = 0; i < data->vertices.size(); i++) {
+		for (uint32_t i = 0; i < data->vertices.size(); i++) {
 			data->texture_coords.push_back(Vector2(data->vertices[i].x * scale, data->vertices[i].z * scale));
 		}
 		data->normals.resize_uninitialized(data->vertices.size());
 		// 生成中心点向外扩散的法线
 		data->normals[0] = Vector3(0.0f, 1.0f, 0.0f);
-		for (int i = 1; i < data->vertices.size(); i++) {
+		for (uint32_t i = 1; i < data->vertices.size(); i++) {
 			float length = data->vertices[i].length();
 			Vector3 normal = data->vertices[i] / length;
 			data->normals[i] = data->normals[0].lerp(normal, MIN(1.0, length * length));

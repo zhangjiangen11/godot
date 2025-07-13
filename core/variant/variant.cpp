@@ -2019,7 +2019,7 @@ Variant::operator NodePath() const {
 	if (type == NODE_PATH) {
 		return *reinterpret_cast<const NodePath *>(_data._mem);
 	} else if (type == STRING) {
-		return NodePath(operator String());	
+		return NodePath(operator String());
 	} else if (type == STRING_NAME) {
 		return NodePath::from_string_name(operator StringName());
 	} else {
@@ -2033,11 +2033,11 @@ Variant::operator ::RID() const {
 	} else if (type == OBJECT && _get_obj().obj == nullptr) {
 		return ::RID();
 	} else if (type == OBJECT && _get_obj().obj) {
-#ifdef DEBUG_ENABLED
-		if (EngineDebugger::is_active()) {
-			ERR_FAIL_NULL_V_MSG(ObjectDB::get_instance(_get_obj().id), ::RID(), "Invalid pointer (object was freed).");
-		}
-#endif
+		// #ifdef DEBUG_ENABLED
+		// 		if (EngineDebugger::is_active()) {
+		ERR_FAIL_NULL_V_MSG(ObjectDB::get_instance(_get_obj().id), ::RID(), "Invalid pointer (object was freed).");
+		// 		}
+		// #endif
 		Callable::CallError ce;
 		const Variant ret = _get_obj().obj->callp(CoreStringName(get_rid), nullptr, 0, ce);
 		if (ce.error == Callable::CallError::CALL_OK && ret.get_type() == Variant::RID) {
@@ -2051,6 +2051,9 @@ Variant::operator ::RID() const {
 
 Variant::operator Object *() const {
 	if (type == OBJECT) {
+		if (ObjectDB::get_instance(_get_obj().id) == nullptr) {
+			return nullptr;
+		}
 		return _get_obj().obj;
 	} else {
 		return nullptr;

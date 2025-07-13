@@ -392,7 +392,9 @@ void QuadTree::UpdatePrepare(const BodyVector &inBodies, TrackingVector &ioTrack
 	}
 
 	// Delete temporary data
-	delete [] node_ids;
+	if (node_ids) {
+		delete[] node_ids;
+	}
 
 	outUpdateState.mRootNodeID = root_node_id;
 }
