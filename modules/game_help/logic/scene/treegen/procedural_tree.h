@@ -49,7 +49,7 @@ struct ProceduralTreePipe : public ProceduralTreeRenderData {
 	 * Construct pipe with different radius at each vertex.
 	 */
 	ProceduralTreePipe(const LocalVector<Vector3> &points, const LocalVector<float> &radius,
-		uint32_t p_slices = 32) :
+			uint32_t p_slices = 32) :
 			points_(points),
 			radius_(radius) {
 		////CHECK(points.size() == radius.size());
@@ -261,7 +261,7 @@ struct ProceduralTreeStem {
 	 */
 	void GlobalRoll(float degree) {
 		Basis rot(Vector3(0.0f, 0.0f, 1.0f),
-			Math::deg_to_rad(degree));
+				Math::deg_to_rad(degree));
 		orientation = rot.xform(orientation);
 		face_orientation = rot.xform(face_orientation);
 	}
@@ -283,22 +283,22 @@ class ProceduralTree : public Node3D {
 
 public:
 	/**
-	 * Enum to refer to branching modes.
+	 * 用于表示分支模式的枚举。
 	 */
 	enum BranchMode {
-		ALTERNATE_OR_OPPOSITE = 1,
-		WHORLED = 2,
-		FAN = 3
+		ALTERNATE_OR_OPPOSITE = 1, // 互生或对生
+		WHORLED = 2, // 轮生
+		FAN = 3 // 扇形
 	};
 
 	/**
-	 * Leaf/blossom information.
+	 * 叶子/花朵信息。
 	 */
 	struct LeafBlossom {
-		Vector3 orientation;
-		Vector3 face_orientation;
-		Vector3 position;
-		float length = 0.0f;
+		Vector3 orientation; // 朝向
+		Vector3 face_orientation; // 正面朝向
+		Vector3 position; // 位置
+		float length = 0.0f; // 长度
 	};
 
 public:
@@ -317,7 +317,7 @@ public:
 	}
 
 	/**
-	 * Re-generate a tree model according to the given parameters.
+	 * 根据给定的参数重新生成树模型。
 	 */
 	void Generate(const Ref<ProceduralTreeParameter> &parameter) {
 		if (parameter.is_null()) {
@@ -332,20 +332,20 @@ public:
 	}
 
 	/**
-	 * Set stems LOD for rendering.
+	 * 设置枝干的LOD（细节层次）用于渲染。
 	 */
 	void SetStemsLOD(int level) {
 		stems_lod_ = level;
 	}
 
 	/**
-	 * Set leaf color.
+	 * 设置叶子颜色。
 	 */
 	void set_leaf_color(const Color &color) {
 		leaf_color_ = color;
 	}
 	/**
-	 * Set seed for random engine.
+	 * 为随机引擎设置种子。
 	 */
 	void set_seed(int p_seed) {
 		seed = p_seed;
@@ -356,27 +356,27 @@ public:
 	}
 
 	/**
-	 * Return the total number of branches of the tree.
+	 * 返回树的总分支数量。
 	 */
 	int n_branches() const {
 		return n_branches_;
 	}
 	/**
-	 * Return the total number of branch segments of the tree.
+	 * 返回树的总分支段数量。
 	 */
 	int get_branch_segments() const {
 		return n_branch_segments_;
 	}
 
 	/**
-	 * Return the total number of leaves.
+	 * 返回叶子的总数量。
 	 */
 	int n_leaves() const {
 		return leaves_.size();
 	}
 
 	/**
-	 * return the LOD of stems.
+	 * 返回枝干的LOD（细节层次）。
 	 */
 	int stems_lod() const {
 		return stems_lod_;
@@ -384,7 +384,7 @@ public:
 
 private:
 	/**
-	 * Add stem recursively.
+	 * 递归添加枝干。
 	 */
 	void AddStems(const ProceduralTreeStem &stem) {
 		if (stem.depth >= stems_lod_) {
@@ -401,7 +401,7 @@ private:
 	}
 
 	/**
-	 * Create tree.
+	 * 创建树。
 	 */
 	void CreateTree() {
 		leaves_generated_ = false;
@@ -414,12 +414,12 @@ private:
 
 		std::uniform_real_distribution<float> uniform(0.0f, float(Math::PI) * 2.0f);
 
-		// Calculate Poissonly distributed points for stem start points.
+		// 计算枝干起始点的泊松分布点。
 		LocalVector<Vector3> roots;
 		if (parameter_->branches[0] == 1) {
 			roots.push_back(Vector3(0.0f, 0.0f, 0.0f));
 		} else {
-			// Calculate approximation spacing radius for dummy stem.
+			// 计算虚拟枝干的近似间距半径。
 			tree_scale_ = parameter_->scale + parameter_->scale_v;
 
 			ProceduralTreeStem temp_stem;
@@ -427,24 +427,22 @@ private:
 			float radius = 2.5f * temp_stem.length * parameter_->ratio *
 					parameter_->radius_modify[0];
 
-			// Generate root points.
+			// 生成根点。
 			for (int i = 0; i < parameter_->branches[0]; ++i) {
 				bool point_ok = false;
 				while (!point_ok) {
-					// Distance from center proportional for number of splits,
-					// tree scale and stem radius.
+					// 与中心的距离与分割数量、树的比例和枝干半径成比例。
 					float dis = std::sqrt(GetRandomNumber2() *
 							parameter_->branches[0] / 2.5f *
 							parameter_->scale *
 							parameter_->ratio);
 
-					// Angle random in circle.
+					// 圆内的随机角度。
 					float theta = uniform(random_engine_);
 					Vector3 pos(dis * std::cos(theta), dis * std::sin(theta),
 							0.0f);
 
-					// Test point against those already in array to ensure it
-					// will not intersect.
+					// 测试该点与已在数组中的点，确保它们不会相交。
 					bool flag = true;
 					for (const Vector3 &p : roots) {
 						if (p.distance_to(pos) < radius) {
@@ -490,7 +488,7 @@ private:
 	}
 
 	/**
-	 * Generate leaves and blossoms.
+	 * 生成叶子和花朵。
 	 */
 	void GenerateLeaves() {
 		if (leaves_generated_) {
@@ -534,7 +532,7 @@ private:
 	}
 
 	/**
-	 * Set up instanced leaf node.
+	 * 设置实例化叶子节点。
 	 */
 	void SetupLeafNode() {
 		LeafGenerator leaf_generator;
@@ -542,45 +540,45 @@ private:
 		ProceduralTreeRenderData blossom_render_data;
 		switch (parameter_->leaf_shape) {
 			case 1:
-				leaf_generator.OctaveLeaf(&leaf_render_data);
+				leaf_generator.OctaveLeaf(&leaf_render_data); // 八度叶
 				break;
 			case 2:
-				leaf_generator.LinearLeaf(&leaf_render_data);
+				leaf_generator.LinearLeaf(&leaf_render_data); // 线性叶
 				break;
 			case 3:
-				leaf_generator.CordateLeaf(&leaf_render_data);
+				leaf_generator.CordateLeaf(&leaf_render_data); // 心形叶
 				break;
 			case 4:
-				leaf_generator.MapleLeaf(&leaf_render_data);
+				leaf_generator.MapleLeaf(&leaf_render_data); // 枫叶
 				break;
 			case 5:
-				leaf_generator.PalmateLeaf(&leaf_render_data);
+				leaf_generator.PalmateLeaf(&leaf_render_data); // 掌状叶
 				break;
 			case 6:
-				leaf_generator.SpikyOakLeaf(&leaf_render_data);
+				leaf_generator.SpikyOakLeaf(&leaf_render_data); // 尖橡叶
 				break;
 			case 7:
-				leaf_generator.RoundOakLeaf(&leaf_render_data);
+				leaf_generator.RoundOakLeaf(&leaf_render_data); // 圆橡叶
 				break;
 			case 8:
-				leaf_generator.EllipticLeaf(&leaf_render_data);
+				leaf_generator.EllipticLeaf(&leaf_render_data); // 椭圆形叶
 				break;
 			case 9:
-				leaf_generator.RectLeaf(&leaf_render_data);
+				leaf_generator.RectLeaf(&leaf_render_data); // 矩形叶
 				break;
 			case 10:
-				leaf_generator.TriangleLeaf(&leaf_render_data);
+				leaf_generator.TriangleLeaf(&leaf_render_data); // 三角形叶
 				break;
 		}
 		switch (parameter_->blossom_shape) {
 			case 1:
-				leaf_generator.CherryLeaf(&blossom_render_data);
+				leaf_generator.CherryLeaf(&blossom_render_data); // 樱花叶
 				break;
 			case 2:
-				leaf_generator.OrangeLeaf(&blossom_render_data);
+				leaf_generator.OrangeLeaf(&blossom_render_data); // 橙花叶
 				break;
 			case 3:
-				leaf_generator.MagnoliaLeaf(&blossom_render_data);
+				leaf_generator.MagnoliaLeaf(&blossom_render_data); // 木兰叶
 				break;
 		}
 
@@ -599,7 +597,7 @@ private:
 	}
 
 	/**
-	 * Create a new branch for the current stem segment.
+	 * 为当前枝干段创建新的分支。
 	 */
 	void CreateBranch(BranchMode branch_mode,
 			const Vector3 &start_point,
@@ -648,7 +646,7 @@ private:
 				break;
 		}
 
-		// Calculate down angle.
+		// 计算下偏角度。
 		float d_angle = GetDownAngle(*stem, stem_offset);
 		p_euler.x = (d_angle);
 		transform.basis = Basis::from_euler(p_euler);
@@ -690,8 +688,7 @@ private:
 	}
 
 	/**
-	 * Generate stem of the given parameters, as well as all children (branches,
-	 * splits and leaves) via recursion.
+	 * 根据给定的参数生成枝干，以及所有子元素（分支、分叉和叶子），通过递归实现。
 	 */
 	void MakeStem(int start,
 			float clone_probability,
@@ -701,13 +698,12 @@ private:
 			return;
 		}
 
-		// If the stem is so thin as to be invisible then don't bother to make
-		// it.
+		// 如果枝干细到看不见，就不必生成它了。
 		if (stem->radius_limit < 0.0001f) {
 			return;
 		}
 
-		// Parameters.
+		// 参数。
 		int depth = stem->depth;
 		int curve_res = parameter_->curve_resolution[depth];
 		float taper = parameter_->taper[depth];
@@ -721,7 +717,7 @@ private:
 		LocalVector<Vector3> vertices;
 		LocalVector<float> radius;
 
-		// Start point.
+		// 起始点。
 		Vector3 start_point = stem->root;
 
 		vertices.emplace_back(start_point);
@@ -731,49 +727,48 @@ private:
 		float leaf_count = 0.0f;
 		if (depth == parameter_->levels - 1 && depth > 0 &&
 				parameter_->n_leaves != 0) {
-			// Calculate base leave count.
+			// 计算基础叶子数量。
 			leaf_count = CalculateLeafCount(*stem);
-			// Correct leaf count for start position along stem.
+			// 根据沿枝干的起始位置校正叶子数量。
 			leaf_count *= 1.0f - float(start) / curve_res;
 		} else {
-			// Calculate base branch count.
+			// 计算基础分支数量。
 			branch_count = CalculateBranchCount(*stem);
-			// correct branch count for start position along stem.
+			// 根据沿枝干的起始位置校正分支数量。
 			branch_count *= 1.0f - float(start) / curve_res;
-			// Correct for reduced number on clone branches.
+			// 根据克隆分支的数量减少进行校正。
 			branch_count *= n_branches_factor;
 		}
 
-		// Divide by curve_res to get no per segment.
+		// 除以曲线分辨率得到每段的数量。
 		float f_leaves_on_segment = leaf_count / curve_res;
-		// Divide by curve_res to get no per segment.
+		// 除以曲线分辨率得到每段的数量。
 		float f_branches_on_segment = branch_count / curve_res;
 
-		// Decide on start rotation for branches/leaves.
+		// 确定分支/叶子的起始旋转角度。
 		stem->prev_rotation_angle = 0.0f;
 		std::uniform_real_distribution<float> uniform(0.0f, 360.0f);
 		if (parameter_->rotation[NextDepth(depth)] >= 0.0f) {
-			// Start at random rotation.
+			// 从随机旋转角度开始。
 			stem->prev_rotation_angle = uniform(random_engine_);
 		} else {
-			// On this case prev_rotation_angle used as multiplier to alternate
-			// side of branch.
+			// 在这种情况下，prev_rotation_angle用作乘数来交替分支的侧面。
 			stem->prev_rotation_angle = 1.0f;
 		}
 
-		// Point resolution for this segment.
+		// 此段的点分辨率。
 		int points_per_segment = 2;
 		if (depth == 0 || taper > 1.0f) {
 			points_per_segment = std::max(2, 100 / curve_res);
 		}
 
-		// Set up Floyd-Steinberg error values.
+		// 设置Floyd-Steinberg误差值。
 		float branch_num_error = 0.0f;
 		float leaf_num_error = 0.0f;
 
 		for (int i = start; i < curve_res; ++i) {
 			bool is_base_split = false;
-			// Compute the number of splits at this segment.
+			// 计算此段的分叉数量。
 			int n_splits = 0;
 			if (i != start) {
 				if (base_splits > 0 && depth == 0 && i == base_segment_index) {
@@ -781,15 +776,13 @@ private:
 					is_base_split = true;
 				} else if (seg_splits > 0.0f && i + 1 < curve_res &&
 						(depth > 0 || i > base_segment_index)) {
-					// Otherwise get number of splits from seg_splits and use
-					// Floyd-Steinberg to fix non-integer values only clone
-					// with probability clone_prob.
+					// 否则从seg_splits获取分叉数量，并使用Floyd-Steinberg来修正非整数值，仅以clone_prob的概率克隆。
 					if (GetRandomNumber2() <= clone_probability) {
 						n_splits = static_cast<int>(seg_splits +
 								split_num_error_[depth]);
 						split_num_error_[depth] -= n_splits - seg_splits;
 
-						// Reduce clone/branch propensity.
+						// 降低克隆/分支倾向。
 						clone_probability /= n_splits + 1.0f;
 						n_branches_factor /= n_splits + 1.0f;
 						n_branches_factor = std::max(0.8f, n_branches_factor);
@@ -800,7 +793,7 @@ private:
 				}
 			}
 
-			// Perform spliting if needed.
+			// 必要时进行分叉。
 			float split_corr_angle = 0.0f;
 			if (n_splits > 0) {
 				float declination = Math::rad_to_deg(stem->orientation.angle_to(
@@ -809,7 +802,7 @@ private:
 				float spr_angle = GetSpreadAngle(declination);
 				split_corr_angle = spl_angle / (curve_res - i);
 
-				// Make clones.
+				// 制作克隆。
 				for (int j = 0; j < n_splits; ++j) {
 					float eff_spr_angle = 0.0f;
 					if (is_base_split) {
@@ -836,7 +829,7 @@ private:
 				}
 
 				stem->Pitch(spl_angle * 0.5f);
-				// Apply spread if splitting to 2 and not base split.
+				// 如果分叉为2且不是基础分叉，则应用展开。
 				if (!is_base_split && n_splits == 1) {
 					stem->GlobalRoll(-spr_angle * 0.5f);
 				}
@@ -846,8 +839,7 @@ private:
 			stem->Roll(GetBendv(depth));
 			stem->Pitch(radian - split_corr_angle);
 
-			// Apply full tropism if not trunk/main branch and horizontal
-			// tropism if is.
+			// 如果不是树干/主分支则应用完全向性，如果是则应用水平向性。
 			if (i > start) {
 				ApplyTropism(stem);
 			}
@@ -861,21 +853,20 @@ private:
 				vertices.emplace_back(start_point + v * offset * seg_length);
 			}
 
-			// Add branches/leaves for this segment.
-			// If below max level of recursion then draw branches, otherwise
-			// draw leaves.
+			// 为此段添加分支/叶子。
+			// 如果低于递归的最大级别，则绘制分支，否则绘制叶子。
 			int branches_on_segment = 0;
 			int leaves_on_segment = 0;
 			if (branch_count != 0.0f && depth < parameter_->levels - 1) {
 				if (branch_count < 0.0f) {
-					// Fan branches.
+					// 扇形分支。
 					if (i + 1 == curve_res) {
 						branches_on_segment = static_cast<int>(branch_count);
 					} else {
 						branches_on_segment = 0;
 					}
 				} else {
-					// Get Floyd-Steinberg corrected branch number.
+					// 获取Floyd-Steinberg校正的分支数量。
 					branches_on_segment =
 							static_cast<int>(f_branches_on_segment +
 									branch_num_error);
@@ -883,27 +874,27 @@ private:
 							f_branches_on_segment;
 				}
 
-				// Add branches.
+				// 添加分支。
 				if (branches_on_segment != 0) {
 					MakeBranches(i, start_point, start_point + v * seg_length,
 							branches_on_segment, false, stem);
 				}
 			} else if (leaf_count != 0.0f && depth > 0) {
 				if (leaf_count < 0.0f) {
-					// Fan leaves.
+					// 扇形叶子。
 					if (i + 1 == curve_res) {
 						leaves_on_segment = static_cast<int>(leaf_count);
 					} else {
 						leaves_on_segment = 0;
 					}
 				} else {
-					// Get Floyd-Steinberg corrected branch number.
+					// 获取Floyd-Steinberg校正的分支数量。
 					leaves_on_segment = static_cast<int>(f_leaves_on_segment +
 							leaf_num_error);
 					leaf_num_error -= leaves_on_segment - f_leaves_on_segment;
 				}
 
-				// Add leaves.
+				// 添加叶子。
 				if (leaves_on_segment != 0) {
 					MakeBranches(i, start_point, start_point + v * seg_length,
 							leaves_on_segment, true, stem);
@@ -926,7 +917,7 @@ private:
 	}
 
 	/**
-	 * Make the required branches for the i-th segment of the stem.
+	 * 为枝干的第i段生成所需的分支。
 	 */
 	void MakeBranches(int segment_index,
 			const Vector3 &start_point,
@@ -939,7 +930,7 @@ private:
 		float offset = 1.0f;
 		float stem_offset = 1.0f;
 		if (branches_on_segment < 0) {
-			// Fan branches.
+			// 扇形分支。
 			for (int i = 0; i < std::abs(branches_on_segment); ++i) {
 				CreateBranch(FAN, start_point, end_point, offset, stem_offset,
 						i, std::abs(branches_on_segment), is_leaf, stem);
@@ -953,32 +944,29 @@ private:
 		int curve_res = parameter_->curve_resolution[stem->depth];
 
 		if (branch_dist > 1.0f) {
-			// Whorled branches.
-			// Calculate number of whorls, will result in a rounded number of
-			// branches rather than the exact amount specified by
-			// branches_on_segment.
+			// 轮生分支。
+			// 计算轮生数量，将导致分支数量为整数，而不是branches_on_segment指定的确切数量。
 			int num_of_whorls = static_cast<int>(branches_on_segment /
 					(branch_dist + 1.0f));
 			float branches_per_whorl = branch_dist + 1.0f;
 			float branch_whorl_error = 0.0f;
 
 			for (int i = 0; i < num_of_whorls; ++i) {
-				// Calculate whorl offset in segment and on stem.
+				// 计算段内和枝干上的轮生偏移量。
 				offset = CLAMP(float(i) / num_of_whorls, 0.0f, 1.0f);
 				stem_offset = ((segment_index + offset) / curve_res) *
 						stem->length;
 
-				// If not in base area then make the branches.
+				// 如果不在基础区域，则生成分支。
 				if (stem_offset > base_length) {
-					// Calculate Floyd-Steinberg corrected num of branches this
-					// whorl.
+					// 计算此轮生的Floyd-Steinberg校正的分支数量。
 					int branches_this_whorl =
 							static_cast<int>(branches_per_whorl +
 									branch_whorl_error);
 					branch_whorl_error -= branches_this_whorl -
 							branches_per_whorl;
 
-					// Set up these branches.
+					// 设置这些分支。
 					for (int j = 0; j < branches_this_whorl; ++j) {
 						CreateBranch(WHORLED, start_point, end_point, offset,
 								stem_offset, j, branches_this_whorl,
@@ -986,14 +974,14 @@ private:
 					}
 				}
 
-				// Rotate start angle for next whorl.
+				// 为下一轮生旋转起始角度。
 				stem->prev_rotation_angle += parameter_->rotation[depth_1];
 			}
 		} else {
-			// Alternate or opposite branches.
-			// Ensure even number of branches on segment if near opposite.
+			// 互生或对生分支。
+			// 如果接近对生，则确保段上的分支数量为偶数。
 			for (int i = 0; i < branches_on_segment; ++i) {
-				//  Calculate offset in segment and on stem.
+				// 计算段内和枝干上的偏移量。
 				if (i % 2 == 0) {
 					offset = CLAMP(float(i) / branches_on_segment, 0.0f, 1.0f);
 				} else {
@@ -1004,7 +992,7 @@ private:
 				stem_offset = ((segment_index + offset) / curve_res) *
 						stem->length;
 
-				// If not in base area then set up the branch.
+				// 如果不在基础区域，则设置分支。
 				if (stem_offset > base_length) {
 					CreateBranch(ALTERNATE_OR_OPPOSITE, start_point,
 							end_point, offset, stem_offset, i, 1, is_leaf,
@@ -1015,9 +1003,9 @@ private:
 	}
 
 	/**
-	 * Calculate radius of stem at offset z_1 along it.
+	 * 计算枝干上沿偏移量z_1处的半径。
 	 *
-	 * See reference [1] for more details.
+	 * 更多细节参见参考文献[1]。
 	 */
 	float CalculateRadius(const ProceduralTreeStem &stem, float z_norm) const {
 		float n_taper = parameter_->taper[stem.depth];
@@ -1029,7 +1017,7 @@ private:
 			unit_taper = 2.0f - n_taper;
 		}
 
-		// Purely tapered radius.
+		// 纯锥形半径。
 		float taper = stem.radius * (1.0f - unit_taper * z_norm);
 
 		float radius;
@@ -1038,7 +1026,7 @@ private:
 		} else {
 			float z2 = (1.0f - z_norm) * stem.length;
 
-			// 'depth' is a scaling factor used for the periodic tapering.
+			// 'depth'是用于周期性锥形的缩放因子。
 			float depth;
 			if (n_taper < 2.0f || z2 < taper) {
 				depth = 1.0f;
@@ -1071,7 +1059,7 @@ private:
 	}
 
 	/**
-	 * Calculate the length of the given stem.
+	 * 计算给定枝干的长度。
 	 */
 	float StemLength(const ProceduralTreeStem &stem) const {
 		static float base_length = 0.0f;
@@ -1095,26 +1083,26 @@ private:
 	}
 
 	/**
-	 * Compute shape ratio as defined in reference [1].
+	 * 按照参考文献[1]中的定义计算形状比例。
 	 */
 	float ShapeRatio(int shape, float ratio) const {
 		switch (shape) {
-			case 1: // spherical
+			case 1: // 球形
 				return 0.2f + 0.8f * std::sin(float(Math::PI) * ratio);
-			case 2: // hemispherical
+			case 2: // 半球形
 				return 0.2f + 0.8f * std::sin(float(Math::PI * 2.0) * ratio);
-			case 3: // cylindrical
+			case 3: // 圆柱形
 				return 1.0f;
-			case 4: // tapered cylindrical
+			case 4: // 锥形圆柱
 				return 0.5f + 0.5f * ratio;
-			case 5: // flame
+			case 5: // 火焰形
 				return ratio <= 0.7f ? ratio / 0.7f : (1.0f - ratio) / 0.3f;
-			case 6: // inverse conical
+			case 6: // 倒锥形
 				return 1.0f - 0.8f * ratio;
-			case 7: // tend flame
+			case 7: // 细长火焰形
 				return ratio <= 0.7f ? 0.5f + 0.5f * ratio / 0.7f
 									 : 0.5f + 0.5f * (1.0f - ratio) / 0.3f;
-			case 8: // envelope
+			case 8: // 信封形
 				if (ratio < 0.0f || ratio > 1.0f) {
 					return 0.0f;
 				} else if (ratio < 1.0f - parameter_->prune_width_peak) {
@@ -1125,13 +1113,13 @@ private:
 									(1.0f - parameter_->prune_width_peak),
 							parameter_->prune_power_low);
 				}
-			default: // conical (0)
+			default: // 锥形 (0)
 				return 0.2f + 0.8f * ratio;
 		}
 	}
 
 	/**
-	 * Apply tropism to stem.
+	 * 对枝干应用向性。
 	 */
 	void ApplyTropism(ProceduralTreeStem *stem) {
 		Vector3 v = Vector3(parameter_->tropism[0], parameter_->tropism[1],
@@ -1151,7 +1139,7 @@ private:
 	}
 
 	/**
-	 * Calculate curve angle for index-th segment on a stem.
+	 * 计算枝干上第index段的弯曲角度。
 	 */
 	float CalculateCurveAngle(int depth, int index) const {
 		float curve = parameter_->curve[depth];
@@ -1172,7 +1160,7 @@ private:
 	}
 
 	/**
-	 * Calculate branch count of this stem.
+	 * 计算此枝干的分支数量。
 	 */
 	float CalculateBranchCount(const ProceduralTreeStem &stem) const {
 		int depth_1 = std::min(stem.depth + 1, 3);
@@ -1195,11 +1183,11 @@ private:
 	}
 
 	/**
-	 * Calculate leaf count of this stem.
+	 * 计算此枝干的叶子数量。
 	 */
 	float CalculateLeafCount(const ProceduralTreeStem &stem) const {
 		if (parameter_->n_leaves >= 0) {
-			// Scale number of leaves to match global scale and taper.
+			// 缩放叶子数量以匹配全局比例和锥形。
 			float n = parameter_->n_leaves * tree_scale_ / parameter_->scale;
 			return n * (stem.length / (stem.max_length * stem.length));
 		}
@@ -1208,7 +1196,7 @@ private:
 	}
 
 	/**
-	 * Get rotate angle, limit to 0-360.
+	 * 获取旋转角度，限制在0-360度之间。
 	 */
 	float GetRotateAngle(int n, float prev_angle) const {
 		float r_angle;
@@ -1225,7 +1213,7 @@ private:
 	}
 
 	/**
-	 * Get down angle for branches or leaves.
+	 * 获取分支或叶子的下偏角度。
 	 */
 	float GetDownAngle(const ProceduralTreeStem &stem, float stem_offset) const {
 		int depth_1 = NextDepth(stem.depth);
@@ -1240,19 +1228,19 @@ private:
 					parameter_->down_angle_v[depth_1] * (1.0f - 2.0f * ratio);
 		}
 
-		// Introduce some variance to improve visual result.
+		// 引入一些变化以改善视觉效果。
 		return GetRandom(d_angle, std::abs(d_angle * 0.1f));
 	}
 
 	/**
-	 * Get the maximum length of the n-th level branch.
+	 * 获取第n级分支的最大长度。
 	 */
 	float GetMaxLength(int n) const {
 		return GetRandom(parameter_->length[n], parameter_->length_v[n]);
 	}
 
 	/**
-	 * Get the split angle.
+	 * 获取分叉角度。
 	 */
 	float GetSplitAngle(int n, float declination) const {
 		//CHECK(n >= 0 && n < parameter_->levels);
@@ -1263,14 +1251,14 @@ private:
 	}
 
 	/**
-	 * Get spread angle of the stem after splitting.
+	 * 获取分叉后枝干的展开角度。
 	 */
 	float GetSpreadAngle(float declination) const {
 		return -(20.0f + 0.75f * (30.0f + std::abs(declination - 90.0f)) * std::pow(GetRandomNumber2(), 2.0f));
 	}
 
 	/**
-	 * Get spread angle of the i-th clones.
+	 * 获取第i个克隆的展开角度。
 	 */
 	float GetEffectSpreadAngle(int depth, int i, int n_splits) const {
 		//CHECK(i >= 0 && i < n_splits);
@@ -1280,9 +1268,7 @@ private:
 	}
 
 	/**
-	 * Get the maximum angle by which the direction of the stem may change from
-	 * start to end, rotating about the stem's local y-axis. Applied randomly at
-	 * each segment.
+	 * 获取枝干方向从起点到终点可能改变的最大角度，绕枝干的局部y轴旋转。随机应用于每个段。
 	 */
 	float GetBendv(int n) const {
 		//CHECK(n >= 0 && n < parameter_->levels);
@@ -1292,84 +1278,84 @@ private:
 	}
 
 	/**
-	 * Get random number from -1 to 1.
+	 * 获取-1到1之间的随机数。
 	 */
 	float GetRandomNumber1() const {
 		return uniform_random1_(random_engine_);
 	}
 
 	/**
-	 * Get random number from 0 to 1.
+	 * 获取0到1之间的随机数。
 	 */
 	float GetRandomNumber2() const {
 		return uniform_random2_(random_engine_);
 	}
 
 	/**
-	 * Get random number: a + b * uniform(-1, 1).
+	 * 获取随机数：a + b * uniform(-1, 1)。
 	 */
 	float GetRandom(float a, float b) const {
 		return a + b * GetRandomNumber1();
 	}
 
 	/**
-	 * Get next depth.
+	 * 获取下一个深度。
 	 *
-	 * Use level 3 parameters for any depth greater than this.
+	 * 对于任何大于此的深度，使用级别3的参数。
 	 */
 	int NextDepth(int depth) const {
 		return std::min(3, depth + 1);
 	}
 
 public: // 临时变量
-	// Leaves generated.
+	// 叶子是否已生成。
 	bool leaves_generated_ = false;
 
-	// Tree leaves and blossoms.
+	// 树的叶子和花朵。
 	LocalVector<LeafBlossom> leaves_;
 
-	// Render object for stems.
+	// 枝干的渲染对象。
 	//RenderObject stem_object_;
 
-	// ProceduralTreeParameter for generating tree.
+	// 用于生成树的参数。
 	Ref<ProceduralTreeParameter> parameter_;
 
-	// Total branches.
+	// 总分支数。
 	int n_branches_ = 0;
 
-	// Total branch segments.
+	// 总分支段数。
 	int n_branch_segments_ = 0;
 
-	// Floyd-Steinberg method to fix non-integer values.
+	// Floyd-Steinberg方法修正非整数值。
 	LocalVector<float> split_num_error_;
 
-	// Material for leaves.
+	// 叶子材质。
 	//Material leaf_material_;
 
-	// Color of leaves.
+	// 叶子颜色。
 	Color leaf_color_ = Color(90.0f / 255.0f, 170.0f / 255.0f, 20.0f / 255.0f);
 
-	// Generate numbers from -1 to 1.
+	// 生成-1到1之间的数字。
 	mutable std::uniform_real_distribution<float> uniform_random1_;
 
-	// Generate numbers from 0 to 1.
+	// 生成0到1之间的数字。
 	mutable std::uniform_real_distribution<float> uniform_random2_;
 
-	// Random engine.
+	// 随机引擎。
 	mutable std::mt19937 random_engine_;
 
 public:
 	int seed = 234;
 
-	// Stems LOD for rendering.
+	// 用于渲染的枝干LOD。
 	int stems_lod_ = 4;
-	// Current scale of the tree.
+	// 树的当前比例。
 	float tree_scale_;
 
 public:
-	// Tree model.
+	// 树模型。
 	LocalVector<ProceduralTreeStem> tree_;
-	// Instance leaves node.
+	// 实例化叶子节点。
 	InstanceNode leaves_node_;
 	InstanceNode blossom_node_;
 };
