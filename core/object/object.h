@@ -176,13 +176,17 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD(#bt_name "_call"), &class_name::bt_name);                                    \
 	ADD_PROPERTY(PropertyInfo(Variant::INT, #bt_name, PROPERTY_HINT_BUTTON, "#F622AA;" lable_name ";" #bt_name "_call()", PROPERTY_USAGE_EDITOR), "_set_" #bt_name "_property", "_get_" #bt_name "_property");
 
-#define DECL_SIMPLE_MEMBER_PROPERTY(type, name) \
-	void set_##name(const type &v) {            \
-		name = v;                               \
-	}                                           \
-	const type &get_##name() const {            \
-		return name;                            \
-	}                                           \
+#define DECL_SIMPLE_MEMBER_PROPERTY(type, name)               \
+	void set_##name(const type &v) {                          \
+		name = v;                                             \
+		Resource *resource = Object::cast_to<Resource>(this); \
+		if (resource) {                                       \
+			resource->emit_changed();                         \
+		}                                                     \
+	}                                                         \
+	const type &get_##name() const {                          \
+		return name;                                          \
+	}                                                         \
 	type name
 #define ADD_SIMPLE_MEMBER_PROPERTY(type, name)                                                          \
 	{                                                                                                   \

@@ -279,6 +279,10 @@ Ref<PackedScene> ResourceLoaderText::_parse_node_tag(VariantParser::ResourcePars
 				if (error) {
 					if (error == ERR_FILE_MISSING_DEPENDENCIES) {
 						// Resource loading error, just skip it.
+					}
+					else if (error == ERR_BUSY) {
+						WARN_PRINT(vformat("Parse Error: %s. [Resource file %s:%d]", error_names[error], res_path, lines));
+						return Ref<PackedScene>();
 					} else if (error != ERR_FILE_EOF) {
 						ERR_PRINT(vformat("Parse Error: %s. [Resource file %s:%d]", error_names[error], res_path, lines));
 						return Ref<PackedScene>();
