@@ -394,4 +394,4 @@ modules/orchestrator
 modules/game_help
 modules/新建 文本文档.cmd
 modules/godot_orchestrator/.github/*
-build
+build/*
