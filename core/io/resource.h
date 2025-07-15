@@ -109,7 +109,7 @@ protected:
 	void _unblock_emit_changed();
 
 	void _set_path(const String &p_path);
-	void _take_over_path(const String& p_path);
+	void _take_over_path(const String &p_path);
 
 	virtual void reset_local_to_scene();
 	GDVIRTUAL0(_setup_local_to_scene);
@@ -149,7 +149,7 @@ public:
 	void set_scene_unique_id(const String &p_id);
 	String get_scene_unique_id() const;
 
-	Ref<RefCounted> duplicate(bool p_deep = false) const;
+	virtual Ref<RefCounted> duplicate(bool p_deep = false) const override;
 	Ref<Resource> duplicate_deep(ResourceDeepDuplicateMode p_deep_subresources_mode = RESOURCE_DEEP_DUPLICATE_INTERNAL) const;
 	Ref<Resource> _duplicate_from_variant(bool p_deep, ResourceDeepDuplicateMode p_deep_subresources_mode, int p_recursion_count) const;
 	static void _teardown_duplicate_from_variant();
