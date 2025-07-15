@@ -825,10 +825,10 @@ void RenIK::_notification(int p_what) {
 	// 				Vector3(2.0, 1.5, 1.0));
 	// 		limb_leg_left.instantiate();
 	// 		limb_leg_left->init(0, Math::deg_to_rad(-180.0), 0, 0.25, 0.25, 0, Math::deg_to_rad(45.0), 0.5,
-	// 				Vector3(0, 0, Math_PI), Vector3());
+	// 				Vector3(0, 0, Math::PI), Vector3());
 	// 		limb_leg_right.instantiate();
 	// 		limb_leg_right->init(0, Math::deg_to_rad(-180.0), 0, 0.25, 0.25, 0, Math::deg_to_rad(45.0), 0.5,
-	// 				Vector3(0, 0, -Math_PI), Vector3());
+	// 				Vector3(0, 0, -Math::PI), Vector3());
 	// 		set_leg_pole_offset(Vector3(0, 0, 180));
 	// 		set_arm_pole_offset(Vector3(15, 0, 60));
 	// 	} break;
@@ -1277,7 +1277,7 @@ HashMap<BoneId, Quaternion> RenIK::solve_trig_ik(Ref<RenIKLimb> limb,
 		float lowerAngle =
 				RenIKHelper::safe_acos((upperLength2 + lowerLength2 - targetDistance2) /
 						(2 * upperLength * lowerLength)) -
-			Math::PI;
+				Math::PI;
 		Vector3 bendAxis = RenIKHelper::get_perpendicular_vector(
 				upperVector); // TODO figure out how to set this automatically to the
 							  // right axis
@@ -1362,7 +1362,7 @@ std::pair<float, float> RenIK::trig_angles(Vector3 const &side1,
 	float angle1 = RenIKHelper::safe_acos(
 			(length1Squared + length3Squared - length2Squared) / (length1 * length3));
 	float angle2 =
-		Math::PI - RenIKHelper::safe_acos((length1Squared + length2Squared - length3Squared) / (length1 * length2));
+			Math::PI - RenIKHelper::safe_acos((length1Squared + length2Squared - length3Squared) / (length1 * length2));
 	return std::make_pair(angle1, angle2);
 }
 

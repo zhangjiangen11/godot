@@ -5,7 +5,7 @@
 #define Mathf_SQRT12 ((float)Math_SQRT12)
 #define Mathf_SQRT2 ((float)Math_SQRT2)
 #define Mathf_LN2 ((float)Math_LN2)
-#define Mathf_PI ((float)Math_PI)
+#define Mathf_PI ((float)Math::PI)
 #define Mathf_TAU ((float)Math_TAU)
 #define Mathf_E ((float)Math_E)
 #define Mathf_INF ((float)Math_INF)
@@ -34,7 +34,7 @@
 
 #endif // TOOLS_ENABLED
 
-//namespace godot::Math {
+// namespace godot::Math {
 
 _FORCE_INLINE_ void decompose(Basis& p_basis, Vector3& p_scale) {
 	Vector3 x = p_basis.get_column(Vector3::AXIS_X);
@@ -68,10 +68,14 @@ _FORCE_INLINE_ Basis decomposed(Basis p_basis, Vector3& p_scale) {
 	return p_basis;
 }
 
-_FORCE_INLINE_ void decomposed(const Transform3D& p_transform, Vector3& p_scale,Transform3D& p_new_transform) {
+_FORCE_INLINE_ void decomposed(
+	const Transform3D& p_transform,
+	Vector3& p_scale,
+	Transform3D& p_new_transform
+) {
 	p_new_transform = p_transform;
 	decompose(p_new_transform, p_scale);
-	//return p_transform;
+	// return p_transform;
 }
 
 _FORCE_INLINE_ float square(float p_value) {
