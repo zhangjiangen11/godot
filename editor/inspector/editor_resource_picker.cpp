@@ -470,14 +470,18 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 
 		case OBJ_MENU_PASTE: {
 			edited_resource = EditorSettings::get_singleton()->get_resource_clipboard();
+			Ref<Resource> resource = edited_resource;
+			if (resource.is_null()) {
+				return;
+			}
 			bool make_unique = true;
 
 			// Automatically make resource unique if it belongs to another scene or resource.
-			if (!EditorNode::get_singleton()->get_edited_scene() || !edited_resource->is_built_in() || edited_resource->get_path().get_slice("::", 0) == EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path()) {
+			if (!EditorNode::get_singleton()->get_edited_scene() || !resource->is_built_in() || resource->get_path().get_slice("::", 0) == EditorNode::get_singleton()->get_edited_scene()->get_scene_file_path()) {
 				make_unique = false;
 			} else if (resource_owner) {
 				Resource *res = Object::cast_to<Resource>(resource_owner);
-				if (res && edited_resource->get_path().get_slice("::", 0) == res->get_path().get_slice("::", 0)) {
+				if (res && resource->get_path().get_slice("::", 0) == res->get_path().get_slice("::", 0)) {
 					make_unique = false;
 				}
 			}
