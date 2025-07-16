@@ -1,8 +1,8 @@
 #pragma once
 #include "../tree/TreeNode.hpp"
 #include "../utilities/RandomGenerator.hpp"
-#include "core/object/ref_counted.h"
 #include "core/io/resource.h"
+#include "core/object/ref_counted.h"
 #include <vector>
 
 namespace Mtree {
