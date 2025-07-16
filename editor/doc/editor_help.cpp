@@ -3180,6 +3180,7 @@ void EditorHelp::regenerate_script_doc_cache() {
 	_wait_for_thread(worker_thread);
 	_wait_for_thread(loader_thread);
 	loader_thread.start(_regen_script_doc_thread, EditorFileSystem::get_singleton()->get_filesystem());
+	loader_thread.set_thread_name("_regen_script_doc_thread");
 }
 
 // Runs on worker_thread since it writes to DocData.

@@ -2,6 +2,7 @@
 #include "../utilities/GeometryUtilities.hpp"
 #include "../utilities/RandomGenerator.hpp"
 #include "core/object/ref_counted.h"
+#include <memory> // needed for shared_ptr
 #include <vector>
 
 namespace Mtree {
@@ -45,7 +46,7 @@ struct SimpleCurveProperty : Property {
 			x_min(x_min), x_max(x_max), y_min(y_min), y_max(y_max), power(power) {}
 
 	float execute(float x) override {
-		float factor = std::clamp((x - x_min) / std::max(0.001f, (x_max - x_min)), 0.f, 1.f);
+		float factor = CLAMP((x - x_min) / std::max(0.001f, (x_max - x_min)), 0.f, 1.f);
 		if (power > 0 && power != 1) {
 			factor = std::pow(factor, power);
 		}
