@@ -38,7 +38,12 @@
 #include "core/templates/vector.h"
 #include "scene/resources/material.h"
 
-struct CSGBrush {
+struct CSGBrush : public Object {
+	GDCLASS(CSGBrush, Object);
+	static void _bind_methods() {
+	}
+
+public:
 	struct Face {
 		Vector3 vertices[3];
 		Vector2 uvs[3];

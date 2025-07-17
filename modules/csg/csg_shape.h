@@ -202,11 +202,13 @@ VARIANT_ENUM_CAST(CSGShape3D::Operation)
 
 class CSGCombiner3D : public CSGShape3D {
 	GDCLASS(CSGCombiner3D, CSGShape3D);
+	static void _bind_methods();
 
 private:
 	virtual CSGBrush *_build_brush() override;
 
 public:
+	GDVIRTUAL0RC(CSGBrush *, build_brush)
 	CSGCombiner3D();
 };
 

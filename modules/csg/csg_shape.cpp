@@ -1069,8 +1069,16 @@ CSGShape3D::~CSGShape3D() {
 
 //////////////////////////////////
 
+void CSGCombiner3D::_bind_methods() {
+	GDVIRTUAL_BIND(build_brush);
+}
 CSGBrush *CSGCombiner3D::_build_brush() {
-	return memnew(CSGBrush); //does not build anything
+	CSGBrush *ret = nullptr;
+	GDVIRTUAL_CALL(build_brush, ret);
+	if (ret == nullptr) {
+		return memnew(CSGBrush); //does not build anythin
+	}
+	return ret;
 }
 
 CSGCombiner3D::CSGCombiner3D() {

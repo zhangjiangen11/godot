@@ -38,6 +38,7 @@
 
 void initialize_csg_module(ModuleInitializationLevel p_level) {
 	if (p_level == MODULE_INITIALIZATION_LEVEL_SCENE) {
+		GDREGISTER_CLASS(CSGBrush);
 		GDREGISTER_ABSTRACT_CLASS(CSGShape3D);
 		GDREGISTER_ABSTRACT_CLASS(CSGPrimitive3D);
 		GDREGISTER_CLASS(CSGMesh3D);
