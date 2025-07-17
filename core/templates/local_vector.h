@@ -266,7 +266,7 @@ public:
 			return *this;
 		}
 
-		_FORCE_INLINE_ Iterator &operator+(U p_offset) const {
+		_FORCE_INLINE_ Iterator operator+(U p_offset) const {
 			Iterator it = *this;
 			it.elem_ptr += p_offset;
 			return it;
