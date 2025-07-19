@@ -56,7 +56,7 @@ class Mesh : public Resource {
 	StringName resource_group;
 	// 动画标签: 大树,小树,花,石头,墙,桥,地板,主体建筑
 	StringName resource_tag;
-	Dictionary user_property;
+	Dictionary user_properties;
 
 	Vector<Vector3> _get_faces() const;
 

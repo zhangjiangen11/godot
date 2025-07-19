@@ -188,12 +188,30 @@ enum PropertyUsageFlags {
 		return name;                                          \
 	}                                                         \
 	type name
+#define DECL_RESOURCE_MEMBER_PROPERTY(type, name)             \
+	void set_##name(const Ref<type> &v) {                     \
+		name = v;                                             \
+		Resource *resource = Object::cast_to<Resource>(this); \
+		if (resource) {                                       \
+			resource->emit_changed();                         \
+		}                                                     \
+	}                                                         \
+	const Ref<type> &get_##name() const {                     \
+		return name;                                          \
+	}                                                         \
+	Ref<type> name
 #define ADD_SIMPLE_MEMBER_PROPERTY(type, name)                                                          \
 	{                                                                                                   \
 		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                    \
 		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                           \
 		type __temp_name = type();                                                                      \
 		ADD_PROPERTY(PropertyInfo(Variant(__temp_name).get_type(), #name), "set_" #name, "get_" #name); \
+	}
+#define ADD_SIMPLE_RESOURCE_PROPERTY(type, name)                                                                            \
+	{                                                                                                                       \
+		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                                        \
+		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                                               \
+		ADD_PROPERTY(PropertyInfo(Variant::OBJECT, #name, PROPERTY_HINT_RESOURCE_TYPE, #type), "set_" #name, "get_" #name); \
 	}
 
 #define ADD_SIMPLE_RANGE_MEMBER_PROPERTY(type, name, min, max)                                                                                        \

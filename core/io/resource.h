@@ -185,6 +185,12 @@ public:
 	void set_id_for_path(const String &p_path, const String &p_id);
 	String get_id_for_path(const String &p_path) const;
 
+	static bool has(const String &p_path);
+	static Ref<Resource> get_ref(const String &p_path);
+	static void set_ref(const String &p_path, Resource *r_res);
+	static Array get_cached_resources();
+	static int get_cached_resource_count();
+
 	Resource();
 	~Resource();
 };

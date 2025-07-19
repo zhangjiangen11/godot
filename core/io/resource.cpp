@@ -704,7 +704,27 @@ String Resource::get_id_for_path(const String &p_path) const {
 	return "";
 #endif
 }
-
+bool Resource::has(const String &p_path) {
+	return ResourceCache::has(p_path);
+}
+Ref<Resource> Resource::get_ref(const String &p_path) {
+	return ResourceCache::get_ref(p_path);
+}
+void Resource::set_ref(const String &p_path, Resource *r_res) {
+	ResourceCache::set_ref(p_path, r_res);
+}
+Array Resource::get_cached_resources() {
+	List<Ref<Resource>> resources;
+	ResourceCache::get_cached_resources(&resources);
+	Array ret;
+	for (const Ref<Resource> &E : resources) {
+		ret.push_back(E);
+	}
+	return ret;
+}
+int Resource::get_cached_resource_count() {
+	return ResourceCache::get_cached_resource_count();
+}
 void Resource::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_path", "path"), &Resource::_set_path);
 	ClassDB::bind_method(D_METHOD("take_over_path", "path"), &Resource::_take_over_path);
@@ -748,6 +768,11 @@ void Resource::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "resource_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "set_path", "get_path");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "resource_name"), "set_name", "get_name");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "resource_scene_unique_id", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_scene_unique_id", "get_scene_unique_id");
+
+	ClassDB::bind_static_method("Resource", D_METHOD("has", "p_path"), &Resource::has);
+	ClassDB::bind_static_method("Resource", D_METHOD("get_ref", "p_path"), &Resource::get_ref);
+	ClassDB::bind_static_method("Resource", D_METHOD("get_cached_resources"), &Resource::get_cached_resources);
+	ClassDB::bind_static_method("Resource", D_METHOD("get_cached_resource_count"), &ResourceCache::get_cached_resource_count);
 
 	GDVIRTUAL_BIND(_setup_local_to_scene);
 	GDVIRTUAL_BIND(_get_rid);
@@ -851,10 +876,10 @@ void ResourceCache::set_ref(const String &p_path, Resource *r_res) {
 }
 
 void ResourceCache::get_cached_resources(List<Ref<Resource>> *p_resources) {
-	MutexLock mutex_lock(lock);
-
 	LocalVector<String> to_remove;
+	to_remove.reserve(resources.size());
 
+	MutexLock mutex_lock(lock);
 	for (KeyValue<String, Resource *> &E : resources) {
 		Ref<Resource> ref = Ref<Resource>(E.value);
 
