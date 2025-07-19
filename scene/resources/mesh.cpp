@@ -812,6 +812,9 @@ Ref<Resource> Mesh::create_placeholder() const {
 }
 
 void Mesh::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_user_property", "property"), &Mesh::set_user_property);
+	ClassDB::bind_method(D_METHOD("get_user_property"), &Mesh::get_user_property);
+
 	ClassDB::bind_method(D_METHOD("set_resource_group", "group"), &Mesh::set_resource_group);
 	ClassDB::bind_method(D_METHOD("get_resource_group"), &Mesh::get_resource_group);
 
@@ -823,6 +826,7 @@ void Mesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_aabb"), &Mesh::get_aabb);
 	ClassDB::bind_method(D_METHOD("get_faces"), &Mesh::_get_faces);
 
+	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "user_properties"), "set_user_property", "get_user_property");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "group"), "set_resource_group", "get_resource_group");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "tag"), "set_resource_tag", "get_resource_tag");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2I, "lightmap_size_hint"), "set_lightmap_size_hint", "get_lightmap_size_hint");

@@ -56,6 +56,7 @@ class Mesh : public Resource {
 	StringName resource_group;
 	// 动画标签: 大树,小树,花,石头,墙,桥,地板,主体建筑
 	StringName resource_tag;
+	Dictionary user_property;
 
 	Vector<Vector3> _get_faces() const;
 
@@ -210,6 +211,14 @@ public:
 	virtual Transform3D get_builtin_bind_pose(int p_index) const;
 
 	virtual Ref<Resource> create_placeholder() const;
+
+	void set_user_property(const Dictionary &p_properties) {
+		user_properties = p_properties;
+	}
+
+	Dictionary get_user_property() const {
+		return user_properties;
+	}
 
 	void set_resource_group(const StringName &p_group) {
 		resource_group = p_group;
