@@ -436,8 +436,8 @@ void ShaderMaterial::set_shader(const Ref<Shader> &p_shader) {
 		RS::get_singleton()->material_set_shader(material_rid, rid);
 	}
 
-	notify_property_list_changed(); //properties for shader exposed
 	emit_changed();
+	notify_property_list_changed(); //properties for shader exposed
 }
 
 Ref<Shader> ShaderMaterial::get_shader() const {
@@ -476,6 +476,7 @@ void ShaderMaterial::set_shader_parameter(const StringName &p_param, const Varia
 			RS::get_singleton()->material_set_param(material_rid, p_param, p_value);
 		}
 	}
+	emit_changed();
 }
 
 Variant ShaderMaterial::get_shader_parameter(const StringName &p_param) const {
@@ -575,6 +576,148 @@ ShaderMaterial::ShaderMaterial() {
 }
 
 ShaderMaterial::~ShaderMaterial() {
+	if (shader.is_valid()) {
+		shader->disconnect_changed(callable_mp(this, &ShaderMaterial::_shader_changed));
+	}
+}
+/////////////////////////////////
+void ShaderMaterialInstance::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_shader"), &ShaderMaterialInstance::get_shader);
+
+	ClassDB::bind_method(D_METHOD("set_param", "param", "value"), &ShaderMaterialInstance::set_param);
+	ClassDB::bind_method(D_METHOD("get_param", "param"), &ShaderMaterialInstance::get_param);
+
+	ClassDB::bind_method(D_METHOD("set_base_material", "base_material"), &ShaderMaterialInstance::set_base_material);
+	ClassDB::bind_method(D_METHOD("get_base_material"), &ShaderMaterialInstance::get_base_material);
+	ClassDB::bind_method(D_METHOD("set_param_overrides", "param_overrides"), &ShaderMaterialInstance::set_param_overrides);
+	ClassDB::bind_method(D_METHOD("get_param_overrides"), &ShaderMaterialInstance::get_param_overrides);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "base_material", PROPERTY_HINT_RESOURCE_TYPE, "ShaderMaterial"), "set_base_material", "get_base_material");
+
+	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "param_overrides"), "set_param_overrides", "get_param_overrides");
+}
+RID ShaderMaterialInstance::get_rid() const {
+	_check_material_rid();
+	if (is_dirty) {
+		update_material();
+	}
+	return Material::get_rid();
+}
+RID ShaderMaterialInstance::get_shader_rid() const {
+	if (base.is_valid()) {
+		return base->get_shader_rid();
+	} else {
+		return RID();
+	}
+}
+
+void ShaderMaterialInstance::set_param_overrides(Dictionary p_param_overrides) {
+	param_overrides.clear();
+	for (auto &it : p_param_overrides) {
+		param_overrides[it.key] = it.value;
+	}
+	is_dirty = true;
+}
+Dictionary ShaderMaterialInstance::get_param_overrides() const {
+	Dictionary ret;
+	for (auto &it : param_overrides) {
+		ret[it.key] = it.value;
+	}
+	return ret;
+}
+void ShaderMaterialInstance::set_base_material(const Ref<ShaderMaterial> &p_base) {
+	if (base == p_base) {
+		return;
+	}
+	if (base.is_valid()) {
+		base->disconnect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
+	}
+	base = p_base;
+	base->connect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
+	if (_get_material().is_valid()) {
+		RID shader_rid = get_shader_rid();
+
+		RS::get_singleton()->material_set_shader(_get_material(), shader_rid);
+	}
+	is_dirty = true;
+}
+void ShaderMaterialInstance::set_param(const StringName &p_name, const Variant &p_value) {
+	if (p_value.get_type() == Variant::NIL) {
+		param_overrides.erase(p_name);
+	} else {
+		if (param_overrides.has(p_name) && param_overrides[p_name] == p_value) {
+			return;
+		}
+		param_overrides[p_name] = p_value;
+	}
+	is_dirty = true;
+}
+Variant ShaderMaterialInstance::get_param(const StringName &p_name) const {
+	if (param_overrides.has(p_name)) {
+		return param_overrides[p_name];
+	}
+	return base->get_shader_parameter(p_name);
+}
+void ShaderMaterialInstance::_check_material_rid() const {
+	if (base.is_null()) {
+		return;
+	}
+	MutexLock lock(material_rid_mutex);
+	if (_get_material().is_null()) {
+		RID shader_rid = base->get_shader().is_valid() ? base->get_shader()->get_rid() : RID();
+		RID next_pass_rid;
+		if (base->get_next_pass().is_valid()) {
+			next_pass_rid = base->get_next_pass()->get_rid();
+		}
+
+		_set_material(RS::get_singleton()->material_create_from_shader(next_pass_rid, get_render_priority(), shader_rid));
+
+		is_dirty = true;
+	}
+}
+void ShaderMaterialInstance::update_material() const {
+	if (_get_material().is_null()) {
+		return;
+	}
+
+	RID shader_rid = get_shader_rid();
+	RID material_rid = _get_material();
+	RS::get_singleton()->material_set_shader(material_rid, shader_rid);
+	if (shader_rid.is_null()) {
+		is_dirty = false;
+		return;
+	}
+	for (KeyValue<StringName, Variant> param : base->param_cache) {
+		if (param.value.get_type() == Variant::OBJECT) {
+			RID tex_rid = param.value;
+			if (tex_rid.is_valid()) {
+				RS::get_singleton()->material_set_param(material_rid, param.key, tex_rid);
+			} else {
+				RS::get_singleton()->material_set_param(material_rid, param.key, Variant());
+			}
+		} else {
+			RS::get_singleton()->material_set_param(material_rid, param.key, param.value);
+		}
+	}
+	// 覆盖参数
+	for (KeyValue<StringName, Variant> param : param_overrides) {
+		if (param.value.get_type() == Variant::OBJECT) {
+			RID tex_rid = param.value;
+			if (tex_rid.is_valid()) {
+				RS::get_singleton()->material_set_param(material_rid, param.key, tex_rid);
+			} else {
+				RS::get_singleton()->material_set_param(material_rid, param.key, Variant());
+			}
+		} else {
+			RS::get_singleton()->material_set_param(material_rid, param.key, param.value);
+		}
+	}
+	is_dirty = false;
+}
+ShaderMaterialInstance::~ShaderMaterialInstance() {
+	if (base.is_valid()) {
+		base->disconnect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
+	}
 }
 
 /////////////////////////////////

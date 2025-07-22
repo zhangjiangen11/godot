@@ -32,11 +32,11 @@
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/io/resource_loader.h"
+#include "scene/resources/texture.h"
 #include "servers/rendering/renderer_rd/forward_clustered/scene_shader_forward_clustered.h"
 #include "servers/rendering/renderer_rd/forward_mobile/scene_shader_forward_mobile.h"
 #include "servers/rendering/storage/variant_converters.h"
 #include "texture_storage.h"
-
 using namespace RendererRD;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1061,10 +1061,9 @@ void MaterialStorage::MaterialData::update_textures(const HashMap<StringName, Va
 				}
 				if (rd_texture.is_null()) {
 					// 直接使用设备的贴图,比如用户直接用RenderingDevice 创建的贴图
-					if(RD::get_singleton()->texture_is_valid(textures[j])) {
+					if (RD::get_singleton()->texture_is_valid(textures[j])) {
 						rd_texture = textures[j];
-					}
-					else {
+					} else {
 						rd_texture = texture_storage->texture_rd_get_default(TextureStorage::DEFAULT_RD_TEXTURE_WHITE);
 					}
 				}
@@ -2323,6 +2322,24 @@ void MaterialStorage::material_set_param(RID p_material, const StringName &p_par
 	if (material->shader && material->shader->data) { //shader is valid
 		bool is_texture = material->shader->data->is_parameter_texture(p_param);
 		_material_queue_update(material, !is_texture, is_texture);
+		if (is_texture) {
+			Ref<Texture2D> tex = p_value;
+			if (tex.is_valid()) {
+				// 刷新2D貼圖大小信息
+				auto it = material->shader->data->uniforms.find(p_param.str() + "_texel_size");
+				if (it != material->shader->data->uniforms.end()) {
+					if (it->value.type == ShaderLanguage::DataType::TYPE_VEC4) {
+						Vector4 texel_size;
+						texel_size.x = tex->get_width();
+						texel_size.y = tex->get_height();
+						texel_size.z = 1.0 / texel_size.x;
+						texel_size.w = 1.0 / texel_size.y;
+						material->params[p_param] = texel_size;
+						material->uniform_dirty = true;
+					}
+				}
+			}
+		}
 	} else {
 		_material_queue_update(material, true, true);
 	}

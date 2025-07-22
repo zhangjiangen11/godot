@@ -94,6 +94,7 @@ public:
 class ShaderMaterial : public Material {
 	GDCLASS(ShaderMaterial, Material);
 	Ref<Shader> shader;
+	friend class ShaderMaterialInstance;
 
 	mutable HashMap<StringName, StringName> remap_cache;
 	mutable HashMap<StringName, Variant> param_cache;
@@ -132,6 +133,55 @@ public:
 
 	ShaderMaterial();
 	~ShaderMaterial();
+};
+
+class ShaderMaterialInstance : public Material {
+	GDCLASS(ShaderMaterialInstance, Material);
+	static void _bind_methods();
+
+public:
+	virtual RID get_rid() const override;
+	virtual RID get_shader_rid() const override;
+
+	void set_base_material(const Ref<ShaderMaterial> &p_base);
+	const Ref<ShaderMaterial> &get_base_material() const { return base; }
+
+	void set_param(const StringName &p_name, const Variant &p_value);
+	Variant get_param(const StringName &p_name) const;
+
+	void set_param_overrides(Dictionary p_param_overrides);
+	Dictionary get_param_overrides() const;
+
+	virtual Shader::Mode get_shader_mode() const override {
+		if (base.is_valid()) {
+			return base->get_shader_mode();
+		} else {
+			return Shader::MODE_SPATIAL;
+		}
+	}
+	Ref<Shader> get_shader() const {
+		if (base.is_valid()) {
+			return base->get_shader();
+		} else {
+			return Ref<Shader>();
+		}
+	}
+	virtual ~ShaderMaterialInstance();
+
+protected:
+	void _check_material_rid() const;
+
+	void update_material() const;
+
+	void _base_changed() const {
+		is_dirty = true;
+	}
+
+public:
+	Ref<ShaderMaterial> base;
+	mutable Mutex material_rid_mutex;
+	mutable HashMap<StringName, Variant> param_overrides;
+	mutable bool is_dirty = true;
 };
 
 class StandardMaterial3D;

@@ -43,6 +43,14 @@ void AABB::merge_with(const AABB &p_aabb) {
 		ERR_PRINT("AABB size is negative, this is not supported. Use AABB.abs() to get an AABB with a positive size.");
 	}
 #endif
+	if (position.x == 0 && position.y == 0 && position.z == 0 && size.x == 0 && size.y == 0 && size.z == 0) {
+		position = p_aabb.position;
+		size = p_aabb.size;
+		return;
+	}
+	if (p_aabb.position.x == 0 && p_aabb.position.y == 0 && p_aabb.position.z == 0 && p_aabb.size.x == 0 && p_aabb.size.y == 0 && p_aabb.size.z == 0) {
+		return;
+	}
 	Vector3 beg_1, beg_2;
 	Vector3 end_1, end_2;
 	Vector3 min, max;

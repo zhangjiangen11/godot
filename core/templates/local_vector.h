@@ -344,7 +344,7 @@ public:
 	 */
 	template <typename IT>
 	void insert(IT first, IT last) {
-		for (Iterator p = first; p != last; ++p) {
+		for (IT p = first; p != last; ++p) {
 			this->push_back(*p);
 		}
 	}
