@@ -181,6 +181,20 @@ static void getStackTrace(LocalVector<StackFrame> &stackFrame) {
 #endif
 
 static ErrorHandlerList *error_handler_list = nullptr;
+static thread_local bool is_printing_error = false;
+
+static void _err_print_fallback(const char *p_function, const char *p_file, int p_line, const char *p_error_details, ErrorHandlerType p_type, bool p_reentrance) {
+	if (p_reentrance) {
+		fprintf(stderr, "While attempting to print an error, another error was printed:\n");
+	}
+
+	fprintf(stderr, "%s: %s\n", _error_handler_type_string(p_type), p_error_details);
+
+	if (p_function && p_file) {
+				fprintf(stderr, "%s(%i): %s at: [%s]\n", p_file, p_line, p_function, _error_handler_type_string(p_type));
+		//fprintf(stderr, "   at: %s (%s:%i)\n", p_function, p_file, p_line);
+	}
+}
 
 void add_error_handler(ErrorHandlerList *p_handler) {
 	// If p_handler is already in error_handler_list
@@ -367,7 +381,7 @@ void _err_print_error(const char *p_function, const char *p_file, int p_line, co
 	} else {
 		// Fallback if errors happen before OS init or after it's destroyed.
 		const char *err_details = (p_message && *p_message) ? p_message : p_error;
-		fprintf(stderr, "%s(%i): %s at: [%s]\n    %s\n", p_file, p_line, p_function, _error_handler_type_string(p_type), err_details);
+		_err_print_fallback(p_function, p_file, p_line, err_details, p_type, false);
 	}
 
 	_global_lock();
@@ -379,6 +393,8 @@ void _err_print_error(const char *p_function, const char *p_file, int p_line, co
 	}
 
 	_global_unlock();
+
+	is_printing_error = false;
 }
 
 // For printing errors when we may crash at any point, so we must flush ASAP a lot of lines
@@ -387,11 +403,19 @@ void _err_print_error(const char *p_function, const char *p_file, int p_line, co
 void _err_print_error_asap(const String &p_error, ErrorHandlerType p_type) {
 	const char *err_details = p_error.utf8().get_data();
 
+	if (is_printing_error) {
+		// Fallback if we're already printing an error, to prevent infinite recursion.
+		_err_print_fallback(nullptr, nullptr, 0, err_details, p_type, true);
+		return;
+	}
+
+	is_printing_error = true;
+
 	if (OS::get_singleton()) {
 		OS::get_singleton()->printerr("%s: %s\n", _error_handler_type_string(p_type), err_details);
 	} else {
 		// Fallback if errors happen before OS init or after it's destroyed.
-		fprintf(stderr, "%s: %s\n", _error_handler_type_string(p_type), err_details);
+		_err_print_fallback(nullptr, nullptr, 0, err_details, p_type, false);
 	}
 
 	_global_lock();
@@ -403,6 +427,8 @@ void _err_print_error_asap(const String &p_error, ErrorHandlerType p_type) {
 	}
 
 	_global_unlock();
+
+	is_printing_error = false;
 }
 
 // Errors with message. (All combinations of p_error and p_message as String or char*.)
