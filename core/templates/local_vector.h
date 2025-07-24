@@ -236,9 +236,9 @@ public:
 	void assign(U p_size, const T &v) {
 		U s = size();
 		U ns = s + p_size;
-		resize_uninitialized(ns);
-		for (U i = s; s < ns; ++i) {
-			data[i] = v;
+		reserve(ns);
+		for (U i = 0; i < p_size; ++i) {
+			push_back(v);
 		}
 	}
 	/// Construct element at the back of the array
