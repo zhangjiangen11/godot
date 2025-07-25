@@ -523,27 +523,27 @@ class ConstLocalVector {
 	T data[N];
 
 public:
-	_FORCE_INLINE_ T& operator[](int index) {
+	_FORCE_INLINE_ T &operator[](int index) {
 		CRASH_BAD_UNSIGNED_INDEX(index, N);
 		return data[index];
 	}
-	_FORCE_INLINE_ const T& operator[](int index) const {
+	_FORCE_INLINE_ const T &operator[](int index) const {
 		CRASH_BAD_UNSIGNED_INDEX(index, N);
 		return data[index];
 	}
-	_FORCE_INLINE_ ConstLocalVector& operator=(const ConstLocalVector& p_from) {
+	_FORCE_INLINE_ ConstLocalVector &operator=(const ConstLocalVector &p_from) {
 		for (int i = 0; i < N; i++) {
 			data[i] = p_from.data[i];
 		}
 		return *this;
 	}
-	_FORCE_INLINE_ void operator=(const std::initializer_list<T>& p_init) {
+	_FORCE_INLINE_ void operator=(const std::initializer_list<T> &p_init) {
 		int count = p_init.size();
 		if (count > N) {
 			count = N;
 		}
 		int index = 0;
-		for (const T& element : p_init) {
+		for (const T &element : p_init) {
 			data[index++] = element;
 		}
 	}
@@ -552,18 +552,18 @@ public:
 			data[i] = T();
 		}
 	}
-	_FORCE_INLINE_ ConstLocalVector(const ConstLocalVector& p_from) {
+	_FORCE_INLINE_ ConstLocalVector(const ConstLocalVector &p_from) {
 		for (int i = 0; i < N; i++) {
 			data[i] = p_from.data[i];
 		}
 	}
-	_FORCE_INLINE_ ConstLocalVector(const std::initializer_list<T>& p_init) {
+	_FORCE_INLINE_ ConstLocalVector(const std::initializer_list<T> &p_init) {
 		int count = p_init.size();
 		if (count > N) {
 			count = N;
 		}
 		int index = 0;
-		for (const T& element : p_init) {
+		for (const T &element : p_init) {
 			data[index++] = element;
 		}
 	}
