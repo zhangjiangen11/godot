@@ -292,6 +292,14 @@ void SurfaceTool::add_vertex(const Vector3 &p_vertex) {
 
 	format |= Mesh::ARRAY_FORMAT_VERTEX;
 }
+static void thread_transform(int index,const Transform3D& p_transform) {
+
+}
+void SurfaceTool::transform(const Transform3D &p_transform) {
+	for (int i = 0; i < vertex_array.size(); i++) {
+		vertex_array[i].vertex = p_transform.xform(vertex_array[i].vertex);
+	}
+}
 
 void SurfaceTool::set_color(Color p_color) {
 	ERR_FAIL_COND(!begun);
