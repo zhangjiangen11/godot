@@ -206,6 +206,7 @@ public:
 	void set_smooth_group(uint32_t p_group);
 
 	void add_vertex(const Vector3 &p_vertex);
+	void reserve_vertices(int p_count) { vertex_array.reserve(p_count); }
 	int64_t get_vertex_count() const { return vertex_array.size(); }
 
 	void add_triangle_fan(const Vector<Vector3> &p_vertices, const Vector<Vector2> &p_uvs = Vector<Vector2>(), const Vector<Color> &p_colors = Vector<Color>(), const Vector<Vector2> &p_uv2s = Vector<Vector2>(), const Vector<Vector3> &p_normals = Vector<Vector3>(), const Vector<Plane> &p_tangents = Vector<Plane>());

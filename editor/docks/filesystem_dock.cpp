@@ -724,19 +724,23 @@ void FileSystemDock::_set_current_path_line_edit_text(const String &p_path) {
 void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_favorites, bool p_grab_focus) {
 	String target_path = p_path;
 	bool is_directory = false;
+	int index = p_path.find("::");
+	if (index >= 0) {
+		target_path = p_path.substr(0, index);
+	}
 
-	if (p_path.is_empty()) {
+	if (target_path.is_empty()) {
 		target_path = "res://";
 		is_directory = true;
-	} else if (p_path != "Favorites") {
+	} else if (target_path != "Favorites") {
 		Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
-		if (da->dir_exists(p_path)) {
+		if (da->dir_exists(target_path)) {
 			is_directory = true;
-			if (!p_path.ends_with("/")) {
+			if (!target_path.ends_with("/")) {
 				target_path += "/";
 			}
-		} else if (!da->file_exists(p_path)) {
-			ERR_FAIL_MSG(vformat("Cannot navigate to '%s' as it has not been found in the file system!", p_path));
+		} else if (!da->file_exists(target_path)) {
+			ERR_FAIL_MSG(vformat("Cannot navigate to '%s' as it has not been found in the file system!", target_path));
 		}
 	}
 
