@@ -212,7 +212,6 @@ enum PropertyUsageFlags {
 #define DECL_RESOURCE_MEMBER_PROPERTY_DIRTY(type, name)       \
 	void set_##name(const Ref<type> &v) {                     \
 		name = v;                                             \
-		Resource *resource = Object::cast_to<Resource>(this); \
 		set_dirty();                                          \
 	}                                                         \
 	const Ref<type> &get_##name() const {                     \
