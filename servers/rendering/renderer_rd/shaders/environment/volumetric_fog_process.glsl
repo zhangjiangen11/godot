@@ -1,11 +1,12 @@
 #[compute]
 
 #version 450
-#ifdef RENDER_API_VULKAN
-#pragma use_vulkan_memory_model
-#endif
 
 #VERSION_DEFINES
+
+#ifdef USE_VULKAN_MEMORY_MODEL
+#pragma use_vulkan_memory_model
+#endif
 
 #ifdef MODE_DENSITY
 layout(local_size_x = 4, local_size_y = 4, local_size_z = 4) in;
