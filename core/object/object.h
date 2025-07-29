@@ -200,6 +200,25 @@ enum PropertyUsageFlags {
 		return name;                                          \
 	}                                                         \
 	Ref<type> name
+#define DECL_SIMPLE_MEMBER_PROPERTY_DIRTY(type, name) \
+	void set_##name(const type &v) {                  \
+		name = v;                                     \
+		set_dirty();                                  \
+	}                                                 \
+	const type &get_##name() const {                  \
+		return name;                                  \
+	}                                                 \
+	type name
+#define DECL_RESOURCE_MEMBER_PROPERTY_DIRTY(type, name)       \
+	void set_##name(const Ref<type> &v) {                     \
+		name = v;                                             \
+		Resource *resource = Object::cast_to<Resource>(this); \
+		set_dirty();                                          \
+	}                                                         \
+	const Ref<type> &get_##name() const {                     \
+		return name;                                          \
+	}                                                         \
+	Ref<type> name
 #define ADD_SIMPLE_MEMBER_PROPERTY(type, name)                                                          \
 	{                                                                                                   \
 		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                    \

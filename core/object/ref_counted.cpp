@@ -106,7 +106,6 @@ bool RefCounted::unreference() {
 	return die;
 }
 
-
 Ref<RefCounted> RefCounted::duplicate(bool p_subresources) const {
 	List<PropertyInfo> plist;
 	get_property_list(&plist);
@@ -142,8 +141,7 @@ Ref<RefCounted> RefCounted::duplicate(bool p_subresources) const {
 					if (sr.is_valid()) {
 						r->set(E.name, sr->duplicate(p_subresources));
 					}
-				}
-				else {
+				} else {
 					r->set(E.name, p);
 				}
 			} break;
@@ -154,10 +152,10 @@ Ref<RefCounted> RefCounted::duplicate(bool p_subresources) const {
 		}
 	}
 
-return r;
+	return r;
 }
 RefCounted::RefCounted() :
-		Object(true), self_is_destory(false){
+		Object(true), self_is_destory(false) {
 	refcount.init();
 	refcount_init.init();
 }
