@@ -1050,8 +1050,7 @@ protected:
 						return;
 					}
 				}
-			}
-			else if (native_group_func != nullptr) {
+			} else if (native_group_func != nullptr) {
 				for (int i = start; i < end; ++i) {
 					(*native_group_func)(native_func_userdata, i);
 					if (WorkerTaskPool::get_singleton()->exit_threads) {
@@ -1232,7 +1231,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, c
 	}
 	return hand;
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName& _task_name, const std::function<void(int)>& p_action, int p_elements, int _batch_count, TaskJobHandle* depend_task) {
+Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName &_task_name, const std::function<void(int)> &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
 	hand->task_name = _task_name;
@@ -1249,7 +1248,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName& _task
 	}
 	hand->taskMax = p_elements;
 	for (int i = 0; i < p_elements; i += _batch_count) {
-		ThreadTaskGroup* task = allocal_task();
+		ThreadTaskGroup *task = allocal_task();
 		task->handle = hand;
 		task->labada = p_action;
 		task->start = i;
@@ -1262,7 +1261,6 @@ Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName& _task
 		add_task(task);
 	}
 	return hand;
-
 }
 Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle> _handles) {
 	if (_handles.size() == 0) {

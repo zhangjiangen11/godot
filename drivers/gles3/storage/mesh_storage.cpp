@@ -51,7 +51,8 @@ protected:
 			const Vector<float> &pre_custom_data) override {
 		GLES3::MeshStorage::get_singleton()->_multimesh_make_local(multimesh);
 
-		for (int p_index = index_start; index_start < (index_start + index_count); ++p_index) {
+		int index_end = index_start + index_count;
+		for (int p_index = index_start; p_index < index_end; ++p_index) {
 			float *w = multimesh->data_cache.ptrw();
 			ERR_FAIL_INDEX(p_index, multimesh->instances);
 			{
@@ -73,7 +74,7 @@ protected:
 				uint16_t val[4] = { Math::make_half_float(*source_ptr), Math::make_half_float(*(source_ptr + 1)), Math::make_half_float(*(source_ptr + 2)), Math::make_half_float(*(source_ptr + 3)) };
 				memcpy(dataptr, val, 2 * 4);
 			}
-			GLES3::MeshStorage::get_singleton()->_multimesh_mark_dirty(multimesh, p_index, false);
+			GLES3::MeshStorage::get_singleton()->_multimesh_mark_dirty(multimesh, p_index, true);
 		}
 	}
 	GLES3::MultiMesh *multimesh = nullptr;
