@@ -1157,6 +1157,7 @@ void EditorPropertyFlags::setup(const Vector<String> &p_options) {
 
 EditorPropertyFlags::EditorPropertyFlags() {
 	vbox = memnew(VBoxContainer);
+	vbox->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	add_child(vbox);
 }
 
