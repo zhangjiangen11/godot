@@ -204,6 +204,14 @@ public:
 	void set_bones(const Vector<int> &p_bones);
 	void set_weights(const Vector<float> &p_weights);
 	void set_smooth_group(uint32_t p_group);
+	void set_custom_vertex_data(uint64_t p_format, Vertex *p_vertex, uint64_t p_vertex_count, int32_t *p_index, uint64_t p_index_count) {
+		format = p_format;
+		vertex_array.resize(p_vertex_count);
+		Vertex *vertex = vertex_array.ptr();
+		memcpy(vertex, p_vertex, p_vertex_count * sizeof(Vertex));
+		index_array.resize(p_index_count);
+		memcpy(index_array.ptr(), p_index, p_index_count * sizeof(int32_t));
+	}
 
 	void add_vertex(const Vector3 &p_vertex);
 	void reserve_vertices(int p_count) { vertex_array.reserve(p_count); }

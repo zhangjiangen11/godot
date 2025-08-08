@@ -292,12 +292,21 @@ void SurfaceTool::add_vertex(const Vector3 &p_vertex) {
 
 	format |= Mesh::ARRAY_FORMAT_VERTEX;
 }
-static void thread_transform(int index, const Transform3D &p_transform) {
+static void thread_transform(int index, const Transform3D &p_transform, uint64_t format, uint64_t vertex_array) {
+	SurfaceTool::Vertex *vertex = (SurfaceTool::Vertex *)vertex_array;
+	vertex[index].vertex = p_transform.xform(vertex[index].vertex);
+	if (format & Mesh::ARRAY_FORMAT_NORMAL) {
+		vertex[index].normal = p_transform.basis.xform(vertex[index].normal).normalized();
+	}
+	if (format & Mesh::ARRAY_FORMAT_TANGENT) {
+		vertex[index].tangent = p_transform.basis.xform(vertex[index].tangent).normalized();
+		vertex[index].binormal = p_transform.basis.xform(vertex[index].binormal).normalized();
+	}
 }
 void SurfaceTool::transform(const Transform3D &p_transform) {
-	for (int i = 0; i < vertex_array.size(); i++) {
-		vertex_array[i].vertex = p_transform.xform(vertex_array[i].vertex);
-	}
+	Ref<TaskJobHandle> job = WorkerTaskPool::get_singleton()->add_group_task("thread_transform", callable_mp_static(&thread_transform).bind(p_transform, format, (uint64_t)vertex_array.ptr()),
+			vertex_array.size(), 128, nullptr);
+	job->wait_completion();
 }
 
 void SurfaceTool::set_color(Color p_color) {
