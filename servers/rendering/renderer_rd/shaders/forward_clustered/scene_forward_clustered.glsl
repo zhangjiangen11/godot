@@ -224,7 +224,7 @@ void vertex_shader(vec3 vertex_input,
 		in vec3 tangent_input,
 		in vec3 binormal_input,
 #endif
-		in uint instance_index, in uint multimesh_offset, in SceneData scene_data, in mat4 model_matrix, out vec4 screen_pos) {
+		in uint instance_index, in uint multimesh_offset, in SceneData scene_data, in mat4 model_matrix, out vec4 screen_pos, in float is_motion_vector) {
 	vec4 instance_custom = vec4(0.0);
 #if defined(COLOR_USED)
 	color_interp = color_attrib;
@@ -303,6 +303,11 @@ void vertex_shader(vec3 vertex_input,
 #else
 		uint stride = multimesh_stride();
 		uint offset = stride * (gl_InstanceIndex + multimesh_offset);
+
+		//
+		if (draw_call.custom_data.x > 0) {
+			offset = stride * multimesh_offset;
+		}
 
 		if (sc_multimesh_format_2d()) {
 			matrix = mat4(transforms.data[offset + 0], transforms.data[offset + 1], vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));
@@ -771,7 +776,7 @@ void main() {
 			prev_tangent,
 			prev_binormal,
 #endif
-			instance_index, draw_call.multimesh_motion_vectors_previous_offset, scene_data_block.prev_data, instances.data[instance_index].prev_transform, prev_screen_position);
+			instance_index, draw_call.multimesh_motion_vectors_previous_offset, scene_data_block.prev_data, instances.data[instance_index].prev_transform, prev_screen_position, 1.0);
 #else
 	// Unused output.
 	vec4 screen_position;
@@ -810,7 +815,7 @@ void main() {
 			tangent,
 			binormal,
 #endif
-			instance_index, draw_call.multimesh_motion_vectors_current_offset, scene_data_block.data, model_matrix, screen_position);
+			instance_index, draw_call.multimesh_motion_vectors_current_offset, scene_data_block.data, model_matrix, screen_position, 0.0);
 }
 
 #[fragment]

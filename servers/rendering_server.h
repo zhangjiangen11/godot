@@ -510,7 +510,7 @@ protected:
 	void _multimesh_allocate_data_bind_compat_99455(RID p_multimesh, int p_instances, MultimeshTransformFormat p_transform_format, bool p_use_colors, bool p_use_custom_data);
 #endif
 public:
-	virtual void multimesh_allocate_data(RID p_multimesh, int p_instances, MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false) = 0;
+	virtual void multimesh_allocate_data(RID p_multimesh, int p_instances, MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false, RID p_custom_command_buffer = RID(), int p_custom_command_buffer_offset = 0) = 0;
 	virtual int multimesh_get_instance_count(RID p_multimesh) const = 0;
 
 	virtual void multimesh_set_mesh(RID p_multimesh, RID p_mesh) = 0;
@@ -533,6 +533,7 @@ public:
 
 	virtual void multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer) = 0;
 	virtual RID multimesh_get_command_buffer_rd_rid(RID p_multimesh) const = 0;
+	virtual int multimesh_get_command_buffer_offset(RID p_multimesh) const = 0;
 	virtual RID multimesh_get_buffer_rd_rid(RID p_multimesh) const = 0;
 	virtual Vector<float> multimesh_get_buffer(RID p_multimesh) const = 0;
 

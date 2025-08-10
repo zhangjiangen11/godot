@@ -154,7 +154,7 @@ public:
 	virtual void _multimesh_initialize(RID p_rid) override;
 	virtual void _multimesh_free(RID p_rid) override;
 
-	virtual void _multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false) override {}
+	virtual void _multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false, RID p_custom_command_buffer = RID(), int p_custom_command_buffer_offset = 0) override {}
 	virtual int _multimesh_get_instance_count(RID p_multimesh) const override { return 0; }
 
 	virtual void _multimesh_set_mesh(RID p_multimesh, RID p_mesh) override {}
@@ -177,6 +177,7 @@ public:
 	virtual void _multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer) override;
 	// 获取draw_argbuffer ,方便传递给ComputeShader进行填充数据,这样可以把ComputeShader计算的最终渲染数量写入到缓冲区,
 	virtual RID _multimesh_get_command_buffer_rd_rid(RID p_multimesh) const override { return RID(); }
+	virtual int _multimesh_get_command_buffer_offset(RID p_multimesh) const override { return 0; }
 	virtual RID _multimesh_get_buffer_rd_rid(RID p_multimesh) const override { return RID(); }
 	virtual Vector<float> _multimesh_get_buffer(RID p_multimesh) const override;
 

@@ -1578,7 +1578,7 @@ void MeshStorage::_multimesh_free(RID p_rid) {
 	multimesh_owner.free(p_rid);
 }
 
-void MeshStorage::_multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors, bool p_use_custom_data, bool p_use_indirect) {
+void MeshStorage::_multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors, bool p_use_custom_data, bool p_use_indirect, RID p_custom_command_buffer, int p_custom_command_buffer_offset) {
 	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
 	ERR_FAIL_NULL(multimesh);
 
@@ -2112,6 +2112,9 @@ RID MeshStorage::_multimesh_get_command_buffer_rd_rid(RID p_multimesh) const {
 	ERR_FAIL_V_MSG(RID(), "GLES3 does not implement indirect multimeshes.");
 }
 
+int MeshStorage::_multimesh_get_command_buffer_offset(RID p_multimesh) const{
+	return 0;
+}
 RID MeshStorage::_multimesh_get_buffer_rd_rid(RID p_multimesh) const {
 	ERR_FAIL_V_MSG(RID(), "GLES3 does not contain a Rid for the multimesh buffer.");
 }

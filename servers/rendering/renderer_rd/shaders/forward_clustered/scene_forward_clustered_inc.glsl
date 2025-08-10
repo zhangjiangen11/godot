@@ -27,6 +27,7 @@ layout(push_constant, std430) uniform DrawCall {
 	uint uv_offset;
 	uint multimesh_motion_vectors_current_offset;
 	uint multimesh_motion_vectors_previous_offset;
+	ivec4 custom_data;
 #ifdef UBERSHADER
 	uint sc_packed_0;
 	uint sc_packed_1;

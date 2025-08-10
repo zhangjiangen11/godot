@@ -393,7 +393,7 @@ public:
 
 	FUNCRIDSPLIT(multimesh)
 
-	FUNC6(multimesh_allocate_data, RID, int, MultimeshTransformFormat, bool, bool, bool)
+	FUNC8(multimesh_allocate_data, RID, int, MultimeshTransformFormat, bool, bool, bool, RID, int)
 	FUNC1RC(int, multimesh_get_instance_count, RID)
 
 	FUNC2(multimesh_set_mesh, RID, RID)
@@ -416,6 +416,7 @@ public:
 
 	FUNC2(multimesh_set_buffer, RID, const Vector<float> &)
 	FUNC1RC(RID, multimesh_get_command_buffer_rd_rid, RID)
+	FUNC1RC(int, multimesh_get_command_buffer_offset, RID)
 	FUNC1RC(RID, multimesh_get_buffer_rd_rid, RID)
 	FUNC1RC(Vector<float>, multimesh_get_buffer, RID)
 

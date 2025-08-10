@@ -268,7 +268,7 @@ void vertex_shader(in vec3 vertex,
 		in mat4 inv_view_matrix,
 		in vec2 viewport_size,
 		in uint scene_directional_light_count,
-		out vec4 screen_position_output) {
+		out vec4 screen_position_output, in float is_motion_vector) {
 	vec4 instance_custom = vec4(0.0);
 #if defined(COLOR_USED)
 	vec4 color_highp = color_attrib;
@@ -345,6 +345,11 @@ void vertex_shader(in vec3 vertex,
 #else
 		uint stride = multimesh_stride();
 		uint offset = stride * (gl_InstanceIndex + multimesh_offset);
+
+		//
+		if (draw_call.custom_data.x > 0) {
+			offset = stride * multimesh_offset;
+		}
 
 		if (sc_multimesh_format_2d()) {
 			matrix = mat4(transforms.data[offset + 0], transforms.data[offset + 1], vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));
@@ -713,7 +718,7 @@ void main() {
 			scene_data_block.prev_data.inv_view_matrix,
 			scene_data_block.prev_data.viewport_size,
 			scene_data_block.prev_data.directional_light_count,
-			prev_screen_position);
+			prev_screen_position, 1.0);
 #else
 	// Unused output.
 	vec4 screen_position;
@@ -770,7 +775,7 @@ void main() {
 			scene_data_block.data.inv_view_matrix,
 			scene_data_block.data.viewport_size,
 			scene_data_block.data.directional_light_count,
-			screen_position);
+			screen_position, 0.0);
 }
 
 #[fragment]

@@ -255,6 +255,10 @@ public:
 		RID uniform_set_2d;
 		RID command_buffer; //used if indirect setting is used
 
+		// 自定义外部命令
+		RID custom_command_buffer; //自定义命令缓冲区
+		int custom_command_buffer_offset = 0;
+
 		bool dirty = false;
 		MultiMesh *dirty_list = nullptr;
 
@@ -651,7 +655,7 @@ public:
 	virtual void _multimesh_initialize(RID p_multimesh) override;
 	virtual void _multimesh_free(RID p_rid) override;
 
-	virtual void _multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false) override;
+	virtual void _multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false, RID p_custom_command_buffer = RID(), int p_custom_command_buffer_offset = 0) override;
 	virtual int _multimesh_get_instance_count(RID p_multimesh) const override;
 
 	virtual void _multimesh_set_mesh(RID p_multimesh, RID p_mesh) override;
@@ -670,6 +674,7 @@ public:
 
 	virtual void _multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer) override;
 	virtual RID _multimesh_get_command_buffer_rd_rid(RID p_multimesh) const override;
+	virtual int _multimesh_get_command_buffer_offset(RID p_multimesh) const override;
 	virtual RID _multimesh_get_buffer_rd_rid(RID p_multimesh) const override;
 	virtual Vector<float> _multimesh_get_buffer(RID p_multimesh) const override;
 

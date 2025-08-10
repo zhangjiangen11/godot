@@ -1232,6 +1232,7 @@ MaterialStorage::MaterialStorage() {
 		actions.renames["MODEL_MATRIX"] = "model_matrix";
 		actions.renames["MODEL_NORMAL_MATRIX"] = "model_normal_matrix";
 		actions.renames["VIEW_MATRIX"] = "scene_data.view_matrix";
+		actions.renames["IS_MOTION_VECTOR"] = "is_motion_vector";
 		actions.renames["INV_VIEW_MATRIX"] = "scene_data.inv_view_matrix";
 		actions.renames["PROJECTION_MATRIX"] = "projection_matrix";
 		actions.renames["INV_PROJECTION_MATRIX"] = "inv_projection_matrix";
