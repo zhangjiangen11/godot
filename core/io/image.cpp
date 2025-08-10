@@ -4165,7 +4165,13 @@ Error Image::load_ktx_from_buffer(const Vector<uint8_t> &p_array) {
 			"The KTX module isn't enabled. Recompile the Godot editor or export template binary with the `module_ktx_enabled=yes` SCons option.");
 	return _load_from_buffer(p_array, _ktx_mem_loader_func);
 }
-
+Error Image::load_gif_from_buffer(const Vector<uint8_t> &p_array) {
+	ERR_FAIL_NULL_V_MSG(
+			_gif_mem_loader_func,
+			ERR_UNAVAILABLE,
+			"The GIF module isn't enabled. Recompile the Redot editor or export template binary with the `module_gif_enabled=yes` SCons option.");
+	return _load_from_buffer(p_array, _gif_mem_loader_func);
+}
 void Image::convert_rg_to_ra_rgba8() {
 	ERR_FAIL_COND(format != FORMAT_RGBA8);
 	ERR_FAIL_COND(data.is_empty());
