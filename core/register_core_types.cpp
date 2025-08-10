@@ -77,6 +77,7 @@
 #include "core/object/undo_redo.h"
 #include "core/object/worker_thread_pool.h"
 #include "core/os/main_loop.h"
+#include "core/os/memory_pool_allocal.h"
 #include "core/os/time.h"
 #include "core/string/optimized_translation.h"
 #include "core/string/translation.h"
@@ -181,6 +182,7 @@ void register_core_types() {
 	GDREGISTER_VIRTUAL_CLASS(ScriptLanguageExtension);
 
 	GDREGISTER_CLASS(RefCounted);
+	GDREGISTER_CLASS(MemoryPoolAllocal);
 	GDREGISTER_CLASS(TaskJobHandle);
 	GDREGISTER_CLASS(WeakRef);
 	GDREGISTER_CLASS(Resource);

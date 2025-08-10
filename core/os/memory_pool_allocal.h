@@ -1,8 +1,12 @@
 #pragma once
 
+#include "core/object/ref_counted.h"
 #include "core/templates/hash_map.h"
 // 内存分配器
-class MemoryPoolAllocal {
+class MemoryPoolAllocal : public RefCounted {
+	GDCLASS(MemoryPoolAllocal, RefCounted);
+	static void _bind_methods();
+
 public:
 	// 内存块结构体
 	class Block {
@@ -12,6 +16,7 @@ public:
 		bool available = false; // 内存块是否可用（true：可用，false：不可用）
 		Block *next = nullptr; // 指向链表中下一个内存块的指针
 		static Block *s_freeBlock;
+		static Mutex mutex;
 		int start() {
 			return offset;
 		}
@@ -19,20 +24,26 @@ public:
 			return offset + size;
 		}
 		static Block *allocate() {
+			mutex.lock();
 			if (s_freeBlock != nullptr) {
 				Block *r = s_freeBlock;
 				s_freeBlock = s_freeBlock->next;
+				mutex.unlock();
 				r->next = nullptr;
 				return r;
 			}
+			mutex.unlock();
 			return memnew(Block);
 		}
 		static void free(Block *_block) {
+			mutex.lock();
 			_block->next = s_freeBlock;
 			s_freeBlock = _block;
+			mutex.unlock();
 		}
 	};
 
+public:
 	MemoryPoolAllocal() {
 		m_totalMemorySize = 0;
 		add_free_block(2048);
@@ -204,6 +215,50 @@ public:
 				break;
 			}
 		}
+	}
+	uint64_t get_total_memory_size() {
+		return m_totalMemorySize;
+	}
+
+public:
+	uint64_t allocate_imp(uint32_t p_size) {
+		Block *block = allocate(p_size);
+		if (block == nullptr) {
+			return 0;
+		}
+		return (uint64_t)block;
+	}
+
+	void free_imp(uint64_t p_block) {
+		if (p_block == 0) {
+			return;
+		}
+		Block *block = (Block *)p_block;
+		free_block(block);
+	}
+
+public:
+	static int get_block_size(uint64_t p_block) {
+		if (p_block == 0) {
+			return 0;
+		}
+		Block *block = (Block *)p_block;
+		return block->size;
+	}
+	static int get_block_offset(uint64_t p_block) {
+		if (p_block == 0) {
+			return 0;
+		}
+		Block *block = (Block *)p_block;
+		return block->offset;
+	}
+
+	static int get_block_end(uint64_t p_block) {
+		if (p_block == 0) {
+			return 0;
+		}
+		Block *block = (Block *)p_block;
+		return block->end();
 	}
 
 private:

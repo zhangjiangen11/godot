@@ -1,24 +1,21 @@
 #pragma once
-
-#include "core/object/class_db.h"
-#include "core/templates/safe_refcount.h"
 #include <atomic>
+#include "core/object/ref_counted.h"
 template <typename T>
-struct SafeArray {
+struct SafeArray : public RefCounted{
+	GDSOFTCLASS(SafeArray, RefCounted)
+public:
 	T *data = nullptr;
-	SafeNumeric<int64_t> listCount;
+	std::atomic<int64_t> listCount;
 
 	int64_t memorySize = 0;
 	bool isSafeAlocal = false;
-	int64_t Length() const {
-		return MIN(listCount.get(), memorySize);
-	}
 	int64_t size() const {
-		return MIN(listCount.get(), memorySize);
+		return MIN(listCount.load(std::memory_order_acquire), memorySize);
 	}
 	SafeArray(int64_t memSize = 0) {
 		data = nullptr;
-		listCount.set(0);
+		listCount.store(0, std::memory_order_release);
 		memorySize = 0;
 		isSafeAlocal = false;
 		if (memSize > 0) {
@@ -30,7 +27,7 @@ struct SafeArray {
 	}
 	void set_memory(T *memory, int64_t offset, int64_t list_count, int64_t memory_size) {
 		data = memory + offset;
-		listCount.set(list_count);
+		listCount.store(list_count, std::memory_order_release);
 		memorySize = memory_size;
 		isSafeAlocal = false;
 	}
@@ -60,7 +57,7 @@ struct SafeArray {
 			}
 			memset(new_data, 0, newsize);
 			if (data != nullptr) {
-				memcpy(new_data, get_unsafe_ptr(), sizeof(T) * listCount.get());
+				memcpy(new_data, get_unsafe_ptr(), sizeof(T) * listCount.load(std::memory_order_acquire));
 				memfree(data);
 			}
 			memorySize = next_length;
@@ -69,14 +66,14 @@ struct SafeArray {
 		}
 	}
 	T *get_unsafe_ptr(int64_t index = 0) {
-		if (index > listCount.get()) {
+		if (index > listCount.load(std::memory_order_acquire)) {
 			//Debug.LogError($"参数获取错误，index[{index}] 要小于listCount[{listCount}]！");
 			return nullptr;
 		}
 		return &data[index];
 	}
 	void set_value(int64_t index, const T &value) {
-		if (index > listCount.get()) {
+		if (index > listCount.load(std::memory_order_acquire)) {
 			//Debug.LogError($"参数设置错误，index[{index}] 要小于listCount[{listCount}]！");
 			return;
 		}
@@ -87,11 +84,11 @@ struct SafeArray {
 			//Debug.LogError($"小贼别跑，这里有毒：{Length} start:{start} count:{count}！");
 			return;
 		}
-		if (start + count > Length()) {
+		if (start + count > size()) {
 			//Debug.LogError($"移除的数据太多了，当前长度：{Length} start:{start} count:{count}！");
 			listCount.set(start);
 			return;
-		} else if (start + count == Length()) {
+		} else if (start + count == size()) {
 			listCount.set(start);
 			return;
 		}
@@ -102,7 +99,7 @@ struct SafeArray {
 		//	UnsafeUtility.MemCpy(&data[start + index], &data[bs + index], UnsafeUtility.SizeOf<T>());
 		//}
 		int64_t last_index = start + count;
-		int64_t copy_count = listCount.get() - last_index;
+		int64_t copy_count = listCount.load(std::memory_order_acquire) - last_index;
 		T *temp = (T *)alloca(sizeof(T) * copy_count);
 		memcpy(temp, &data[last_index], sizeof(T) * copy_count);
 		memcpy(&data[start], temp, sizeof(T) * copy_count);
@@ -131,27 +128,29 @@ struct SafeArray {
 		auto_resize(last_count + 1, last_count + 1 + 200);
 
 		memcpy(&data[last_count], &_data, sizeof(T));
-		listCount.add(1);
+		listCount.fetch_add(1, std::memory_order_release);
 	}
-	/// <summary>
-	/// 多线程并发写入，不支持动态分配内存，需要预先分配好内存
-	/// </summary>
-	/// <param name="_data"></param>
 	void thread_add(T &_data) {
-		auto idx = listCount.add(1) - 1;
+		auto idx = listCount.fetch_add(1, std::memory_order_acq_rel) - 1;
 		if (idx < memorySize) {
 			memcpy(&data[idx], &_data, sizeof(T));
 		}
 	}
-	/// <summary>
-	/// 多线程并发写入，不支持动态分配内存，需要预先分配好内存
-	/// </summary>
-	/// <param name="_data"></param>
 	void thread_add_range(T *_data, int64_t count) {
-		auto idx = listCount.add(count) - count;
+		auto idx = listCount.fetch_add(count, std::memory_order_acq_rel) - count;
 		if (idx + count <= memorySize) {
 			memcpy(&data[idx], _data, sizeof(T) * count);
 		}
+	}
+	T* thread_add_range_empty(int64_t count, uint64_t* p_old_index = nullptr) {
+		auto idx = listCount.fetch_add(count, std::memory_order_acq_rel) - count;
+		if (p_old_index != nullptr) {
+			*p_old_index = idx;
+		}
+		if (idx + count <= memorySize) {
+			return &data[idx];
+		}
+		return nullptr;
 	}
 
 	void add(T _data) {
@@ -159,14 +158,14 @@ struct SafeArray {
 		auto_resize(last_count + 1, last_count + 1 + 200);
 
 		memcpy(&data[last_count], &_data, sizeof(T));
-		listCount.add(1);
+		listCount.fetch_add(1, std::memory_order_release);
 	}
 	void add_range(T *_data, int64_t count) {
 		int last_count = listCount.get();
 		auto_resize(last_count + count, last_count + count + 200);
 
 		memcpy(&data[last_count], _data, sizeof(T) * count);
-		listCount.add(count);
+		listCount.fetch_add(count, std::memory_order_release);
 	}
 	/// <summary>
 	/// Sets the length of this list, increasing the capacity if necessary.
@@ -175,7 +174,7 @@ struct SafeArray {
 	/// <param name="length">The new length of this list.</param>
 	void resize_uninitialized(int64_t length, int64_t addCount = 0) {
 		auto_resize(length, length + addCount);
-		listCount.set(length);
+		listCount.store(length, std::memory_order_release);
 	}
 	void compact_memory() {
 		if (data != nullptr) {
@@ -183,12 +182,12 @@ struct SafeArray {
 				memfree(data);
 			}
 			data = nullptr;
-			listCount.set(0);
+			listCount.store(0, std::memory_order_release);
 			memorySize = 0;
 		}
 	}
 	void clear() {
-		listCount.set(0);
+		listCount.store(0, std::memory_order_release);
 	}
 	void dispose() {
 		if (data != nullptr) {
@@ -196,7 +195,7 @@ struct SafeArray {
 				memfree(data);
 			}
 			data = nullptr;
-			listCount.set(0);
+			listCount.store(0, std::memory_order_release);
 			memorySize = 0;
 		}
 	}
