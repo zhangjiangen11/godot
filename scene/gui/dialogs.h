@@ -35,6 +35,7 @@
 #include "scene/gui/label.h"
 #include "scene/gui/panel.h"
 #include "scene/gui/popup.h"
+#include "scene/gui/progress_bar.h"
 #include "scene/gui/texture_button.h"
 #include "scene/main/window.h"
 
@@ -46,13 +47,17 @@ class AcceptDialog : public Window {
 	Window *parent_visible = nullptr;
 
 	Panel *bg_panel = nullptr;
+	VBoxContainer *message_vbox = nullptr;
 	Label *message_label = nullptr;
+	ProgressBar *progress_bar = nullptr;
 	HBoxContainer *buttons_hbox = nullptr;
 	Button *ok_button = nullptr;
 
 	bool popped_up = false;
 	String ok_text;
 	String default_ok_text;
+	float progress_max = 100.0f;
+	float progress_value = 50.0f;
 
 	bool hide_on_ok = true;
 	bool close_on_escape = true;
@@ -107,12 +112,17 @@ public:
 	void register_text_enter(LineEdit *p_line_edit);
 
 	Button *get_ok_button() { return ok_button; }
+	VBoxContainer *get_message_vbox() { return message_vbox; }
+	ProgressBar *get_progress_bar() { return progress_bar; }
 	Button *add_button(const String &p_text, bool p_right = false, const String &p_action = "");
 	Button *add_cancel_button(const String &p_cancel = "");
 	void remove_button(Button *p_button);
 
 	void set_hide_on_ok(bool p_hide);
 	bool get_hide_on_ok() const;
+
+	void set_hide_progress_bar(bool p_hide);
+	bool get_hide_progress_bar() const;
 
 	void set_close_on_escape(bool p_enable);
 	bool get_close_on_escape() const;
@@ -125,6 +135,21 @@ public:
 
 	void set_ok_button_text(String p_ok_button_text);
 	String get_ok_button_text() const;
+
+	void set_progress_max(float p_max) {
+		progress_max = p_max;
+		if (progress_bar) {
+			progress_bar->set_max(p_max);
+		}
+	}
+	float get_progress_max() const { return progress_max; }
+	void set_progress_value(float p_value) {
+		progress_value = p_value;
+		if (progress_bar) {
+			progress_bar->set_value(p_value);
+		}
+	}
+	float get_progress_value() const { return progress_value; }
 
 	AcceptDialog();
 	~AcceptDialog();
