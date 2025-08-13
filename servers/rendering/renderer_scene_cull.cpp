@@ -1025,6 +1025,12 @@ void RendererSceneCull::instance_set_surface_override_material(RID p_instance, i
 	if (instance->base_type == RS::INSTANCE_MESH) {
 		//may not have been updated yet, may also have not been set yet. When updated will be correcte, worst case
 		instance->materials.resize(MAX(p_surface + 1, RSG::mesh_storage->mesh_get_surface_count(instance->base)));
+	} else if (instance->base_type == RS::INSTANCE_MULTIMESH) {
+		RID mesh = RSG::mesh_storage->multimesh_get_mesh(instance->base);
+		//may not have been updated yet, may also have not been set yet. When updated will be correcte, worst case
+		if (mesh.is_valid()) {
+			instance->materials.resize(MAX(p_surface + 1, RSG::mesh_storage->mesh_get_surface_count(mesh)));
+		}
 	}
 
 	ERR_FAIL_INDEX(p_surface, instance->materials.size());
