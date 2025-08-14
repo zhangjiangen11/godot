@@ -2220,9 +2220,18 @@ void MeshStorage::_multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_
 	}
 }
 
+void MeshStorage::_multimesh_set_command_buffer_custom_id_and_offset(RID p_multimesh, RID p_custom_command_buffer, int p_offset) {
+	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
+	ERR_FAIL_NULL(multimesh);
+	multimesh->custom_command_buffer = p_custom_command_buffer;
+	multimesh->custom_command_buffer_offset = p_offset;
+}
 RID MeshStorage::_multimesh_get_command_buffer_rd_rid(RID p_multimesh) const {
 	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
 	ERR_FAIL_NULL_V(multimesh, RID());
+	if (multimesh->custom_command_buffer.is_valid()) {
+		return multimesh->custom_command_buffer;
+	}
 	return multimesh->command_buffer;
 }
 int MeshStorage::_multimesh_get_command_buffer_offset(RID p_multimesh) const {

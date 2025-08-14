@@ -533,6 +533,7 @@ public:
 
 	virtual void multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer) = 0;
 	virtual RID multimesh_get_command_buffer_rd_rid(RID p_multimesh) const = 0;
+	virtual void multimesh_set_command_buffer_custom_id_and_offset(RID p_multimesh, RID p_custom_command_buffer, int p_offset) = 0;
 	virtual int multimesh_get_command_buffer_offset(RID p_multimesh) const = 0;
 	virtual RID multimesh_get_buffer_rd_rid(RID p_multimesh) const = 0;
 	virtual Vector<float> multimesh_get_buffer(RID p_multimesh) const = 0;

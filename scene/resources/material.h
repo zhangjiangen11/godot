@@ -86,6 +86,7 @@ public:
 	virtual Shader::Mode get_shader_mode() const;
 
 	virtual Ref<Resource> create_placeholder() const;
+	virtual void set_shader_parameter(const StringName &p_name, const Variant &p_value) {}
 
 	Material();
 	virtual ~Material();
@@ -146,8 +147,8 @@ public:
 	void set_base_material(const Ref<ShaderMaterial> &p_base);
 	const Ref<ShaderMaterial> &get_base_material() const { return base; }
 
-	void set_param(const StringName &p_name, const Variant &p_value);
-	Variant get_param(const StringName &p_name) const;
+	void set_shader_parameter(const StringName &p_name, const Variant &p_value) override;
+	Variant get_shader_parameter(const StringName &p_name) const;
 
 	void set_param_overrides(Dictionary p_param_overrides);
 	Dictionary get_param_overrides() const;
@@ -579,6 +580,9 @@ private:
 	_FORCE_INLINE_ void _queue_shader_change();
 	void _check_material_rid();
 	void _material_set_param(const StringName &p_name, const Variant &p_value);
+	void set_shader_parameter(const StringName &p_name, const Variant &p_value) override {
+		_material_set_param(p_name, p_value);
+	}
 
 	bool orm;
 	RID shader_rid;

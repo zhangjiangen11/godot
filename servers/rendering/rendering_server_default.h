@@ -416,6 +416,8 @@ public:
 
 	FUNC2(multimesh_set_buffer, RID, const Vector<float> &)
 	FUNC1RC(RID, multimesh_get_command_buffer_rd_rid, RID)
+
+	FUNC3(_multimesh_set_command_buffer_custom_id_and_offset, RID, RID, int)
 	FUNC1RC(int, multimesh_get_command_buffer_offset, RID)
 	FUNC1RC(RID, multimesh_get_buffer_rd_rid, RID)
 	FUNC1RC(Vector<float>, multimesh_get_buffer, RID)

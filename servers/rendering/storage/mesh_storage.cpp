@@ -230,6 +230,9 @@ void RendererMeshStorage::multimesh_set_buffer(RID p_multimesh, const Vector<flo
 	_multimesh_set_buffer(p_multimesh, p_buffer);
 }
 
+void RendererMeshStorage::multimesh_set_command_buffer_custom_id_and_offset(RID p_multimesh, RID p_custom_command_buffer, int p_offset) {
+	_multimesh_set_command_buffer_custom_id_and_offset(p_multimesh, p_custom_command_buffer, p_offset);
+}
 RID RendererMeshStorage::multimesh_get_command_buffer_rd_rid(RID p_multimesh) const {
 	return _multimesh_get_command_buffer_rd_rid(p_multimesh);
 }

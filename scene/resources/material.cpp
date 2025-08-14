@@ -584,8 +584,8 @@ ShaderMaterial::~ShaderMaterial() {
 void ShaderMaterialInstance::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_shader"), &ShaderMaterialInstance::get_shader);
 
-	ClassDB::bind_method(D_METHOD("set_param", "param", "value"), &ShaderMaterialInstance::set_param);
-	ClassDB::bind_method(D_METHOD("get_param", "param"), &ShaderMaterialInstance::get_param);
+	ClassDB::bind_method(D_METHOD("set_shader_parameter", "param", "value"), &ShaderMaterialInstance::set_shader_parameter);
+	ClassDB::bind_method(D_METHOD("get_shader_parameter", "param"), &ShaderMaterialInstance::get_shader_parameter);
 
 	ClassDB::bind_method(D_METHOD("set_base_material", "base_material"), &ShaderMaterialInstance::set_base_material);
 	ClassDB::bind_method(D_METHOD("get_base_material"), &ShaderMaterialInstance::get_base_material);

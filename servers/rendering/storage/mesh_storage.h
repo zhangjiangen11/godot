@@ -122,7 +122,7 @@ public:
 	virtual void multimesh_initialize(RID p_rid);
 	virtual void multimesh_free(RID p_rid);
 
-	virtual void multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false,  RID p_custom_command_buffer = RID(), int p_custom_command_buffer_offset = 0);
+	virtual void multimesh_allocate_data(RID p_multimesh, int p_instances, RS::MultimeshTransformFormat p_transform_format, bool p_use_colors = false, bool p_use_custom_data = false, bool p_use_indirect = false, RID p_custom_command_buffer = RID(), int p_custom_command_buffer_offset = 0);
 
 	virtual int multimesh_get_instance_count(RID p_multimesh) const;
 
@@ -146,6 +146,7 @@ public:
 	virtual void multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer);
 	// 获取drawArg buffer,方便传递给computeshader填充,渲染实例数量,存在多少子模型,需要填充几次,因为每个子模型的面熟有可能不同,所以不能复用
 	virtual RID multimesh_get_command_buffer_rd_rid(RID p_multimesh) const;
+	virtual void multimesh_set_command_buffer_custom_id_and_offset(RID p_multimesh, RID p_custom_command_buffer, int p_offset);
 	virtual int multimesh_get_command_buffer_offset(RID p_multimesh) const;
 	// 获取Transform3D buffer,方便ComputeBuffer填充矩阵数据
 	virtual RID multimesh_get_buffer_rd_rid(RID p_multimesh) const;
@@ -189,6 +190,7 @@ public:
 	virtual void _multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_buffer) = 0;
 	// 获取drawArg buffer,方便传递给computeshader填充,渲染实例数量,存在多少子模型,需要填充几次,因为每个子模型的面熟有可能不同,所以不能复用
 	virtual RID _multimesh_get_command_buffer_rd_rid(RID p_multimesh) const = 0;
+	virtual void _multimesh_set_command_buffer_custom_id_and_offset(RID p_multimesh, RID p_custom_command_buffer, int p_offset) = 0;
 	virtual int _multimesh_get_command_buffer_offset(RID p_multimesh) const = 0;
 	// 获取Transform3D buffer,方便ComputeBuffer填充矩阵数据
 	virtual RID _multimesh_get_buffer_rd_rid(RID p_multimesh) const = 0;
