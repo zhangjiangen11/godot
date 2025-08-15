@@ -641,7 +641,7 @@ void ShaderMaterialInstance::set_base_material(const Ref<ShaderMaterial> &p_base
 	}
 	is_dirty = true;
 }
-void ShaderMaterialInstance::set_param(const StringName &p_name, const Variant &p_value) {
+void ShaderMaterialInstance::set_shader_parameter(const StringName &p_name, const Variant &p_value) {
 	if (p_value.get_type() == Variant::NIL) {
 		param_overrides.erase(p_name);
 	} else {
@@ -652,7 +652,7 @@ void ShaderMaterialInstance::set_param(const StringName &p_name, const Variant &
 	}
 	is_dirty = true;
 }
-Variant ShaderMaterialInstance::get_param(const StringName &p_name) const {
+Variant ShaderMaterialInstance::get_shader_parameter(const StringName &p_name) const {
 	if (param_overrides.has(p_name)) {
 		return param_overrides[p_name];
 	}

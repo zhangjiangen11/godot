@@ -275,6 +275,8 @@ public:
 	RID get_depth_texture();
 	RID get_depth_texture(const uint32_t p_layer);
 
+	virtual RID get_depth_layer(const uint32_t p_layer, bool p_msaa = false) override { return _get_depth_layer(p_layer, p_msaa); }
+
 	RID get_depth_msaa() const {
 		return get_texture(RB_SCOPE_BUFFERS, RB_TEX_DEPTH_MSAA);
 	}

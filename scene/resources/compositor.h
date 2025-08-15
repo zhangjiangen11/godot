@@ -64,7 +64,7 @@ protected:
 	static void _bind_methods();
 	void _validate_property(PropertyInfo &p_property) const;
 
-	void _call_render_callback(int p_effect_callback_type, const RenderData *p_render_data);
+	virtual void _call_render_callback(int p_effect_callback_type, const RenderData *p_render_data);
 
 	GDVIRTUAL2(_render_callback, int, const RenderData *)
 
@@ -74,8 +74,8 @@ public:
 	void set_enabled(bool p_enabled);
 	bool get_enabled() const;
 
-	void set_effect_callback_type(EffectCallbackType p_callback_type);
-	EffectCallbackType get_effect_callback_type() const;
+	virtual void set_effect_callback_type(EffectCallbackType p_callback_type);
+	virtual EffectCallbackType get_effect_callback_type() const;
 
 	void set_access_resolved_color(bool p_enabled);
 	bool get_access_resolved_color() const;
