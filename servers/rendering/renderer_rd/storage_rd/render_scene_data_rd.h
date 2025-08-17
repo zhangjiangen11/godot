@@ -84,7 +84,7 @@ public:
 	float time_step;
 
 	virtual Transform3D get_cam_transform() const override;
-	virtual Projection get_cam_projection() const override;
+	virtual Projection get_cam_projection(bool p_flip_y = false, bool p_reverse_z = false, bool p_remap_z = true) const override;
 
 	virtual uint32_t get_view_count() const override;
 	virtual Vector3 get_view_eye_offset(uint32_t p_view) const override;

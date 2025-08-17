@@ -43,7 +43,8 @@ protected:
 
 public:
 	virtual Transform3D get_cam_transform() const = 0;
-	virtual Projection get_cam_projection() const = 0;
+	// 这个方法获取的投影矩阵没有反转z值
+	virtual Projection get_cam_projection(bool p_flip_y = false, bool p_reverse_z = false, bool p_remap_z = true) const = 0;
 
 	virtual uint32_t get_view_count() const = 0;
 	virtual Vector3 get_view_eye_offset(uint32_t p_view) const = 0;
@@ -60,7 +61,7 @@ protected:
 
 public:
 	virtual Transform3D get_cam_transform() const override;
-	virtual Projection get_cam_projection() const override;
+	virtual Projection get_cam_projection(bool p_flip_y = false, bool p_reverse_z = false, bool p_remap_z = true) const override;
 
 	virtual uint32_t get_view_count() const override;
 	virtual Vector3 get_view_eye_offset(uint32_t p_view) const override;

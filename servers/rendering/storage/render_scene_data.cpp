@@ -32,7 +32,7 @@
 
 void RenderSceneData::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_cam_transform"), &RenderSceneData::get_cam_transform);
-	ClassDB::bind_method(D_METHOD("get_cam_projection"), &RenderSceneData::get_cam_projection);
+	ClassDB::bind_method(D_METHOD("get_cam_projection", "flip_y", "reverse_z", "remap_z"), &RenderSceneData::get_cam_projection, DEFVAL(false), DEFVAL(false), DEFVAL(true));
 
 	ClassDB::bind_method(D_METHOD("get_view_count"), &RenderSceneData::get_view_count);
 	ClassDB::bind_method(D_METHOD("get_view_eye_offset", "view"), &RenderSceneData::get_view_eye_offset);
@@ -57,7 +57,7 @@ Transform3D RenderSceneDataExtension::get_cam_transform() const {
 	return ret;
 }
 
-Projection RenderSceneDataExtension::get_cam_projection() const {
+Projection RenderSceneDataExtension::get_cam_projection(bool p_flip_y, bool p_reverse_z, bool p_remap_z) const {
 	Projection ret;
 	GDVIRTUAL_CALL(_get_cam_projection, ret);
 	return ret;
