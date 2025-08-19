@@ -133,5 +133,6 @@ public:
 
 	bool has_mesh() const;
 	Ref<ArrayMesh> get_mesh(const Ref<ArrayMesh> &p_base = Ref<ArrayMesh>());
+	Array get_lod_meshes();
 	void clear();
 };

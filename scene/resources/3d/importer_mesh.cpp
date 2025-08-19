@@ -630,6 +630,68 @@ Ref<ArrayMesh> ImporterMesh::get_mesh(const Ref<ArrayMesh> &p_base) {
 
 	return mesh;
 }
+Array ImporterMesh::get_lod_meshes() {
+	int max_lod_count = 0;
+	for (int i = 0; i < surfaces.size(); i++) {
+		if (surfaces[i].lods.size() > max_lod_count) {
+			max_lod_count = surfaces[i].lods.size();
+		}
+	}
+	// 填充lod 数量
+
+	for (int i = 0; i < surfaces.size(); i++) {
+		if (surfaces[i].lods.size() == 0) {
+			continue;
+		}
+		while (surfaces[i].lods.size() < max_lod_count) {
+
+			Surface::LOD lod = surfaces[i].lods[surfaces[i].lods.size() - 1];
+			surfaces.write[i].lods.push_back(lod);
+		}
+	}
+	Array lod_meshes;
+	for (int lod = 0; lod < max_lod_count; lod++) {
+		Ref<ArrayMesh> lod_mesh;
+		if (lod_mesh.is_null()) {
+			lod_mesh.instantiate();
+		}
+		lod_mesh->set_name(get_name());
+		if (has_meta("import_id")) {
+			lod_mesh->set_meta("import_id", get_meta("import_id"));
+		}
+		for (int i = 0; i < blend_shapes.size(); i++) {
+			lod_mesh->add_blend_shape(blend_shapes[i]);
+		}
+		lod_mesh->set_blend_shape_mode(blend_shape_mode);
+		for (int i = 0; i < surfaces.size(); i++) {
+			Array bs_data;
+			if (surfaces[i].blend_shape_data.size()) {
+				for (int j = 0; j < surfaces[i].blend_shape_data.size(); j++) {
+					bs_data.push_back(surfaces[i].blend_shape_data[j].arrays);
+				}
+			}
+			Dictionary lods;
+			Array arrays = surfaces[i].arrays;
+			arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod].indices;
+
+			lod_mesh->add_surface_from_arrays(surfaces[i].primitive, arrays, bs_data, lods, surfaces[i].flags);
+			if (surfaces[i].material.is_valid()) {
+				lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, surfaces[i].material);
+			}
+			if (!surfaces[i].name.is_empty()) {
+				lod_mesh->surface_set_name(lod_mesh->get_surface_count() - 1, surfaces[i].name);
+			}
+		}
+
+		lod_mesh->set_lightmap_size_hint(lightmap_size_hint);
+
+		lod_meshes.push_back(lod_mesh);
+	}
+	// 数据已经全部破坏了，就不要留着了
+	clear();
+
+	return lod_meshes;
+}
 
 void ImporterMesh::clear() {
 	surfaces.clear();
