@@ -63,7 +63,39 @@ void ImporterMesh::set_blend_shape_mode(Mesh::BlendShapeMode p_blend_shape_mode)
 Mesh::BlendShapeMode ImporterMesh::get_blend_shape_mode() const {
 	return blend_shape_mode;
 }
+void ImporterMesh::init_form_mesh(Ref<Mesh> p_mesh) {
+	clear();
+	if (p_mesh.is_null()) {
+		return;
+	}
 
+	Ref<ArrayMesh> array_mesh = p_mesh;
+	if (p_mesh->get_blend_shape_count()) {
+		ArrayMesh::BlendShapeMode shape_mode = ArrayMesh::BLEND_SHAPE_MODE_NORMALIZED;
+		if (array_mesh.is_valid()) {
+			shape_mode = array_mesh->get_blend_shape_mode();
+		}
+		set_blend_shape_mode(shape_mode);
+		for (int morph_i = 0; morph_i < p_mesh->get_blend_shape_count(); morph_i++) {
+			add_blend_shape(p_mesh->get_blend_shape_name(morph_i));
+		}
+	}
+	for (int32_t surface_i = 0; surface_i < p_mesh->get_surface_count(); surface_i++) {
+		Array array = p_mesh->surface_get_arrays(surface_i);
+		Ref<Material> mat = p_mesh->surface_get_material(surface_i);
+		String mat_name;
+		if (mat.is_valid()) {
+			mat_name = mat->get_name();
+		} else {
+			// Assign default material when no material is assigned.
+			mat.instantiate();
+		}
+		add_surface(p_mesh->surface_get_primitive_type(surface_i),
+				array, p_mesh->surface_get_blend_shape_arrays(surface_i), p_mesh->surface_get_lods(surface_i), mat,
+				mat_name, p_mesh->surface_get_format(surface_i));
+	}
+	merge_meta_from(*p_mesh);
+}
 void ImporterMesh::add_surface(Mesh::PrimitiveType p_primitive, const Array &p_arrays, const TypedArray<Array> &p_blend_shapes, const Dictionary &p_lods, const Ref<Material> &p_material, const String &p_name, const uint64_t p_flags) {
 	ERR_FAIL_COND(p_blend_shapes.size() != blend_shapes.size());
 	ERR_FAIL_COND(p_arrays.size() != Mesh::ARRAY_MAX);
@@ -1209,6 +1241,7 @@ void ImporterMesh::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_blend_shape_mode", "mode"), &ImporterMesh::set_blend_shape_mode);
 	ClassDB::bind_method(D_METHOD("get_blend_shape_mode"), &ImporterMesh::get_blend_shape_mode);
 
+	ClassDB::bind_method(D_METHOD("init_form_mesh", "mesh"), &ImporterMesh::init_form_mesh);
 	ClassDB::bind_method(D_METHOD("add_surface", "primitive", "arrays", "blend_shapes", "lods", "material", "name", "flags"), &ImporterMesh::add_surface, DEFVAL(TypedArray<Array>()), DEFVAL(Dictionary()), DEFVAL(Ref<Material>()), DEFVAL(String()), DEFVAL(0));
 
 	ClassDB::bind_method(D_METHOD("get_surface_count"), &ImporterMesh::get_surface_count);

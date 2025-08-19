@@ -414,8 +414,8 @@ public:
 	void regen_normal_maps();
 	const void *get_vertex_array_data_ptr(int p_surface, ArrayType p_type) const {
 		Array arrays = surface_get_arrays(p_surface);
-		if (arrays[Mesh::ARRAY_TEX_UV2].get_type() != Variant::NIL) {
-			return arrays[Mesh::ARRAY_TEX_UV2].operator Vector<Vector2>().ptr();
+		if (arrays[p_type].get_type() != Variant::NIL) {
+			return arrays[p_type].operator Vector<Vector2>().ptr();
 		}
 		return nullptr;
 	}
