@@ -209,14 +209,14 @@ enum PropertyUsageFlags {
 		return name;                                  \
 	}                                                 \
 	type name
-#define DECL_RESOURCE_MEMBER_PROPERTY_DIRTY(type, name)       \
-	void set_##name(const Ref<type> &v) {                     \
-		name = v;                                             \
-		set_dirty();                                          \
-	}                                                         \
-	const Ref<type> &get_##name() const {                     \
-		return name;                                          \
-	}                                                         \
+#define DECL_RESOURCE_MEMBER_PROPERTY_DIRTY(type, name) \
+	void set_##name(const Ref<type> &v) {               \
+		name = v;                                       \
+		set_dirty();                                    \
+	}                                                   \
+	const Ref<type> &get_##name() const {               \
+		return name;                                    \
+	}                                                   \
 	Ref<type> name
 #define ADD_SIMPLE_MEMBER_PROPERTY(type, name)                                                          \
 	{                                                                                                   \
@@ -239,11 +239,29 @@ enum PropertyUsageFlags {
 		type __temp_name = type();                                                                                                                    \
 		ADD_PROPERTY(PropertyInfo(Variant(__temp_name).get_type(), #name, PROPERTY_HINT_RANGE, #min "," #max ",0.0001"), "set_" #name, "get_" #name); \
 	}
+#define ADD_SIMPLE_PATH_MEMBER_PROPERTY(type, name)                                                        \
+	{                                                                                                      \
+		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                       \
+		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                              \
+		ADD_PROPERTY(PropertyInfo(Variant::STRING, #name, PROPERTY_HINT_DIR), "set_" #name, "get_" #name); \
+	}
+#define ADD_SIMPLE_FILE_MEMBER_PROPERTY(type, name, hit_string)                                                         \
+	{                                                                                                                   \
+		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                                    \
+		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                                           \
+		ADD_PROPERTY(PropertyInfo(Variant::STRING, #name, PROPERTY_HINT_FILE, hit_string), "set_" #name, "get_" #name); \
+	}
 #define ADD_SIMPLE_ENUM_MEMBER_PROPERTY(type, name, enum_hint)                                                      \
 	{                                                                                                               \
 		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                                \
 		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                                       \
 		ADD_PROPERTY(PropertyInfo(Variant::INT, #name, PROPERTY_HINT_ENUM, enum_hint), "set_" #name, "get_" #name); \
+	}
+#define ADD_ENUM_MEMBER_PROPERTY(type, name, variant_type, enum_hint)                                               \
+	{                                                                                                               \
+		ClassDB::bind_method(D_METHOD("set_" #name, #name), &self_type::set_##name);                                \
+		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                                       \
+		ADD_PROPERTY(PropertyInfo(variant_type, #name, PROPERTY_HINT_ENUM, enum_hint), "set_" #name, "get_" #name); \
 	}
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
