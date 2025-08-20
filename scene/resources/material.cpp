@@ -516,6 +516,20 @@ void ShaderMaterial::_check_material_rid() const {
 		}
 	}
 }
+void ShaderMaterial::update_material() {
+	for (KeyValue<StringName, Variant> param : param_cache) {
+		if (param.value.get_type() == Variant::OBJECT) {
+			RID tex_rid = param.value;
+			if (tex_rid.is_valid()) {
+				RS::get_singleton()->material_set_param(_get_material(), param.key, tex_rid);
+			} else {
+				RS::get_singleton()->material_set_param(_get_material(), param.key, Variant());
+			}
+		} else {
+			RS::get_singleton()->material_set_param(_get_material(), param.key, param.value);
+		}
+	}
+}
 
 void ShaderMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_shader", "shader"), &ShaderMaterial::set_shader);
@@ -582,8 +596,6 @@ ShaderMaterial::~ShaderMaterial() {
 }
 /////////////////////////////////
 void ShaderMaterialInstance::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("get_shader"), &ShaderMaterialInstance::get_shader);
-
 	ClassDB::bind_method(D_METHOD("set_shader_parameter", "param", "value"), &ShaderMaterialInstance::set_shader_parameter);
 	ClassDB::bind_method(D_METHOD("get_shader_parameter", "param"), &ShaderMaterialInstance::get_shader_parameter);
 
@@ -625,7 +637,7 @@ Dictionary ShaderMaterialInstance::get_param_overrides() const {
 	}
 	return ret;
 }
-void ShaderMaterialInstance::set_base_material(const Ref<ShaderMaterial> &p_base) {
+void ShaderMaterialInstance::set_base_material(const Ref<Material> &p_base) {
 	if (base == p_base) {
 		return;
 	}
@@ -664,7 +676,7 @@ void ShaderMaterialInstance::_check_material_rid() const {
 	}
 	MutexLock lock(material_rid_mutex);
 	if (_get_material().is_null()) {
-		RID shader_rid = base->get_shader().is_valid() ? base->get_shader()->get_rid() : RID();
+		RID shader_rid = base->get_shader_rid();
 		RID next_pass_rid;
 		if (base->get_next_pass().is_valid()) {
 			next_pass_rid = base->get_next_pass()->get_rid();
@@ -687,18 +699,7 @@ void ShaderMaterialInstance::update_material() const {
 		is_dirty = false;
 		return;
 	}
-	for (KeyValue<StringName, Variant> param : base->param_cache) {
-		if (param.value.get_type() == Variant::OBJECT) {
-			RID tex_rid = param.value;
-			if (tex_rid.is_valid()) {
-				RS::get_singleton()->material_set_param(material_rid, param.key, tex_rid);
-			} else {
-				RS::get_singleton()->material_set_param(material_rid, param.key, Variant());
-			}
-		} else {
-			RS::get_singleton()->material_set_param(material_rid, param.key, param.value);
-		}
-	}
+	base->update_material();
 	// 覆盖参数
 	for (KeyValue<StringName, Variant> param : param_overrides) {
 		if (param.value.get_type() == Variant::OBJECT) {
@@ -2277,6 +2278,27 @@ void BaseMaterial3D::_material_set_param(const StringName &p_name, const Variant
 		RS::get_singleton()->material_set_param(_get_material(), p_name, p_value);
 	} else {
 		pending_params[p_name] = p_value;
+	}
+	param_cache[p_name] = p_value;
+}
+Variant BaseMaterial3D::_material_get_param(const StringName &p_param) const {
+	if (param_cache.has(p_param)) {
+		return param_cache[p_param];
+	}
+	return Variant();
+}
+void BaseMaterial3D::update_material() {
+	for (KeyValue<StringName, Variant> param : param_cache) {
+		if (param.value.get_type() == Variant::OBJECT) {
+			RID tex_rid = param.value;
+			if (tex_rid.is_valid()) {
+				RS::get_singleton()->material_set_param(_get_material(), param.key, tex_rid);
+			} else {
+				RS::get_singleton()->material_set_param(_get_material(), param.key, Variant());
+			}
+		} else {
+			RS::get_singleton()->material_set_param(_get_material(), param.key, param.value);
+		}
 	}
 }
 

@@ -87,6 +87,8 @@ public:
 
 	virtual Ref<Resource> create_placeholder() const;
 	virtual void set_shader_parameter(const StringName &p_name, const Variant &p_value) {}
+	virtual Variant get_shader_parameter(const StringName &p_param) const { return Variant(); }
+	virtual void update_material(){}
 
 	Material();
 	virtual ~Material();
@@ -124,13 +126,14 @@ public:
 	void set_shader(const Ref<Shader> &p_shader);
 	Ref<Shader> get_shader() const;
 
-	void set_shader_parameter(const StringName &p_param, const Variant &p_value);
-	Variant get_shader_parameter(const StringName &p_param) const;
+	void set_shader_parameter(const StringName &p_param, const Variant &p_value) override;
+	Variant get_shader_parameter(const StringName &p_param) const override;
 
 	virtual Shader::Mode get_shader_mode() const override;
 
 	virtual RID get_rid() const override;
 	virtual RID get_shader_rid() const override;
+	virtual void update_material();
 
 	ShaderMaterial();
 	~ShaderMaterial();
@@ -144,11 +147,11 @@ public:
 	virtual RID get_rid() const override;
 	virtual RID get_shader_rid() const override;
 
-	void set_base_material(const Ref<ShaderMaterial> &p_base);
-	const Ref<ShaderMaterial> &get_base_material() const { return base; }
+	void set_base_material(const Ref<Material> &p_base);
+	const Ref<Material> &get_base_material() const { return base; }
 
 	void set_shader_parameter(const StringName &p_name, const Variant &p_value) override;
-	Variant get_shader_parameter(const StringName &p_name) const;
+	Variant get_shader_parameter(const StringName &p_name) const override;
 
 	void set_param_overrides(Dictionary p_param_overrides);
 	Dictionary get_param_overrides() const;
@@ -158,13 +161,6 @@ public:
 			return base->get_shader_mode();
 		} else {
 			return Shader::MODE_SPATIAL;
-		}
-	}
-	Ref<Shader> get_shader() const {
-		if (base.is_valid()) {
-			return base->get_shader();
-		} else {
-			return Ref<Shader>();
 		}
 	}
 	virtual ~ShaderMaterialInstance();
@@ -179,7 +175,7 @@ protected:
 	}
 
 public:
-	Ref<ShaderMaterial> base;
+	Ref<Material> base;
 	mutable Mutex material_rid_mutex;
 	mutable HashMap<StringName, Variant> param_overrides;
 	mutable bool is_dirty = true;
@@ -580,13 +576,19 @@ private:
 	_FORCE_INLINE_ void _queue_shader_change();
 	void _check_material_rid();
 	void _material_set_param(const StringName &p_name, const Variant &p_value);
+	Variant _material_get_param(const StringName &p_param) const;
 	void set_shader_parameter(const StringName &p_name, const Variant &p_value) override {
 		_material_set_param(p_name, p_value);
 	}
+	Variant get_shader_parameter(const StringName &p_name) const override {
+		return _material_get_param(p_name);
+	}
+	virtual void update_material() override;
 
 	bool orm;
 	RID shader_rid;
 	HashMap<StringName, Variant> pending_params;
+	mutable HashMap<StringName, Variant> param_cache;
 
 	Color albedo;
 	float specular = 0.0f;

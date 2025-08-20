@@ -645,7 +645,6 @@ Array ImporterMesh::get_lod_meshes() {
 			continue;
 		}
 		while (surfaces[i].lods.size() < max_lod_count) {
-
 			Surface::LOD lod = surfaces[i].lods[surfaces[i].lods.size() - 1];
 			surfaces.write[i].lods.push_back(lod);
 		}
