@@ -676,7 +676,26 @@ Array ImporterMesh::get_lod_meshes() {
 
 			lod_mesh->add_surface_from_arrays(surfaces[i].primitive, arrays, bs_data, lods, surfaces[i].flags);
 			if (surfaces[i].material.is_valid()) {
-				lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, surfaces[i].material);
+				Ref<Material> material = surfaces[i].material;
+				Ref<ShaderMaterialInstance> shader_material = material;
+				if (shader_material.is_valid()) {
+					shader_material = shader_material->duplicate(false);
+					lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, shader_material);
+				} else {
+					String path = material->get_path();
+					if (path.find("::") != -1) {
+						Ref<ShaderMaterialInstance> smi;
+						smi.instantiate();
+						smi->set_base_material(material->duplicate(false));
+						lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
+
+					} else {
+						Ref<ShaderMaterialInstance> smi;
+						smi.instantiate();
+						smi->set_base_material(material);
+						lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
+					}
+				}
 			}
 			if (!surfaces[i].name.is_empty()) {
 				lod_mesh->surface_set_name(lod_mesh->get_surface_count() - 1, surfaces[i].name);
