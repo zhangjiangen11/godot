@@ -69,7 +69,7 @@ public:
 	Ref<StandardMaterial3D> get_debug_material();
 
 	Path3D();
-	~Path3D();
+	virtual ~Path3D();
 };
 
 class PathFollow3D : public Node3D {

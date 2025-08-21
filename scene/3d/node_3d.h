@@ -346,11 +346,11 @@ public:
 
 	void set_visibility_parent(const NodePath &p_path);
 	NodePath get_visibility_parent() const;
-	
+
 	DECL_MEMBER_BUTTON(bt_conver_child_to_multi_mesh);
 
 	Node3D();
-	~Node3D();
+	virtual ~Node3D();
 };
 
 VARIANT_ENUM_CAST(Node3D::RotationEditMode)

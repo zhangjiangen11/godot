@@ -178,6 +178,9 @@ enum PropertyUsageFlags {
 
 #define DECL_SIMPLE_MEMBER_PROPERTY(type, name)               \
 	void set_##name(const type &v) {                          \
+		if (name == v) {                                      \
+			return;                                           \
+		}                                                     \
 		name = v;                                             \
 		Resource *resource = Object::cast_to<Resource>(this); \
 		if (resource) {                                       \
@@ -190,6 +193,9 @@ enum PropertyUsageFlags {
 	type name
 #define DECL_RESOURCE_MEMBER_PROPERTY(type, name)             \
 	void set_##name(const Ref<type> &v) {                     \
+		if (name == v) {                                      \
+			return;                                           \
+		}                                                     \
 		name = v;                                             \
 		Resource *resource = Object::cast_to<Resource>(this); \
 		if (resource) {                                       \
@@ -202,6 +208,9 @@ enum PropertyUsageFlags {
 	Ref<type> name
 #define DECL_SIMPLE_MEMBER_PROPERTY_DIRTY(type, name) \
 	void set_##name(const type &v) {                  \
+		if (name == v) {                              \
+			return;                                   \
+		}                                             \
 		name = v;                                     \
 		set_dirty();                                  \
 	}                                                 \
@@ -211,6 +220,9 @@ enum PropertyUsageFlags {
 	type name
 #define DECL_RESOURCE_MEMBER_PROPERTY_DIRTY(type, name) \
 	void set_##name(const Ref<type> &v) {               \
+		if (name == v) {                                \
+			return;                                     \
+		}                                               \
 		name = v;                                       \
 		set_dirty();                                    \
 	}                                                   \

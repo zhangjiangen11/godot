@@ -875,7 +875,7 @@ public:
 	virtual bool has_connections(const StringName &p_signal) const override;
 #endif
 	Node();
-	~Node();
+	virtual ~Node();
 };
 
 VARIANT_ENUM_CAST(Node::DuplicateFlags);
