@@ -101,6 +101,6 @@ public:
 
 	static void reference_scaling_level(double p_scale);
 	static void unreference_scaling_level(double p_scale);
-
+	DPITexture();
 	~DPITexture();
 };

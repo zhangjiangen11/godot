@@ -3878,10 +3878,7 @@ void TextEdit::show_emoji_and_symbol_picker() {
 }
 
 void TextEdit::set_emoji_menu_enabled(bool p_enabled) {
-	if (emoji_menu_enabled != p_enabled) {
-		emoji_menu_enabled = p_enabled;
-		_update_context_menu();
-	}
+	emoji_menu_enabled = p_enabled;
 }
 
 bool TextEdit::is_emoji_menu_enabled() const {

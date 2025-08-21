@@ -372,6 +372,8 @@ void DPITexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "color_map", PROPERTY_HINT_DICTIONARY_TYPE, "Color;Color"), "set_color_map", "get_color_map");
 }
 
+DPITexture::DPITexture() {
+}
 DPITexture::~DPITexture() {
 	_clear();
 

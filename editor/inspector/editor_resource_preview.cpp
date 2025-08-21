@@ -186,6 +186,7 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 
 	int thumbnail_size = EDITOR_GET("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
+	thumbnail_size = 80;
 
 	r_texture = Ref<ImageTexture>();
 	r_small_texture = Ref<ImageTexture>();
@@ -248,9 +249,9 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 		if (r_texture.is_valid()) {
 			// Wow it generated a preview... save cache.
 			bool has_small_texture = r_small_texture.is_valid();
-			ResourceSaver::save(r_texture, cache_base + ".png");
+			ResourceSaver::save(r_texture, cache_base + ".res");
 			if (has_small_texture) {
-				ResourceSaver::save(r_small_texture, cache_base + "_small.png");
+				ResourceSaver::save(r_small_texture, cache_base + "_small.res");
 			}
 			Ref<FileAccess> f = FileAccess::open(cache_base + ".txt", FileAccess::WRITE);
 			ERR_FAIL_COND_MSG(f.is_null(), "Cannot create file '" + cache_base + ".txt'. Check user write permissions.");
@@ -303,6 +304,7 @@ void EditorResourcePreview::_iterate() {
 
 	int thumbnail_size = EDITOR_GET("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
+	thumbnail_size = 80;
 
 	if (item.resource.is_valid()) {
 		Dictionary preview_metadata;
@@ -373,21 +375,17 @@ void EditorResourcePreview::_iterate() {
 			img.instantiate();
 			Ref<Image> small_img;
 			small_img.instantiate();
-
-			if (img->load(cache_base + ".png") != OK) {
-				cache_valid = false;
-			} else {
-				texture.instantiate();
-				texture->set_image(img);
-
+			if (FileAccess::exists(cache_base + ".res")) {
+				texture = ResourceLoader::load(cache_base + ".res");
 				if (has_small_texture) {
-					if (small_img->load(cache_base + "_small.png") != OK) {
-						cache_valid = false;
+					if (FileAccess::exists(cache_base + "_small.res")) {
+						small_texture = ResourceLoader::load(cache_base + "_small.res");
 					} else {
-						small_texture.instantiate();
-						small_texture->set_image(small_img);
+						cache_valid = false;
 					}
 				}
+			} else {
+				cache_valid = false;
 			}
 		}
 
@@ -443,6 +441,7 @@ void EditorResourcePreview::_update_thumbnail_sizes() {
 	if (small_thumbnail_size == -1) {
 		// Kind of a workaround to retrieve the default icon size.
 		small_thumbnail_size = EditorNode::get_singleton()->get_editor_theme()->get_icon(SNAME("Object"), EditorStringName(EditorIcons))->get_width();
+		small_thumbnail_size = 40;
 	}
 }
 
@@ -484,6 +483,7 @@ void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p
 		QueueItem item;
 		item.function = p_receiver_func;
 		item.id = p_receiver->get_instance_id();
+		item.obj_ref = Object::cast_to<RefCounted>(p_receiver);
 		item.resource = p_res;
 		item.path = path_id;
 		item.userdata = p_userdata;
@@ -495,6 +495,9 @@ void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p
 
 void EditorResourcePreview::queue_resource_preview(const String &p_path, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata) {
 	ERR_FAIL_NULL(p_receiver);
+	if (p_path.ends_with(".gd")) {
+		return;
+	}
 	_update_thumbnail_sizes();
 
 	{
@@ -507,6 +510,7 @@ void EditorResourcePreview::queue_resource_preview(const String &p_path, Object 
 
 		QueueItem item;
 		item.function = p_receiver_func;
+		item.obj_ref = Object::cast_to<RefCounted>(p_receiver);
 		item.id = p_receiver->get_instance_id();
 		item.path = p_path;
 		item.userdata = p_userdata;

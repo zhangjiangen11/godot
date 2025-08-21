@@ -80,6 +80,7 @@ class EditorResourcePreview : public Node {
 		Ref<Resource> resource;
 		String path;
 		ObjectID id;
+		Ref<RefCounted> obj_ref;
 		StringName function;
 		Variant userdata;
 	};
@@ -93,6 +94,8 @@ class EditorResourcePreview : public Node {
 	SafeFlag exited;
 
 	struct Item {
+		String preview_path;
+		String small_preview_path;
 		Ref<Texture2D> preview;
 		Ref<Texture2D> small_preview;
 		Dictionary preview_metadata;
