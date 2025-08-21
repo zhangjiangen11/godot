@@ -815,7 +815,9 @@ void RendererSceneCull::instance_set_base(RID p_instance, RID p_base) {
 void RendererSceneCull::instance_set_scenario(RID p_instance, RID p_scenario) {
 	Instance *instance = instance_owner.get_or_null(p_instance);
 	ERR_FAIL_NULL(instance);
-
+	if (instance->scenario == p_scenario) {
+		return;
+	}
 	if (instance->scenario) {
 		instance->scenario->instances.remove(&instance->scenario_item);
 
