@@ -10500,6 +10500,7 @@ Error ShaderLanguage::_parse_shader(const HashMap<StringName, FunctionInfo> &p_f
 							break;
 						}
 
+						// unused for now
 						if (tk.type == TK_BUFFER_BIND) {
 							if (binded) {
 								_set_error(RTR("Binding already specified."));
@@ -10513,6 +10514,8 @@ Error ShaderLanguage::_parse_shader(const HashMap<StringName, FunctionInfo> &p_f
 							tk = _get_token();
 							binded = true;
 						}
+
+						// unused for now
 						if (tk.type == TK_BUFFER_SET) {
 							if (set_assigned) {
 								_set_error(RTR("Set already specified."));
@@ -10526,6 +10529,8 @@ Error ShaderLanguage::_parse_shader(const HashMap<StringName, FunctionInfo> &p_f
 							tk = _get_token();
 							set_assigned = true;
 						}
+
+						// unused for now
 						if (tk.type == TK_BUFFER_FORMAT) {
 							if (format_assigned) {
 								_set_error(RTR("Format already specified."));
