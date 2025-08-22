@@ -345,8 +345,8 @@ private:
 	void _get_drag_target_folder(String &target, bool &target_favorites, const Point2 &p_point, Control *p_from) const;
 
 	void _preview_invalidated(const String &p_path);
-	void _file_list_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata);
-	void _tree_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata);
+	void _file_list_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata);
+	void _tree_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata);
 
 	void _update_display_mode(bool p_force = false);
 

@@ -96,8 +96,6 @@ class EditorResourcePreview : public Node {
 	struct Item {
 		String preview_path;
 		String small_preview_path;
-		Ref<Texture2D> preview;
-		Ref<Texture2D> small_preview;
 		Dictionary preview_metadata;
 		uint32_t last_hash = 0;
 		uint64_t modified_time = 0;
@@ -105,8 +103,8 @@ class EditorResourcePreview : public Node {
 
 	HashMap<String, Item> cache;
 
-	void _preview_ready(const String &p_path, int p_hash, const Ref<Texture2D> &p_texture, const Ref<Texture2D> &p_small_texture, ObjectID id, const StringName &p_func, const Variant &p_ud, const Dictionary &p_metadata);
-	void _generate_preview(Ref<ImageTexture> &r_texture, Ref<ImageTexture> &r_small_texture, const QueueItem &p_item, const String &cache_base, Dictionary &p_metadata);
+	void _preview_ready(const String &p_path, int p_hash, String &r_texture_path, String &r_small_texture_path, ObjectID id, const StringName &p_func, const Variant &p_ud, const Dictionary &p_metadata);
+	void _generate_preview(String &r_texture_path, String &r_small_texture_path, Ref<ImageTexture> &r_texture, Ref<ImageTexture> &r_small_texture, const QueueItem &p_item, const String &cache_base, Dictionary &p_metadata);
 
 	int small_thumbnail_size = -1;
 
@@ -130,8 +128,8 @@ public:
 	static EditorResourcePreview *get_singleton();
 
 	struct PreviewItem {
-		Ref<Texture2D> preview;
-		Ref<Texture2D> small_preview;
+		String preview_path;
+		String small_preview_path;
 	};
 
 	// p_receiver_func callback has signature (String p_path, Ref<Texture2D> p_preview, Ref<Texture2D> p_preview_small, Variant p_userdata)

@@ -39,15 +39,18 @@
 #include "scene/gui/label.h"
 #include "scene/gui/texture_rect.h"
 
-void EditorResourceTooltipPlugin::_thumbnail_ready(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+void EditorResourceTooltipPlugin::_thumbnail_ready(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata) {
 	ObjectID trid = p_udata;
 	TextureRect *tr = ObjectDB::get_instance<TextureRect>(trid);
 
 	if (!tr) {
 		return;
 	}
-
-	tr->set_texture(p_preview);
+	if (p_preview.is_empty()) {
+		tr->set_texture(Ref<Texture3D>());
+	} else {
+		tr->set_texture(ResourceLoader::load(p_preview));
+	}
 }
 
 void EditorResourceTooltipPlugin::_bind_methods() {

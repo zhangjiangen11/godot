@@ -831,30 +831,30 @@ void FileSystemDock::navigate_to_path(const String &p_path) {
 	_update_import_dock();
 }
 
-void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
-	if (p_preview.is_valid()) {
+void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata) {
+	if (!p_preview.is_empty()) {
 		Array uarr = p_udata;
 		int idx = uarr[0];
 		String file = uarr[1];
 		if (idx < files->get_item_count() && files->get_item_text(idx) == file && files->get_item_metadata(idx) == p_path) {
 			if (file_list_display_mode == FILE_LIST_DISPLAY_LIST) {
-				if (p_small_preview.is_valid()) {
-					files->set_item_icon(idx, p_small_preview);
+				if (!p_small_preview.is_empty()) {
+					files->set_item_icon(idx, ResourceLoader::load(p_small_preview));
 				}
 			} else {
-				files->set_item_icon(idx, p_preview);
+				files->set_item_icon(idx, ResourceLoader::load(p_preview));
 			}
 		}
 	}
 }
 
-void FileSystemDock::_tree_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
-	if (p_small_preview.is_valid()) {
+void FileSystemDock::_tree_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata) {
+	if (!p_small_preview.is_empty()) {
 		Array uarr = p_udata;
 		if (tree_update_id == (int)uarr[0]) {
 			TreeItem *file_item = Object::cast_to<TreeItem>(uarr[1]);
 			if (file_item) {
-				file_item->set_icon(0, p_small_preview);
+				file_item->set_icon(0, ResourceLoader::load(p_small_preview));
 			}
 		}
 	}

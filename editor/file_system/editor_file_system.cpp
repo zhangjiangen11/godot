@@ -46,7 +46,6 @@
 #include "editor/settings/editor_settings.h"
 #include "editor/settings/project_settings_editor.h"
 #include "scene/resources/packed_scene.h"
-#include "core/object/worker_thread_pool.h"
 
 EditorFileSystem *EditorFileSystem::singleton = nullptr;
 int EditorFileSystem::nb_files_total = 0;
@@ -2874,7 +2873,7 @@ Error EditorFileSystem::_reimport_file(const String &p_file, const HashMap<Strin
 	//mix with default params, in case a parameter is missing
 
 	List<ResourceImporter::ImportOption> opts;
-	importer->get_import_options(p_file, &opts);
+	importer->get_import_options(p_file, &opts, 2);
 	for (const ResourceImporter::ImportOption &E : opts) {
 		if (!params.has(E.option.name)) { //this one is not present
 			params[E.option.name] = E.default_value;

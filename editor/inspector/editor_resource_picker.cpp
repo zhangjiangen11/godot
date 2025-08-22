@@ -108,7 +108,7 @@ void EditorResourcePicker::_update_resource() {
 	quick_load_button->set_visible(editable && edited_resource.is_null());
 }
 
-void EditorResourcePicker::_update_resource_preview(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, ObjectID p_obj) {
+void EditorResourcePicker::_update_resource_preview(const String &p_path, const String &p_preview, const String &p_small_preview, ObjectID p_obj) {
 	if (edited_resource.is_null() || edited_resource->get_instance_id() != p_obj) {
 		return;
 	}
@@ -120,7 +120,7 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 			return;
 		}
 
-		if (p_preview.is_valid()) {
+		if (!p_preview.is_empty()) {
 			preview_rect->set_offset(SIDE_LEFT, assign_button->get_button_icon()->get_width() + assign_button->get_theme_stylebox(CoreStringName(normal))->get_content_margin(SIDE_LEFT) + get_theme_constant(SNAME("h_separation"), SNAME("Button")));
 
 			// Resource-specific stretching.
@@ -134,7 +134,7 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 				assign_button->set_custom_minimum_size(assign_button_min_size.max(Size2(1, thumbnail_size)));
 			}
 
-			preview_rect->set_texture(p_preview);
+			preview_rect->set_texture(ResourceLoader::load(p_preview));
 			assign_button->set_text("");
 		}
 	}

@@ -510,8 +510,8 @@ void EditorFileDialog::_post_popup() {
 	set_process_shortcut_input(true);
 }
 
-void EditorFileDialog::_thumbnail_result(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
-	if (display_mode == DISPLAY_LIST || p_preview.is_null()) {
+void EditorFileDialog::_thumbnail_result(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata) {
+	if (display_mode == DISPLAY_LIST || p_preview.is_empty()) {
 		return;
 	}
 
@@ -519,18 +519,18 @@ void EditorFileDialog::_thumbnail_result(const String &p_path, const Ref<Texture
 		Dictionary d = item_list->get_item_metadata(i);
 		String pname = d["path"];
 		if (pname == p_path) {
-			item_list->set_item_icon(i, p_preview);
+			item_list->set_item_icon(i, ResourceLoader::load(p_preview));
 			item_list->set_item_tag_icon(i, Ref<Texture2D>());
 		}
 	}
 }
 
-void EditorFileDialog::_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+void EditorFileDialog::_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata) {
 	set_process(false);
 	preview_waiting = false;
 
-	if (p_preview.is_valid() && get_current_path() == p_path) {
-		preview->set_texture(p_preview);
+	if (!p_preview.is_empty() && get_current_path() == p_path) {
+		preview->set_texture(ResourceLoader::load(p_preview));
 		if (display_mode == DISPLAY_THUMBNAILS) {
 			preview_vb->hide();
 		} else {

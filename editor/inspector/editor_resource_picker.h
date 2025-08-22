@@ -86,7 +86,7 @@ class EditorResourcePicker : public HBoxContainer {
 
 	PopupMenu *edit_menu = nullptr;
 
-	void _update_resource_preview(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, ObjectID p_obj);
+	void _update_resource_preview(const String &p_path, const String &p_preview, const String &p_small_preview, ObjectID p_obj);
 
 	void _resource_selected();
 	void _resource_changed();

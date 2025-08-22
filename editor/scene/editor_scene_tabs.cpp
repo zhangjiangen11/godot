@@ -337,10 +337,10 @@ void EditorSceneTabs::_scene_tabs_resized() {
 	}
 }
 
-void EditorSceneTabs::_tab_preview_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+void EditorSceneTabs::_tab_preview_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata) {
 	int p_tab = p_udata;
-	if (p_preview.is_valid()) {
-		tab_preview->set_texture(p_preview);
+	if (!p_preview.is_empty()) {
+		tab_preview->set_texture(ResourceLoader::load(p_preview));
 
 		Rect2 rect = scene_tabs->get_tab_rect(p_tab);
 		rect.position += scene_tabs->get_global_position();

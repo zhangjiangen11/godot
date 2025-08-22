@@ -222,11 +222,15 @@ void TileSetScenesCollectionSourceEditor::_tile_set_scenes_collection_source_cha
 	tile_set_scenes_collection_source_changed_needs_update = true;
 }
 
-void TileSetScenesCollectionSourceEditor::_scene_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_ud) {
+void TileSetScenesCollectionSourceEditor::_scene_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_ud) {
 	int index = p_ud;
 
 	if (index >= 0 && index < scene_tiles_list->get_item_count()) {
-		scene_tiles_list->set_item_icon(index, p_preview);
+		if (p_preview.is_empty()) {
+			scene_tiles_list->set_item_icon(index, Ref<Texture2D>());
+		} else {
+			scene_tiles_list->set_item_icon(index, ResourceLoader::load(p_preview));
+		}
 	}
 }
 

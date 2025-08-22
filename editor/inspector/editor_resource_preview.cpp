@@ -31,6 +31,7 @@
 #include "editor_resource_preview.h"
 
 #include "core/config/project_settings.h"
+#include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
@@ -136,7 +137,7 @@ void EditorResourcePreview::_thread_func(void *ud) {
 	erp->_thread();
 }
 
-void EditorResourcePreview::_preview_ready(const String &p_path, int p_hash, const Ref<Texture2D> &p_texture, const Ref<Texture2D> &p_small_texture, ObjectID id, const StringName &p_func, const Variant &p_ud, const Dictionary &p_metadata) {
+void EditorResourcePreview::_preview_ready(const String &p_path, int p_hash, String &r_texture_path, String &r_small_texture_path, ObjectID id, const StringName &p_func, const Variant &p_ud, const Dictionary &p_metadata) {
 	{
 		MutexLock lock(preview_mutex);
 
@@ -151,8 +152,8 @@ void EditorResourcePreview::_preview_ready(const String &p_path, int p_hash, con
 		}
 
 		Item item;
-		item.preview = p_texture;
-		item.small_preview = p_small_texture;
+		item.preview_path = r_texture_path;
+		item.small_preview_path = r_small_texture_path;
 		item.last_hash = p_hash;
 		item.modified_time = modified_time;
 		item.preview_metadata = p_metadata;
@@ -160,10 +161,10 @@ void EditorResourcePreview::_preview_ready(const String &p_path, int p_hash, con
 		cache[p_path] = item;
 	}
 
-	Callable(id, p_func).call_deferred(p_path, p_texture, p_small_texture, p_ud);
+	Callable(id, p_func).call_deferred(p_path, r_texture_path, r_small_texture_path, p_ud);
 }
 
-void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<ImageTexture> &r_small_texture, const QueueItem &p_item, const String &cache_base, Dictionary &p_metadata) {
+void EditorResourcePreview::_generate_preview(String &r_texture_path, String &r_small_texture_path, Ref<ImageTexture> &r_texture, Ref<ImageTexture> &r_small_texture, const QueueItem &p_item, const String &cache_base, Dictionary &p_metadata) {
 	String type;
 
 	uint64_t started_at = OS::get_singleton()->get_ticks_usec();
@@ -250,8 +251,10 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 			// Wow it generated a preview... save cache.
 			bool has_small_texture = r_small_texture.is_valid();
 			ResourceSaver::save(r_texture, cache_base + ".res");
+			r_texture_path = cache_base + ".res";
 			if (has_small_texture) {
 				ResourceSaver::save(r_small_texture, cache_base + "_small.res");
+				r_small_texture_path = cache_base + "_small.res";
 			}
 			Ref<FileAccess> f = FileAccess::open(cache_base + ".txt", FileAccess::WRITE);
 			ERR_FAIL_COND_MSG(f.is_null(), "Cannot create file '" + cache_base + ".txt'. Check user write permissions.");
@@ -263,6 +266,17 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 			}
 
 			_write_preview_cache(f, thumbnail_size, has_small_texture, modtime, FileAccess::get_md5(p_item.path), p_metadata);
+		}
+	} else {
+		if (r_texture.is_valid()) {
+			// Wow it generated a preview... save cache.
+			bool has_small_texture = r_small_texture.is_valid();
+			ResourceSaver::save(r_texture, cache_base + "_temp.res");
+			r_texture_path = cache_base + "_temp.res";
+			if (has_small_texture) {
+				ResourceSaver::save(r_small_texture, cache_base + "_small.res");
+				r_small_texture_path = cache_base + "_small.res";
+			}
 		}
 	}
 
@@ -293,7 +307,7 @@ void EditorResourcePreview::_iterate() {
 	if (cache.has(item.path)) {
 		Item cached_item = cache[item.path];
 		// Already has it because someone loaded it, just let it know it's ready.
-		_preview_ready(item.path, cached_item.last_hash, cached_item.preview, cached_item.small_preview, item.id, item.function, item.userdata, cached_item.preview_metadata);
+		_preview_ready(item.path, cached_item.last_hash, cached_item.preview_path, cached_item.small_preview_path, item.id, item.function, item.userdata, cached_item.preview_metadata);
 		preview_mutex.unlock();
 		return;
 	}
@@ -302,19 +316,25 @@ void EditorResourcePreview::_iterate() {
 	Ref<ImageTexture> texture;
 	Ref<ImageTexture> small_texture;
 
+	String texture_path;
+	String small_texture_path;
+
 	int thumbnail_size = EDITOR_GET("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
 	thumbnail_size = 80;
 
+	String temp_path = EditorPaths::get_singleton()->get_cache_dir();
 	if (item.resource.is_valid()) {
+		temp_path = temp_path.path_join("temp_resthumb");
 		Dictionary preview_metadata;
-		_generate_preview(texture, small_texture, item, String(), preview_metadata);
-		_preview_ready(item.path, item.resource->hash_edited_version_for_preview(), texture, small_texture, item.id, item.function, item.userdata, preview_metadata);
+		String cache_base = itos(item.resource->get_instance_id()) + item.resource->get_class_name();
+		cache_base = temp_path.path_join("resthumb-" + cache_base);
+		_generate_preview(texture_path, small_texture_path, texture, small_texture, item, cache_base, preview_metadata);
+		_preview_ready(item.path, item.resource->hash_edited_version_for_preview(), texture_path, small_texture_path, item.id, item.function, item.userdata, preview_metadata);
 		return;
 	}
 
 	Dictionary preview_metadata;
-	String temp_path = EditorPaths::get_singleton()->get_cache_dir();
 	String cache_base = ProjectSettings::get_singleton()->globalize_path(item.path).md5_text();
 	cache_base = temp_path.path_join("resthumb-" + cache_base);
 
@@ -324,7 +344,7 @@ void EditorResourcePreview::_iterate() {
 	Ref<FileAccess> f = FileAccess::open(file, FileAccess::READ);
 	if (f.is_null()) {
 		// No cache found, generate.
-		_generate_preview(texture, small_texture, item, cache_base, preview_metadata);
+		_generate_preview(texture_path, small_texture_path, texture, small_texture, item, cache_base, preview_metadata);
 	} else {
 		uint64_t modtime = FileAccess::get_modified_time(item.path);
 		String import_path = item.path + ".import";
@@ -390,10 +410,10 @@ void EditorResourcePreview::_iterate() {
 		}
 
 		if (!cache_valid) {
-			_generate_preview(texture, small_texture, item, cache_base, preview_metadata);
+			_generate_preview(texture_path, small_texture_path, texture, small_texture, item, cache_base, preview_metadata);
 		}
 	}
-	_preview_ready(item.path, 0, texture, small_texture, item.id, item.function, item.userdata, preview_metadata);
+	_preview_ready(item.path, 0, texture_path, small_texture_path, item.id, item.function, item.userdata, preview_metadata);
 }
 
 void EditorResourcePreview::_write_preview_cache(Ref<FileAccess> p_file, int p_thumbnail_size, bool p_has_small_texture, uint64_t p_modified_time, const String &p_hash, const Dictionary &p_metadata) {
@@ -456,8 +476,8 @@ EditorResourcePreview::PreviewItem EditorResourcePreview::get_resource_preview_i
 		}
 
 		EditorResourcePreview::Item &cached_item = I->value;
-		item.preview = cached_item.preview;
-		item.small_preview = cached_item.small_preview;
+		item.preview_path = cached_item.preview_path;
+		item.small_preview_path = cached_item.small_preview_path;
 	}
 	preview_sem.post();
 	return item;
@@ -474,7 +494,7 @@ void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p
 		String path_id = "ID:" + itos(p_res->get_instance_id());
 
 		if (cache.has(path_id) && cache[path_id].last_hash == p_res->hash_edited_version_for_preview()) {
-			p_receiver->call(p_receiver_func, path_id, cache[path_id].preview, cache[path_id].small_preview, p_userdata);
+			p_receiver->call(p_receiver_func, path_id, cache[path_id].preview_path, cache[path_id].small_preview_path, p_userdata);
 			return;
 		}
 
@@ -495,16 +515,13 @@ void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p
 
 void EditorResourcePreview::queue_resource_preview(const String &p_path, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata) {
 	ERR_FAIL_NULL(p_receiver);
-	if (p_path.ends_with(".gd")) {
-		return;
-	}
 	_update_thumbnail_sizes();
 
 	{
 		MutexLock lock(preview_mutex);
 
 		if (cache.has(p_path)) {
-			p_receiver->call(p_receiver_func, p_path, cache[p_path].preview, cache[p_path].small_preview, p_userdata);
+			p_receiver->call(p_receiver_func, p_path, cache[p_path].preview_path, cache[p_path].small_preview_path, p_userdata);
 			return;
 		}
 
@@ -614,6 +631,12 @@ void EditorResourcePreview::stop() {
 
 EditorResourcePreview::EditorResourcePreview() {
 	singleton = this;
+
+	String temp_path = EditorPaths::get_singleton()->get_cache_dir();
+	temp_path = temp_path.path_join("temp_resthumb");
+	if (!DirAccess::exists(temp_path)) {
+		DirAccess::make_dir_absolute(temp_path);
+	}
 }
 
 EditorResourcePreview::~EditorResourcePreview() {
