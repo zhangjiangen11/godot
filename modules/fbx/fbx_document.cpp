@@ -2387,11 +2387,14 @@ String FBXDocument::_get_texture_path(const String &p_base_dir, const String &p_
 	if (FileAccess::exists(p_source_file_path)) {
 		return p_source_file_path.strip_edges();
 	}
-	const String tex_file_name = p_source_file_path.get_file();
+	String tex_file_name = p_source_file_path.get_file();
+	if (tex_file_name.ends_with(".tif")) {
+		tex_file_name = tex_file_name.get_basename() + ".png";
+	}
 	const Vector<String> subdirs = {
 		"", "textures/", "Textures/", "images/",
 		"Images/", "materials/", "Materials/",
-		"maps/", "Maps/", "tex/", "Tex/"
+		"maps/", "Maps/", "tex/", "Tex/", "Mat/"
 	};
 	String base_dir = p_base_dir;
 	const String source_file_name = tex_file_name;
