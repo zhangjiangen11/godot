@@ -642,10 +642,16 @@ void ShaderMaterialInstance::set_base_material(const Ref<Material> &p_base) {
 	if (base == p_base) {
 		return;
 	}
+	Ref<Material> new_base = p_base;
+	Ref<ShaderMaterialInstance> b = new_base;
+	while (b.is_valid()) {
+		new_base = b->base;
+		b = new_base;
+	}
 	if (base.is_valid()) {
 		base->disconnect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
 	}
-	base = p_base;
+	base = new_base;
 	base->connect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
 	if (_get_material().is_valid()) {
 		RID shader_rid = get_shader_rid();
