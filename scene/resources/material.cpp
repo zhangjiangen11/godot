@@ -688,7 +688,7 @@ void ShaderMaterialInstance::_check_material_rid() const {
 		is_dirty = true;
 	}
 }
-void ShaderMaterialInstance::update_material(RID p_material)const {
+void ShaderMaterialInstance::update_material(RID p_material) const {
 	if (p_material.is_null()) {
 		return;
 	}
@@ -2280,6 +2280,7 @@ void BaseMaterial3D::_material_set_param(const StringName &p_name, const Variant
 		pending_params[p_name] = p_value;
 	}
 	param_cache[p_name] = p_value;
+	emit_changed();
 }
 Variant BaseMaterial3D::_material_get_param(const StringName &p_param) const {
 	if (param_cache.has(p_param)) {

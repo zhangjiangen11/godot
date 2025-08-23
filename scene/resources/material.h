@@ -88,7 +88,8 @@ public:
 	virtual Ref<Resource> create_placeholder() const;
 	virtual void set_shader_parameter(const StringName &p_name, const Variant &p_value) {}
 	virtual Variant get_shader_parameter(const StringName &p_param) const { return Variant(); }
-	virtual void update_material(RID p_material) const{}
+	virtual void update_material(RID p_material) const {}
+	virtual void update_dirty() {}
 
 	Material();
 	virtual ~Material();
@@ -148,7 +149,15 @@ public:
 	virtual RID get_shader_rid() const override;
 
 	void set_base_material(const Ref<Material> &p_base);
-	const Ref<Material> &get_base_material() const { return base; }
+	const Ref<Material> &get_base_material() const {
+		update_dirty();
+		return base;
+	}
+	virtual void update_dirty() const {
+		if (is_dirty) {
+			update_material(_get_material());
+		}
+	}
 
 	void set_shader_parameter(const StringName &p_name, const Variant &p_value) override;
 	Variant get_shader_parameter(const StringName &p_name) const override;

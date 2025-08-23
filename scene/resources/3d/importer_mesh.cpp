@@ -649,6 +649,29 @@ Array ImporterMesh::get_lod_meshes() {
 			surfaces.write[i].lods.push_back(lod);
 		}
 	}
+	HashMap<Ref<Material>, Ref<Material>> material_map;
+
+	for (int i = 0; i < surfaces.size(); i++) {
+		Ref<Material> material = surfaces[i].material;
+		if (material_map.has(material)) {
+			continue;
+		}
+		Ref<ShaderMaterialInstance> shader_material = material;
+		if (shader_material.is_valid()) {
+			continue;
+		}
+		String path = material->get_path();
+		if (path.find("::") != -1) {
+			material_map[material] = material->duplicate(false);
+			if (material->get_name().is_empty()) {
+				material_map[material]->set_name(material->get_name() + "mat_sur_" + itos(material_map.size()));
+			} else {
+				material_map[material]->set_name(material->get_name() + "_sur_" + itos(material_map.size()));
+			}
+		} else {
+			material_map[material] = material;
+		}
+	}
 	Array lod_meshes;
 	for (int lod = 0; lod < max_lod_count; lod++) {
 		Ref<ArrayMesh> lod_mesh;
@@ -672,7 +695,9 @@ Array ImporterMesh::get_lod_meshes() {
 			}
 			Dictionary lods;
 			Array arrays = surfaces[i].arrays;
-			arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod].indices;
+			if (lod > 0 && surfaces[i].lods.size() > 0) {
+				arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod].indices;
+			}
 
 			lod_mesh->add_surface_from_arrays(surfaces[i].primitive, arrays, bs_data, lods, surfaces[i].flags);
 			if (surfaces[i].material.is_valid()) {
@@ -683,18 +708,10 @@ Array ImporterMesh::get_lod_meshes() {
 					lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, shader_material);
 				} else {
 					String path = material->get_path();
-					if (path.find("::") != -1) {
-						Ref<ShaderMaterialInstance> smi;
-						smi.instantiate();
-						smi->set_base_material(material->duplicate(false));
-						lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
-
-					} else {
-						Ref<ShaderMaterialInstance> smi;
-						smi.instantiate();
-						smi->set_base_material(material);
-						lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
-					}
+					Ref<ShaderMaterialInstance> smi;
+					smi.instantiate();
+					smi->set_base_material(material_map[material]);
+					lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
 				}
 			}
 			if (!surfaces[i].name.is_empty()) {
