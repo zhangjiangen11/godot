@@ -582,7 +582,9 @@ bool EditorPropertyArray::_is_drop_valid(const Dictionary &p_drag_data) const {
 
 	if (drop_type == "files") {
 		PackedStringArray files = drag_data["files"];
-
+		if (subtype == Variant::STRING) {
+			return true;
+		}
 		for (const String &file : files) {
 			int idx_in_dir;
 			EditorFileSystemDirectory const *dir = EditorFileSystem::get_singleton()->find_file(file, &idx_in_dir);
@@ -610,6 +612,9 @@ bool EditorPropertyArray::_is_drop_valid(const Dictionary &p_drag_data) const {
 		if (res.is_null()) {
 			return false;
 		}
+		if (subtype == Variant::STRING) {
+			return true;
+		}
 
 		String res_type = res->get_class();
 		StringName script_class;
@@ -630,6 +635,9 @@ bool EditorPropertyArray::_is_drop_valid(const Dictionary &p_drag_data) const {
 	if (drop_type == "nodes") {
 		Array node_paths = drag_data["nodes"];
 
+		if (subtype == Variant::STRING) {
+			return true;
+		}
 		PackedStringArray allowed_subtype_array;
 		if (allowed_type == "NodePath") {
 			if (subtype_hint_string == "NodePath") {
@@ -701,13 +709,21 @@ void EditorPropertyArray::drop_data_fw(const Point2 &p_point, const Variant &p_d
 	if (drop_type == "files") {
 		PackedStringArray files = drag_data["files"];
 
-		// Loop the file array and add to existing array.
-		for (int i = 0; i < files.size(); i++) {
-			const String &file = files[i];
+		if (subtype == Variant::STRING) {
+			// Loop the file array and add to existing array.
+			for (int i = 0; i < files.size(); i++) {
+				const String &file = files[i];
+				array.call("push_back", file);
+			}
+		} else {
+			// Loop the file array and add to existing array.
+			for (int i = 0; i < files.size(); i++) {
+				const String &file = files[i];
 
-			Ref<Resource> res = ResourceLoader::load(file);
-			if (res.is_valid()) {
-				array.call("push_back", res);
+				Ref<Resource> res = ResourceLoader::load(file);
+				if (res.is_valid()) {
+					array.call("push_back", res);
+				}
 			}
 		}
 
@@ -717,10 +733,14 @@ void EditorPropertyArray::drop_data_fw(const Point2 &p_point, const Variant &p_d
 	if (drop_type == "resource") {
 		Ref<Resource> res = drag_data["resource"];
 
-		if (res.is_valid()) {
-			array.call("push_back", res);
+		if (subtype == Variant::STRING) {
+			array.call("push_back", res->get_path());
+		} else {
+			if (res.is_valid()) {
+				array.call("push_back", res);
 
-			emit_changed(get_edited_property(), array);
+				emit_changed(get_edited_property(), array);
+			}
 		}
 	}
 
@@ -728,13 +748,20 @@ void EditorPropertyArray::drop_data_fw(const Point2 &p_point, const Variant &p_d
 		Array node_paths = drag_data["nodes"];
 		Node *base_node = get_base_node();
 
-		for (int i = 0; i < node_paths.size(); i++) {
-			const NodePath &path = node_paths[i];
+		if (subtype == Variant::STRING) {
+			for (int i = 0; i < node_paths.size(); i++) {
+				const NodePath &path = node_paths[i];
+				array.call("push_back", String(base_node->get_path().rel_path_to(path)));
+			}
+		} else {
+			for (int i = 0; i < node_paths.size(); i++) {
+				const NodePath &path = node_paths[i];
 
-			if (subtype == Variant::OBJECT) {
-				array.call("push_back", get_node(path));
-			} else if (subtype == Variant::NODE_PATH) {
-				array.call("push_back", base_node->get_path().rel_path_to(path));
+				if (subtype == Variant::OBJECT) {
+					array.call("push_back", get_node(path));
+				} else if (subtype == Variant::NODE_PATH) {
+					array.call("push_back", base_node->get_path().rel_path_to(path));
+				}
 			}
 		}
 
