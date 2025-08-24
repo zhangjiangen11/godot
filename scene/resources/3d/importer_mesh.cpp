@@ -673,6 +673,7 @@ Array ImporterMesh::get_lod_meshes() {
 		}
 	}
 	Array lod_meshes;
+	max_lod_count += 1;
 	for (int lod = 0; lod < max_lod_count; lod++) {
 		Ref<ArrayMesh> lod_mesh;
 		if (lod_mesh.is_null()) {
@@ -696,7 +697,7 @@ Array ImporterMesh::get_lod_meshes() {
 			Dictionary lods;
 			Array arrays = surfaces[i].arrays;
 			if (lod > 0 && surfaces[i].lods.size() > 0) {
-				arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod].indices;
+				arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod - 1].indices;
 			}
 
 			lod_mesh->add_surface_from_arrays(surfaces[i].primitive, arrays, bs_data, lods, surfaces[i].flags);

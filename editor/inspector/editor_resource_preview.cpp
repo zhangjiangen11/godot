@@ -187,7 +187,6 @@ void EditorResourcePreview::_generate_preview(String &r_texture_path, String &r_
 
 	int thumbnail_size = EDITOR_GET("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
-	thumbnail_size = 80;
 
 	r_texture = Ref<ImageTexture>();
 	r_small_texture = Ref<ImageTexture>();
@@ -321,7 +320,6 @@ void EditorResourcePreview::_iterate() {
 
 	int thumbnail_size = EDITOR_GET("filesystem/file_dialog/thumbnail_size");
 	thumbnail_size *= EDSCALE;
-	thumbnail_size = 80;
 
 	String temp_path = EditorPaths::get_singleton()->get_cache_dir();
 	if (item.resource.is_valid()) {
@@ -396,10 +394,12 @@ void EditorResourcePreview::_iterate() {
 			Ref<Image> small_img;
 			small_img.instantiate();
 			if (FileAccess::exists(cache_base + ".res")) {
-				texture = ResourceLoader::load(cache_base + ".res");
+				//texture = ResourceLoader::load(cache_base + ".res");
+				texture_path = cache_base + ".res";
 				if (has_small_texture) {
 					if (FileAccess::exists(cache_base + "_small.res")) {
-						small_texture = ResourceLoader::load(cache_base + "_small.res");
+						//small_texture = ResourceLoader::load(cache_base + "_small.res");
+						small_texture_path = cache_base + "_small.res";
 					} else {
 						cache_valid = false;
 					}

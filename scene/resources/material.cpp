@@ -669,7 +669,11 @@ void ShaderMaterialInstance::set_shader_parameter(const StringName &p_name, cons
 		}
 		param_overrides[p_name] = p_value;
 	}
-	is_dirty = true;
+	if (_get_material().is_valid()) {
+		RS::get_singleton()->material_set_param(_get_material(), p_name, p_value);
+	} else {
+		is_dirty = true;
+	}
 }
 Variant ShaderMaterialInstance::get_shader_parameter(const StringName &p_name) const {
 	if (param_overrides.has(p_name)) {
