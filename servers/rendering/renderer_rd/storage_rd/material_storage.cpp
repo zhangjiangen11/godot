@@ -2317,6 +2317,15 @@ void MaterialStorage::material_set_param(RID p_material, const StringName &p_par
 		material->params.erase(p_param);
 	} else {
 		ERR_FAIL_COND(p_value.get_type() == Variant::OBJECT); //object not allowed
+		if (material->params.has(p_param)) {
+			Variant &param = material->params[p_param];
+			if (param.get_type() == p_value.get_type()) {
+				if (param == p_value) {
+					// 没有刷新就直接返回吧
+					return;
+				}
+			}
+		}
 		material->params[p_param] = p_value;
 	}
 

@@ -89,7 +89,7 @@ public:
 	virtual void set_shader_parameter(const StringName &p_name, const Variant &p_value) {}
 	virtual Variant get_shader_parameter(const StringName &p_param) const { return Variant(); }
 	virtual void update_material(RID p_material) const {}
-	virtual void update_dirty() {}
+	virtual void update_dirty() const {}
 
 	Material();
 	virtual ~Material();
@@ -153,7 +153,7 @@ public:
 		update_dirty();
 		return base;
 	}
-	virtual void update_dirty() const {
+	virtual void update_dirty() const override {
 		if (is_dirty) {
 			update_material(_get_material());
 		}

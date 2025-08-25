@@ -311,7 +311,7 @@ void ShaderRD::_compile_variant(uint32_t p_variant, CompileData p_data) {
 		p_data.version->variant_data.write[variant] = shader_data;
 	}
 }
-static String get_string_line_range(const String& code,int line_start = 0, int line_range = 100) {
+static String get_string_line_range(const String &code, int line_start = 0, int line_range = 100) {
 	const Vector<String> lines = code.split("\n");
 	String ret;
 	int min_line = line_start - line_range;
@@ -328,13 +328,11 @@ static String get_string_line_range(const String& code,int line_start = 0, int l
 		}
 		if (i == line_start) {
 			ret += vformat("        %4d | %s", i + 1, lines[i]);
-		}
-		else {
+		} else {
 			ret += vformat("%4d | %s", i + 1, lines[i]);
 		}
 	}
 	return ret;
-
 }
 
 Vector<String> ShaderRD::version_build_variant_stage_sources(RID p_version, int p_variant) {

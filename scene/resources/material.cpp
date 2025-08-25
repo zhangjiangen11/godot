@@ -706,7 +706,6 @@ void ShaderMaterialInstance::update_material(RID p_material) const {
 	RID shader_rid = get_shader_rid();
 	RS::get_singleton()->material_set_shader(p_material, shader_rid);
 	if (shader_rid.is_null()) {
-		is_dirty = false;
 		return;
 	}
 	base->update_material(p_material);
@@ -2235,6 +2234,7 @@ void fragment() {)";
 	if (_get_material().is_valid()) {
 		RS::get_singleton()->material_set_shader(_get_material(), shader_rid);
 	}
+	emit_changed();
 }
 
 void BaseMaterial3D::_check_material_rid() {
@@ -2276,6 +2276,7 @@ void BaseMaterial3D::_queue_shader_change() {
 		return;
 	}
 
+	emit_changed();
 	MutexLock lock(material_mutex);
 
 	if (!element.in_list()) {

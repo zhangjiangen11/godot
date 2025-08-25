@@ -105,6 +105,7 @@ public:
 		FLAG_SAVE_BIG_ENDIAN = 16,
 		FLAG_COMPRESS = 32,
 		FLAG_REPLACE_SUBRESOURCE_PATHS = 64,
+		FLAG_CHANGE_CACHE = 1024,
 	};
 
 	static ResourceSaver *get_singleton() { return singleton; }

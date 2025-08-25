@@ -275,8 +275,7 @@ Ref<PackedScene> ResourceLoaderText::_parse_node_tag(VariantParser::ResourcePars
 				if (error) {
 					if (error == ERR_FILE_MISSING_DEPENDENCIES) {
 						// Resource loading error, just skip it.
-					}
-					else if (error == ERR_BUSY) {
+					} else if (error == ERR_BUSY) {
 						WARN_PRINT(vformat("Parse Error: %s. [Resource file %s:%d]", error_names[error], res_path, lines));
 						return Ref<PackedScene>();
 					} else if (error != ERR_FILE_EOF) {
@@ -1611,8 +1610,7 @@ void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, 
 					return;
 				}
 			}
-			if(res.is_valid())
-			{
+			if (res.is_valid()) {
 				if (!p_main && (!bundle_resources) && !res->is_built_in()) {
 					if (res->get_path() == local_path) {
 						ERR_PRINT("Circular reference to resource being saved found: '" + local_path + "' will be null next time it's loaded.");
@@ -1631,10 +1629,8 @@ void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, 
 				}
 
 				resource_set.insert(res);
-
 			}
-			if(ref.is_null())
-			{
+			if (ref.is_null()) {
 				return;
 			}
 
@@ -1661,8 +1657,7 @@ void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, 
 						if (sres.is_valid()) {
 							resource_set.insert(sres);
 							saved_resources.push_back(sres);
-							if (sres->is_built_in())
-							{
+							if (sres->is_built_in()) {
 								_find_resources(sres);
 							}
 						} else {
@@ -1675,8 +1670,9 @@ void ResourceFormatSaverTextInstance::_find_resources(const Variant &p_variant, 
 
 				I = I->next();
 			}
-			if(res.is_valid())
+			if (res.is_valid()) {
 				saved_resources.push_back(res); // Saved after, so the children it needs are available when loaded
+			}
 
 		} break;
 		case Variant::ARRAY: {

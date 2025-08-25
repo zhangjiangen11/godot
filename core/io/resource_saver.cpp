@@ -130,6 +130,9 @@ Error ResourceSaver::save(const Ref<Resource> &p_resource, const String &p_path,
 		if (err == OK) {
 #ifdef TOOLS_ENABLED
 
+			if (p_flags & FLAG_CHANGE_CACHE) {
+				ResourceCache::set_ref(p_path, p_resource.ptr());
+			}
 			((Resource *)p_resource.ptr())->set_edited(false);
 			if (timestamp_on_save) {
 				uint64_t mt = FileAccess::get_modified_time(path);
@@ -141,6 +144,7 @@ Error ResourceSaver::save(const Ref<Resource> &p_resource, const String &p_path,
 			if (p_flags & FLAG_CHANGE_PATH) {
 				p_resource->set_path(old_path);
 			}
+
 
 			if (save_callback && path.begins_with("res://")) {
 				save_callback(p_resource, path);
