@@ -12,6 +12,13 @@
 	<tutorials>
 	</tutorials>
 	<methods>
+		<method name="create">
+			<return type="void" />
+			<param index="0" name="faces" type="PackedVector3Array" />
+			<param index="1" name="surface_indices" type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
 		<method name="create_from_faces">
 			<return type="bool" />
 			<param index="0" name="faces" type="PackedVector3Array" />
@@ -20,10 +27,38 @@
 				Returns [code]true[/code] if the tree is successfully built, [code]false[/code] otherwise.
 			</description>
 		</method>
+		<method name="get_closest_point_to_swap_normal" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="point" type="Vector3" />
+			<param index="1" name="max_distance" type="float" />
+			<param index="2" name="auto_swap_normal" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
 		<method name="get_faces" qualifiers="const">
 			<return type="PackedVector3Array" />
 			<description>
 				Returns a copy of the geometry faces. Each 3 vertices of the array represent one triangle (face).
+			</description>
+		</method>
+		<method name="get_indices" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_vertices" qualifiers="const">
+			<return type="PackedVector3Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_vertices_xy" qualifiers="const">
+			<return type="PackedVector2Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_vertices_xz" qualifiers="const">
+			<return type="PackedVector2Array" />
+			<description>
 			</description>
 		</method>
 		<method name="intersect_ray" qualifiers="const">
@@ -52,6 +87,14 @@
 				[code]face_index[/code]: The index of the intersected triangle.
 				Returns an empty [Dictionary] if no intersection happens.
 				See also [method intersect_ray], which is similar but uses an infinite-length ray.
+			</description>
+		</method>
+		<method name="intersect_segment_swap_normal" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="begin" type="Vector3" />
+			<param index="1" name="end" type="Vector3" />
+			<param index="2" name="auto_swap_normal" type="bool" default="true" />
+			<description>
 			</description>
 		</method>
 	</methods>

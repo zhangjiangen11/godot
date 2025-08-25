@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterPrefabProcessPanel" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_charcter_prefab_groups">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="multe_charcter_prefab_file_path" type="String" setter="set_multe_charcter_prefab_file_path" getter="get_multe_charcter_prefab_file_path" default="&quot;&quot;">
+		</member>
+		<member name="multe_charcter_prefab_group" type="StringName" setter="set_multe_charcter_prefab_group" getter="get_multe_charcter_prefab_group" default="&amp;&quot;&quot;">
+		</member>
+		<member name="preview_mesh_path" type="String" setter="set_preview_mesh_path" getter="get_preview_mesh_path" default="&quot;&quot;">
+		</member>
+		<member name="single_charcter_prefab_group" type="StringName" setter="set_single_charcter_prefab_group" getter="get_single_charcter_prefab_group" default="&amp;&quot;&quot;">
+		</member>
+	</members>
+</class>

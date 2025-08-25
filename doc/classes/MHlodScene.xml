@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MHlodScene" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="awake" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_aabb" qualifiers="const">
+			<return type="AABB" />
+			<description>
+			</description>
+		</method>
+		<method name="get_debug_info" qualifiers="static">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_hlod_users" qualifiers="static">
+			<return type="Array" />
+			<param index="0" name="hlod_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_lod_mesh_ids_transforms">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_load_rest_timeout" qualifiers="static">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_triangle_mesh">
+			<return type="TriangleMesh" />
+			<description>
+			</description>
+		</method>
+		<method name="is_init_scene" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_load_rest_timeout" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="val" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="sleep" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="hlod" type="MHlod" setter="set_hlod" getter="get_hlod">
+		</member>
+		<member name="scene_layers" type="int" setter="set_scene_layers" getter="get_scene_layers" default="0">
+		</member>
+	</members>
+</class>

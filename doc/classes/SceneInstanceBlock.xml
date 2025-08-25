@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneInstanceBlock" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="build_gpu_render_mesh_data">
+			<return type="void" />
+			<param index="0" name="_unnamed_arg0" type="SceneEntityResource" />
+			<description>
+			</description>
+		</method>
+		<method name="compute_rotation">
+			<return type="void" />
+			<param index="0" name="p_index" type="int" />
+			<param index="1" name="p_normal" type="Vector3" />
+			<param index="2" name="p_angle" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="create_block_array" qualifiers="static">
+			<return type="Array" />
+			<param index="0" name="world_width" type="int" />
+			<param index="1" name="world_height" type="int" />
+			<param index="2" name="cell_step_x" type="float" />
+			<param index="3" name="cell_step_z" type="float" />
+			<param index="4" name="guid" type="String" />
+			<param index="5" name="callable" type="Callable" default="Callable()" />
+			<param index="6" name="is_far" type="bool" default="false" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cell_height" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cell_step_x" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cell_step_z" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cell_width" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_instance_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_instance_render_level" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_instance_transform" qualifiers="const">
+			<return type="Transform3D" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_abrupt_slope">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_height_map" type="FoliageHeightMap" />
+			<param index="2" name="height_range" type="Vector2" />
+			<param index="3" name="check_range" type="float" />
+			<param index="4" name="height_gap" type="float" />
+			<param index="5" name="hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_bordering">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_height_map" type="FoliageHeightMap" />
+			<param index="2" name="height_range" type="Vector2" />
+			<param index="3" name="check_range" type="float" />
+			<param index="4" name="height_gap" type="float" />
+			<param index="5" name="hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_cell_mask_around">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_cell_mask" type="FoliageCellMask" />
+			<param index="2" name="check_range" type="Vector2" />
+			<param index="3" name="p_hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_cell_mask_center">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_cell_mask" type="FoliageCellMask" />
+			<param index="2" name="p_hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_flat_land">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_height_map" type="FoliageHeightMap" />
+			<param index="2" name="height_range" type="Vector2" />
+			<param index="3" name="check_range" type="float" />
+			<param index="4" name="height_gap" type="float" />
+			<param index="5" name="hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_fosse">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_height_map" type="FoliageHeightMap" />
+			<param index="2" name="height_range" type="Vector2" />
+			<param index="3" name="check_range" type="float" />
+			<param index="4" name="height_gap" type="float" />
+			<param index="5" name="hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_height_range">
+			<return type="void" />
+			<param index="0" name="p_check_range" type="Vector2" />
+			<param index="1" name="hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_normal_slope">
+			<return type="void" />
+			<param index="0" name="p_normal_map" type="FoliageNormalMap" />
+			<param index="1" name="p_normal_y_min" type="float" />
+			<param index="2" name="p_normal_y_max" type="float" />
+			<param index="3" name="hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_world_abrupt_slope">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_height_map" type="FoliageHeightMap" />
+			<param index="2" name="height_range" type="Vector2" />
+			<param index="3" name="world_dir_angle" type="float" />
+			<param index="4" name="check_range" type="float" />
+			<param index="5" name="height_gap" type="float" />
+			<param index="6" name="hide_in_range" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="init_height">
+			<return type="void" />
+			<param index="0" name="p_world_range" type="Rect2" />
+			<param index="1" name="p_height_range" type="Vector2" />
+			<param index="2" name="p_height_map" type="FoliageHeightMap" />
+			<description>
+			</description>
+		</method>
+		<method name="init_xz_position">
+			<return type="void" />
+			<param index="0" name="start_position" type="Vector2" />
+			<description>
+			</description>
+		</method>
+		<method name="merage_block">
+			<return type="void" />
+			<param index="0" name="p_block" type="SceneInstanceBlock" />
+			<description>
+			</description>
+		</method>
+		<method name="random_instance_forward_rotation">
+			<return type="void" />
+			<param index="0" name="p_angle_min" type="float" />
+			<param index="1" name="p_angle_max" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="random_instance_move">
+			<return type="void" />
+			<param index="0" name="p_move_distance" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="random_instance_rotation">
+			<return type="void" />
+			<param index="0" name="p_angle_min" type="float" />
+			<param index="1" name="p_angle_max" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="random_instance_scale">
+			<return type="void" />
+			<param index="0" name="p_scale_min" type="float" />
+			<param index="1" name="p_scale_max" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="random_render_level">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_hiden_instances">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_instance_count">
+			<return type="void" />
+			<param index="0" name="cell_width" type="int" />
+			<param index="1" name="cell_height" type="int" />
+			<param index="2" name="cell_x_length" type="float" />
+			<param index="3" name="cell_z_length" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_instance_render_level">
+			<return type="void" />
+			<param index="0" name="index" type="int" />
+			<param index="1" name="render_level" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_instance_transform">
+			<return type="void" />
+			<param index="0" name="index" type="int" />
+			<param index="1" name="transform" type="Transform3D" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="cell_index" type="int" setter="set_cell_index" getter="get_cell_index" default="-1">
+		</member>
+		<member name="chunk_position" type="Vector2i" setter="set_chunk_position" getter="get_chunk_position" default="Vector2i(0, 0)">
+		</member>
+		<member name="gpu_render_block_array_lod0" type="SceneInstanceBlockGpuData[]" setter="set_gpu_render_block_array_lod0" getter="get_gpu_render_block_array_lod0" default="[]">
+		</member>
+		<member name="gpu_render_block_array_lod1" type="SceneInstanceBlockGpuData[]" setter="set_gpu_render_block_array_lod1" getter="get_gpu_render_block_array_lod1" default="[]">
+		</member>
+		<member name="gpu_render_block_array_lod2" type="SceneInstanceBlockGpuData[]" setter="set_gpu_render_block_array_lod2" getter="get_gpu_render_block_array_lod2" default="[]">
+		</member>
+		<member name="gpu_render_block_array_lod3" type="SceneInstanceBlockGpuData[]" setter="set_gpu_render_block_array_lod3" getter="get_gpu_render_block_array_lod3" default="[]">
+		</member>
+		<member name="guid" type="String" setter="set_guid" getter="get_guid" default="&quot;&quot;">
+		</member>
+		<member name="is_far" type="bool" setter="set_far" getter="is_far" default="false">
+		</member>
+		<member name="render_level" type="PackedByteArray" setter="set_render_level" getter="get_render_level" default="PackedByteArray()">
+		</member>
+		<member name="show_level_index" type="Vector3i" setter="set_show_level_index" getter="get_show_level_index" default="Vector3i(0, 0, 0)">
+		</member>
+	</members>
+</class>

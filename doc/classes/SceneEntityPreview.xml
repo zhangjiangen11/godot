@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneEntityPreview" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="bt_build_scene_entity_res_call">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="bt_build_scene_entity_res" type="int" setter="_set_bt_build_scene_entity_res_property" getter="_get_bt_build_scene_entity_res_property" default="0">
+		</member>
+		<member name="end_fliter" type="String" setter="set_end_fliter" getter="get_end_fliter" default="&quot;_LOD0&quot;">
+		</member>
+		<member name="group_name" type="String" setter="set_group_name" getter="get_group_name" default="&quot;build&quot;">
+		</member>
+		<member name="merge_angle" type="float" setter="set_merge_angle" getter="get_merge_angle" default="20.0">
+		</member>
+		<member name="scene_pack_res" type="PackedStringArray" setter="set_scene_pack_res" getter="get_scene_pack_res" default="PackedStringArray()">
+		</member>
+		<member name="scene_resource" type="SceneEntityResource" setter="set_scene_resource" getter="get_scene_resource">
+		</member>
+		<member name="show_level" type="int" setter="set_show_level" getter="get_show_level" default="0">
+		</member>
+		<member name="show_lod" type="int" setter="set_show_lod" getter="get_show_lod" default="0">
+		</member>
+		<member name="using_collision" type="bool" setter="set_using_collision" getter="get_using_collision" default="true">
+		</member>
+	</members>
+</class>

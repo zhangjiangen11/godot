@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EffekseerEmitter2D" inherits="Node2D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_playing">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="play">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="send_trigger">
+			<return type="void" />
+			<param index="0" name="trigger_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_dynamic_input">
+			<return type="void" />
+			<param index="0" name="input_index" type="int" />
+			<param index="1" name="value" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_editor_mode">
+			<return type="void" />
+			<param index="0" name="_unnamed_arg0" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="stop">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="stop_root">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="autofree" type="bool" setter="set_autofree" getter="is_autofree" default="false">
+		</member>
+		<member name="autoplay" type="bool" setter="set_autoplay" getter="is_autoplay" default="true">
+		</member>
+		<member name="color" type="Color" setter="set_color" getter="get_color" default="Color(1, 1, 1, 1)">
+		</member>
+		<member name="effect" type="EffekseerEffect" setter="set_effect" getter="get_effect">
+		</member>
+		<member name="flip_h" type="bool" setter="set_flip_h" getter="get_flip_h" default="false">
+		</member>
+		<member name="flip_v" type="bool" setter="set_flip_v" getter="get_flip_v" default="true">
+		</member>
+		<member name="orientation" type="Vector3" setter="set_orientation" getter="get_orientation" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="paused" type="bool" setter="set_paused" getter="is_paused" default="false">
+		</member>
+		<member name="speed" type="float" setter="set_speed" getter="get_speed" default="1.0">
+		</member>
+		<member name="target_position" type="Vector2" setter="set_target_position" getter="get_target_position" default="Vector2(0, 0)">
+		</member>
+	</members>
+	<signals>
+		<signal name="finished">
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

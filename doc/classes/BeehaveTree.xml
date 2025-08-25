@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BeehaveTree" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="listener" type="BeehaveListener[]" setter="set_listener" getter="get_listener" default="[]">
+		</member>
+		<member name="root_node" type="BeehaveNode" setter="set_root_node" getter="get_root_node">
+		</member>
+	</members>
+</class>

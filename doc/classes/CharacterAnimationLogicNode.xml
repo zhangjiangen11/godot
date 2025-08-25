@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAnimationLogicNode" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_animation_process" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="_layer" type="CharacterAnimatorLayer" />
+			<param index="1" name="_blackboard" type="Blackboard" />
+			<param index="2" name="_delta" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="_animation_process_start" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="_layer" type="CharacterAnimatorLayer" />
+			<param index="1" name="_blackboard" type="Blackboard" />
+			<description>
+			</description>
+		</method>
+		<method name="_animation_process_stop" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="_layer" type="CharacterAnimatorLayer" />
+			<param index="1" name="_blackboard" type="Blackboard" />
+			<description>
+			</description>
+		</method>
+		<method name="_check_stop" qualifiers="virtual">
+			<return type="bool" />
+			<param index="0" name="_layer" type="CharacterAnimatorLayer" />
+			<param index="1" name="_blackboard" type="Blackboard" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="blackboard_plan" type="BlackboardPlan" setter="set_blackboard_plan" getter="get_blackboard_plan">
+		</member>
+		<member name="check_stop_delay_time" type="float" setter="set_check_stop_delay_time" getter="get_check_stop_delay_time" default="0.0">
+		</member>
+		<member name="enter_condtion" type="CharacterAnimatorCondition" setter="set_enter_condtion" getter="get_enter_condtion">
+		</member>
+		<member name="life_time" type="float" setter="set_life_time" getter="get_life_time" default="0.0">
+		</member>
+		<member name="player_animation_name" type="StringName" setter="set_player_animation_name" getter="get_player_animation_name" default="&amp;&quot;&quot;">
+		</member>
+		<member name="priority" type="int" setter="set_priority" getter="get_priority" default="0">
+		</member>
+		<member name="start_blackboard_set" type="AnimatorBlackboardSet" setter="set_start_blackboard_set" getter="get_start_blackboard_set">
+		</member>
+		<member name="stop_blackboard_set" type="AnimatorBlackboardSet" setter="set_stop_blackboard_set" getter="get_stop_blackboard_set">
+		</member>
+		<member name="stop_check_anmation_length_scale" type="float" setter="set_stop_check_anmation_length_scale" getter="get_stop_check_anmation_length_scale" default="1.0">
+		</member>
+		<member name="stop_check_condtion" type="CharacterAnimatorCondition" setter="set_stop_check_condtion" getter="get_stop_check_condtion">
+		</member>
+		<member name="stop_check_type" type="int" setter="set_stop_check_type" getter="get_stop_check_type" enum="CharacterAnimationLogicNode.AnimatorAIStopCheckType" default="0">
+		</member>
+	</members>
+	<constants>
+		<constant name="Life" value="0" enum="AnimatorAIStopCheckType">
+		</constant>
+		<constant name="AnimationLengthScale" value="1" enum="AnimatorAIStopCheckType">
+		</constant>
+		<constant name="Condition" value="2" enum="AnimatorAIStopCheckType">
+		</constant>
+		<constant name="Script" value="3" enum="AnimatorAIStopCheckType">
+		</constant>
+	</constants>
+</class>

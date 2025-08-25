@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PathModifier3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="sample_3d_modifier_at" qualifiers="const">
+			<return type="Transform3D" />
+			<param index="0" name="offset_ratio" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="sample_uv_modifier_at" qualifiers="const">
+			<return type="Transform2D" />
+			<param index="0" name="offset_ratio" type="float" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="curve_offset_end" type="float" setter="set_curve_offset_end" getter="get_curve_offset_end" default="0.0">
+		</member>
+		<member name="curve_offset_ratio_end" type="float" setter="set_curve_offset_ratio_end" getter="get_curve_offset_ratio_end" default="1.0">
+		</member>
+		<member name="curve_offset_ratio_start" type="float" setter="set_curve_offset_ratio_start" getter="get_curve_offset_ratio_start" default="0.0">
+		</member>
+		<member name="curve_offset_start" type="float" setter="set_curve_offset_start" getter="get_curve_offset_start" default="0.0">
+		</member>
+		<member name="influence" type="Curve" setter="set_influence" getter="get_influence">
+		</member>
+		<member name="position_modifier" type="Vector3" setter="set_position_modifier" getter="get_position_modifier" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="position_randomness" type="Vector3" setter="set_position_randomness" getter="get_position_randomness" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="rotation_modifier" type="Variant" setter="set_rotation_modifier" getter="get_rotation_modifier" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="rotation_randomness" type="Variant" setter="set_rotation_randomness" getter="get_rotation_randomness" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="scale_modifier" type="Vector3" setter="set_scale_modifier" getter="get_scale_modifier" default="Vector3(1, 1, 1)">
+		</member>
+		<member name="scale_randomness" type="Vector3" setter="set_scale_randomness" getter="get_scale_randomness" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="uv_offset_modifier" type="Vector2" setter="set_uv_offset_modifier" getter="get_uv_offset_modifier" default="Vector2(0, 0)">
+		</member>
+		<member name="uv_offset_randomness" type="Vector2" setter="set_uv_offset_randomness" getter="get_uv_offset_randomness" default="Vector2(0, 0)">
+		</member>
+		<member name="uv_scale_modifier" type="Vector2" setter="set_uv_scale_modifier" getter="get_uv_scale_modifier" default="Vector2(1, 1)">
+		</member>
+		<member name="uv_scale_randomness" type="Vector2" setter="set_uv_scale_randomness" getter="get_uv_scale_randomness" default="Vector2(0, 0)">
+		</member>
+	</members>
+	<constants>
+		<constant name="ROTATION_EDIT_MODE_EULER" value="0" enum="RotationEditMode">
+		</constant>
+		<constant name="ROTATION_EDIT_MODE_QUATERNION" value="1" enum="RotationEditMode">
+		</constant>
+		<constant name="ROTATION_EDIT_MODE_BASIS" value="2" enum="RotationEditMode">
+		</constant>
+	</constants>
+</class>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="Node2DMultiMaterial" inherits="Node2D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_item">
+			<return type="RID" />
+			<param index="0" name="owner" type="int" />
+			<param index="1" name="material" type="Material" />
+			<param index="2" name="rect" type="Rect2i" />
+			<description>
+			</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_item">
+			<return type="void" />
+			<param index="0" name="owner" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_item_material">
+			<return type="RID" />
+			<param index="0" name="owner" type="int" />
+			<param index="1" name="material" type="Material" />
+			<description>
+			</description>
+		</method>
+		<method name="set_item_rect">
+			<return type="RID" />
+			<param index="0" name="owner" type="int" />
+			<param index="1" name="rect" type="Rect2" />
+			<description>
+			</description>
+		</method>
+		<method name="set_item_transform">
+			<return type="RID" />
+			<param index="0" name="owner" type="int" />
+			<param index="1" name="transform" type="Transform2D" />
+			<description>
+			</description>
+		</method>
+		<method name="set_item_visible">
+			<return type="RID" />
+			<param index="0" name="owner" type="int" />
+			<param index="1" name="visible" type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

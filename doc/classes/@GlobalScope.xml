@@ -293,6 +293,11 @@
 				[/codeblock]
 			</description>
 		</method>
+		<method name="create_signaling_null">
+			<return type="Variant" />
+			<description>
+			</description>
+		</method>
 		<method name="cubic_interpolate">
 			<return type="float" />
 			<param index="0" name="from" type="float" />
@@ -605,6 +610,12 @@
 				[/codeblock]
 				These are [Variant] value types: [code]null[/code], [bool], [int], [float], [String], [StringName], [Vector2], [Vector2i], [Vector3], [Vector3i], [Vector4], [Vector4i], [Rect2], [Rect2i], [Transform2D], [Transform3D], [Plane], [Quaternion], [AABB], [Basis], [Projection], [Color], [NodePath], [RID], [Callable] and [Signal].
 				These are [Variant] reference types: [Object], [Dictionary], [Array], [PackedByteArray], [PackedInt32Array], [PackedInt64Array], [PackedFloat32Array], [PackedFloat64Array], [PackedStringArray], [PackedVector2Array], [PackedVector3Array], [PackedVector4Array], and [PackedColorArray].
+			</description>
+		</method>
+		<method name="is_signaling_null">
+			<return type="bool" />
+			<param index="0" name="variant" type="Variant" />
+			<description>
 			</description>
 		</method>
 		<method name="is_zero_approx">
@@ -1547,14 +1558,20 @@
 		</method>
 	</methods>
 	<members>
+		<member name="AnimationManager" type="AnimationManager" setter="" getter="">
+		</member>
 		<member name="AudioServer" type="AudioServer" setter="" getter="">
 			The [AudioServer] singleton.
 		</member>
 		<member name="CameraServer" type="CameraServer" setter="" getter="">
 			The [CameraServer] singleton.
 		</member>
+		<member name="CharacterManager" type="CharacterManager" setter="" getter="">
+		</member>
 		<member name="ClassDB" type="ClassDB" setter="" getter="">
 			The [ClassDB] singleton.
+		</member>
+		<member name="DataTableManager" type="DataTableManager" setter="" getter="">
 		</member>
 		<member name="DisplayServer" type="DisplayServer" setter="" getter="">
 			The [DisplayServer] singleton.
@@ -1562,6 +1579,8 @@
 		<member name="EditorInterface" type="EditorInterface" setter="" getter="">
 			The [EditorInterface] singleton.
 			[b]Note:[/b] Only available in editor builds.
+		</member>
+		<member name="EffekseerSystem" type="EffekseerSystem" setter="" getter="">
 		</member>
 		<member name="Engine" type="Engine" setter="" getter="">
 			The [Engine] singleton.
@@ -1598,6 +1617,8 @@
 		<member name="Marshalls" type="Marshalls" setter="" getter="">
 			The [Marshalls] singleton.
 		</member>
+		<member name="MessageManager" type="MessageManager" setter="" getter="">
+		</member>
 		<member name="NativeMenu" type="NativeMenu" setter="" getter="">
 			The [NativeMenu] singleton.
 			[b]Note:[/b] Only implemented on macOS.
@@ -1613,6 +1634,8 @@
 		</member>
 		<member name="OS" type="OS" setter="" getter="">
 			The [OS] singleton.
+		</member>
+		<member name="PathManager" type="PathManager" setter="" getter="">
 		</member>
 		<member name="Performance" type="Performance" setter="" getter="">
 			The [Performance] singleton.
@@ -1655,6 +1678,8 @@
 		</member>
 		<member name="TranslationServer" type="TranslationServer" setter="" getter="">
 			The [TranslationServer] singleton.
+		</member>
+		<member name="WorkerTaskPool" type="WorkerTaskPool" setter="" getter="">
 		</member>
 		<member name="WorkerThreadPool" type="WorkerThreadPool" setter="" getter="">
 			The [WorkerThreadPool] singleton.
@@ -2925,7 +2950,7 @@
 			Hints that a property is an [Array] with the stored type specified in the hint string. The hint string contains the type of the array (e.g. [code]"String"[/code]).
 			Use the hint string format from [constant PROPERTY_HINT_TYPE_STRING] for more control over the stored type.
 		</constant>
-		<constant name="PROPERTY_HINT_DICTIONARY_TYPE" value="38" enum="PropertyHint">
+		<constant name="PROPERTY_HINT_DICTIONARY_TYPE" value="40" enum="PropertyHint">
 			Hints that a property is a [Dictionary] with the stored types specified in the hint string. The hint string contains the key and value types separated by a semicolon (e.g. [code]"int;String"[/code]).
 			Use the hint string format from [constant PROPERTY_HINT_TYPE_STRING] for more control over the stored types.
 		</constant>
@@ -2944,7 +2969,11 @@
 		<constant name="PROPERTY_HINT_PASSWORD" value="36" enum="PropertyHint">
 			Hints that a string property is a password, and every character is replaced with the secret character.
 		</constant>
-		<constant name="PROPERTY_HINT_TOOL_BUTTON" value="39" enum="PropertyHint">
+		<constant name="PROPERTY_HINT_BUTTON" value="38" enum="PropertyHint">
+		</constant>
+		<constant name="PROPERTY_HINT_ENUM_DYNAMIC_LIST" value="39" enum="PropertyHint">
+		</constant>
+		<constant name="PROPERTY_HINT_TOOL_BUTTON" value="41" enum="PropertyHint">
 			Hints that a [Callable] property should be displayed as a clickable button. When the button is pressed, the callable is called. The hint string specifies the button text and optionally an icon from the [code]"EditorIcons"[/code] theme type.
 			[codeblock lang=text]
 			"Click me!" - A button with the text "Click me!" and the default "Callable" icon.
@@ -2952,22 +2981,22 @@
 			[/codeblock]
 			[b]Note:[/b] A [Callable] cannot be properly serialized and stored in a file, so it is recommended to use [constant PROPERTY_USAGE_EDITOR] instead of [constant PROPERTY_USAGE_DEFAULT].
 		</constant>
-		<constant name="PROPERTY_HINT_ONESHOT" value="40" enum="PropertyHint">
+		<constant name="PROPERTY_HINT_ONESHOT" value="42" enum="PropertyHint">
 			Hints that a property will be changed on its own after setting, such as [member AudioStreamPlayer.playing] or [member GPUParticles3D.emitting].
 		</constant>
-		<constant name="PROPERTY_HINT_GROUP_ENABLE" value="42" enum="PropertyHint">
+		<constant name="PROPERTY_HINT_GROUP_ENABLE" value="44" enum="PropertyHint">
 			Hints that a boolean property will enable the feature associated with the group that it occurs in. The property will be displayed as a checkbox on the group header. Only works within a group or subgroup.
 			By default, disabling the property hides all properties in the group. Use the optional hint string [code]"checkbox_only"[/code] to disable this behavior.
 		</constant>
-		<constant name="PROPERTY_HINT_INPUT_NAME" value="43" enum="PropertyHint">
+		<constant name="PROPERTY_HINT_INPUT_NAME" value="45" enum="PropertyHint">
 			Hints that a [String] or [StringName] property is the name of an input action. This allows the selection of any action name from the Input Map in the Project Settings. The hint string may contain two options separated by commas:
 			- If it contains [code]"show_builtin"[/code], built-in input actions are included in the selection.
 			- If it contains [code]"loose_mode"[/code], loose mode is enabled. This allows inserting any action name even if it's not present in the input map.
 		</constant>
-		<constant name="PROPERTY_HINT_FILE_PATH" value="44" enum="PropertyHint">
+		<constant name="PROPERTY_HINT_FILE_PATH" value="46" enum="PropertyHint">
 			Like [constant PROPERTY_HINT_FILE], but the property is stored as a raw path, not UID. That means the reference will be broken if you move the file. Consider using [constant PROPERTY_HINT_FILE] when possible.
 		</constant>
-		<constant name="PROPERTY_HINT_MAX" value="45" enum="PropertyHint">
+		<constant name="PROPERTY_HINT_MAX" value="47" enum="PropertyHint">
 			Represents the size of the [enum PropertyHint] enum.
 		</constant>
 		<constant name="PROPERTY_USAGE_NONE" value="0" enum="PropertyUsageFlags" is_bitfield="true">

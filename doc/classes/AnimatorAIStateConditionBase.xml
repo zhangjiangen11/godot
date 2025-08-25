@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AnimatorAIStateConditionBase" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_blackboard_plan">
+			<return type="BlackboardPlan" />
+			<description>
+			</description>
+		</method>
+		<method name="get_blackbord_propertys">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_compare_type">
+			<return type="int" enum="AnimatorAIStateConditionBase.AnimatorAICompareType" />
+			<description>
+			</description>
+		</method>
+		<method name="get_compare_value">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="set_blackboard_plan">
+			<return type="void" />
+			<param index="0" name="plan" type="BlackboardPlan" />
+			<description>
+			</description>
+		</method>
+		<method name="set_compare_type">
+			<return type="void" />
+			<param index="0" name="type" type="int" enum="AnimatorAIStateConditionBase.AnimatorAICompareType" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="blackbord_property_name" type="StringName" setter="set_blackbord_property_name" getter="get_blackbord_property_name" default="&amp;&quot;&quot;">
+		</member>
+		<member name="compare_type_name" type="StringName" setter="set_compare_type_name" getter="get_compare_type_name" default="&amp;&quot;==&quot;">
+		</member>
+		<member name="is_value_by_property" type="bool" setter="set_is_value_by_property" getter="get_is_value_by_property" default="false">
+		</member>
+		<member name="property_name" type="StringName" setter="set_property_name" getter="get_property_name" default="&amp;&quot;&quot;">
+		</member>
+	</members>
+	<constants>
+		<constant name="Equal" value="0" enum="AnimatorAICompareType">
+		</constant>
+		<constant name="Less" value="1" enum="AnimatorAICompareType">
+		</constant>
+		<constant name="LessEqual" value="2" enum="AnimatorAICompareType">
+		</constant>
+		<constant name="Greater" value="3" enum="AnimatorAICompareType">
+		</constant>
+		<constant name="GreaterEqual" value="4" enum="AnimatorAICompareType">
+		</constant>
+		<constant name="NotEqual" value="5" enum="AnimatorAICompareType">
+		</constant>
+	</constants>
+</class>

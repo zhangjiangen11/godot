@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MTool" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="enable_editor_plugin" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="find_camera" qualifiers="static">
+			<return type="Node3D" />
+			<param index="0" name="changed_camera" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_global_aabb" qualifiers="static">
+			<return type="AABB" />
+			<param index="0" name="aabb" type="AABB" />
+			<param index="1" name="global_transform" type="Transform3D" />
+			<description>
+			</description>
+		</method>
+		<method name="get_r16_image" qualifiers="static">
+			<return type="Image" />
+			<param index="0" name="file_path" type="String" />
+			<param index="1" name="width" type="int" />
+			<param index="2" name="height" type="int" />
+			<param index="3" name="min_height" type="float" />
+			<param index="4" name="max_height" type="float" />
+			<param index="5" name="is_half" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="normalize_rf_data" qualifiers="static">
+			<return type="PackedByteArray" />
+			<param index="0" name="data" type="PackedByteArray" />
+			<param index="1" name="min_height" type="float" />
+			<param index="2" name="max_height" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="print_edmsg" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="msg" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="ray_collision_y_zero_plane" qualifiers="static">
+			<return type="MCollision" />
+			<param index="0" name="ray_origin" type="Vector3" />
+			<param index="1" name="ray" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="write_r16" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="file_path" type="String" />
+			<param index="1" name="data" type="PackedByteArray" />
+			<param index="2" name="min_height" type="float" />
+			<param index="3" name="max_height" type="float" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

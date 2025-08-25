@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MAssetMeshUpdater" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_current_lod">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_join_at_lod">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_joined_mesh_ids">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_lod">
+			<return type="MMesh[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_root_node" qualifiers="const">
+			<return type="Node3D" />
+			<description>
+			</description>
+		</method>
+		<method name="refresh_all_masset_updater" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_root_node">
+			<return type="void" />
+			<param index="0" name="input" type="Node3D" />
+			<description>
+			</description>
+		</method>
+		<method name="update_auto_lod">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="update_force_lod">
+			<return type="void" />
+			<param index="0" name="lod" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="join_mesh_id" type="int" setter="set_join_mesh_id" getter="get_join_mesh_id" default="-1">
+		</member>
+		<member name="show_boundary" type="bool" setter="set_show_boundary" getter="get_show_boundary" default="false">
+		</member>
+		<member name="variation_layers" type="int" setter="set_variation_layers" getter="get_variation_layers" default="0">
+		</member>
+	</members>
+</class>

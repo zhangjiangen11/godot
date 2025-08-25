@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneDataCompoentMulti" inherits="SceneDataCompoent" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_child">
+			<return type="SceneDataCompoentChild" />
+			<param index="0" name="com" type="SceneDataCompoent" />
+			<description>
+			</description>
+		</method>
+		<method name="add_mesh_child">
+			<return type="SceneDataCompoentChild" />
+			<param index="0" name="path" type="String" />
+			<param index="1" name="_unnamed_arg1" type="Transform3D" />
+			<description>
+			</description>
+		</method>
+		<method name="add_mesh_collision">
+			<return type="SceneDataCompoentChild" />
+			<param index="0" name="path" type="String" />
+			<param index="1" name="_unnamed_arg1" type="Transform3D" />
+			<description>
+			</description>
+		</method>
+		<method name="show">
+			<return type="void" />
+			<param index="0" name="show_level" type="int" />
+			<param index="1" name="parent" type="Transform3D" />
+			<param index="2" name="instance" type="int" enum="SceneDataCompoent.ShowType" />
+			<param index="3" name="_unnamed_arg3" type="Node3D" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="compoents" type="Array" setter="set_compoents" getter="get_compoents" default="[]">
+		</member>
+	</members>
+</class>

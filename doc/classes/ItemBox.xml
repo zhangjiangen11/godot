@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ItemBox" inherits="ScrollContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_item">
+			<return type="void" />
+			<param index="0" name="item" type="RefCounted" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_item">
+			<return type="void" />
+			<param index="0" name="item" type="RefCounted" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="item_size" type="Vector2" setter="set_item_size" getter="get_item_size" default="Vector2(400, 400)">
+		</member>
+	</members>
+</class>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AnimationProcessPanel" inherits="VBoxContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_animation_groups">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_animation_tags">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="multe_animation_file_path" type="String" setter="set_multe_animation_file_path" getter="get_multe_animation_file_path" default="&quot;&quot;">
+		</member>
+		<member name="multe_animation_group" type="StringName" setter="set_multe_animation_group" getter="get_multe_animation_group" default="&amp;&quot;&quot;">
+		</member>
+		<member name="multe_animation_tags" type="StringName" setter="set_multe_animation_tags" getter="get_multe_animation_tags" default="&amp;&quot;&quot;">
+		</member>
+		<member name="preview_prefab_path" type="String" setter="set_preview_prefab_path" getter="get_preview_prefab_path" default="&quot;&quot;">
+		</member>
+		<member name="single_animation_file_path" type="String" setter="set_single_animation_file_path" getter="get_single_animation_file_path" default="&quot;&quot;">
+		</member>
+		<member name="single_animation_group" type="StringName" setter="set_single_animation_group" getter="get_single_animation_group" default="&amp;&quot;&quot;">
+		</member>
+		<member name="single_animation_tags" type="StringName" setter="set_single_animation_tags" getter="get_single_animation_tags" default="&amp;&quot;&quot;">
+		</member>
+	</members>
+</class>

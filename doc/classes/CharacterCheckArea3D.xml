@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterCheckArea3D" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="area_shape" type="CollisionObject3DConnectionShape[]" setter="set_area_shape" getter="get_area_shape" default="[]">
+		</member>
+		<member name="cell_size" type="int" setter="set_cell_size" getter="get_cell_size" default="2">
+		</member>
+		<member name="collision_check_mask" type="int" setter="set_collision_check_mask" getter="get_collision_check_mask" default="-1">
+		</member>
+		<member name="name" type="StringName" setter="set_name" getter="get_name" default="&amp;&quot;&quot;">
+		</member>
+	</members>
+</class>

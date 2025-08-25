@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MHlod" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_mesh_item">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="mesh" type="PackedInt32Array" />
+			<param index="2" name="material" type="PackedInt32Array" />
+			<param index="3" name="shadow_settings" type="PackedByteArray" />
+			<param index="4" name="gi_mode" type="PackedByteArray" />
+			<param index="5" name="render_layers" type="int" />
+			<param index="6" name="hlod_layers" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="add_sub_hlod">
+			<return type="void" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="hlod" type="MHlod" />
+			<param index="2" name="scene_layers" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="decal_add">
+			<return type="int" />
+			<param index="0" name="decal_id" type="int" />
+			<param index="1" name="transform" type="Transform3D" />
+			<param index="2" name="render_layer" type="int" />
+			<param index="3" name="variation_layer" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collision_root_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collsion_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_decal_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_decal_root_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_hlod_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_hlod_root_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_item_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_item_type" qualifiers="const">
+			<return type="int" enum="MHlod.Type" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_joined_mesh" qualifiers="const">
+			<return type="ArrayMesh" />
+			<param index="0" name="for_triangle_mesh" type="bool" />
+			<param index="1" name="best_mesh_quality" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_lod_with_mesh" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_lod_table">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_items_ids" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="mesh_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_root_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_packed_scene_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_packed_scene_root_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_physic_setting_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_physics_settings_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_used_mesh_ids" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="insert_item_in_lod_table">
+			<return type="void" />
+			<param index="0" name="item_id" type="int" />
+			<param index="1" name="lod" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="light_add">
+			<return type="int" />
+			<param index="0" name="light_node" type="Object" />
+			<param index="1" name="transform" type="Transform3D" />
+			<param index="2" name="layers" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="packed_scene_add">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="id" type="int" />
+			<param index="2" name="arg0" type="int" />
+			<param index="3" name="arg0" type="int" />
+			<param index="4" name="arg2" type="int" />
+			<param index="5" name="layers" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="packed_scene_set_bind_items">
+			<return type="void" />
+			<param index="0" name="packed_scene_item_id" type="int" />
+			<param index="1" name="bind0" type="int" />
+			<param index="2" name="bind1" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="shape_add_box">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="size" type="Vector3" />
+			<param index="2" name="layers" type="int" />
+			<param index="3" name="body_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="shape_add_capsule">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="radius" type="float" />
+			<param index="2" name="height" type="float" />
+			<param index="3" name="layers" type="int" />
+			<param index="4" name="body_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="shape_add_complex">
+			<return type="int" />
+			<param index="0" name="id" type="int" />
+			<param index="1" name="transform" type="Transform3D" />
+			<param index="2" name="layers" type="int" />
+			<param index="3" name="body_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="shape_add_cylinder">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="radius" type="float" />
+			<param index="2" name="height" type="float" />
+			<param index="3" name="layers" type="int" />
+			<param index="4" name="body_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="shape_add_sphere">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="radius" type="float" />
+			<param index="2" name="layers" type="int" />
+			<param index="3" name="body_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="start_test">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_data" type="Array" setter="_set_data" getter="_get_data" default="[[], [], PackedByteArray(), [], PackedByteArray(), PackedByteArray(), 1]">
+		</member>
+		<member name="aabb" type="AABB" setter="set_aabb" getter="get_aabb" default="AABB(0, 0, 0, 0, 0, 0)">
+		</member>
+		<member name="baker_path" type="String" setter="set_baker_path" getter="get_baker_path" default="&quot;&quot;">
+		</member>
+		<member name="join_at_lod" type="int" setter="set_join_at_lod" getter="get_join_at_lod" default="-1">
+		</member>
+	</members>
+	<constants>
+		<constant name="NONE" value="0" enum="Type">
+		</constant>
+		<constant name="MESH" value="1" enum="Type">
+		</constant>
+		<constant name="COLLISION" value="2" enum="Type">
+		</constant>
+		<constant name="COLLISION_COMPLEX" value="3" enum="Type">
+		</constant>
+		<constant name="LIGHT" value="4" enum="Type">
+		</constant>
+		<constant name="PACKED_SCENE" value="5" enum="Type">
+		</constant>
+		<constant name="DECAL" value="6" enum="Type">
+		</constant>
+		<constant name="GI_MODE_DISABLED" value="0" enum="GIMode">
+		</constant>
+		<constant name="GI_MODE_STATIC" value="1" enum="GIMode">
+		</constant>
+		<constant name="GI_MODE_DYNAMIC" value="2" enum="GIMode">
+		</constant>
+		<constant name="GI_MODE_STATIC_DYNAMIC" value="3" enum="GIMode">
+		</constant>
+	</constants>
+</class>

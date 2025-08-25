@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MCurveInstance" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_default_element" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="instance_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_element" qualifiers="const">
+			<return type="MCurveInstanceElement" />
+			<param index="0" name="instance_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_element_count" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_instance_count" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_default_element">
+			<return type="void" />
+			<param index="0" name="instance_index" type="int" />
+			<param index="1" name="input" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_element">
+			<return type="void" />
+			<param index="0" name="input" type="int" />
+			<param index="1" name="instance_index" type="MCurveInstanceElement" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="default_element_0" type="int" setter="set_default_element" getter="get_default_element" default="0">
+		</member>
+		<member name="default_element_1" type="int" setter="set_default_element" getter="get_default_element" default="-1">
+		</member>
+		<member name="default_element_2" type="int" setter="set_default_element" getter="get_default_element" default="-1">
+		</member>
+		<member name="default_element_3" type="int" setter="set_default_element" getter="get_default_element" default="-1">
+		</member>
+		<member name="element_0" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_1" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_2" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_3" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_4" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_5" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_6" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_7" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_8" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_9" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_10" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_11" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_12" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_13" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_14" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="element_15" type="MCurveInstanceElement" setter="set_element" getter="get_element">
+		</member>
+		<member name="override_data" type="MCurveInstanceOverride" setter="set_override" getter="get_override">
+		</member>
+	</members>
+</class>

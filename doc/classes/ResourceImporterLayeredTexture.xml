@@ -31,7 +31,7 @@
 		<member name="compress/lossy_quality" type="float" setter="" getter="" default="0.7">
 			The quality to use when using the [b]Lossy[/b] compression mode. Higher values result in better quality, at the cost of larger file sizes. Lossy quality does not affect memory usage of the imported texture, only its file size on disk.
 		</member>
-		<member name="compress/mode" type="int" setter="" getter="" default="1">
+		<member name="compress/mode" type="int" setter="" getter="" default="2">
 			The compression mode to use. Each compression mode provides a different tradeoff:
 			[b]Lossless[/b]: Original quality, high memory usage, high size on disk, fast import.
 			[b]Lossy:[/b] Reduced quality, high memory usage, low size on disk, fast import.

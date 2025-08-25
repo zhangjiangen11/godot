@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="RDMultimeshUpdate" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="update_dynamic_instance">
+			<return type="void" />
+			<param index="0" name="index_start" type="int" />
+			<param index="1" name="index_count" type="int" />
+			<param index="2" name="transform_data" type="PackedFloat32Array" />
+			<param index="3" name="color_data" type="PackedFloat32Array" />
+			<param index="4" name="custom_data" type="PackedFloat32Array" />
+			<param index="5" name="pre_transform_data" type="PackedFloat32Array" />
+			<param index="6" name="pre_color_data" type="PackedFloat32Array" />
+			<param index="7" name="pre_custom_data" type="PackedFloat32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="update_static_instance">
+			<return type="void" />
+			<param index="0" name="index_start" type="int" />
+			<param index="1" name="index_count" type="int" />
+			<param index="2" name="transform_data" type="PackedFloat32Array" />
+			<param index="3" name="color_data" type="PackedFloat32Array" />
+			<param index="4" name="custom_data" type="PackedFloat32Array" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

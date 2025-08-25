@@ -47,6 +47,12 @@
 		<member name="hit_from_inside" type="bool" setter="set_hit_from_inside" getter="is_hit_from_inside_enabled" default="false">
 			If [code]true[/code], the query will detect a hit when starting inside shapes. In this case the collision normal will be [code]Vector3(0, 0, 0)[/code]. Does not affect concave polygon shapes or heightmap shapes.
 		</member>
+		<member name="hit_point" type="Vector3" setter="set_hit_point" getter="get_hit_point" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="is_hit" type="bool" setter="set_is_hit" getter="is_hit_enabled" default="false">
+		</member>
+		<member name="only_position" type="bool" setter="set_only_position" getter="is_only_position_enabled" default="false">
+		</member>
 		<member name="to" type="Vector3" setter="set_to" getter="get_to" default="Vector3(0, 0, 0)">
 			The ending point of the ray being queried for, in global coordinates.
 		</member>

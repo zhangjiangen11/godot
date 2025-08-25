@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ResetParentOffsetDragger" inherits="Control" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="custom_minimum_size" type="Vector2" setter="set_custom_minimum_size" getter="get_custom_minimum_size" overrides="Control" default="Vector2(2, 2)" />
+		<member name="dragger_dir" type="int" setter="set_dragger_dir" getter="get_dragger_dir" enum="Side" default="0">
+		</member>
+		<member name="parent_name" type="String" setter="set_parent_name" getter="get_parent_name" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

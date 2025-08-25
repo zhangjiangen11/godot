@@ -275,6 +275,13 @@
 				Encodes a 64-bit signed integer number as bytes at the index of [param byte_offset] bytes. The array must have at least 8 bytes of space, starting at the offset.
 			</description>
 		</method>
+		<method name="encode_transform">
+			<return type="void" />
+			<param index="0" name="byte_offset" type="int" />
+			<param index="1" name="value" type="Transform3D" />
+			<description>
+			</description>
+		</method>
 		<method name="encode_u8">
 			<return type="void" />
 			<param index="0" name="byte_offset" type="int" />

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BeehaveDecoratorLimiterTimer" inherits="BeehaveDecorator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="max_time" type="float" setter="set_max_time" getter="get_max_time" default="0.0">
+		</member>
+	</members>
+</class>

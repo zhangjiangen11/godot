@@ -48,20 +48,6 @@
 				[/codeblock]
 			</description>
 		</method>
-		<method name="duplicate" qualifiers="const">
-			<return type="Resource" />
-			<param index="0" name="deep" type="bool" default="false" />
-			<description>
-				Duplicates this resource, returning a new resource with its [code]export[/code]ed or [constant PROPERTY_USAGE_STORAGE] properties copied from the original.
-				If [param deep] is [code]false[/code], a [b]shallow[/b] copy is returned: nested [Array], [Dictionary], and [Resource] properties are not duplicated and are shared with the original resource.
-				If [param deep] is [code]true[/code], a [b]deep[/b] copy is returned: all nested arrays, dictionaries, and packed arrays are also duplicated (recursively). Any [Resource] found inside will only be duplicated if it's local, like [constant DEEP_DUPLICATE_INTERNAL] used with [method duplicate_deep].
-				The following exceptions apply:
-				- Subresource properties with the [constant PROPERTY_USAGE_ALWAYS_DUPLICATE] flag are always duplicated (recursively or not, depending on [param deep]).
-				- Subresource properties with the [constant PROPERTY_USAGE_NEVER_DUPLICATE] flag are never duplicated.
-				[b]Note:[/b] For custom resources, this method will fail if [method Object._init] has been defined with required parameters.
-				[b]Note:[/b] When duplicating with [param deep] set to [code]true[/code], each resource found, including the one on which this method is called, will be only duplicated once and referenced as many times as needed in the duplicate. For instance, if you are duplicating resource A that happens to have resource B referenced twice, you'll get a new resource A' referencing a new resource B' twice.
-			</description>
-		</method>
 		<method name="duplicate_deep" qualifiers="const">
 			<return type="Resource" />
 			<param index="0" name="deep_subresources_mode" type="int" enum="Resource.DeepDuplicateMode" default="1" />
@@ -90,6 +76,21 @@
 				Generates a unique identifier for a resource to be contained inside a [PackedScene], based on the current date, time, and a random value. The returned string is only composed of letters ([code]a[/code] to [code]y[/code]) and numbers ([code]0[/code] to [code]8[/code]). See also [member resource_scene_unique_id].
 			</description>
 		</method>
+		<method name="get_base_file_name">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cached_resource_count" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_cached_resources" qualifiers="static">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
 		<method name="get_id_for_path" qualifiers="const">
 			<return type="String" />
 			<param index="0" name="path" type="String" />
@@ -104,10 +105,22 @@
 				If [member resource_local_to_scene] is set to [code]true[/code] and the resource has been loaded from a [PackedScene] instantiation, returns the root [Node] of the scene where this resource is used. Otherwise, returns [code]null[/code].
 			</description>
 		</method>
+		<method name="get_ref" qualifiers="static">
+			<return type="Resource" />
+			<param index="0" name="p_path" type="String" />
+			<description>
+			</description>
+		</method>
 		<method name="get_rid" qualifiers="const">
 			<return type="RID" />
 			<description>
 				Returns the [RID] of this resource (or an empty RID). Many resources (such as [Texture2D], [Mesh], and so on) are high-level abstractions of resources stored in a specialized server ([DisplayServer], [RenderingServer], etc.), so this function will return the original [RID].
+			</description>
+		</method>
+		<method name="has" qualifiers="static">
+			<return type="bool" />
+			<param index="0" name="p_path" type="String" />
+			<description>
 			</description>
 		</method>
 		<method name="is_built_in" qualifiers="const">

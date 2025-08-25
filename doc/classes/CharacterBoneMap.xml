@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterBoneMap" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="bone_map" type="Dictionary" setter="set_bone_map" getter="get_bone_map" default="{}">
+		</member>
+		<member name="bone_names" type="PackedStringArray" setter="set_bone_names" getter="get_bone_names" default="PackedStringArray()">
+		</member>
+		<member name="human_config" type="HumanBoneConfig" setter="set_human_config" getter="get_human_config">
+		</member>
+		<member name="skeleton_path" type="String" setter="set_skeleton_path" getter="get_skeleton_path" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

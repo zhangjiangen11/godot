@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="InstanceBlockList" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_block">
+			<return type="void" />
+			<param index="0" name="block" type="SceneInstanceBlock" />
+			<description>
+			</description>
+		</method>
+		<method name="chunk_index_from_cell_pos" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="cell_pos" type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="create_block_list" qualifiers="static">
+			<return type="Dictionary" />
+			<param index="0" name="world_width" type="int" />
+			<param index="1" name="world_height" type="int" />
+			<param index="2" name="is_far" type="bool" default="false" />
+			<description>
+			</description>
+		</method>
+		<method name="get_block" qualifiers="const">
+			<return type="SceneInstanceBlock" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_block_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_blocks" qualifiers="const">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_chunk_position" qualifiers="const">
+			<return type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="get_chunk_position_from_cell_pos" qualifiers="static">
+			<return type="Vector2i" />
+			<param index="0" name="cell_pos" type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="merge_block">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="new_block">
+			<return type="SceneInstanceBlock" />
+			<param index="0" name="guid" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="send_instance_array_to_instance_list_dict" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="block_instance_array" type="Array" />
+			<param index="1" name="block_instance_list_dict" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="send_to_asset" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="block_list_dict" type="Dictionary" />
+			<param index="1" name="foliage_cell_asset" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="send_to_asset_list" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="block_list_dict" type="Dictionary" />
+			<param index="1" name="foliage_cell_asset" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="set_chunk_position">
+			<return type="void" />
+			<param index="0" name="position" type="Vector2i" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="cell_index" type="int" setter="set_cell_index" getter="get_cell_index" default="-1">
+		</member>
+	</members>
+</class>

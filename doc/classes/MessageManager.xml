@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MessageManager" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_messages">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="emit">
+			<return type="void" />
+			<param index="0" name="msg_name" type="StringName" />
+			<param index="1" name="arg" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="emit_deferred">
+			<return type="void" />
+			<param index="0" name="msg_name" type="StringName" />
+			<param index="1" name="arg" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="emit_enum">
+			<return type="void" />
+			<param index="0" name="msg_name" type="int" />
+			<param index="1" name="arg" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="emit_enum_deferred">
+			<return type="void" />
+			<param index="0" name="msg_name" type="int" />
+			<param index="1" name="arg" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="process">
+			<return type="void" />
+			<param index="0" name="max_process_count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="register_enum_message">
+			<return type="void" />
+			<param index="0" name="msg_name" type="int" />
+			<param index="1" name="callable" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="register_message">
+			<return type="void" />
+			<param index="0" name="msg_name" type="StringName" />
+			<param index="1" name="callable" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="unregister_enum_message">
+			<return type="void" />
+			<param index="0" name="msg_name" type="int" />
+			<param index="1" name="callable" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="unregister_message">
+			<return type="void" />
+			<param index="0" name="msg_name" type="StringName" />
+			<param index="1" name="callable" type="Callable" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneEntityResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_lod">
+			<return type="void" />
+			<param index="0" name="lod" type="SceneDataCompoent" />
+			<description>
+			</description>
+		</method>
+		<method name="show">
+			<return type="void" />
+			<param index="0" name="lod" type="int" />
+			<param index="1" name="show_level" type="int" />
+			<param index="2" name="parent" type="Transform3D" />
+			<param index="3" name="show_type" type="int" enum="SceneDataCompoent.ShowType" />
+			<param index="4" name="instance" type="Node3D" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="aabb" type="AABB" setter="set_aabb" getter="get_aabb" default="AABB(0, 0, 0, 0, 0, 0)">
+		</member>
+		<member name="lod_distance" type="Vector4" setter="set_lod_distance" getter="get_lod_distance" default="Vector4(32, 64, 128, 256)">
+		</member>
+		<member name="lods" type="Array" setter="set_lods" getter="get_lods" default="[]">
+		</member>
+		<member name="show_level" type="int" setter="set_show_level" getter="get_show_level" default="0">
+		</member>
+	</members>
+</class>

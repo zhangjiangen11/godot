@@ -16,12 +16,6 @@
 				Clears the [member data_array] and resets the cursor.
 			</description>
 		</method>
-		<method name="duplicate" qualifiers="const">
-			<return type="StreamPeerBuffer" />
-			<description>
-				Returns a new [StreamPeerBuffer] with the same [member data_array] content.
-			</description>
-		</method>
 		<method name="get_position" qualifiers="const">
 			<return type="int" />
 			<description>

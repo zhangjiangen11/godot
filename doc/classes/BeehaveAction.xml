@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BeehaveAction" inherits="BeehaveLeaf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_after_run" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="run_context" type="BeehaveRuncontext" />
+			<description>
+			</description>
+		</method>
+		<method name="_before_run" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="run_context" type="BeehaveRuncontext" />
+			<description>
+			</description>
+		</method>
+		<method name="_interrupt" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="run_context" type="BeehaveRuncontext" />
+			<description>
+			</description>
+		</method>
+		<method name="_tick" qualifiers="virtual">
+			<return type="int" />
+			<param index="0" name="run_context" type="BeehaveRuncontext" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

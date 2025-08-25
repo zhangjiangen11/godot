@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterBodyMain" inherits="CharacterBody3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="audio_add_socket_call">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_animation_Group" qualifiers="const">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_animation_Tags" qualifiers="const">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_audio_player">
+			<return type="AudioStreamPlayer3DCompoent" />
+			<param index="0" name="audio_socket" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="get_check_area_by_name">
+			<return type="CharacterCheckArea3D" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="humanizer_install_mkhm_call">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="play_audio">
+			<return type="void" />
+			<param index="0" name="audio_socket" type="StringName" />
+			<param index="1" name="stream" type="AudioStream" />
+			<description>
+			</description>
+		</method>
+		<method name="restart">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="animation_library" type="CharacterAnimationLibrary" setter="set_animation_library" getter="get_animation_library">
+		</member>
+		<member name="animator" type="CharacterAnimator" setter="set_animator" getter="get_animator">
+		</member>
+		<member name="audio_add_socket" type="int" setter="_set_audio_add_socket_property" getter="_get_audio_add_socket_property" default="0">
+		</member>
+		<member name="audio_play_component" type="Dictionary" setter="set_audio_play_component" getter="get_audio_play_component" default="{}">
+		</member>
+		<member name="audio_socket_name" type="StringName" setter="set_audio_socket_name" getter="get_audio_socket_name" default="&amp;&quot;&quot;">
+		</member>
+		<member name="blackboard_plan" type="BlackboardPlan" setter="set_blackboard_plan" getter="get_blackboard_plan">
+		</member>
+		<member name="body_prefab" type="CharacterBodyPrefab" setter="set_body_prefab" getter="get_body_prefab">
+		</member>
+		<member name="character_ai" type="CharacterAI" setter="set_character_ai" getter="get_character_ai">
+		</member>
+		<member name="check_area" type="CharacterCheckArea3D[]" setter="set_check_area" getter="get_check_area" default="[]">
+		</member>
+		<member name="humanizer_install_mkhm" type="int" setter="_set_humanizer_install_mkhm_property" getter="_get_humanizer_install_mkhm_property" default="0">
+		</member>
+		<member name="ik" type="RenIK" setter="set_ik" getter="get_ik">
+		</member>
+		<member name="main_shape" type="CollisionObject3DConnectionShape" setter="set_main_shape" getter="get_main_shape">
+		</member>
+		<member name="navigation_agent" type="CharacterNavigationAgent3D" setter="set_navigation_agent" getter="get_navigation_agent">
+		</member>
+		<member name="raycast" type="Dictionary" setter="set_raycast" getter="get_raycast" default="{}">
+		</member>
+	</members>
+	<signals>
+		<signal name="behavior_tree_finished">
+			<param index="0" name="status" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="behavior_tree_updated">
+			<param index="0" name="status" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="skill_tree_finished">
+			<param index="0" name="status" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="skill_tree_updated">
+			<param index="0" name="status" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

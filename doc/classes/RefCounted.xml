@@ -14,6 +14,12 @@
 		<link title="When and how to avoid using nodes for everything">$DOCS_URL/tutorials/best_practices/node_alternatives.html</link>
 	</tutorials>
 	<methods>
+		<method name="duplicate" qualifiers="const">
+			<return type="RefCounted" />
+			<param index="0" name="subresources" type="bool" default="false" />
+			<description>
+			</description>
+		</method>
 		<method name="get_reference_count" qualifiers="const">
 			<return type="int" />
 			<description>

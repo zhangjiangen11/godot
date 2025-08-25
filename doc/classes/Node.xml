@@ -736,6 +736,12 @@
 				Returns [code]true[/code] if the node is processing unhandled key input (see [method set_process_unhandled_key_input]).
 			</description>
 		</method>
+		<method name="log_node">
+			<return type="String" />
+			<param index="0" name="space" type="String" default="&quot;&quot;" />
+			<description>
+			</description>
+		</method>
 		<method name="move_child">
 			<return type="void" />
 			<param index="0" name="child_node" type="Node" />
@@ -1040,6 +1046,8 @@
 			Defines if any text should automatically change to its translated version depending on the current locale (for nodes such as [Label], [RichTextLabel], [Window], etc.). Also decides if the node's strings should be parsed for POT generation.
 			[b]Note:[/b] For the root node, auto translate mode can also be set via [member ProjectSettings.internationalization/rendering/root_node_auto_translate].
 		</member>
+		<member name="dont_save" type="bool" setter="set_dont_save" getter="get_dont_save">
+		</member>
 		<member name="editor_description" type="String" setter="set_editor_description" getter="get_editor_description" default="&quot;&quot;">
 			An optional description to the node. It will be displayed as a tooltip when hovering over the node in the editor's Scene dock.
 		</member>
@@ -1085,6 +1093,8 @@
 		<member name="scene_file_path" type="String" setter="set_scene_file_path" getter="get_scene_file_path">
 			The original scene's file path, if the node has been instantiated from a [PackedScene] file. Only scene root nodes contains this.
 		</member>
+		<member name="tag" type="StringName" setter="set_tag" getter="get_tag">
+		</member>
 		<member name="unique_name_in_owner" type="bool" setter="set_unique_name_in_owner" getter="is_unique_name_in_owner" default="false">
 			If [code]true[/code], the node can be accessed from any node sharing the same [member owner] or from the [member owner] itself, with special [code]%Name[/code] syntax in [method get_node].
 			[b]Note:[/b] If another node with the same [member owner] shares the same [member name] as this node, the other node will no longer be accessible as unique.
@@ -1119,6 +1129,14 @@
 		<signal name="editor_state_changed">
 			<description>
 				Emitted when an attribute of the node that is relevant to the editor is changed. Only emitted in the editor.
+			</description>
+		</signal>
+		<signal name="on_free">
+			<description>
+			</description>
+		</signal>
+		<signal name="process">
+			<description>
 			</description>
 		</signal>
 		<signal name="ready">

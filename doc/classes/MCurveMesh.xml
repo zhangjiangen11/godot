@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MCurveMesh" inherits="Node" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_all_curve_mesh_nodes" qualifiers="static">
+			<return type="MCurveMesh[]" />
+			<description>
+			</description>
+		</method>
+		<method name="recreate">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="reload">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="intersections" type="Array" setter="set_intersections" getter="get_intersections" default="[]">
+		</member>
+		<member name="materials" type="Array" setter="set_materials" getter="get_materials" default="[]">
+		</member>
+		<member name="meshes" type="Array" setter="set_meshses" getter="get_meshses" default="[]">
+		</member>
+		<member name="override" type="MCurveMeshOverride" setter="set_overrides" getter="get_overrides">
+		</member>
+		<member name="restart" type="bool" setter="dumy_set_restart" getter="dumy_get_true" default="true">
+		</member>
+	</members>
+</class>

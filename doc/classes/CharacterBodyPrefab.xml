@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterBodyPrefab" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="is_human" type="bool" setter="set_is_human" getter="get_is_human" default="false">
+		</member>
+		<member name="parts" type="Dictionary" setter="set_parts" getter="get_parts" default="{}">
+		</member>
+		<member name="resource_group" type="StringName" setter="set_resource_group" getter="get_resource_group" default="&amp;&quot;&quot;">
+		</member>
+		<member name="skeleton_path" type="String" setter="set_skeleton_path" getter="get_skeleton_path" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

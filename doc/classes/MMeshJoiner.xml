@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MMeshJoiner" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collission_mesh" qualifiers="static">
+			<return type="Mesh" />
+			<param index="0" name="meshes" type="Array" />
+			<param index="1" name="transoforms" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_data_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="insert_mesh_data">
+			<return type="bool" />
+			<param index="0" name="meshes" type="Array" />
+			<param index="1" name="transforms" type="Array" />
+			<param index="2" name="materials_override" type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="insert_mmesh_data">
+			<return type="bool" />
+			<param index="0" name="meshes" type="Array" />
+			<param index="1" name="transforms" type="Array" />
+			<param index="2" name="materials_set_ids" type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="join_meshes">
+			<return type="ArrayMesh" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

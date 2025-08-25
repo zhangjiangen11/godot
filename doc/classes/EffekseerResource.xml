@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EffekseerResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="load">
+			<return type="void" />
+			<param index="0" name="_unnamed_arg0" type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="data_bytes" type="PackedByteArray" setter="set_data_bytes" getter="get_data_bytes" default="PackedByteArray()">
+		</member>
+	</members>
+</class>

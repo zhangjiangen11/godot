@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MMeshLod" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="meshes" type="Mesh[]" setter="set_meshes" getter="get_meshes" default="[null]">
+		</member>
+	</members>
+	<signals>
+		<signal name="meshes_changed">
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

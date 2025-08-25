@@ -70,6 +70,12 @@
 				Returns the index of the tab at local coordinates [param point]. Returns [code]-1[/code] if the point is outside the control boundaries or if there's no tab at the queried position.
 			</description>
 		</method>
+		<method name="get_tab_index_by_name" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="title" type="String" />
+			<description>
+			</description>
+		</method>
 		<method name="get_tab_language" qualifiers="const">
 			<return type="String" />
 			<param index="0" name="tab_idx" type="int" />
@@ -157,6 +163,13 @@
 			<return type="bool" />
 			<description>
 				Selects the first available tab with lower index than the currently selected. Returns [code]true[/code] if tab selection changed.
+			</description>
+		</method>
+		<method name="set_current_tab_by_name">
+			<return type="void" />
+			<param index="0" name="name" type="String" />
+			<param index="1" name="emit_sig" type="bool" default="true" />
+			<description>
 			</description>
 		</method>
 		<method name="set_tab_button_icon">

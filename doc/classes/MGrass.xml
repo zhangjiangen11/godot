@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MGrass" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="check_undo">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="draw_grass">
+			<return type="void" />
+			<param index="0" name="brush_pos" type="Vector3" />
+			<param index="1" name="radius" type="float" />
+			<param index="2" name="add" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_all_grass_nodes" qualifiers="static">
+			<return type="MGrass[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_closest_pixel">
+			<return type="Vector2i" />
+			<param index="0" name="world_pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_count">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_grass_by_pixel">
+			<return type="bool" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_height">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_width">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="grass_px_to_grid_px">
+			<return type="Vector2i" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="has_sublayer">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="is_init">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="make_grass_dirty_by_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="merge_sublayer">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="recreate_all_grass">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="save_grass_data">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="set_grass_by_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="val" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="undo">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="update_dirty_chunks">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active" type="bool" setter="set_active" getter="get_active" default="true">
+		</member>
+		<member name="active_shape_resize" type="bool" setter="set_active_shape_resize" getter="get_active_shape_resize" default="false">
+		</member>
+		<member name="cell_creation_time_data_limit" type="int" setter="set_cell_creation_time_data_limit" getter="get_cell_creation_time_data_limit" default="10000">
+		</member>
+		<member name="collision_layer" type="int" setter="set_collision_layer" getter="get_collision_layer" default="1">
+		</member>
+		<member name="collision_mask" type="int" setter="set_collision_mask" getter="get_collision_mask" default="1">
+		</member>
+		<member name="collision_radius" type="float" setter="set_collision_radius" getter="get_collision_radius" default="64.0">
+		</member>
+		<member name="grass_count_limit" type="int" setter="set_grass_count_limit" getter="get_grass_count_limit" default="9000000">
+		</member>
+		<member name="grass_data" type="MGrassData" setter="set_grass_data" getter="get_grass_data">
+		</member>
+		<member name="lod_settings" type="Array" setter="set_lod_settings" getter="get_lod_settings" default="[]">
+		</member>
+		<member name="materials" type="Array" setter="set_materials" getter="get_materials" default="[]">
+		</member>
+		<member name="meshes" type="Variant" setter="set_meshes" getter="get_meshes">
+		</member>
+		<member name="min_grass_cutoff" type="int" setter="set_min_grass_cutoff" getter="get_min_grass_cutoff" default="1">
+		</member>
+		<member name="nav_obstacle_radius" type="float" setter="set_nav_obstacle_radius" getter="get_nav_obstacle_radius" default="1.0">
+		</member>
+		<member name="physics_material" type="PhysicsMaterial" setter="set_physics_material" getter="get_physics_material">
+		</member>
+		<member name="shape" type="Shape3D" setter="set_shape" getter="get_shape">
+		</member>
+		<member name="shape_offset" type="Vector3" setter="set_shape_offset" getter="get_shape_offset" default="Vector3(0, 0, 0)">
+		</member>
+	</members>
+	<signals>
+		<signal name="grass_is_ready">
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

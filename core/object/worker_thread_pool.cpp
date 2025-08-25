@@ -1373,7 +1373,9 @@ void WorkerTaskPool::finish() {
 		task_available_semaphore.post();
 	}
 	for (ThreadData &data : threads) {
-		data.thread.wait_to_finish();
+		if (data.thread.is_started()) {
+			data.thread.wait_to_finish();
+		}
 	}
 	singleton = nullptr;
 	class ThreadTaskGroup *it = task_queue;

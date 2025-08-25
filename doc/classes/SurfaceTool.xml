@@ -177,6 +177,11 @@
 				[b]Note:[/b] This function returns an enum, not the exact number of weights.
 			</description>
 		</method>
+		<method name="get_vertex_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
 		<method name="index">
 			<return type="void" />
 			<description>

@@ -533,6 +533,11 @@
 				Returns [code]true[/code] if the node receives [constant NOTIFICATION_LOCAL_TRANSFORM_CHANGED] whenever its local transform changes. This is enabled with [method set_notify_local_transform].
 			</description>
 		</method>
+		<method name="is_manual_redraw_enabled" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
 		<method name="is_transform_notification_enabled" qualifiers="const">
 			<return type="bool" />
 			<description>
@@ -565,6 +570,16 @@
 				Returns a copy of the given [param event] with its coordinates converted from global space to this [CanvasItem]'s local space. If not possible, returns the same [InputEvent] unchanged.
 			</description>
 		</method>
+		<method name="manual_redraw_begin">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="manual_redraw_end">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
 		<method name="move_to_front">
 			<return type="void" />
 			<description>
@@ -585,6 +600,12 @@
 				Set the value of a shader uniform for this instance only ([url=$DOCS_URL/tutorials/shaders/shader_reference/shading_language.html#per-instance-uniforms]per-instance uniform[/url]). See also [method ShaderMaterial.set_shader_parameter] to assign a uniform on all instances using the same [ShaderMaterial].
 				[b]Note:[/b] For a shader uniform to be assignable on a per-instance basis, it [i]must[/i] be defined with [code]instance uniform ...[/code] rather than [code]uniform ...[/code] in the shader code.
 				[b]Note:[/b] [param name] is case-sensitive and must match the name of the uniform in the code exactly (not the capitalized name in the inspector).
+			</description>
+		</method>
+		<method name="set_manual_redraw">
+			<return type="void" />
+			<param index="0" name="enable" type="bool" />
+			<description>
 			</description>
 		</method>
 		<method name="set_notify_local_transform">

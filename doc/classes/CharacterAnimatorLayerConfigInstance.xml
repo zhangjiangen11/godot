@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAnimatorLayerConfigInstance" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="editor_play_select_animation_call">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="config" type="CharacterAnimatorLayerConfig" setter="set_config" getter="get_config">
+		</member>
+		<member name="editor_play_select_animation" type="int" setter="_set_editor_play_select_animation_property" getter="_get_editor_play_select_animation_property" default="0">
+		</member>
+		<member name="play_animation" type="Animation" setter="set_play_animation" getter="get_play_animation">
+		</member>
+	</members>
+</class>

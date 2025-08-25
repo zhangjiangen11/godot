@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MTerrain" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_heightmap_layer">
+			<return type="void" />
+			<param index="0" name="layer_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="create_grid">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="disable_brush_mask">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="draw_color">
+			<return type="void" />
+			<param index="0" name="brush_pos" type="Vector3" />
+			<param index="1" name="radius" type="float" />
+			<param index="2" name="brush_id" type="String" />
+			<param index="3" name="index" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="draw_height">
+			<return type="void" />
+			<param index="0" name="brush_pos" type="Vector3" />
+			<param index="1" name="radius" type="float" />
+			<param index="2" name="brush_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="finish_update">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="finish_update_physics">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_all_terrain_nodes" qualifiers="static">
+			<return type="MTerrain[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_base_size">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_closest_height">
+			<return type="float" />
+			<param index="0" name="world_position" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_closest_pixel">
+			<return type="Vector2i" />
+			<param index="0" name="world_pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_h_scale">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_height">
+			<return type="float" />
+			<param index="0" name="world_position" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_height_by_pixel">
+			<return type="float" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_image_id">
+			<return type="int" />
+			<param index="0" name="uniform_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_image_list">
+			<return type="PackedStringArray" />
+			<description>
+			</description>
+		</method>
+		<method name="get_layer_visibility">
+			<return type="bool" />
+			<param index="0" name="input" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_layers_info">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_normal">
+			<return type="Vector3" />
+			<param index="0" name="world_pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_normal_accurate">
+			<return type="Vector3" />
+			<param index="0" name="world_pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_normal_accurate_by_pixel">
+			<return type="Vector3" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_normal_by_pixel">
+			<return type="Vector3" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_pixel">
+			<return type="Color" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="image_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_pixel_height">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_pixel_width">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_pixel_world_pos">
+			<return type="Vector3" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_ray_collision_point">
+			<return type="MCollision" />
+			<param index="0" name="ray_origin" type="Vector3" />
+			<param index="1" name="ray_vector" type="Vector3" />
+			<param index="2" name="step" type="float" />
+			<param index="3" name="max_step" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_ray_collision_point_ignore_holes">
+			<return type="MCollision" />
+			<param index="0" name="ray_origin" type="Vector3" />
+			<param index="1" name="ray_vector" type="Vector3" />
+			<param index="2" name="step" type="float" />
+			<param index="3" name="max_step" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_region_grid_size">
+			<return type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="get_region_id_by_world_pos">
+			<return type="int" />
+			<param index="0" name="world_pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="has_unsave_image">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="images_add_undo_stage">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="images_undo">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="is_finishing_update_chunks">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="is_finishing_update_physics">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="is_grid_created">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="is_ram_image">
+			<return type="bool" />
+			<param index="0" name="uniform_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="merge_heightmap_layer">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_grid">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_heightmap_layer">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="rename_heightmap_layer">
+			<return type="bool" />
+			<param index="0" name="old_name" type="String" />
+			<param index="1" name="new_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="restart_grid">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="save_all_dirty_images">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="save_image">
+			<return type="void" />
+			<param index="0" name="image_index" type="int" />
+			<param index="1" name="force_save" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_active_layer_by_name">
+			<return type="bool" />
+			<param index="0" name="layer_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_brush_manager">
+			<return type="void" />
+			<param index="0" name="brush_manager" type="Object" />
+			<description>
+			</description>
+		</method>
+		<method name="set_brush_mask">
+			<return type="void" />
+			<param index="0" name="mask_image" type="Image" />
+			<description>
+			</description>
+		</method>
+		<method name="set_brush_mask_px_pos">
+			<return type="void" />
+			<param index="0" name="mask_image" type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="set_brush_start_point">
+			<return type="void" />
+			<param index="0" name="brush_pos" type="Vector3" />
+			<param index="1" name="radius" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_color_layer">
+			<return type="void" />
+			<param index="0" name="index" type="int" />
+			<param index="1" name="group_index" type="int" />
+			<param index="2" name="brush_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="set_custom_camera">
+			<return type="void" />
+			<param index="0" name="camera" type="Node3D" />
+			<description>
+			</description>
+		</method>
+		<method name="set_editor_camera">
+			<return type="void" />
+			<param index="0" name="camera" type="Node3D" />
+			<description>
+			</description>
+		</method>
+		<method name="set_height_by_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="value" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_mask_cutoff">
+			<return type="void" />
+			<param index="0" name="val" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="color" type="Color" />
+			<param index="3" name="image_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_save_config">
+			<return type="void" />
+			<param index="0" name="conf" type="ConfigFile" />
+			<description>
+			</description>
+		</method>
+		<method name="terrain_child_changed">
+			<return type="void" />
+			<param index="0" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="toggle_heightmap_layer_visibile">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="update">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="update_all_dirty_image_texture">
+			<return type="void" />
+			<param index="0" name="update_physics" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="update_normals">
+			<return type="void" />
+			<param index="0" name="left" type="int" />
+			<param index="1" name="right" type="int" />
+			<param index="2" name="top" type="int" />
+			<param index="3" name="bottom" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="update_physics">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="brush_layers" type="Array" setter="set_brush_layers" getter="get_brush_layers" default="[]">
+		</member>
+		<member name="brush_layers_groups_num" type="int" setter="set_brush_layers_num" getter="get_brush_layers_num" default="0">
+		</member>
+		<member name="chunks_update_interval" type="float" setter="set_chunks_update_interval" getter="get_chunks_update_interval" default="0.1">
+		</member>
+		<member name="chunks_update_loop_enabled" type="bool" setter="set_chunks_update_loop_enabled" getter="get_chunks_update_loop_enabled" default="true">
+		</member>
+		<member name="collision_layer" type="int" setter="set_collision_layer" getter="get_collision_layer" default="1">
+		</member>
+		<member name="collision_mask" type="int" setter="set_collision_mask" getter="get_collision_mask" default="1">
+		</member>
+		<member name="create" type="bool" setter="set_grid_create" getter="get_create_grid" default="false">
+		</member>
+		<member name="dataDir" type="String" setter="set_dataDir" getter="get_dataDir" default="&quot;&quot;">
+		</member>
+		<member name="distance_update_threshold" type="float" setter="set_distance_update_threshold" getter="get_distance_update_threshold" default="32.0">
+		</member>
+		<member name="heightmap_layers" type="PackedStringArray" setter="set_heightmap_layers" getter="get_heightmap_layers" default="PackedStringArray()">
+		</member>
+		<member name="layersDataDir" type="String" setter="set_layersDataDir" getter="get_layersDataDir" default="&quot;&quot;">
+		</member>
+		<member name="lod_distance" type="PackedInt32Array" setter="set_lod_distance" getter="get_lod_distance" default="PackedInt32Array(3, 6, 12, 16, 24)">
+		</member>
+		<member name="max_h_scale" type="int" setter="set_max_h_scale" getter="get_max_h_scale" default="7">
+		</member>
+		<member name="max_quad_visible" type="int" setter="set_max_range" getter="get_max_range" default="1000">
+		</member>
+		<member name="min_h_scale" type="int" setter="set_min_h_scale" getter="get_min_h_scale" default="2">
+		</member>
+		<member name="offset" type="Vector3" setter="set_offset" getter="get_offset" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="physics_material" type="PhysicsMaterial" setter="set_physics_material" getter="get_physics_material">
+		</member>
+		<member name="physics_update_interval" type="float" setter="set_physics_update_interval" getter="get_physics_update_interval" default="0.5">
+		</member>
+		<member name="physics_update_loop_enabled" type="bool" setter="set_physics_update_loop_enabled" getter="get_physics_update_loop_enabled" default="true">
+		</member>
+		<member name="quad_size_max" type="int" setter="set_max_size" getter="get_max_size" default="7">
+		</member>
+		<member name="quad_size_min" type="int" setter="set_min_size" getter="get_min_size" default="2">
+		</member>
+		<member name="region_quad_count" type="int" setter="set_region_size" getter="get_region_size" default="16">
+		</member>
+		<member name="regions_processing_physics" type="int" setter="set_regions_processing_physics" getter="get_regions_processing_physics" default="1">
+		</member>
+		<member name="regions_visible" type="int" setter="set_regions_limit" getter="get_regions_limit" default="2">
+		</member>
+		<member name="set_mtime" type="bool" setter="set_set_mtime" getter="get_set_mtime" default="false">
+		</member>
+		<member name="size_info" type="Array" setter="set_size_info" getter="get_size_info" default="[[true, true, true, true, true, true], [false, true, true, true, true, true], [false, false, true, true, true, true], [false, false, false, true, true, true], [false, false, false, false, true, true], [false, false, false, false, false, true]]">
+		</member>
+		<member name="terrain_material" type="MTerrainMaterial" setter="set_terrain_material" getter="get_terrain_material">
+		</member>
+		<member name="terrain_quad_count" type="Vector2i" setter="set_terrain_size" getter="get_terrain_size" default="Vector2i(16, 16)">
+		</member>
+		<member name="terrain_region_count" type="Vector2i" setter="set_terrain_region_count" getter="get_terrain_region_count" default="Vector2i(1, 1)">
+		</member>
+	</members>
+</class>

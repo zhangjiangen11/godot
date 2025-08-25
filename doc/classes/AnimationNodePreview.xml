@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AnimationNodePreview" inherits="SubViewportContainer" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_animation_groups">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_animation_tags">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="custom_minimum_size" type="Vector2" setter="set_custom_minimum_size" getter="get_custom_minimum_size" overrides="Control" default="Vector2(1, 150)" />
+		<member name="resource_group" type="String" setter="set_resource_group" getter="get_resource_group" default="&quot;&quot;">
+		</member>
+		<member name="resource_tag" type="String" setter="set_resource_tag" getter="get_resource_tag" default="&quot;&quot;">
+		</member>
+		<member name="stretch" type="bool" setter="set_stretch" getter="is_stretch_enabled" overrides="SubViewportContainer" default="true" />
+	</members>
+</class>

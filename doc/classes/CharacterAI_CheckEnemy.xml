@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAI_CheckEnemy" inherits="CharacterAI_CheckBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="body_area_name" type="StringName" setter="set_body_area_name" getter="get_body_area_name" default="&amp;&quot;&quot;">
+		</member>
+		<member name="enemy_layer" type="int" setter="set_enemy_layer" getter="get_enemy_layer" default="0">
+		</member>
+		<member name="form_angle" type="float" setter="set_form_angle" getter="get_form_angle" default="1.0">
+		</member>
+		<member name="is_form_angle" type="bool" setter="set_is_form_angle" getter="get_is_form_angle" default="false">
+		</member>
+	</members>
+</class>

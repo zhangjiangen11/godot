@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PathExtrudeProfileCircle" inherits="PathExtrudeProfileBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="closed" type="bool" setter="set_closed" getter="get_closed" default="true">
+		</member>
+		<member name="curve" type="Curve" setter="set_curve" getter="get_curve">
+		</member>
+		<member name="ending_angle" type="float" setter="set_ending_angle" getter="get_ending_angle" default="6.2831855">
+		</member>
+		<member name="radius" type="float" setter="set_radius" getter="get_radius" default="1.0">
+		</member>
+		<member name="segments" type="int" setter="set_segments" getter="get_segments" default="32">
+		</member>
+		<member name="smooth_normals" type="bool" setter="set_smooth_normals" getter="get_smooth_normals" default="true">
+		</member>
+		<member name="starting_angle" type="float" setter="set_starting_angle" getter="get_starting_angle" default="0.0">
+		</member>
+	</members>
+</class>

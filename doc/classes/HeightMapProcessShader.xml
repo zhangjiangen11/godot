@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="HeightMapProcessShader" inherits="ProcessShaderBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="auto_reload">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_is_error">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_params">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_params_dict">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_params_display_name_dict">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="get_preview_finish_shader">
+			<return type="Shader" />
+			<description>
+			</description>
+		</method>
+		<method name="get_preview_height_shader">
+			<return type="Shader" />
+			<description>
+			</description>
+		</method>
+		<method name="get_preview_shader">
+			<return type="Shader" />
+			<description>
+			</description>
+		</method>
+		<method name="get_process_shader">
+			<return type="RDShaderFile" />
+			<description>
+			</description>
+		</method>
+		<method name="init">
+			<return type="void" />
+			<param index="0" name="template_shader" type="HeightMapTemplateShader" />
+			<param index="1" name="code_file_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="init_from_only_process">
+			<return type="void" />
+			<param index="0" name="code_file_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="update_process_shader_params">
+			<return type="PackedByteArray" />
+			<param index="0" name="params" type="Dictionary" />
+			<param index="1" name="code" type="PackedByteArray" />
+			<param index="2" name="start_index" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<signals>
+		<signal name="changed">
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

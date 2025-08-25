@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MHlodNode3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="_before_remove" qualifiers="virtual">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="_update_lod" qualifiers="virtual">
+			<return type="void" />
+			<param index="0" name="lod" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="bind_item_get_disabled" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="idx" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="bind_item_get_global_id" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="idx" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="bind_item_get_transform" qualifiers="const">
+			<return type="Transform3D" />
+			<param index="0" name="idx" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="bind_item_set_disabled">
+			<return type="void" />
+			<param index="0" name="idx" type="int" />
+			<param index="1" name="disabled" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="bind_item_set_transform">
+			<return type="void" />
+			<param index="0" name="idx" type="int" />
+			<param index="1" name="new_transform" type="Transform3D" />
+			<description>
+			</description>
+		</method>
+		<method name="get_arg" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="idx" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_current_lod" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_global_id" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="state_data_exist">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="state_data_get">
+			<return type="Variant" />
+			<description>
+			</description>
+		</method>
+		<method name="state_data_get_cache_size" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="state_data_get_prop_name" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="state_data_set">
+			<return type="void" />
+			<param index="0" name="data" type="Variant" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_args" type="PackedInt32Array" setter="_set_args" getter="_get_args" default="PackedInt32Array(0, 0, 0)">
+		</member>
+	</members>
+</class>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneChunk" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_collision_instance">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="type" type="int" enum="SceneDataCompoent.CollisionShapeType" />
+			<param index="2" name="_unnamed_arg2" type="Vector3" />
+			<param index="3" name="_unnamed_arg3" type="float" />
+			<param index="4" name="_unnamed_arg4" type="float" />
+			<param index="5" name="_unnamed_arg5" type="int" />
+			<param index="6" name="_unnamed_arg6" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="add_mesh_collision_instance">
+			<return type="int" />
+			<param index="0" name="transform" type="Transform3D" />
+			<param index="1" name="res_path" type="String" />
+			<param index="2" name="_unnamed_arg2" type="int" />
+			<param index="3" name="_unnamed_arg3" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="add_multimesh_instance">
+			<return type="int" />
+			<param index="0" name="res_path" type="String" />
+			<param index="1" name="transform" type="Transform3D" />
+			<param index="2" name="collision_layer" type="int" />
+			<param index="3" name="is_ground_object" type="bool" />
+			<param index="4" name="_unnamed_arg4" type="Vector4" />
+			<description>
+			</description>
+		</method>
+		<method name="add_multmesh_instance_block">
+			<return type="void" />
+			<param index="0" name="res_path" type="String" />
+			<param index="1" name="block" type="SceneInstanceBlockGpuData" />
+			<param index="2" name="is_ground_object" type="Color" />
+			<param index="3" name="_unnamed_arg3" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_collision_instance">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_mesh_collision_instance">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<param index="1" name="res_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_multimesh_instance">
+			<return type="void" />
+			<param index="0" name="res_path" type="String" />
+			<param index="1" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_multmesh_instance_block">
+			<return type="void" />
+			<param index="0" name="res_path" type="String" />
+			<param index="1" name="block" type="SceneInstanceBlockGpuData" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

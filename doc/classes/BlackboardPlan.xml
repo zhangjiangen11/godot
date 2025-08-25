@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BlackboardPlan" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="create_blackboard">
+			<return type="Blackboard" />
+			<param index="0" name="node" type="Node" />
+			<param index="1" name="parent_scope" type="Blackboard" default="null" />
+			<description>
+			</description>
+		</method>
+		<method name="get_base_plan" qualifiers="const">
+			<return type="BlackboardPlan" />
+			<description>
+			</description>
+		</method>
+		<method name="get_parent_scope_plan_provider" qualifiers="const">
+			<return type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="is_derived" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="populate_blackboard">
+			<return type="void" />
+			<param index="0" name="blackboard" type="Blackboard" />
+			<param index="1" name="overwrite" type="bool" />
+			<param index="2" name="node" type="Node" />
+			<description>
+			</description>
+		</method>
+		<method name="set_base_plan">
+			<return type="void" />
+			<param index="0" name="blackboard_plan" type="BlackboardPlan" />
+			<description>
+			</description>
+		</method>
+		<method name="set_parent_scope_plan_provider">
+			<return type="void" />
+			<param index="0" name="callable" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="sync_with_base_plan">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="prefetch_nodepath_vars" type="bool" setter="set_prefetch_nodepath_vars" getter="is_prefetching_nodepath_vars" default="true">
+		</member>
+	</members>
+</class>

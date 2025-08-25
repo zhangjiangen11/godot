@@ -536,6 +536,12 @@
 				Disconnects a [param signal] by name from a given [param callable]. If the connection does not exist, generates an error. Use [method is_connected] to make sure that the connection exists.
 			</description>
 		</method>
+		<method name="disconnect_all">
+			<return type="void" />
+			<param index="0" name="signal" type="StringName" />
+			<description>
+			</description>
+		</method>
 		<method name="emit_signal" qualifiers="vararg">
 			<return type="int" enum="Error" />
 			<param index="0" name="signal" type="StringName" />

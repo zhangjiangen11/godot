@@ -146,4 +146,12 @@
 			</description>
 		</method>
 	</methods>
+	<constants>
+		<constant name="STRETCH" value="0" enum="FillMode">
+		</constant>
+		<constant name="TILE" value="1" enum="FillMode">
+		</constant>
+		<constant name="TILE_FIT" value="2" enum="FillMode">
+		</constant>
+	</constants>
 </class>

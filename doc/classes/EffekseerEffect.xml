@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="EffekseerEffect" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="calculate_duration" qualifiers="const">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="import">
+			<return type="void" />
+			<param index="0" name="path" type="String" />
+			<param index="1" name="shrink_binary" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="load">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="release">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="data_bytes" type="PackedByteArray" setter="set_data_bytes" getter="get_data_bytes" default="PackedByteArray()">
+		</member>
+		<member name="scale" type="float" setter="set_scale" getter="get_scale" default="1.0">
+		</member>
+		<member name="subresources" type="Dictionary" setter="set_subresources" getter="get_subresources" default="{}">
+		</member>
+	</members>
+</class>

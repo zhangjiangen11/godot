@@ -20,6 +20,22 @@
 		<member name="margin" type="Rect2" setter="set_margin" getter="get_margin" default="Rect2(0, 0, 0, 0)">
 			The margin around the [member region]. Useful for small adjustments. If the [member Rect2.size] of this property ("w" and "h" in the editor) is set, the drawn texture is resized to fit within the margin.
 		</member>
+		<member name="nine_bottom" type="int" setter="set_nine_bottom" getter="get_nine_bottom" default="0">
+		</member>
+		<member name="nine_draw" type="bool" setter="set_nine_draw" getter="get_nine_draw" default="false">
+		</member>
+		<member name="nine_draw_center" type="bool" setter="set_nine_draw_center" getter="get_nine_draw_center" default="true">
+		</member>
+		<member name="nine_horizontal_fill" type="int" setter="set_nine_horizontal_fill" getter="get_nine_horizontal_fill" enum="Texture2D.FillMode" default="0">
+		</member>
+		<member name="nine_left" type="int" setter="set_nine_left" getter="get_nine_left" default="0">
+		</member>
+		<member name="nine_right" type="int" setter="set_nine_right" getter="get_nine_right" default="0">
+		</member>
+		<member name="nine_top" type="int" setter="set_nine_top" getter="get_nine_top" default="0">
+		</member>
+		<member name="nine_vertical_fill" type="int" setter="set_nine_vertical_fill" getter="get_nine_vertical_fill" enum="Texture2D.FillMode" default="0">
+		</member>
 		<member name="region" type="Rect2" setter="set_region" getter="get_region" default="Rect2(0, 0, 0, 0)">
 			The region used to draw the [member atlas]. If either dimension of the region's size is [code]0[/code], the value from [member atlas] size will be used for that axis instead.
 		</member>

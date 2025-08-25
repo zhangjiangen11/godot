@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MCurveInstanceOverride" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_element">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="element_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_to_default">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_element_capacity" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_elements" qualifiers="const">
+			<return type="PackedByteArray" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_end_offset" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="_unnamed_arg1" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_exclude" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_flag" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="element_index" type="int" />
+			<param index="2" name="flag" type="int" enum="MCurveInstanceOverride.FLAG" />
+			<description>
+			</description>
+		</method>
+		<method name="get_rand_remove" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="_unnamed_arg1" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_start_offset" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="element_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="has_element" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="element_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="has_override" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_element">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="element_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_end_offset">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="value" type="int" />
+			<param index="2" name="_unnamed_arg2" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_exclude">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="value" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_flag">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="element_index" type="int" />
+			<param index="2" name="flag" type="int" enum="MCurveInstanceOverride.FLAG" />
+			<param index="3" name="value" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_rand_remove">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="value" type="int" />
+			<param index="2" name="_unnamed_arg2" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_start_offset">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="element_index" type="int" />
+			<param index="2" name="value" type="float" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="data" type="PackedByteArray" setter="set_data" getter="get_data" default="PackedByteArray()">
+		</member>
+	</members>
+	<signals>
+		<signal name="connection_changed">
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="REVERSE_OFFSET" value="2" enum="FLAG">
+		</constant>
+	</constants>
+</class>

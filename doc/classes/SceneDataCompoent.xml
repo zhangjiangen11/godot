@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneDataCompoent" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="aabb" type="AABB" setter="set_aabb" getter="get_aabb" default="AABB(0, 0, 0, 0, 0, 0)">
+		</member>
+		<member name="collision_capsule_height" type="float" setter="set_collision_capsule_height" getter="get_collision_capsule_height" default="1.0">
+		</member>
+		<member name="collision_capsule_radius" type="float" setter="set_collision_capsule_radius" getter="get_collision_capsule_radius" default="1.0">
+		</member>
+		<member name="collision_cylinder_height" type="float" setter="set_collision_cylinder_height" getter="get_collision_cylinder_height" default="1.0">
+		</member>
+		<member name="collision_cylinder_radius" type="float" setter="set_collision_cylinder_radius" getter="get_collision_cylinder_radius" default="1.0">
+		</member>
+		<member name="collision_mask" type="int" setter="set_collision_mask" getter="get_collision_mask" default="4294967295">
+		</member>
+		<member name="collision_shape_type" type="int" setter="set_collision_shape_type" getter="get_collision_shape_type" enum="SceneDataCompoent.CollisionShapeType" default="0">
+		</member>
+		<member name="collision_sphere_radius" type="float" setter="set_collision_sphere_radius" getter="get_collision_sphere_radius" default="1.0">
+		</member>
+		<member name="collosion_box_size" type="Vector3" setter="set_collosion_box_size" getter="get_collosion_box_size" default="Vector3(1, 1, 1)">
+		</member>
+		<member name="object_layer" type="int" setter="set_object_layer" getter="get_object_layer" default="1">
+		</member>
+		<member name="position" type="Vector3" setter="set_position" getter="get_position" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="resource" type="Resource" setter="set_resource" getter="get_resource">
+		</member>
+		<member name="resource_path" type="String" setter="set_resource_path" getter="get_resource_path" default="&quot;&quot;">
+		</member>
+		<member name="resource_type" type="int" setter="set_resource_type" getter="get_resource_type" enum="SceneDataCompoent.ResourceType" default="-1">
+		</member>
+		<member name="rotation" type="Quaternion" setter="set_rotation" getter="get_rotation" default="Quaternion(0, 0, 0, 1)">
+		</member>
+		<member name="scale" type="Vector3" setter="set_scale" getter="get_scale" default="Vector3(1, 1, 1)">
+		</member>
+		<member name="submesh_hsv" type="Vector4" setter="set_submesh_hsv" getter="get_submesh_hsv" default="Vector4(0, 0, 0, 0)">
+		</member>
+		<member name="transform" type="Transform3D" setter="set_transform" getter="get_transform" default="Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)">
+		</member>
+	</members>
+</class>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FoliageCellMask" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="apply_mask">
+			<return type="void" />
+			<param index="0" name="p_x" type="int" />
+			<param index="1" name="p_y" type="int" />
+			<param index="2" name="mask" type="FoliageCellMask" />
+			<description>
+			</description>
+		</method>
+		<method name="create_sub_mask">
+			<return type="FoliageCellMask" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="width" type="int" />
+			<param index="3" name="height" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_data_size">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_pixel">
+			<return type="int" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="init">
+			<return type="void" />
+			<param index="0" name="width" type="int" />
+			<param index="1" name="height" type="int" />
+			<param index="2" name="is_bit" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="merge_mask">
+			<return type="void" />
+			<param index="0" name="texture" type="Image" />
+			<param index="1" name="image_slot" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_circle_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="radius" type="int" />
+			<param index="3" name="value" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_form_texture_pixel">
+			<return type="void" />
+			<param index="0" name="texture" type="Image" />
+			<param index="1" name="image_slot" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="value" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_pixel_form_uv">
+			<return type="void" />
+			<param index="0" name="u" type="float" />
+			<param index="1" name="v" type="float" />
+			<param index="2" name="value" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_pixel_form_uv_max">
+			<return type="void" />
+			<param index="0" name="u" type="float" />
+			<param index="1" name="v" type="float" />
+			<param index="2" name="value" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_pixel_max">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="value" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_rect_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="width" type="int" />
+			<param index="3" name="height" type="int" />
+			<param index="4" name="value" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="data" type="PackedByteArray" setter="set_data" getter="get_data" default="PackedByteArray()">
+		</member>
+		<member name="height" type="int" setter="set_height" getter="get_height" default="0">
+		</member>
+		<member name="is_bit" type="bool" setter="set_is_bit" getter="get_is_bit" default="false">
+		</member>
+		<member name="real_width" type="int" setter="set_real_width" getter="get_real_width" default="0">
+		</member>
+		<member name="width" type="int" setter="set_width" getter="get_width" default="0">
+		</member>
+	</members>
+</class>

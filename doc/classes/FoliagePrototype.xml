@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FoliagePrototype" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="guid" type="String" setter="set_guid" getter="get_guid" default="&quot;&quot;">
+		</member>
+		<member name="name" type="String" setter="set_name" getter="get_name" default="&quot;&quot;">
+		</member>
+		<member name="protypeId" type="int" setter="set_protypeId" getter="get_protypeId" default="-1">
+		</member>
+		<member name="scene_resource" type="SceneEntityResource" setter="set_scene_resource" getter="get_scene_resource">
+		</member>
+	</members>
+</class>

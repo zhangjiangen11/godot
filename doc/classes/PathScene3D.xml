@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PathScene3D" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="bake_instances">
+			<return type="Node3D[]" />
+			<description>
+			</description>
+		</method>
+		<method name="queue_rebuild">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="alignment" type="int" setter="set_alignment" getter="get_alignment" enum="PathScene3D.Alignment" default="0">
+		</member>
+		<member name="count" type="int" setter="set_count" getter="get_count" default="1">
+		</member>
+		<member name="distance" type="float" setter="set_distance" getter="get_distance" default="1.0">
+		</member>
+		<member name="distribution" type="int" setter="set_distribution" getter="get_distribution" enum="PathScene3D.Distribution" default="0">
+		</member>
+		<member name="path_3d" type="Path3D" setter="set_path_3d" getter="get_path_3d">
+		</member>
+		<member name="rotation" type="Vector3" setter="set_mesh_rotation" getter="get_mesh_rotation" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="rotation_mode" type="int" setter="set_mesh_rotation_mode" getter="get_mesh_rotation_mode" enum="PathScene3D.Rotation" default="1">
+		</member>
+		<member name="sample_cubic" type="bool" setter="set_sample_cubic" getter="get_sample_cubic" default="false">
+		</member>
+		<member name="scene" type="PackedScene" setter="set_scene" getter="get_scene">
+		</member>
+		<member name="scene_transform" type="int" setter="set_scene_transform" getter="get_scene_transform" enum="PathScene3D.RelativeTransform" default="0">
+		</member>
+	</members>
+	<signals>
+		<signal name="curve_changed">
+			<description>
+			</description>
+		</signal>
+		<signal name="scene_changed">
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="TRANSFORM_SCENE_LOCAL" value="0" enum="RelativeTransform">
+		</constant>
+		<constant name="TRANSFORM_SCENE_PATH_NODE" value="1" enum="RelativeTransform">
+		</constant>
+		<constant name="DISTRIBUTE_BY_COUNT" value="0" enum="Distribution">
+		</constant>
+		<constant name="DISTRIBUTE_BY_DISTANCE" value="1" enum="Distribution">
+		</constant>
+		<constant name="DISTRIBUTE_MAX" value="2" enum="Distribution">
+		</constant>
+		<constant name="ROTATE_FIXED" value="0" enum="Rotation">
+		</constant>
+		<constant name="ROTATE_PATH" value="1" enum="Rotation">
+		</constant>
+		<constant name="ROTATE_RANDOM" value="2" enum="Rotation">
+		</constant>
+		<constant name="ROTATE_MAX" value="3" enum="Rotation">
+		</constant>
+		<constant name="ALIGN_FROM_START" value="0" enum="Alignment">
+		</constant>
+		<constant name="ALIGN_CENTERED" value="1" enum="Alignment">
+		</constant>
+		<constant name="ALIGN_FROM_END" value="2" enum="Alignment">
+		</constant>
+		<constant name="ALIGN_MAX" value="3" enum="Alignment">
+		</constant>
+	</constants>
+</class>

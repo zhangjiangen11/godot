@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PathMultiMesh3D" inherits="GeometryInstance3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="queue_rebuild">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="alignment" type="int" setter="set_alignment" getter="get_alignment" enum="PathMultiMesh3D.Alignment" default="0">
+		</member>
+		<member name="count" type="int" setter="set_count" getter="get_count" default="1">
+		</member>
+		<member name="distance" type="float" setter="set_distance" getter="get_distance" default="1.0">
+		</member>
+		<member name="distribution" type="int" setter="set_distribution" getter="get_distribution" enum="PathMultiMesh3D.Distribution" default="0">
+		</member>
+		<member name="mesh_rotation" type="Vector3" setter="set_mesh_rotation" getter="get_mesh_rotation" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="mesh_transform" type="int" setter="set_mesh_transform" getter="get_mesh_transform" enum="PathMultiMesh3D.RelativeTransform" default="0">
+		</member>
+		<member name="multi_mesh" type="MultiMesh" setter="set_multi_mesh" getter="get_multi_mesh">
+		</member>
+		<member name="path_3d" type="Path3D" setter="set_path_3d" getter="get_path_3d">
+		</member>
+		<member name="rotation_mode" type="int" setter="set_rotation_mode" getter="get_rotation_mode" enum="PathMultiMesh3D.Rotation" default="1">
+		</member>
+		<member name="sample_cubic" type="bool" setter="set_sample_cubic" getter="get_sample_cubic" default="false">
+		</member>
+	</members>
+	<signals>
+		<signal name="curve_changed">
+			<description>
+			</description>
+		</signal>
+		<signal name="mesh_changed">
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="TRANSFORM_MESH_LOCAL" value="0" enum="RelativeTransform">
+		</constant>
+		<constant name="TRANSFORM_MESH_PATH_NODE" value="1" enum="RelativeTransform">
+		</constant>
+		<constant name="DISTRIBUTE_BY_COUNT" value="0" enum="Distribution">
+		</constant>
+		<constant name="DISTRIBUTE_BY_DISTANCE" value="1" enum="Distribution">
+		</constant>
+		<constant name="DISTRIBUTE_MAX" value="2" enum="Distribution">
+		</constant>
+		<constant name="ROTATE_FIXED" value="0" enum="Rotation">
+		</constant>
+		<constant name="ROTATE_PATH" value="1" enum="Rotation">
+		</constant>
+		<constant name="ROTATE_RANDOM" value="2" enum="Rotation">
+		</constant>
+		<constant name="ROTATE_MAX" value="3" enum="Rotation">
+		</constant>
+		<constant name="ALIGN_FROM_START" value="0" enum="Alignment">
+		</constant>
+		<constant name="ALIGN_CENTERED" value="1" enum="Alignment">
+		</constant>
+		<constant name="ALIGN_FROM_END" value="2" enum="Alignment">
+		</constant>
+		<constant name="ALIGN_MAX" value="3" enum="Alignment">
+		</constant>
+	</constants>
+</class>

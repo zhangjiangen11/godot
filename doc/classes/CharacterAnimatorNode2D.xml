@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAnimatorNode2D" inherits="CharacterAnimatorNodeBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="black_board_property" type="StringName" setter="set_black_board_property" getter="get_black_board_property" default="&amp;&quot;&quot;">
+		</member>
+		<member name="black_board_property_y" type="StringName" setter="set_black_board_property_y" getter="get_black_board_property_y" default="&amp;&quot;&quot;">
+		</member>
+		<member name="position_array" type="PackedVector2Array" setter="set_position_array" getter="get_position_array" default="PackedVector2Array()">
+		</member>
+	</members>
+	<constants>
+		<constant name="SimpleDirectionnal2D" value="1" enum="BlendType">
+		</constant>
+		<constant name="FreeformDirectionnal2D" value="2" enum="BlendType">
+		</constant>
+		<constant name="FreeformCartesian2D" value="3" enum="BlendType">
+		</constant>
+	</constants>
+</class>

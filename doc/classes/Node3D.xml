@@ -22,6 +22,11 @@
 				[b]Note:[/b] [param gizmo] should be an [EditorNode3DGizmo]. The argument type is [Node3DGizmo] to avoid depending on editor classes in [Node3D].
 			</description>
 		</method>
+		<method name="bt_conver_child_to_multi_mesh_call">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
 		<method name="clear_gizmos">
 			<return type="void" />
 			<description>
@@ -293,6 +298,8 @@
 		<member name="basis" type="Basis" setter="set_basis" getter="get_basis">
 			Basis of the [member transform] property. Represents the rotation, scale, and shear of this node in parent space (relative to the parent node).
 		</member>
+		<member name="bt_conver_child_to_multi_mesh" type="int" setter="_set_bt_conver_child_to_multi_mesh_property" getter="_get_bt_conver_child_to_multi_mesh_property" default="0">
+		</member>
 		<member name="global_basis" type="Basis" setter="set_global_basis" getter="get_global_basis">
 			Basis of the [member global_transform] property. Represents the rotation, scale, and shear of this node in global space (relative to the world).
 			[b]Note:[/b] If the node is not inside the tree, getting this property fails and returns [constant Basis.IDENTITY].
@@ -362,6 +369,10 @@
 		</member>
 	</members>
 	<signals>
+		<signal name="transform_changed">
+			<description>
+			</description>
+		</signal>
 		<signal name="visibility_changed">
 			<description>
 				Emitted when this node's visibility changes (see [member visible] and [method is_visible_in_tree]).

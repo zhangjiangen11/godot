@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MIntersection" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="generate_mesh_info">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_debug_mesh">
+			<return type="ArrayMesh" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="mesh" type="MMeshLod" setter="set_mesh" getter="get_mesh">
+		</member>
+		<member name="sockets" type="Transform3D[]" setter="set_sockets" getter="get_sockets" default="[]">
+		</member>
+	</members>
+</class>

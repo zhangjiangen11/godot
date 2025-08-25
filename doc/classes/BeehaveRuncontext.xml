@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BeehaveRuncontext" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_blackboard">
+			<return type="Blackboard" />
+			<description>
+			</description>
+		</method>
+		<method name="get_init_status">
+			<return type="int" />
+			<param index="0" name="curr_this_node" type="Object" />
+			<description>
+			</description>
+		</method>
+		<method name="get_property">
+			<return type="Dictionary" />
+			<param index="0" name="curr_this_node" type="Object" />
+			<description>
+			</description>
+		</method>
+		<method name="get_run_state">
+			<return type="int" />
+			<param index="0" name="curr_this_node" type="Object" />
+			<description>
+			</description>
+		</method>
+		<method name="init_child_state">
+			<return type="void" />
+			<param index="0" name="curr_this_node" type="Object" />
+			<param index="1" name="child_count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_init_status">
+			<return type="void" />
+			<param index="0" name="curr_this_node" type="Object" />
+			<param index="1" name="state" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_run_state">
+			<return type="void" />
+			<param index="0" name="curr_this_node" type="Object" />
+			<param index="1" name="state" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

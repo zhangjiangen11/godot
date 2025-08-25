@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ShaderTemplate" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="code" type="String" setter="set_code" getter="get_code" default="&quot;&quot;">
+		</member>
+		<member name="preview_name" type="String" setter="set_preview_name" getter="get_preview_name" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PathExtrudeProfileManual" inherits="PathExtrudeProfileBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="closed" type="bool" setter="set_closed" getter="get_closed" default="true">
+		</member>
+		<member name="cross_section" type="PackedVector2Array" setter="set_manual_cross_section" getter="get_manual_cross_section" default="PackedVector2Array()">
+		</member>
+		<member name="smooth_normals" type="bool" setter="set_smooth_normals" getter="get_smooth_normals" default="false">
+		</member>
+	</members>
+</class>

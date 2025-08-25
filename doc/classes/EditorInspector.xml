@@ -47,6 +47,38 @@
 				Creates a property editor that can be used by plugin UI to edit the specified property of an [param object].
 			</description>
 		</method>
+		<method name="set_autoclear">
+			<return type="void" />
+			<param index="0" name="enable" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_hide_metadata">
+			<return type="void" />
+			<param index="0" name="hide" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_hide_script">
+			<return type="void" />
+			<param index="0" name="hide" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_show_categories">
+			<return type="void" />
+			<param index="0" name="show_standard" type="bool" />
+			<param index="1" name="show_custom" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_use_folding">
+			<return type="void" />
+			<param index="0" name="enable" type="bool" />
+			<param index="1" name="update_tree" type="bool" default="true" />
+			<description>
+			</description>
+		</method>
 	</methods>
 	<members>
 		<member name="draw_focus_border" type="bool" setter="set_draw_focus_border" getter="get_draw_focus_border" overrides="ScrollContainer" default="true" />

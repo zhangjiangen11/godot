@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MResource" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_compress">
+			<return type="int" enum="MResource.Compress" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="get_data">
+			<return type="PackedByteArray" />
+			<param index="0" name="name" type="StringName" />
+			<param index="1" name="two_plus_one" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_data_format">
+			<return type="int" enum="Image.Format" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="get_data_names">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_data_width">
+			<return type="int" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="get_file_compress">
+			<return type="int" enum="MResource.FileCompress" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="get_heightmap_rf">
+			<return type="PackedByteArray" />
+			<param index="0" name="two_plus_one" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_heightmap_width">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_max_height">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_min_height">
+			<return type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="has_data">
+			<return type="bool" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="insert_data">
+			<return type="void" />
+			<param index="0" name="data" type="PackedByteArray" />
+			<param index="1" name="name" type="StringName" />
+			<param index="2" name="format" type="int" enum="Image.Format" />
+			<param index="3" name="compress" type="int" enum="MResource.Compress" />
+			<param index="4" name="file_compress" type="int" enum="MResource.FileCompress" />
+			<description>
+			</description>
+		</method>
+		<method name="insert_heightmap_rf">
+			<return type="void" />
+			<param index="0" name="data" type="PackedByteArray" />
+			<param index="1" name="accuracy" type="float" />
+			<param index="2" name="compress_qtq" type="bool" />
+			<param index="3" name="file_compress" type="int" enum="MResource.FileCompress" />
+			<description>
+			</description>
+		</method>
+		<method name="is_compress_qtq">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_data">
+			<return type="void" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="compressed_data" type="Dictionary" setter="set_compressed_data" getter="get_compressed_data" default="{}">
+		</member>
+	</members>
+	<constants>
+		<constant name="COMPRESS_NONE" value="0" enum="Compress">
+		</constant>
+		<constant name="COMPRESS_QOI" value="1" enum="Compress">
+		</constant>
+		<constant name="COMPRESS_PNG" value="2" enum="Compress">
+		</constant>
+		<constant name="FILE_COMPRESSION_NONE" value="0" enum="FileCompress">
+		</constant>
+		<constant name="FILE_COMPRESSION_FASTLZ" value="1" enum="FileCompress">
+		</constant>
+		<constant name="FILE_COMPRESSION_DEFLATE" value="2" enum="FileCompress">
+		</constant>
+		<constant name="FILE_COMPRESSION_ZSTD" value="3" enum="FileCompress">
+		</constant>
+		<constant name="FILE_COMPRESSION_GZIP" value="4" enum="FileCompress">
+		</constant>
+	</constants>
+</class>

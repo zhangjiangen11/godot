@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MCurveTerrain" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_deform">
+			<return type="void" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_deform_aabb">
+			<return type="void" />
+			<param index="0" name="aabb" type="AABB" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_grass">
+			<return type="void" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<param index="1" name="grass" type="MGrass" />
+			<param index="2" name="radius_plus_offset" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_grass_aabb">
+			<return type="void" />
+			<param index="0" name="grass" type="MGrass" />
+			<param index="1" name="aabb" type="AABB" />
+			<param index="2" name="radius_plus_offset" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_paint">
+			<return type="void" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_paint_aabb">
+			<return type="void" />
+			<param index="0" name="aabb" type="AABB" />
+			<description>
+			</description>
+		</method>
+		<method name="deform_on_conns">
+			<return type="void" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<description>
+			</description>
+		</method>
+		<method name="modify_grass">
+			<return type="void" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<param index="1" name="grass" type="MGrass" />
+			<param index="2" name="start_offset" type="float" />
+			<param index="3" name="radius" type="float" />
+			<param index="4" name="add" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="paint_on_conns">
+			<return type="void" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="apply_scale" type="bool" setter="set_apply_scale" getter="get_apply_scale" default="true">
+		</member>
+		<member name="apply_tilt" type="bool" setter="set_apply_tilt" getter="get_apply_tilt" default="false">
+		</member>
+		<member name="bg_color" type="Color" setter="set_bg_color" getter="get_bg_color" default="Color(0, 0, 0, 1)">
+		</member>
+		<member name="curve" type="MCurve" setter="set_curve" getter="get_curve">
+		</member>
+		<member name="deform_falloff" type="float" setter="set_deform_falloff" getter="get_deform_falloff" default="2.0">
+		</member>
+		<member name="deform_offest" type="float" setter="set_deform_offest" getter="get_deform_offest" default="0.0">
+		</member>
+		<member name="deform_radius" type="float" setter="set_deform_radius" getter="get_deform_radius" default="6.0">
+		</member>
+		<member name="paint_color" type="Color" setter="set_paint_color" getter="get_paint_color" default="Color(1, 1, 1, 1)">
+		</member>
+		<member name="paint_falloff" type="float" setter="set_paint_falloff" getter="get_paint_falloff" default="0.0">
+		</member>
+		<member name="paint_radius" type="float" setter="set_paint_radius" getter="get_paint_radius" default="6.0">
+		</member>
+		<member name="terrain" type="MTerrain" setter="set_terrain" getter="get_terrain">
+		</member>
+		<member name="terrain_image_name" type="String" setter="set_terrain_image_name" getter="get_terrain_image_name" default="&quot;&quot;">
+		</member>
+		<member name="terrain_layer_name" type="String" setter="set_terrain_layer_name" getter="get_terrain_layer_name" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

@@ -198,8 +198,14 @@
 		</method>
 	</methods>
 	<members>
+		<member name="group" type="StringName" setter="set_resource_group" getter="get_resource_group" default="&amp;&quot;&quot;">
+		</member>
 		<member name="lightmap_size_hint" type="Vector2i" setter="set_lightmap_size_hint" getter="get_lightmap_size_hint" default="Vector2i(0, 0)">
 			Sets a hint to be used for lightmap resolution.
+		</member>
+		<member name="tag" type="StringName" setter="set_resource_tag" getter="get_resource_tag" default="&amp;&quot;&quot;">
+		</member>
+		<member name="user_properties" type="Dictionary" setter="set_user_property" getter="get_user_property" default="{}">
 		</member>
 	</members>
 	<constants>

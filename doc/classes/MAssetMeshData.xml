@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MAssetMeshData" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_collision_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collision_params" qualifiers="const">
+			<return type="Vector3" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collision_transform" qualifiers="const">
+			<return type="Transform3D" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collision_type" qualifiers="const">
+			<return type="int" enum="MAssetTable.CollisionType" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_complex_shape_id">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_global_transform" qualifiers="const">
+			<return type="Transform3D" />
+			<description>
+			</description>
+		</method>
+		<method name="get_item_ids" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_valid_lod" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_valid_mesh" qualifiers="const">
+			<return type="MMesh" />
+			<description>
+			</description>
+		</method>
+		<method name="get_material_set_id" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_lod" qualifiers="const">
+			<return type="MMesh[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_transform" qualifiers="const">
+			<return type="Transform3D" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

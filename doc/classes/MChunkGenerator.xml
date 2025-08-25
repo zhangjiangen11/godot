@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MChunkGenerator" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="generate" qualifiers="static">
+			<return type="ArrayMesh" />
+			<param index="0" name="size" type="float" />
+			<param index="1" name="h_scale" type="float" />
+			<param index="2" name="el" type="bool" />
+			<param index="3" name="er" type="bool" />
+			<param index="4" name="et" type="bool" />
+			<param index="5" name="eb" type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAnimationLibraryItem" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="name" type="StringName" setter="set_name" getter="get_name" default="&amp;&quot;&quot;">
+		</member>
+		<member name="node" type="CharacterAnimatorNodeBase" setter="_set_node" getter="_get_node">
+		</member>
+		<member name="path" type="String" setter="set_path" getter="get_path" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

@@ -49,6 +49,8 @@
 		<member name="autowrap_trim_flags" type="int" setter="set_autowrap_trim_flags" getter="get_autowrap_trim_flags" enum="TextServer.LineBreakFlag" is_bitfield="true" default="128">
 			Autowrap space trimming flags. See [constant TextServer.BREAK_TRIM_START_EDGE_SPACES] and [constant TextServer.BREAK_TRIM_END_EDGE_SPACES] for more info.
 		</member>
+		<member name="background_texture" type="Texture2D" setter="set_background_texture" getter="get_background_texture">
+		</member>
 		<member name="clip_text" type="bool" setter="set_clip_text" getter="get_clip_text" default="false">
 			If [code]true[/code], text that is too large to fit the button is clipped horizontally. If [code]false[/code], the button will always be wide enough to hold the text. The text is not vertically clipped, and the button's height is not affected by this property.
 		</member>
@@ -57,6 +59,8 @@
 		</member>
 		<member name="flat" type="bool" setter="set_flat" getter="is_flat" default="false">
 			Flat buttons don't display decoration.
+		</member>
+		<member name="focus_texture" type="Texture2D" setter="set_focus_texture" getter="get_focus_texture">
 		</member>
 		<member name="icon" type="Texture2D" setter="set_button_icon" getter="get_button_icon">
 			Button's icon, if text is present the icon will be placed before the text.

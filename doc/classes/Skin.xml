@@ -76,5 +76,11 @@
 			<description>
 			</description>
 		</method>
+		<method name="set_human_bone_mapping">
+			<return type="void" />
+			<param index="0" name="mapping" type="Dictionary" />
+			<description>
+			</description>
+		</method>
 	</methods>
 </class>

@@ -102,7 +102,7 @@ GDScriptParser::GDScriptParser() {
 		// Export annotations.
 		register_annotation(MethodInfo("@export"), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_NONE, Variant::NIL>);
 
-		register_annotation(MethodInfo("@export_button",PropertyInfo(Variant::STRING, "names")), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_BUTTON, Variant::NIL>);
+		register_annotation(MethodInfo("@export_button", PropertyInfo(Variant::STRING, "names")), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_BUTTON, Variant::NIL>);
 
 		register_annotation(MethodInfo("@export_enum", PropertyInfo(Variant::STRING, "names")), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_ENUM, Variant::NIL>, varray(), true);
 		register_annotation(MethodInfo("@export_enum_dynamic", PropertyInfo(Variant::STRING, "func_call")), AnnotationInfo::VARIABLE, &GDScriptParser::export_annotations<PROPERTY_HINT_ENUM_DYNAMIC_LIST, Variant::NIL>, varray());
@@ -4554,11 +4554,9 @@ bool GDScriptParser::export_annotations(AnnotationNode *p_annotation, Node *p_ta
 	variable->export_info.hint = t_hint;
 
 	if (p_annotation->name == SNAME("@export_button")) {
-		if(p_annotation->resolved_arguments.size() == 1) {
+		if (p_annotation->resolved_arguments.size() == 1) {
 			variable->export_info.hint_string = p_annotation->resolved_arguments[0];
-		}
-		else
-		{
+		} else {
 			push_error(vformat(R"(Argument of annotation "%s" is invalid. only one argument is allowed)", p_annotation->name), p_annotation->arguments[0]);
 			return false;
 		}
@@ -4661,12 +4659,10 @@ bool GDScriptParser::export_annotations(AnnotationNode *p_annotation, Node *p_ta
 	if (p_annotation->name == SNAME("@export_range")) {
 		if (export_type.builtin_type == Variant::INT) {
 			variable->export_info.type = Variant::INT;
-		}
-		else if (export_type.builtin_type == Variant::VECTOR2) {
-			variable->export_info.type = Variant::VECTOR2;		
-			use_default_variable_type_check = false;	
-		}
-		else if (export_type.builtin_type == Variant::VECTOR2I) {
+		} else if (export_type.builtin_type == Variant::VECTOR2) {
+			variable->export_info.type = Variant::VECTOR2;
+			use_default_variable_type_check = false;
+		} else if (export_type.builtin_type == Variant::VECTOR2I) {
 			variable->export_info.type = Variant::VECTOR2I;
 			use_default_variable_type_check = false;
 		}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="HumanBoneConfig" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="data" type="Dictionary" setter="set_data" getter="get_data" default="{ &quot;root_bone&quot;: PackedStringArray(), &quot;virtual_pose&quot;: {} }">
+		</member>
+	</members>
+</class>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="TaskJobHandle" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="is_completed">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="new_next">
+			<return type="TaskJobHandle" />
+			<param index="0" name="task_name" type="StringName" />
+			<param index="1" name="action" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="new_next_group">
+			<return type="TaskJobHandle" />
+			<param index="0" name="task_name" type="StringName" />
+			<param index="1" name="action" type="Callable" />
+			<param index="2" name="elements_count" type="int" />
+			<param index="3" name="batch_count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="push_depend">
+			<return type="void" />
+			<param index="0" name="depend_task" type="TaskJobHandle" />
+			<description>
+			</description>
+		</method>
+		<method name="wait_completion">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

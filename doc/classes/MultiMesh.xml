@@ -51,6 +51,11 @@
 				Returns the [Transform2D] of a specific instance.
 			</description>
 		</method>
+		<method name="get_update">
+			<return type="RDMultimeshUpdate" />
+			<description>
+			</description>
+		</method>
 		<method name="reset_instance_physics_interpolation">
 			<return type="void" />
 			<param index="0" name="instance" type="int" />

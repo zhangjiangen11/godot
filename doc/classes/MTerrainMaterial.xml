@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MTerrainMaterial" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_material">
+			<return type="RID" />
+			<param index="0" name="region_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_reserved_uniforms" qualifiers="const">
+			<return type="PackedStringArray" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_next_passes" type="Dictionary" setter="_set_next_passes" getter="_get_next_passes" default="{}">
+		</member>
+		<member name="_uniforms" type="Dictionary" setter="_set_uniforms" getter="_get_uniforms" default="{}">
+		</member>
+		<member name="active_region" type="int" setter="set_active_region" getter="get_active_region" default="-1">
+		</member>
+		<member name="clear_all" type="bool" setter="set_clear_all" getter="get_clear_all">
+		</member>
+		<member name="shader" type="Shader" setter="set_shader" getter="get_shader">
+		</member>
+		<member name="show_region" type="bool" setter="set_show_region" getter="get_show_region" default="false">
+		</member>
+	</members>
+</class>

@@ -17,6 +17,11 @@
 		<link title="3D Voxel Demo">https://godotengine.org/asset-library/asset/2755</link>
 	</tutorials>
 	<methods>
+		<method name="get_caller_id" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
 		<method name="get_id" qualifiers="const">
 			<return type="String" />
 			<description>
@@ -28,6 +33,11 @@
 			<description>
 				Returns [code]true[/code] if this [Thread] is currently running the provided function. This is useful for determining if [method wait_to_finish] can be called without blocking the calling thread.
 				To check if a [Thread] is joinable, use [method is_started].
+			</description>
+		</method>
+		<method name="is_main_thread" qualifiers="static">
+			<return type="bool" />
+			<description>
 			</description>
 		</method>
 		<method name="is_started" qualifiers="const">

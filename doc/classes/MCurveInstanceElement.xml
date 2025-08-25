@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MCurveInstanceElement" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="emit_elements_changed">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="collision_layer" type="int" setter="set_collision_layer" getter="get_collision_layer" default="1">
+		</member>
+		<member name="collision_mask" type="int" setter="set_collision_mask" getter="get_collision_mask" default="1">
+		</member>
+		<member name="curve_align" type="int" setter="set_curve_align_mode" getter="get_curve_align_mode" enum="MCurveInstanceElement.ALIGN" default="1">
+		</member>
+		<member name="include_end" type="bool" setter="set_include_end" getter="get_include_end" default="false">
+		</member>
+		<member name="interval" type="float" setter="set_interval" getter="get_interval" default="2.0">
+		</member>
+		<member name="mesh" type="MMeshLod" setter="set_mesh" getter="get_mesh">
+		</member>
+		<member name="middle" type="bool" setter="set_middle" getter="get_middle" default="false">
+		</member>
+		<member name="mirror" type="bool" setter="set_mirror" getter="get_mirror" default="false">
+		</member>
+		<member name="mirror_rotation" type="bool" setter="set_mirror_rotation" getter="get_mirror_rotation" default="false">
+		</member>
+		<member name="name" type="String" setter="set_element_name" getter="get_element_name" default="&quot;&quot;">
+		</member>
+		<member name="offset" type="Vector3" setter="set_offset" getter="get_offset" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="physics_material" type="PhysicsMaterial" setter="set_physics_material" getter="get_physics_material">
+		</member>
+		<member name="rand_offset_end" type="Vector3" setter="set_rand_offset_end" getter="get_rand_offset_end" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="rand_offset_start" type="Vector3" setter="set_rand_offset_start" getter="get_rand_offset_start" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="rand_rotation_end" type="Vector3" setter="set_rand_rotation_end" getter="get_rand_rotation_end" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="rand_rotation_start" type="Vector3" setter="set_rand_rotation_start" getter="get_rand_rotation_start" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="rand_scale_end" type="Vector3" setter="set_rand_scale_end" getter="get_rand_scale_end" default="Vector3(1, 1, 1)">
+		</member>
+		<member name="rand_scale_start" type="Vector3" setter="set_rand_scale_start" getter="get_rand_scale_start" default="Vector3(1, 1, 1)">
+		</member>
+		<member name="rand_uniform_scale_end" type="float" setter="set_rand_uniform_scale_end" getter="get_rand_uniform_scale_end" default="1.0">
+		</member>
+		<member name="rand_uniform_scale_start" type="float" setter="set_rand_uniform_scale_start" getter="get_rand_uniform_scale_start" default="1.0">
+		</member>
+		<member name="render_layers" type="int" setter="set_render_layers" getter="get_render_layers" default="1">
+		</member>
+		<member name="roation" type="Vector3" setter="set_rotation" getter="get_rotation" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="scale" type="Vector3" setter="set_scale" getter="get_scale" default="Vector3(1, 1, 1)">
+		</member>
+		<member name="seed" type="int" setter="set_seed" getter="get_seed" default="101">
+		</member>
+		<member name="shadow_setting" type="int" setter="set_shadow_setting" getter="get_shadow_setting" enum="RenderingServer.ShadowCastingSetting" default="1">
+		</member>
+		<member name="shape" type="Shape3D" setter="set_shape" getter="get_shape">
+		</member>
+		<member name="shape_local_basis" type="Basis" setter="set_shape_local_basis" getter="get_shape_local_basis" default="Basis(1, 0, 0, 0, 1, 0, 0, 0, 1)">
+		</member>
+		<member name="shape_local_position" type="Vector3" setter="set_shape_local_position" getter="get_shape_local_position" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="shape_lod_cutoff" type="int" setter="set_shape_lod_cutoff" getter="get_shape_lod_cutoff" default="2">
+		</member>
+	</members>
+	<signals>
+		<signal name="elements_changed">
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="NO_ALIGN" value="0" enum="ALIGN">
+		</constant>
+		<constant name="CURVE_XYZ" value="1" enum="ALIGN">
+		</constant>
+		<constant name="CURVE_XZ" value="2" enum="ALIGN">
+		</constant>
+	</constants>
+</class>

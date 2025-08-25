@@ -50,6 +50,11 @@
 				Returns the weight values of the specified bone.
 			</description>
 		</method>
+		<method name="get_mesh_data" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
 		<method name="set_bone_path">
 			<return type="void" />
 			<param index="0" name="index" type="int" />

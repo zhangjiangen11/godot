@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAnimatorLayerConfig" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="blend_type" type="int" setter="set_blend_type" getter="get_blend_type" enum="CharacterAnimatorLayerConfig.BlendType" default="0">
+		</member>
+		<member name="layer_name" type="StringName" setter="set_layer_name" getter="get_layer_name" default="&amp;&quot;&quot;">
+		</member>
+		<member name="mask" type="CharacterAnimatorMask" setter="set_mask" getter="get_mask">
+		</member>
+	</members>
+	<constants>
+		<constant name="BT_Blend" value="0" enum="BlendType">
+		</constant>
+		<constant name="BT_Override" value="1" enum="BlendType">
+		</constant>
+	</constants>
+</class>

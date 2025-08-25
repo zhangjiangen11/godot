@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MemoryPoolAllocal" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="allocate">
+			<return type="int" />
+			<param index="0" name="count" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="free_block">
+			<return type="void" />
+			<param index="0" name="block" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_block_end" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="block" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_block_offset" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="block" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_block_size" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="block" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_total_memory_size">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

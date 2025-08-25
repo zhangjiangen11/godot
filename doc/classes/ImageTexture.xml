@@ -68,6 +68,22 @@
 		</method>
 	</methods>
 	<members>
+		<member name="nine_bottom" type="int" setter="set_nine_bottom" getter="get_nine_bottom" default="0">
+		</member>
+		<member name="nine_draw" type="bool" setter="set_nine_draw" getter="get_nine_draw" default="false">
+		</member>
+		<member name="nine_draw_center" type="bool" setter="set_nine_draw_center" getter="get_nine_draw_center" default="true">
+		</member>
+		<member name="nine_horizontal_fill" type="int" setter="set_nine_horizontal_fill" getter="get_nine_horizontal_fill" enum="Texture2D.FillMode" default="0">
+		</member>
+		<member name="nine_left" type="int" setter="set_nine_left" getter="get_nine_left" default="0">
+		</member>
+		<member name="nine_right" type="int" setter="set_nine_right" getter="get_nine_right" default="0">
+		</member>
+		<member name="nine_top" type="int" setter="set_nine_top" getter="get_nine_top" default="0">
+		</member>
+		<member name="nine_vertical_fill" type="int" setter="set_nine_vertical_fill" getter="get_nine_vertical_fill" enum="Texture2D.FillMode" default="0">
+		</member>
 		<member name="resource_local_to_scene" type="bool" setter="set_local_to_scene" getter="is_local_to_scene" overrides="Resource" default="false" />
 	</members>
 </class>

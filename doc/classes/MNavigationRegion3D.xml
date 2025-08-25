@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MNavigationRegion3D" inherits="NavigationRegion3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="draw_npoints">
+			<return type="void" />
+			<param index="0" name="brush_pos" type="Vector3" />
+			<param index="1" name="radius" type="float" />
+			<param index="2" name="add" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_all_navigation_nodes" qualifiers="static">
+			<return type="MNavigationRegion3D[]" />
+			<description>
+			</description>
+		</method>
+		<method name="get_npoint_by_pixel">
+			<return type="bool" />
+			<param index="0" name="px" type="int" />
+			<param index="1" name="py" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="save_nav_data">
+			<return type="int" enum="Error" />
+			<description>
+			</description>
+		</method>
+		<method name="set_npoint_by_pixel">
+			<return type="void" />
+			<param index="0" name="px" type="int" />
+			<param index="1" name="py" type="int" />
+			<param index="2" name="val" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="set_npoints_visible">
+			<return type="void" />
+			<param index="0" name="val" type="bool" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="active" type="bool" setter="set_active" getter="get_active" default="true">
+		</member>
+		<member name="data" type="MNavigationMeshData" setter="set_nav_data" getter="get_nav_data">
+		</member>
+		<member name="distance_update_threshold" type="float" setter="set_distance_update_threshold" getter="get_distance_update_threshold" default="64.0">
+		</member>
+		<member name="follow_camera" type="bool" setter="set_follow_camera" getter="get_follow_camera" default="true">
+		</member>
+		<member name="force_bake" type="bool" setter="set_force_update" getter="get_force_update" default="true">
+		</member>
+		<member name="max_shown_lod" type="int" setter="set_max_shown_lod" getter="get_max_shown_lod" default="2">
+		</member>
+		<member name="navigation_radius" type="float" setter="set_navigation_radius" getter="get_navigation_radius" default="256.0">
+		</member>
+	</members>
+	<signals>
+		<signal name="navigation_region_is_ready">
+			<description>
+			</description>
+		</signal>
+		<signal name="update_navmesh">
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

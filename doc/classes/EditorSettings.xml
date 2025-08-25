@@ -78,7 +78,7 @@
 		</method>
 		<method name="erase">
 			<return type="void" />
-			<param index="0" name="property" type="String" />
+			<param index="0" name="property" type="StringName" />
 			<description>
 				Erases the setting whose name is specified by [param property].
 			</description>
@@ -112,14 +112,14 @@
 		</method>
 		<method name="get_setting" qualifiers="const">
 			<return type="Variant" />
-			<param index="0" name="name" type="String" />
+			<param index="0" name="name" type="StringName" />
 			<description>
 				Returns the value of the setting specified by [param name]. This is equivalent to using [method Object.get] on the EditorSettings instance.
 			</description>
 		</method>
 		<method name="has_setting" qualifiers="const">
 			<return type="bool" />
-			<param index="0" name="name" type="String" />
+			<param index="0" name="name" type="StringName" />
 			<description>
 				Returns [code]true[/code] if the setting specified by [param name] exists, [code]false[/code] otherwise.
 			</description>
@@ -173,7 +173,7 @@
 		</method>
 		<method name="set_setting">
 			<return type="void" />
-			<param index="0" name="name" type="String" />
+			<param index="0" name="name" type="StringName" />
 			<param index="1" name="value" type="Variant" />
 			<description>
 				Sets the [param value] of the setting specified by [param name]. This is equivalent to using [method Object.set] on the EditorSettings instance.

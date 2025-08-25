@@ -10,4 +10,11 @@
 	<tutorials>
 		<link title="Prototyping levels with CSG">$DOCS_URL/tutorials/3d/csg_tools.html</link>
 	</tutorials>
+	<methods>
+		<method name="build_brush" qualifiers="virtual const">
+			<return type="CSGBrush" />
+			<description>
+			</description>
+		</method>
+	</methods>
 </class>

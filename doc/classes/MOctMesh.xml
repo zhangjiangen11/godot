@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MOctMesh" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_active_mesh">
+			<return type="Mesh" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="custom_aabb" type="AABB" setter="set_custom_aabb" getter="get_custom_aabb" default="AABB(0, 0, 0, 0, 0, 0)">
+		</member>
+		<member name="enable_global_illumination" type="bool" setter="set_enable_global_illumination" getter="get_enable_global_illumination" default="true">
+		</member>
+		<member name="extra_cull_margin" type="float" setter="set_extra_cull_margin" getter="get_extra_cull_margin" default="0.0">
+		</member>
+		<member name="ignore_occlusion_culling" type="bool" setter="set_ignore_occlusion_culling" getter="get_ignore_occlusion_culling" default="false">
+		</member>
+		<member name="instance_shader_parameters" type="Dictionary" setter="set_instance_shader_parameters" getter="get_instance_shader_parameters" default="{}">
+		</member>
+		<member name="lod_bias" type="float" setter="set_lod_bias" getter="get_lod_bias" default="1.0">
+		</member>
+		<member name="material_override" type="Material" setter="set_material_override" getter="get_material_override">
+		</member>
+		<member name="mesh_lod" type="MMeshLod" setter="set_mesh_lod" getter="get_mesh_lod">
+		</member>
+		<member name="shadow_setting" type="int" setter="set_shadow_setting" getter="get_shadow_setting" enum="RenderingServer.ShadowCastingSetting" default="1">
+		</member>
+		<member name="transparency" type="float" setter="set_transparency" getter="get_transparency" default="0.0">
+		</member>
+	</members>
+</class>

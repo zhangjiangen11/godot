@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FoliageHeightMap" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_pixel" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_flatland">
+			<return type="TaskJobHandle" />
+			<param index="0" name="block" type="SceneInstanceBlock" />
+			<param index="1" name="instance_range" type="float" />
+			<param index="2" name="flatland_height" type="float" />
+			<param index="3" name="instance_start_pos" type="Vector2" />
+			<param index="4" name="depend_job" type="TaskJobHandle" />
+			<description>
+			</description>
+		</method>
+		<method name="hide_instance_by_height_range">
+			<return type="TaskJobHandle" />
+			<param index="0" name="block" type="SceneInstanceBlock" />
+			<param index="1" name="min_height" type="float" />
+			<param index="2" name="max_height" type="float" />
+			<param index="3" name="instance_start_pos" type="Vector2" />
+			<param index="4" name="depend_job" type="TaskJobHandle" />
+			<description>
+			</description>
+		</method>
+		<method name="init">
+			<return type="void" />
+			<param index="0" name="width" type="int" />
+			<param index="1" name="height" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="init_form_image">
+			<return type="void" />
+			<param index="0" name="image" type="Image" />
+			<param index="1" name="rect" type="Rect2i" />
+			<description>
+			</description>
+		</method>
+		<method name="sample_height">
+			<return type="float" />
+			<param index="0" name="u" type="float" />
+			<param index="1" name="v" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_pixel">
+			<return type="void" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="y" type="int" />
+			<param index="2" name="value" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="update_height">
+			<return type="TaskJobHandle" />
+			<param index="0" name="block" type="SceneInstanceBlock" />
+			<param index="1" name="base_height" type="float" />
+			<param index="2" name="height_range" type="float" />
+			<param index="3" name="instance_start_pos" type="Vector2" />
+			<param index="4" name="depend_job" type="TaskJobHandle" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="data" type="PackedFloat32Array" setter="set_data" getter="get_data" default="PackedFloat32Array()">
+		</member>
+		<member name="height" type="int" setter="set_height" getter="get_height" default="0">
+		</member>
+		<member name="width" type="int" setter="set_width" getter="get_width" default="0">
+		</member>
+	</members>
+</class>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MBrushLayers" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="brush_name" type="String" setter="set_brush_name" getter="get_brush_name" default="&quot;Color Paint&quot;">
+		</member>
+		<member name="layers" type="Array" setter="set_layers" getter="get_layers" default="[]">
+		</member>
+		<member name="layers_num" type="int" setter="set_layers_num" getter="get_layers_num" default="0">
+		</member>
+		<member name="layers_title" type="String" setter="set_layers_title" getter="get_layers_title" default="&quot;&quot;">
+		</member>
+		<member name="uniform_name" type="String" setter="set_uniform_name" getter="get_uniform_name" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

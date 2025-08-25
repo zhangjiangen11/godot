@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FoliageCellAsset" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_instance_block">
+			<return type="void" />
+			<param index="0" name="block" type="InstanceBlockList" />
+			<description>
+			</description>
+		</method>
+		<method name="chunk_index_from_cell_pos" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="cell_pos" type="Vector2i" />
+			<description>
+			</description>
+		</method>
+		<method name="create_asset_list" qualifiers="static">
+			<return type="Array" />
+			<param index="0" name="world_width" type="float" />
+			<param index="1" name="world_height" type="float" />
+			<param index="2" name="is_far" type="bool" default="false" />
+			<description>
+			</description>
+		</method>
+		<method name="is_bounding_cell_pos" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="x" type="int" />
+			<param index="1" name="z" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="instance_blocks" type="Dictionary" setter="set_instance_blocks" getter="get_instance_blocks" default="{}">
+		</member>
+		<member name="is_far" type="bool" setter="set_far" getter="get_far" default="false">
+		</member>
+		<member name="region_offset" type="Vector2" setter="set_region_offset" getter="get_region_offset" default="Vector2(0, 0)">
+		</member>
+		<member name="x" type="int" setter="set_x" getter="get_x" default="0">
+		</member>
+		<member name="z" type="int" setter="set_z" getter="get_z" default="0">
+		</member>
+	</members>
+</class>

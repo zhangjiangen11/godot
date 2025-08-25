@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="DataTableManager" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_data_item">
+			<return type="Dictionary" />
+			<param index="0" name="name" type="StringName" />
+			<param index="1" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_data_table">
+			<return type="Dictionary" />
+			<param index="0" name="name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="parse_yaml">
+			<return type="JSON" />
+			<param index="0" name="text" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="parse_yaml_file">
+			<return type="JSON" />
+			<param index="0" name="file_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="reload">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_animation_load_cb">
+			<return type="void" />
+			<param index="0" name="callback" type="Callable" />
+			<description>
+			</description>
+		</method>
+		<method name="set_data_table_path">
+			<return type="void" />
+			<param index="0" name="path" type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="animation_table_name" type="StringName" setter="set_animation_table_name" getter="get_animation_table_name" default="&amp;&quot;animation_table&quot;">
+		</member>
+		<member name="body_table_name" type="StringName" setter="set_body_table_name" getter="get_body_table_name" default="&amp;&quot;body_table&quot;">
+		</member>
+		<member name="charecter_table_name" type="StringName" setter="set_charecter_table_name" getter="get_charecter_table_name" default="&amp;&quot;charecter_table&quot;">
+		</member>
+		<member name="item_table_name" type="StringName" setter="set_item_table_name" getter="get_item_table_name" default="&amp;&quot;item_table_name&quot;">
+		</member>
+		<member name="mesh_part_table_name" type="StringName" setter="set_mesh_part_table_name" getter="get_mesh_part_table_name" default="&amp;&quot;mesh_part_table&quot;">
+		</member>
+		<member name="path_table_name" type="StringName" setter="set_path_table_name" getter="get_path_table_name" default="&amp;&quot;path_table&quot;">
+		</member>
+		<member name="scene_table_name" type="StringName" setter="set_scene_table_name" getter="get_scene_table_name" default="&amp;&quot;scene_table&quot;">
+		</member>
+		<member name="skill_table_name" type="StringName" setter="set_skill_table_name" getter="get_skill_table_name" default="&amp;&quot;skill_table_name&quot;">
+		</member>
+	</members>
+</class>

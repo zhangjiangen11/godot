@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneDataCompoentChild" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="show">
+			<return type="void" />
+			<param index="0" name="show_level" type="int" />
+			<param index="1" name="parent" type="Transform3D" />
+			<param index="2" name="show_type" type="int" enum="SceneDataCompoent.ShowType" />
+			<param index="3" name="instance" type="Node3D" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="scene_data_compoent" type="SceneDataCompoent" setter="set_scene_data_compoent" getter="get_scene_data_compoent">
+		</member>
+		<member name="show_level" type="int" setter="set_show_level" getter="get_show_level" default="0">
+		</member>
+	</members>
+</class>

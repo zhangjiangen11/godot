@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAI" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="brain" type="CharacterAI_Brain" setter="set_brain" getter="get_brain">
+		</member>
+		<member name="inductor" type="CharacterAI_Inductor" setter="set_inductor" getter="get_inductor">
+		</member>
+		<member name="logic_node" type="CharacterAILogicNode[]" setter="set_logic_node" getter="get_logic_node" default="[]">
+		</member>
+	</members>
+</class>

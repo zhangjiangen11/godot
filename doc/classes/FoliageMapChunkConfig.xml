@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FoliageMapChunkConfig" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="chunk_area" type="Rect2" setter="set_chunk_area" getter="get_chunk_area" default="Rect2(0, 0, 0, 0)">
+		</member>
+		<member name="chunk_asset_name" type="String" setter="set_chunk_asset_name" getter="get_chunk_asset_name" default="&quot;&quot;">
+		</member>
+	</members>
+</class>

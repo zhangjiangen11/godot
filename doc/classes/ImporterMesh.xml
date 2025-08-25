@@ -161,6 +161,12 @@
 				Returns the primitive type of the requested surface (see [method add_surface]).
 			</description>
 		</method>
+		<method name="init_form_mesh">
+			<return type="void" />
+			<param index="0" name="mesh" type="Mesh" />
+			<description>
+			</description>
+		</method>
 		<method name="set_blend_shape_mode">
 			<return type="void" />
 			<param index="0" name="mode" type="int" enum="Mesh.BlendShapeMode" />

@@ -16,6 +16,11 @@
 				Returns the current line count.
 			</description>
 		</method>
+		<method name="resort">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
 	</methods>
 	<members>
 		<member name="alignment" type="int" setter="set_alignment" getter="get_alignment" enum="FlowContainer.AlignmentMode" default="0">

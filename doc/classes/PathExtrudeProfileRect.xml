@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="PathExtrudeProfileRect" inherits="PathExtrudeProfileBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="rect" type="Rect2" setter="set_rect" getter="get_rect" default="Rect2(0, 0, 0, 0)">
+		</member>
+		<member name="smooth_normals" type="bool" setter="set_smooth_normals" getter="get_smooth_normals" default="false">
+		</member>
+		<member name="subdivisions" type="Vector2i" setter="set_subdivisions" getter="get_subdivisions" default="Vector2i(0, 0)">
+		</member>
+	</members>
+</class>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BeehaveNode" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="annotation" type="String" setter="set_annotation" getter="get_annotation">
+		</member>
+		<member name="children" type="BeehaveNode[]" setter="set_children" getter="get_children">
+		</member>
+		<member name="debug_enabled" type="bool" setter="set_debug_enabled" getter="get_debug_enabled">
+		</member>
+		<member name="editor_collapsed_children" type="bool" setter="set_editor_collapsed_children" getter="get_editor_collapsed_children">
+		</member>
+		<member name="enable" type="bool" setter="set_enable" getter="get_enable">
+		</member>
+		<member name="name" type="StringName" setter="set_name" getter="get_name">
+		</member>
+	</members>
+</class>

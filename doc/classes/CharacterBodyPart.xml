@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterBodyPart" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="init_form_mesh_instance">
+			<return type="void" />
+			<param index="0" name="p_mesh_instance" type="MeshInstance3D" />
+			<param index="1" name="bone_mapping" type="Dictionary" default="{}" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="material" type="Material" setter="set_material" getter="get_material">
+		</member>
+		<member name="mesh" type="Mesh" setter="set_mesh" getter="get_mesh">
+		</member>
+		<member name="skin" type="Skin" setter="set_skin" getter="get_skin">
+		</member>
+	</members>
+	<signals>
+		<signal name="part_changed">
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

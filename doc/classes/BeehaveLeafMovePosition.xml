@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BeehaveLeafMovePosition" inherits="BeehaveLeaf" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="by_blackboard_property" type="bool" setter="set_by_blackboard_property" getter="get_by_blackboard_property" default="false">
+		</member>
+		<member name="move_direction" type="Vector3" setter="set_move_direction" getter="get_move_direction" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="move_direction_blackboard_property" type="StringName" setter="set_move_direction_blackboard_property" getter="get_move_direction_blackboard_property" default="&amp;&quot;&quot;">
+		</member>
+	</members>
+</class>

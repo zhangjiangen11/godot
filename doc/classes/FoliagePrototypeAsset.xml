@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FoliagePrototypeAsset" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_prototype">
+			<return type="void" />
+			<param index="0" name="prototype" type="FoliagePrototype" />
+			<description>
+			</description>
+		</method>
+		<method name="add_prototype_form_scene_resource_path">
+			<return type="FoliagePrototype" />
+			<param index="0" name="guid" type="String" />
+			<param index="1" name="scene_resource_path" type="SceneEntityResource" />
+			<description>
+			</description>
+		</method>
+		<method name="get_prototype">
+			<return type="FoliagePrototype" />
+			<param index="0" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_prototype_form_guid">
+			<return type="FoliagePrototype" />
+			<param index="0" name="guid" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_prototype_form_id">
+			<return type="FoliagePrototype" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="proto" type="Array" setter="set_proto" getter="get_proto" default="[]">
+		</member>
+		<member name="region" type="Rect2" setter="set_region" getter="get_region" default="Rect2(0, 0, 0, 0)">
+		</member>
+	</members>
+</class>

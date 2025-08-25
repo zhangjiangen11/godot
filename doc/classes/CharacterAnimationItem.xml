@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAnimationItem" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="animation" type="Animation" setter="set_animation" getter="get_animation">
+		</member>
+		<member name="child_node" type="CharacterAnimatorNodeBase" setter="set_child_node" getter="get_child_node">
+		</member>
+		<member name="is_clip" type="bool" setter="set_is_clip" getter="get_is_clip" default="true">
+		</member>
+		<member name="speed" type="float" setter="set_speed" getter="get_speed" default="1.0">
+		</member>
+	</members>
+</class>

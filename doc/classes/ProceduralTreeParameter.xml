@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ProceduralTreeParameter" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="_0_base_size" type="float" setter="set_base_size_0" getter="get_base_size_0" default="0.3">
+		</member>
+		<member name="_0_bend_v" type="float" setter="set_bend_v_0" getter="get_bend_v_0" default="0.0">
+		</member>
+		<member name="_0_branch_dist" type="float" setter="set_branch_dist_0" getter="get_branch_dist_0" default="0.0">
+		</member>
+		<member name="_0_branches" type="int" setter="set_branches_0" getter="get_branches_0" default="1">
+		</member>
+		<member name="_0_curve" type="float" setter="set_curve_0" getter="get_curve_0" default="0.0">
+		</member>
+		<member name="_0_curve_back" type="float" setter="set_curve_back_0" getter="get_curve_back_0" default="0.0">
+		</member>
+		<member name="_0_curve_resolution" type="int" setter="set_curve_resolution_0" getter="get_curve_resolution_0" default="5">
+		</member>
+		<member name="_0_curve_v" type="float" setter="set_curve_v_0" getter="get_curve_v_0" default="20.0">
+		</member>
+		<member name="_0_down_angle" type="float" setter="set_down_angle_0" getter="get_down_angle_0" default="0.0">
+		</member>
+		<member name="_0_down_angle_v" type="float" setter="set_down_angle_v_0" getter="get_down_angle_v_0" default="0.0">
+		</member>
+		<member name="_0_length" type="float" setter="set_length_0" getter="get_length_0" default="1.0">
+		</member>
+		<member name="_0_length_v" type="float" setter="set_length_v_0" getter="get_length_v_0" default="0.0">
+		</member>
+		<member name="_0_radius_modify" type="float" setter="set_radius_modify_0" getter="get_radius_modify_0" default="1.0">
+		</member>
+		<member name="_0_rotation" type="float" setter="set_rotation_0" getter="get_rotation_0" default="0.0">
+		</member>
+		<member name="_0_rotation_v" type="float" setter="set_rotation_v_0" getter="get_rotation_v_0" default="0.0">
+		</member>
+		<member name="_0_segment_splits" type="float" setter="set_segment_splits_0" getter="get_segment_splits_0" default="0.0">
+		</member>
+		<member name="_0_split_angle" type="float" setter="set_split_angle_0" getter="get_split_angle_0" default="40.0">
+		</member>
+		<member name="_0_split_angle_v" type="float" setter="set_split_angle_v_0" getter="get_split_angle_v_0" default="5.0">
+		</member>
+		<member name="_0_taper" type="float" setter="set_taper_0" getter="get_taper_0" default="1.0">
+		</member>
+		<member name="_0_tropism" type="float" setter="set_tropism_0" getter="get_tropism_0" default="0.0">
+		</member>
+		<member name="_0_trunk_angle_add" type="float" setter="set_trunk_angle_add_0" getter="get_trunk_angle_add_0" default="0.0">
+		</member>
+		<member name="_0_trunk_segment_vertex_splits" type="int" setter="set_trunk_segment_vertex_splits_0" getter="get_trunk_segment_vertex_splits_0" default="16">
+		</member>
+		<member name="_1_base_size" type="float" setter="set_base_size_1" getter="get_base_size_1" default="0.02">
+		</member>
+		<member name="_1_bend_v" type="float" setter="set_bend_v_1" getter="get_bend_v_1" default="50.0">
+		</member>
+		<member name="_1_branch_dist" type="float" setter="set_branch_dist_1" getter="get_branch_dist_1" default="0.0">
+		</member>
+		<member name="_1_branches" type="int" setter="set_branches_1" getter="get_branches_1" default="50">
+		</member>
+		<member name="_1_curve" type="float" setter="set_curve_1" getter="get_curve_1" default="-40.0">
+		</member>
+		<member name="_1_curve_back" type="float" setter="set_curve_back_1" getter="get_curve_back_1" default="0.0">
+		</member>
+		<member name="_1_curve_resolution" type="int" setter="set_curve_resolution_1" getter="get_curve_resolution_1" default="5">
+		</member>
+		<member name="_1_curve_v" type="float" setter="set_curve_v_1" getter="get_curve_v_1" default="50.0">
+		</member>
+		<member name="_1_down_angle" type="float" setter="set_down_angle_1" getter="get_down_angle_1" default="60.0">
+		</member>
+		<member name="_1_down_angle_v" type="float" setter="set_down_angle_v_1" getter="get_down_angle_v_1" default="-50.0">
+		</member>
+		<member name="_1_length" type="float" setter="set_length_1" getter="get_length_1" default="0.3">
+		</member>
+		<member name="_1_length_v" type="float" setter="set_length_v_1" getter="get_length_v_1" default="0.0">
+		</member>
+		<member name="_1_radius_modify" type="float" setter="set_radius_modify_1" getter="get_radius_modify_1" default="1.0">
+		</member>
+		<member name="_1_rotation" type="float" setter="set_rotation_1" getter="get_rotation_1" default="140.0">
+		</member>
+		<member name="_1_rotation_v" type="float" setter="set_rotation_v_1" getter="get_rotation_v_1" default="0.0">
+		</member>
+		<member name="_1_segment_splits" type="float" setter="set_segment_splits_1" getter="get_segment_splits_1" default="0.0">
+		</member>
+		<member name="_1_split_angle" type="float" setter="set_split_angle_1" getter="get_split_angle_1" default="0.0">
+		</member>
+		<member name="_1_split_angle_v" type="float" setter="set_split_angle_v_1" getter="get_split_angle_v_1" default="0.0">
+		</member>
+		<member name="_1_taper" type="float" setter="set_taper_1" getter="get_taper_1" default="1.0">
+		</member>
+		<member name="_1_tropism" type="float" setter="set_tropism_1" getter="get_tropism_1" default="0.0">
+		</member>
+		<member name="_1_trunk_angle_add" type="float" setter="set_trunk_angle_add_1" getter="get_trunk_angle_add_1" default="0.0">
+		</member>
+		<member name="_1_trunk_segment_vertex_splits" type="int" setter="set_trunk_segment_vertex_splits_1" getter="get_trunk_segment_vertex_splits_1" default="8">
+		</member>
+		<member name="_2_base_size" type="float" setter="set_base_size_2" getter="get_base_size_2" default="0.02">
+		</member>
+		<member name="_2_bend_v" type="float" setter="set_bend_v_2" getter="get_bend_v_2" default="0.0">
+		</member>
+		<member name="_2_branch_dist" type="float" setter="set_branch_dist_2" getter="get_branch_dist_2" default="0.0">
+		</member>
+		<member name="_2_branches" type="int" setter="set_branches_2" getter="get_branches_2" default="30">
+		</member>
+		<member name="_2_curve" type="float" setter="set_curve_2" getter="get_curve_2" default="-40.0">
+		</member>
+		<member name="_2_curve_back" type="float" setter="set_curve_back_2" getter="get_curve_back_2" default="0.0">
+		</member>
+		<member name="_2_curve_resolution" type="int" setter="set_curve_resolution_2" getter="get_curve_resolution_2" default="3">
+		</member>
+		<member name="_2_curve_v" type="float" setter="set_curve_v_2" getter="get_curve_v_2" default="75.0">
+		</member>
+		<member name="_2_down_angle" type="float" setter="set_down_angle_2" getter="get_down_angle_2" default="45.0">
+		</member>
+		<member name="_2_down_angle_v" type="float" setter="set_down_angle_v_2" getter="get_down_angle_v_2" default="10.0">
+		</member>
+		<member name="_2_length" type="float" setter="set_length_2" getter="get_length_2" default="0.6">
+		</member>
+		<member name="_2_length_v" type="float" setter="set_length_v_2" getter="get_length_v_2" default="0.0">
+		</member>
+		<member name="_2_radius_modify" type="float" setter="set_radius_modify_2" getter="get_radius_modify_2" default="1.0">
+		</member>
+		<member name="_2_rotation" type="float" setter="set_rotation_2" getter="get_rotation_2" default="140.0">
+		</member>
+		<member name="_2_rotation_v" type="float" setter="set_rotation_v_2" getter="get_rotation_v_2" default="0.0">
+		</member>
+		<member name="_2_segment_splits" type="float" setter="set_segment_splits_2" getter="get_segment_splits_2" default="0.0">
+		</member>
+		<member name="_2_split_angle" type="float" setter="set_split_angle_2" getter="get_split_angle_2" default="0.0">
+		</member>
+		<member name="_2_split_angle_v" type="float" setter="set_split_angle_v_2" getter="get_split_angle_v_2" default="0.0">
+		</member>
+		<member name="_2_taper" type="float" setter="set_taper_2" getter="get_taper_2" default="1.0">
+		</member>
+		<member name="_2_tropism" type="float" setter="set_tropism_2" getter="get_tropism_2" default="0.5">
+		</member>
+		<member name="_2_trunk_angle_add" type="float" setter="set_trunk_angle_add_2" getter="get_trunk_angle_add_2" default="0.0">
+		</member>
+		<member name="_2_trunk_segment_vertex_splits" type="int" setter="set_trunk_segment_vertex_splits_2" getter="get_trunk_segment_vertex_splits_2" default="4">
+		</member>
+		<member name="_3_base_size" type="float" setter="set_base_size_3" getter="get_base_size_3" default="0.02">
+		</member>
+		<member name="_3_bend_v" type="float" setter="set_bend_v_3" getter="get_bend_v_3" default="0.0">
+		</member>
+		<member name="_3_branch_dist" type="float" setter="set_branch_dist_3" getter="get_branch_dist_3" default="0.0">
+		</member>
+		<member name="_3_branches" type="int" setter="set_branches_3" getter="get_branches_3" default="1">
+		</member>
+		<member name="_3_curve" type="float" setter="set_curve_3" getter="get_curve_3" default="0.0">
+		</member>
+		<member name="_3_curve_back" type="float" setter="set_curve_back_3" getter="get_curve_back_3" default="0.0">
+		</member>
+		<member name="_3_curve_resolution" type="int" setter="set_curve_resolution_3" getter="get_curve_resolution_3" default="1">
+		</member>
+		<member name="_3_curve_v" type="float" setter="set_curve_v_3" getter="get_curve_v_3" default="0.0">
+		</member>
+		<member name="_3_down_angle" type="float" setter="set_down_angle_3" getter="get_down_angle_3" default="45.0">
+		</member>
+		<member name="_3_down_angle_v" type="float" setter="set_down_angle_v_3" getter="get_down_angle_v_3" default="10.0">
+		</member>
+		<member name="_3_length" type="float" setter="set_length_3" getter="get_length_3" default="0.0">
+		</member>
+		<member name="_3_length_v" type="float" setter="set_length_v_3" getter="get_length_v_3" default="0.0">
+		</member>
+		<member name="_3_radius_modify" type="float" setter="set_radius_modify_3" getter="get_radius_modify_3" default="1.0">
+		</member>
+		<member name="_3_rotation" type="float" setter="set_rotation_3" getter="get_rotation_3" default="77.0">
+		</member>
+		<member name="_3_rotation_v" type="float" setter="set_rotation_v_3" getter="get_rotation_v_3" default="0.0">
+		</member>
+		<member name="_3_segment_splits" type="float" setter="set_segment_splits_3" getter="get_segment_splits_3" default="0.0">
+		</member>
+		<member name="_3_split_angle" type="float" setter="set_split_angle_3" getter="get_split_angle_3" default="0.0">
+		</member>
+		<member name="_3_split_angle_v" type="float" setter="set_split_angle_v_3" getter="get_split_angle_v_3" default="0.0">
+		</member>
+		<member name="_3_taper" type="float" setter="set_taper_3" getter="get_taper_3" default="1.0">
+		</member>
+		<member name="_3_tropism" type="float" setter="set_tropism_3" getter="get_tropism_3" default="0.0">
+		</member>
+		<member name="_3_trunk_angle_add" type="float" setter="set_trunk_angle_add_3" getter="get_trunk_angle_add_3" default="0.0">
+		</member>
+		<member name="_3_trunk_segment_vertex_splits" type="int" setter="set_trunk_segment_vertex_splits_3" getter="get_trunk_segment_vertex_splits_3" default="3">
+		</member>
+		<member name="base_splits" type="int" setter="set_base_splits" getter="get_base_splits" default="0">
+		</member>
+		<member name="blossom_material_lod0" type="ShaderMaterial" setter="set_blossom_material_lod0" getter="get_blossom_material_lod0">
+		</member>
+		<member name="blossom_material_lod1" type="ShaderMaterial" setter="set_blossom_material_lod1" getter="get_blossom_material_lod1">
+		</member>
+		<member name="blossom_material_lod2" type="ShaderMaterial" setter="set_blossom_material_lod2" getter="get_blossom_material_lod2">
+		</member>
+		<member name="blossom_rate" type="float" setter="set_blossom_rate" getter="get_blossom_rate" default="0.0">
+		</member>
+		<member name="blossom_scale" type="float" setter="set_blossom_scale" getter="get_blossom_scale" default="0.0">
+		</member>
+		<member name="blossom_shape" type="int" setter="set_blossom_shape" getter="get_blossom_shape" default="1">
+		</member>
+		<member name="flare" type="float" setter="set_flare" getter="get_flare" default="0.6">
+		</member>
+		<member name="leaf_bend" type="float" setter="set_leaf_bend" getter="get_leaf_bend" default="0.0">
+		</member>
+		<member name="leaf_scale" type="float" setter="set_leaf_scale" getter="get_leaf_scale" default="1.0">
+		</member>
+		<member name="leaf_scale_x" type="float" setter="set_leaf_scale_x" getter="get_leaf_scale_x" default="1.0">
+		</member>
+		<member name="leaf_shape" type="int" setter="set_leaf_shape" getter="get_leaf_shape" default="0">
+		</member>
+		<member name="leaves_material_lod0" type="ShaderMaterial" setter="set_leaves_material_lod0" getter="get_leaves_material_lod0">
+		</member>
+		<member name="leaves_material_lod1" type="ShaderMaterial" setter="set_leaves_material_lod1" getter="get_leaves_material_lod1">
+		</member>
+		<member name="leaves_material_lod2" type="ShaderMaterial" setter="set_leaves_material_lod2" getter="get_leaves_material_lod2">
+		</member>
+		<member name="levels" type="int" setter="set_levels" getter="get_levels" default="3">
+		</member>
+		<member name="n_leaves" type="int" setter="set_n_leaves" getter="get_n_leaves" default="0">
+		</member>
+		<member name="prune_power_high" type="float" setter="set_prune_power_high" getter="get_prune_power_high" default="0.5">
+		</member>
+		<member name="prune_power_low" type="float" setter="set_prune_power_low" getter="get_prune_power_low" default="0.5">
+		</member>
+		<member name="prune_width_peak" type="float" setter="set_prune_width_peak" getter="get_prune_width_peak" default="0.5">
+		</member>
+		<member name="ratio" type="float" setter="set_ratio" getter="get_ratio" default="0.015">
+		</member>
+		<member name="ratio_power" type="float" setter="set_ratio_power" getter="get_ratio_power" default="1.2">
+		</member>
+		<member name="save_name" type="String" setter="set_save_name" getter="get_save_name" default="&quot;tree&quot;">
+		</member>
+		<member name="save_path" type="String" setter="set_save_path" getter="get_save_path" default="&quot;res://Assets/trees&quot;">
+		</member>
+		<member name="scale" type="float" setter="set_scale" getter="get_scale" default="13.0">
+		</member>
+		<member name="scale_v" type="float" setter="set_scale_v" getter="get_scale_v" default="3.0">
+		</member>
+		<member name="scene_resource" type="SceneEntityResource" setter="set_scene_resource" getter="get_scene_resource">
+		</member>
+		<member name="shape" type="int" setter="set_shape" getter="get_shape" default="7">
+		</member>
+		<member name="template_name" type="int" setter="set_template_name" getter="get_template_name" default="0">
+		</member>
+		<member name="trunk_material_lod0" type="ShaderMaterial" setter="set_trunk_material_lod0" getter="get_trunk_material_lod0">
+		</member>
+		<member name="trunk_material_lod1" type="ShaderMaterial" setter="set_trunk_material_lod1" getter="get_trunk_material_lod1">
+		</member>
+		<member name="trunk_material_lod2" type="ShaderMaterial" setter="set_trunk_material_lod2" getter="get_trunk_material_lod2">
+		</member>
+		<member name="trunk_scale_curve" type="Curve" setter="set_trunk_scale_curve" getter="get_trunk_scale_curve">
+		</member>
+	</members>
+</class>

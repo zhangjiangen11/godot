@@ -354,6 +354,12 @@
 				[b]Note:[/b] Node export is only supported in [Node]-derived classes and has a number of other limitations.
 			</description>
 		</annotation>
+		<annotation name="@export_button">
+			<return type="void" />
+			<param index="0" name="names" type="String" />
+			<description>
+			</description>
+		</annotation>
 		<annotation name="@export_category">
 			<return type="void" />
 			<param index="0" name="name" type="String" />
@@ -429,6 +435,12 @@
 				enum CharacterItem {SWORD, SPEAR, MACE}
 				@export var character_items: Array[CharacterItem]
 				[/codeblock]
+			</description>
+		</annotation>
+		<annotation name="@export_enum_dynamic">
+			<return type="void" />
+			<param index="0" name="func_call" type="String" />
+			<description>
 			</description>
 		</annotation>
 		<annotation name="@export_exp_easing" qualifiers="vararg">

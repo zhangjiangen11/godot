@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneInstanceBlockGpuData" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_instance_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_bounds">
+			<return type="void" />
+			<param index="0" name="bounds" type="AABB" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="compoent_show_level" type="int" setter="set_compoent_show_level" getter="get_compoent_show_level" default="0">
+		</member>
+		<member name="gpu_index" type="int" setter="set_gpu_index" getter="get_gpu_index" default="0">
+		</member>
+		<member name="instance_bounds_max" type="Vector3" setter="set_instance_bounds_max" getter="get_instance_bounds_max" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="instance_bounds_min" type="Vector3" setter="set_instance_bounds_min" getter="get_instance_bounds_min" default="Vector3(0, 0, 0)">
+		</member>
+		<member name="mesh_path" type="String" setter="set_mesh_path" getter="get_mesh_path" default="&quot;&quot;">
+		</member>
+		<member name="show_level_index" type="Vector3i" setter="set_show_level_index" getter="get_show_level_index" default="Vector3i(0, 0, 0)">
+		</member>
+		<member name="transform_render" type="PackedFloat32Array" setter="set_transform_render" getter="get_transform_render" default="PackedFloat32Array()">
+		</member>
+	</members>
+</class>

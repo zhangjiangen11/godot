@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAnimationLibrary" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="editor_create_animation_node_call">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="animation_library" type="CharacterAnimationLibraryItem[]" setter="set_animation_library" getter="get_animation_library" default="[]">
+		</member>
+		<member name="base_library" type="CharacterAnimationLibrary" setter="set_base_library" getter="get_base_library">
+		</member>
+		<member name="editor_animator_node_name" type="String" setter="set_animator_node_name" getter="get_animator_node_name" default="&quot;&quot;">
+		</member>
+		<member name="editor_animator_node_type" type="int" setter="set_animator_node_type" getter="get_animator_node_type" default="0">
+		</member>
+		<member name="editor_create_animation_node" type="int" setter="_set_editor_create_animation_node_property" getter="_get_editor_create_animation_node_property" default="0">
+		</member>
+	</members>
+</class>

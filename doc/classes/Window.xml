@@ -590,8 +590,14 @@
 		<member name="auto_translate" type="bool" setter="set_auto_translate" getter="is_auto_translating" deprecated="Use [member Node.auto_translate_mode] and [method Node.can_auto_translate] instead.">
 			Toggles if any text should automatically change to its translated version depending on the current locale.
 		</member>
+		<member name="background_texture" type="Texture2D" setter="set_background_texture" getter="get_background_texture">
+		</member>
 		<member name="borderless" type="bool" setter="set_flag" getter="get_flag" default="false">
 			If [code]true[/code], the window will have no borders.
+		</member>
+		<member name="close_pressed_texture" type="Texture2D" setter="set_close_pressed_texture" getter="get_close_pressed_texture">
+		</member>
+		<member name="close_texture" type="Texture2D" setter="set_close_texture" getter="get_close_texture">
 		</member>
 		<member name="content_scale_aspect" type="int" setter="set_content_scale_aspect" getter="get_content_scale_aspect" enum="Window.ContentScaleAspect" default="0">
 			Specifies how the content's aspect behaves when the [Window] is resized. The base aspect is determined by [member content_scale_size].

@@ -1335,22 +1335,20 @@ void LineEdit::_notification(int p_what) {
 
 			if (!flat) {
 				Ref<Texture2D> bg = user_data.background;
-				if(!is_editable()){
+				if (!is_editable()) {
 					bg = user_data.background_read_only;
 				}
-				if(bg.is_valid()){
+				if (bg.is_valid()) {
 					bg->draw_rect(ci, Rect2(Point2(), size));
-				}
-				else {
+				} else {
 					style->draw(ci, Rect2(Point2(), size));
 				}
 			}
 
 			if (has_focus() && is_editable()) {
-				if(user_data.focus.is_valid()){
+				if (user_data.focus.is_valid()) {
 					user_data.focus->draw_rect(ci, Rect2(Point2(), size));
-				}
-				else {
+				} else {
 					theme_cache.focus->draw(ci, Rect2(Point2(), size));
 				}
 			}

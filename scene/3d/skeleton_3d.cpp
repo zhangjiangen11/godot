@@ -997,7 +997,7 @@ void Skeleton3D::clear_bones() {
 
 // Posing api
 
-void Skeleton3D::set_bone_pose(int p_bone, const Transform3D &p_pose, bool p_notify ) {
+void Skeleton3D::set_bone_pose(int p_bone, const Transform3D &p_pose, bool p_notify) {
 	const int bone_size = bones.size();
 	ERR_FAIL_INDEX(p_bone, bone_size);
 

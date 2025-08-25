@@ -193,11 +193,23 @@
 				Returns a list of the currently selected subgizmos. Can be used to highlight selected elements during [method _redraw].
 			</description>
 		</method>
+		<method name="intersect_frustum">
+			<return type="bool" />
+			<param index="0" name="p_camera" type="Camera3D" />
+			<param index="1" name="p_frustum" type="Plane[]" />
+			<description>
+			</description>
+		</method>
 		<method name="is_subgizmo_selected" qualifiers="const">
 			<return type="bool" />
 			<param index="0" name="id" type="int" />
 			<description>
 				Returns [code]true[/code] if the given subgizmo is currently selected. Can be used to highlight selected elements during [method _redraw].
+			</description>
+		</method>
+		<method name="redraw">
+			<return type="void" />
+			<description>
 			</description>
 		</method>
 		<method name="set_hidden">

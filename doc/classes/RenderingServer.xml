@@ -2582,6 +2582,8 @@
 			<param index="3" name="color_format" type="bool" default="false" />
 			<param index="4" name="custom_data_format" type="bool" default="false" />
 			<param index="5" name="use_indirect" type="bool" default="false" />
+			<param index="6" name="custom_cammand_buffer" type="RID" default="RID()" />
+			<param index="7" name="custom_cammand_buffer_offset" type="int" default="0" />
 			<description>
 			</description>
 		</method>
@@ -2614,6 +2616,12 @@
 			<param index="0" name="multimesh" type="RID" />
 			<description>
 				Returns the [RenderingDevice] [RID] handle of the [MultiMesh], which can be used as any other buffer on the Rendering Device.
+			</description>
+		</method>
+		<method name="multimesh_get_command_buffer_offset" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="multimesh" type="RID" />
+			<description>
 			</description>
 		</method>
 		<method name="multimesh_get_command_buffer_rd_rid" qualifiers="const">
@@ -3780,6 +3788,12 @@
 				Returns a texture [RID] that can be used with [RenderingDevice].
 			</description>
 		</method>
+		<method name="texture_is_valid" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="texture_rid" type="RID" />
+			<description>
+			</description>
+		</method>
 		<method name="texture_proxy_create" deprecated="ProxyTexture was removed in Godot 4.">
 			<return type="RID" />
 			<param index="0" name="base" type="RID" />
@@ -4850,7 +4864,7 @@
 		<constant name="LIGHT_PARAM_INTENSITY" value="20" enum="LightParam">
 			Constant representing the intensity of the light, measured in Lumens when dealing with a [SpotLight3D] or [OmniLight3D], or measured in Lux with a [DirectionalLight3D]. Only used when [member ProjectSettings.rendering/lights_and_shadows/use_physical_light_units] is [code]true[/code].
 		</constant>
-		<constant name="LIGHT_PARAM_MAX" value="21" enum="LightParam">
+		<constant name="LIGHT_PARAM_MAX" value="24" enum="LightParam">
 			Represents the size of the [enum LightParam] enum.
 		</constant>
 		<constant name="LIGHT_BAKE_DISABLED" value="0" enum="LightBakeMode">

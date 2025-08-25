@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MGrassData" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="backup_data" type="PackedByteArray" setter="set_backup_data" getter="get_backup_data" default="PackedByteArray()">
+		</member>
+		<member name="data" type="PackedByteArray" setter="set_data" getter="get_data" default="PackedByteArray()">
+		</member>
+		<member name="density" type="int" setter="set_density" getter="get_density">
+		</member>
+		<member name="grass_cell_size" type="int" setter="set_density" getter="get_density" default="2">
+		</member>
+	</members>
+</class>

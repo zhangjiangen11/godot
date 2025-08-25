@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MOctree" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_oct_id">
+			<return type="void" />
+			<param index="0" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="enable_as_curve_updater">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="enable_as_hlod_updater">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="enable_as_octmesh_updater">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_ids">
+			<return type="PackedInt32Array" />
+			<param index="0" name="search_bound" type="AABB" />
+			<param index="1" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_ids_exclude">
+			<return type="PackedInt32Array" />
+			<param index="0" name="search_bound" type="AABB" />
+			<param index="1" name="exclude_bound" type="AABB" />
+			<param index="2" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_oct_id">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_oct_id_points_count">
+			<return type="int" />
+			<param index="0" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_update_dictionary_array">
+			<return type="Array" />
+			<param index="0" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_points_count">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_tree_lines">
+			<return type="PackedVector3Array" />
+			<description>
+			</description>
+		</method>
+		<method name="insert_points">
+			<return type="void" />
+			<param index="0" name="points" type="PackedVector3Array" />
+			<param index="1" name="ids" type="PackedInt32Array" />
+			<param index="2" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="point_process_finished">
+			<return type="void" />
+			<param index="0" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_oct_id">
+			<return type="void" />
+			<param index="0" name="oct_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_camera_node">
+			<return type="void" />
+			<param index="0" name="camera" type="Node3D" />
+			<description>
+			</description>
+		</method>
+		<method name="set_custom_capacity">
+			<return type="void" />
+			<param index="0" name="input" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_lod_setting">
+			<return type="void" />
+			<param index="0" name="lod" type="PackedFloat32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="set_world_boundary">
+			<return type="void" />
+			<param index="0" name="start" type="Vector3" />
+			<param index="1" name="end" type="Vector3" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="debug_draw" type="bool" setter="set_debug_draw" getter="get_debug_draw" default="false">
+		</member>
+	</members>
+	<signals>
+		<signal name="update_finished">
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

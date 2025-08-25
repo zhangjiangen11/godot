@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="AnimationManager" inherits="Object" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_animation">
+			<return type="void" />
+			<param index="0" name="group_name" type="StringName" />
+			<param index="1" name="anim_name" type="StringName" />
+			<param index="2" name="animation_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="add_animation_group">
+			<return type="void" />
+			<param index="0" name="group_name" type="StringName" />
+			<param index="1" name="animation_tree_path" type="String" />
+			<param index="2" name="animation_library_path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="create_animation_library">
+			<return type="void" />
+			<param index="0" name="animation" type="Dictionary" />
+			<param index="1" name="name" type="String" />
+			<param index="2" name="path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_animation_nodes">
+			<return type="Animation[]" />
+			<param index="0" name="path" type="String" />
+			<param index="1" name="is_single_valid" type="bool" />
+			<param index="2" name="change_animName_to_sceneName" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="load_animation_tree">
+			<return type="void" />
+			<param index="0" name="anim_parent_node" type="Node" />
+			<param index="1" name="group_name" type="StringName" />
+			<description>
+			</description>
+		</method>
+		<method name="save_animation_tree">
+			<return type="void" />
+			<param index="0" name="tree" type="AnimationTree" />
+			<param index="1" name="path" type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+</class>

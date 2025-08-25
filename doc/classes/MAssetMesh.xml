@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MAssetMesh" inherits="Node3D" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_collection_ids" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collection_material_set" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_collection_merged_mesh" qualifiers="static">
+			<return type="ArrayMesh" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="lowest_lod" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_joined_aabb">
+			<return type="AABB" />
+			<description>
+			</description>
+		</method>
+		<method name="get_joined_triangle_mesh">
+			<return type="TriangleMesh" />
+			<description>
+			</description>
+		</method>
+		<method name="get_merged_mesh">
+			<return type="ArrayMesh" />
+			<param index="0" name="lowest_lod" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_data">
+			<return type="MAssetMeshData[]" />
+			<description>
+			</description>
+		</method>
+		<method name="has_collsion" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="refresh_all_masset_nodes" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_collection_material_set">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="set_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="update_instance_date">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="update_lod">
+			<return type="void" />
+			<param index="0" name="lod" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_collection_identifier" type="Array" setter="_set_collection_identifier" getter="_get_collection_identifier" default="[-1, &quot;&quot;]">
+		</member>
+		<member name="_collections_material_set" type="Dictionary" setter="set_collections_material_set" getter="get_collections_material_set" default="{}">
+		</member>
+		<member name="collection_id" type="int" setter="set_collection_id" getter="get_collection_id" default="-1">
+		</member>
+		<member name="collision_lod_cutoff" type="int" setter="set_collision_lod_cutoff" getter="get_collision_lod_cutoff" default="-1">
+		</member>
+		<member name="disable_collision" type="bool" setter="set_disable_collision" getter="get_disable_collision" default="false">
+		</member>
+		<member name="gi_mode" type="int" setter="set_gi_mode" getter="get_gi_mode" enum="MHlod.GIMode" default="1">
+		</member>
+		<member name="hlod_layers" type="int" setter="set_hlod_layers" getter="get_hlod_layers" default="0">
+		</member>
+		<member name="mesh_lod_cutoff" type="int" setter="set_mesh_lod_cutoff" getter="get_mesh_lod_cutoff" default="-1">
+		</member>
+		<member name="shadow_setting" type="int" setter="set_shadow_setting" getter="get_shadow_setting" enum="RenderingServer.ShadowCastingSetting" default="1">
+		</member>
+		<member name="visual_layers" type="int" setter="set_visual_layers" getter="get_visual_layers" default="1">
+		</member>
+	</members>
+</class>

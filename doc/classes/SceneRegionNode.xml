@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="SceneRegionNode" inherits="SceneRegionNodeBase" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="local_aabb" type="AABB" setter="set_local_aabb" getter="get_local_aabb" default="AABB(0, 0, 0, 0, 0, 0)">
+		</member>
+		<member name="world_aabb" type="AABB" setter="set_world_aabb" getter="get_world_aabb" default="AABB(0, 0, 0, 0, 0, 0)">
+		</member>
+	</members>
+</class>

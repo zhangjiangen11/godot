@@ -46,7 +46,7 @@
 		<member name="editable" type="bool" setter="set_editable" getter="is_editable" default="true" keywords="readonly, disabled, enabled">
 			If [code]true[/code], the value can be selected and edited.
 		</member>
-		<member name="edited_resource" type="Resource" setter="set_edited_resource" getter="get_edited_resource">
+		<member name="edited_resource" type="RefCounted" setter="set_edited_resource" getter="get_edited_resource">
 			The edited resource value.
 		</member>
 		<member name="toggle_mode" type="bool" setter="set_toggle_mode" getter="is_toggle_mode" default="false">
@@ -55,13 +55,13 @@
 	</members>
 	<signals>
 		<signal name="resource_changed">
-			<param index="0" name="resource" type="Resource" />
+			<param index="0" name="resource" type="RefCounted" />
 			<description>
 				Emitted when the value of the edited resource was changed.
 			</description>
 		</signal>
 		<signal name="resource_selected">
-			<param index="0" name="resource" type="Resource" />
+			<param index="0" name="resource" type="RefCounted" />
 			<param index="1" name="inspect" type="bool" />
 			<description>
 				Emitted when the resource value was set and user clicked to edit it. When [param inspect] is [code]true[/code], the signal was caused by the context menu "Edit" or "Inspect" option.

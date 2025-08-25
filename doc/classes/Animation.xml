@@ -271,6 +271,16 @@
 				Adds a new track to [param to_animation] that is a copy of the given track from this animation.
 			</description>
 		</method>
+		<method name="editor_get_animation_Group" qualifiers="const">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
+		<method name="editor_get_animation_tags" qualifiers="const">
+			<return type="Array" />
+			<description>
+			</description>
+		</method>
 		<method name="find_track" qualifiers="const">
 			<return type="int" />
 			<param index="0" name="path" type="NodePath" />
@@ -424,6 +434,13 @@
 			<param index="2" name="backward" type="bool" default="false" />
 			<description>
 				Returns the interpolated scale value at the given time (in seconds). The [param track_idx] must be the index of a 3D scale track.
+			</description>
+		</method>
+		<method name="set_human_bone_mapping">
+			<return type="void" />
+			<param index="0" name="mapping" type="Dictionary" />
+			<param index="1" name="is_only_enable_human" type="bool" default="false" />
+			<description>
 			</description>
 		</method>
 		<method name="set_marker_color">
@@ -679,8 +696,20 @@
 		</method>
 	</methods>
 	<members>
+		<member name="animation_group" type="StringName" setter="set_animation_group" getter="get_animation_group" default="&amp;&quot;&quot;">
+		</member>
+		<member name="animation_tag" type="StringName" setter="set_animation_tag" getter="get_animation_tag" default="&amp;&quot;&quot;">
+		</member>
+		<member name="bone_map" type="Resource" setter="set_bone_map" getter="get_bone_map">
+		</member>
 		<member name="capture_included" type="bool" setter="" getter="is_capture_included" default="false">
 			Returns [code]true[/code] if the capture track is included. This is a cached readonly value for performance.
+		</member>
+		<member name="human_bone_mask" type="PackedByteArray" setter="set_human_bone_mask" getter="get_human_bone_mask" default="PackedByteArray()">
+		</member>
+		<member name="human_config" type="Resource" setter="set_human_config" getter="get_human_config">
+		</member>
+		<member name="is_human" type="bool" setter="set_is_human_animation" getter="get_is_human_animation" default="false">
 		</member>
 		<member name="length" type="float" setter="set_length" getter="get_length" default="1.0">
 			The total length of the animation (in seconds).
@@ -689,8 +718,14 @@
 		<member name="loop_mode" type="int" setter="set_loop_mode" getter="get_loop_mode" enum="Animation.LoopMode" default="0">
 			Determines the behavior of both ends of the animation timeline during animation playback. This indicates whether and how the animation should be restarted, and is also used to correctly interpolate animation cycles.
 		</member>
+		<member name="preview_prefab_path" type="String" setter="set_preview_prefab_path" getter="get_preview_prefab_path" default="&quot;&quot;">
+		</member>
+		<member name="show_name" type="String" setter="set_show_name" getter="get_show_name" default="&quot;&quot;">
+		</member>
 		<member name="step" type="float" setter="set_step" getter="get_step" default="0.033333335">
 			The animation step value.
+		</member>
+		<member name="track_info" type="StringName[]" setter="set_track_info" getter="get_track_info" default="[]">
 		</member>
 	</members>
 	<constants>

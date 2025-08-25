@@ -60,6 +60,7 @@ public:
 			Block::free(entry.value);
 		}
 		m_block_map.clear();
+		m_total_Blocks.clear();
 	}
 	Block *add_free_block(int count = 256) {
 		Block *first_block = Block::allocate();
@@ -67,6 +68,7 @@ public:
 		first_block->offset = m_totalMemorySize;
 		first_block->size = count;
 		m_block_map.insert(first_block->offset, first_block);
+		m_total_Blocks.insert(first_block);
 		m_totalMemorySize += count;
 
 		return first_block;
@@ -122,6 +124,7 @@ public:
 				remaining_block->next = nullptr;
 
 				m_block_map.insert(remaining_block->offset, remaining_block);
+				m_total_Blocks.insert(remaining_block);
 
 			} else {
 				// 标记已分配内存块为不可用
@@ -158,7 +161,7 @@ public:
 		free->size = reduction_count;
 		free->available = false;
 		m_block_map.insert(free->start(), free);
-		free_block(free);
+		m_total_Blocks.insert(free);
 		return block;
 	}
 	void free_block(int block_offset) {
@@ -173,6 +176,9 @@ public:
 
 	// 释放内存块
 	void free_block(Block *freed_block) {
+		if (!m_total_Blocks.has(freed_block)) {
+			return;
+		}
 		if (freed_block->available == true) {
 			return;
 		}
@@ -193,6 +199,7 @@ public:
 
 				// 从映射表和堆内存中删除被合并的相邻内存块
 				m_block_map.erase(nextKey);
+				m_total_Blocks.erase(next_block);
 				Block::free(next_block);
 			}
 		}
@@ -210,8 +217,9 @@ public:
 				}
 
 				current_block->size += freed_block->size;
-				Block::free(freed_block);
+				m_total_Blocks.erase(freed_block);
 				m_block_map.erase(freed_block->offset);
+				Block::free(freed_block);
 				break;
 			}
 		}
@@ -264,4 +272,5 @@ public:
 private:
 	int m_totalMemorySize;
 	HashMap<int, Block *> m_block_map; // 保存内存地址和Block信息的映射表
+	HashSet<Block *> m_total_Blocks;
 };

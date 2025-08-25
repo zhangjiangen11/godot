@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MAssetTable" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="auto_asset_update_from_dir">
+			<return type="void" />
+			<param index="0" name="type" type="int" enum="MAssetTable.ItemType" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_import_info_cache">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_table">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_add_collision">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="col_type" type="int" enum="MAssetTable.CollisionType" />
+			<param index="2" name="col_transform" type="Transform3D" />
+			<param index="3" name="base_transform" type="Transform3D" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_add_sub_collection">
+			<return type="bool" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="sub_collection_id" type="int" />
+			<param index="2" name="transform" type="Transform3D" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_add_tag">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="tag" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_clear_sub_and_col">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_create">
+			<return type="int" />
+			<param index="0" name="name" type="String" />
+			<param index="1" name="item_id" type="int" />
+			<param index="2" name="type" type="int" enum="MAssetTable.ItemType" />
+			<param index="3" name="glb_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_find_with_item_type_item_id" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="type" type="int" enum="MAssetTable.ItemType" />
+			<param index="1" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_colcutoff" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_collision_count" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_glb_id" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_id" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="collection_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_item_id">
+			<return type="int" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_list" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_modify_time" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_name" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_physics_setting" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_sub_collections" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_tags" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_get_type" qualifiers="const">
+			<return type="int" enum="MAssetTable.ItemType" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_remove">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_remove_tag">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="tag" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_set_colcutoff">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="value" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_set_name">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="expected_type" type="int" enum="MAssetTable.ItemType" />
+			<param index="2" name="new_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_set_physics_setting">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<param index="1" name="physics_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="collection_update_modify_time">
+			<return type="void" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="collections_get_by_type" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="item_types" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="debug_test">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="get_asset_editor_root_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_asset_table_path" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_asset_thumbnails_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_asset_thumbnails_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_editor_baker_scenes_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_hlod_res_dir" qualifiers="static">
+			<return type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_free_decal_id" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_free_hlod_id" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_free_mesh_id_and_increase" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_free_mesh_join_id" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_last_free_packed_scene_id" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_material_thumbnails_path" qualifiers="static">
+			<return type="String" />
+			<param index="0" name="material_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_singleton" qualifiers="static">
+			<return type="MAssetTable" />
+			<description>
+			</description>
+		</method>
+		<method name="group_add_tag">
+			<return type="void" />
+			<param index="0" name="group_name" type="String" />
+			<param index="1" name="tag" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="group_count" qualifiers="const">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="group_create">
+			<return type="bool" />
+			<param index="0" name="group_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="group_exist" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="group_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="group_get_collections_with_tags" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="group_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="group_get_list" qualifiers="const">
+			<return type="PackedStringArray" />
+			<description>
+			</description>
+		</method>
+		<method name="group_get_tags" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="group_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="group_remove">
+			<return type="void" />
+			<param index="0" name="group_remove" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="group_remove_tag">
+			<return type="void" />
+			<param index="0" name="group_name" type="String" />
+			<param index="1" name="tag" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="group_rename">
+			<return type="bool" />
+			<param index="0" name="group_name" type="String" />
+			<param index="1" name="new_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="groups_get_collections_all" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="group_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="groups_get_collections_any" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="group_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="has_collection" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="collection_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_get_first_lod" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_get_first_valid_id" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_get_max_lod" qualifiers="static">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_get_stop_lod" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_ids" qualifiers="static">
+			<return type="PackedInt32Array" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_ids_no_replace" qualifiers="static">
+			<return type="PackedInt32Array" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_is_valid" qualifiers="static">
+			<return type="bool" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_meshes" qualifiers="static">
+			<return type="MMesh[]" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_item_meshes_no_replace" qualifiers="static">
+			<return type="MMesh[]" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_get_first_lod" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_get_stop_lod" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_ids" qualifiers="static">
+			<return type="PackedInt32Array" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_ids_no_replace" qualifiers="static">
+			<return type="PackedInt32Array" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_is_valid" qualifiers="static">
+			<return type="bool" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_meshes" qualifiers="static">
+			<return type="MMesh[]" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_meshes_no_replace" qualifiers="static">
+			<return type="MMesh[]" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="mesh_join_start_lod" qualifiers="static">
+			<return type="int" />
+			<param index="0" name="item_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="reset" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="hard" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="save" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="save_import_info">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="set_singleton" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="asset_table" type="MAssetTable" />
+			<description>
+			</description>
+		</method>
+		<method name="tag_add">
+			<return type="int" />
+			<param index="0" name="name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="tag_get_collections" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="tag_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="tag_get_id">
+			<return type="int" />
+			<param index="0" name="tag_name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="tag_get_name" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="tag_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="tag_get_names" qualifiers="const">
+			<return type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="tag_get_tagless_collections" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="tag_set_name">
+			<return type="void" />
+			<param index="0" name="tag_id" type="int" />
+			<param index="1" name="name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="tags_get_collections_all" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="search_collections" type="PackedInt32Array" />
+			<param index="1" name="tags" type="PackedInt32Array" />
+			<param index="2" name="exclude_tags" type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="tags_get_collections_any" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="search_collections" type="PackedInt32Array" />
+			<param index="1" name="tags" type="PackedInt32Array" />
+			<param index="2" name="exclude_tags" type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="test">
+			<return type="void" />
+			<param index="0" name="data" type="Dictionary" />
+			<description>
+			</description>
+		</method>
+		<method name="update_last_free_mesh_id" qualifiers="static">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="data" type="Dictionary" setter="set_data" getter="get_data" default="{ &quot;collections&quot;: [], &quot;collections_names&quot;: PackedStringArray(), &quot;collections_tags&quot;: PackedByteArray(), &quot;free_collections&quot;: PackedByteArray(), &quot;group_names&quot;: PackedStringArray(), &quot;groups&quot;: PackedByteArray(), &quot;physics_names&quot;: PackedStringArray(), &quot;tag_names&quot;: PackedStringArray(&quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;) }">
+		</member>
+		<member name="import_info" type="Dictionary" setter="set_import_info" getter="get_import_info">
+		</member>
+	</members>
+	<signals>
+		<signal name="finish_import">
+			<param index="0" name="glb_path" type="String" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="NONE" value="0" enum="ItemType">
+		</constant>
+		<constant name="MESH" value="2" enum="ItemType">
+		</constant>
+		<constant name="COLLISION" value="4" enum="ItemType">
+		</constant>
+		<constant name="PACKEDSCENE" value="8" enum="ItemType">
+		</constant>
+		<constant name="DECAL" value="16" enum="ItemType">
+		</constant>
+		<constant name="HLOD" value="32" enum="ItemType">
+		</constant>
+		<constant name="UNDEF" value="0" enum="CollisionType">
+		</constant>
+		<constant name="SPHERE" value="1" enum="CollisionType">
+		</constant>
+		<constant name="CYLINDER" value="2" enum="CollisionType">
+		</constant>
+		<constant name="CAPSULE" value="3" enum="CollisionType">
+		</constant>
+		<constant name="BOX" value="4" enum="CollisionType">
+		</constant>
+	</constants>
+</class>

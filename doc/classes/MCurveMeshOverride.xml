@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MCurveMeshOverride" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="clear_material_override">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_mesh_override">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_override">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_material_override">
+			<return type="int" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_override">
+			<return type="int" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_override_entry" qualifiers="const">
+			<return type="PackedByteArray" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_material_override">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<param index="1" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_mesh_override">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<param index="1" name="index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_override_entry">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<param index="1" name="data_input" type="PackedByteArray" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_data" type="PackedByteArray" setter="_set_data" getter="_get_data" default="PackedByteArray()">
+		</member>
+	</members>
+	<signals>
+		<signal name="id_updated">
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+</class>

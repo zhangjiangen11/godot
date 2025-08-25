@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="FoliageMapConfig" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="save_config" qualifiers="static">
+			<return type="void" />
+			<param index="0" name="config" type="FoliageCellAsset[]" />
+			<param index="1" name="path" type="FoliageCellAsset[]" />
+			<param index="2" name="_unnamed_arg2" type="FoliagePrototypeAsset" />
+			<param index="3" name="_unnamed_arg3" type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="config" type="FoliageMapChunkConfig[]" setter="set_config" getter="get_config" default="[]">
+		</member>
+		<member name="prototype_asset" type="FoliagePrototypeAsset" setter="set_prototype_asset" getter="get_prototype_asset">
+		</member>
+	</members>
+</class>

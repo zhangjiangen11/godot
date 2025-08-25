@@ -643,6 +643,14 @@
 		<member name="allow_search" type="bool" setter="set_allow_search" getter="get_allow_search" default="true">
 			If [code]true[/code], allows navigating [PopupMenu] with letter keys.
 		</member>
+		<member name="checked_disabled_texture" type="Texture2D" setter="set_checked_disabled_texture" getter="get_checked_disabled_texture">
+		</member>
+		<member name="checked_radio_disabled_texture" type="Texture2D" setter="set_checked_radio_disabled_texture" getter="get_checked_radio_disabled_texture">
+		</member>
+		<member name="checked_radio_texture" type="Texture2D" setter="set_checked_radio_texture" getter="get_checked_radio_texture">
+		</member>
+		<member name="checked_texture" type="Texture2D" setter="set_checked_texture" getter="get_checked_texture">
+		</member>
 		<member name="hide_on_checkable_item_selection" type="bool" setter="set_hide_on_checkable_item_selection" getter="is_hide_on_checkable_item_selection" default="true">
 			If [code]true[/code], hides the [PopupMenu] when a checkbox or radio button is selected.
 		</member>
@@ -659,14 +667,26 @@
 			If [code]true[/code], [MenuBar] will use native menu when supported.
 			[b]Note:[/b] If [PopupMenu] is linked to [StatusIndicator], [MenuBar], or another [PopupMenu] item it can use native menu regardless of this property, use [method is_native_menu] to check it.
 		</member>
+		<member name="submenu_mirrored_texture" type="Texture2D" setter="set_submenu_mirrored_texture" getter="get_submenu_mirrored_texture">
+		</member>
 		<member name="submenu_popup_delay" type="float" setter="set_submenu_popup_delay" getter="get_submenu_popup_delay" default="0.3">
 			Sets the delay time in seconds for the submenu item to popup on mouse hovering. If the popup menu is added as a child of another (acting as a submenu), it will inherit the delay time of the parent menu item.
+		</member>
+		<member name="submenu_texture" type="Texture2D" setter="set_submenu_texture" getter="get_submenu_texture">
 		</member>
 		<member name="system_menu_id" type="int" setter="set_system_menu" getter="get_system_menu" enum="NativeMenu.SystemMenus" default="0">
 			If set to one of the values of [enum NativeMenu.SystemMenus], this [PopupMenu] is bound to the special system menu. Only one [PopupMenu] can be bound to each special menu at a time.
 		</member>
 		<member name="transparent" type="bool" setter="set_flag" getter="get_flag" overrides="Window" default="true" />
 		<member name="transparent_bg" type="bool" setter="set_transparent_background" getter="has_transparent_background" overrides="Viewport" default="true" />
+		<member name="unchecked_disabled_texture" type="Texture2D" setter="set_unchecked_disabled_texture" getter="get_unchecked_disabled_texture">
+		</member>
+		<member name="unchecked_radio_disabled_texture" type="Texture2D" setter="set_unchecked_radio_disabled_texture" getter="get_unchecked_radio_disabled_texture">
+		</member>
+		<member name="unchecked_radio_texture" type="Texture2D" setter="set_unchecked_radio_texture" getter="get_unchecked_radio_texture">
+		</member>
+		<member name="unchecked_texture" type="Texture2D" setter="set_unchecked_texture" getter="get_unchecked_texture">
+		</member>
 	</members>
 	<signals>
 		<signal name="id_focused">

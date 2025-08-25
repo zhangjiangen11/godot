@@ -79,8 +79,20 @@
 				[b]Note:[/b] In GDScript, it's also possible to convert a constant string into a node path by prefixing it with [code]^[/code]. [code]^"path/to/node"[/code] is equivalent to [code]NodePath("path/to/node")[/code].
 			</description>
 		</constructor>
+		<constructor name="NodePath">
+			<return type="NodePath" />
+			<param index="0" name="from" type="StringName" />
+			<description>
+			</description>
+		</constructor>
 	</constructors>
 	<methods>
+		<method name="from_string_name" qualifiers="static">
+			<return type="NodePath" />
+			<param index="0" name="string_name" type="StringName" />
+			<description>
+			</description>
+		</method>
 		<method name="get_as_property_path" qualifiers="const">
 			<return type="NodePath" />
 			<description>
@@ -198,6 +210,11 @@
 			<return type="bool" />
 			<description>
 				Returns [code]true[/code] if the node path has been constructed from an empty [String] ([code]""[/code]).
+			</description>
+		</method>
+		<method name="is_valid" qualifiers="const">
+			<return type="bool" />
+			<description>
 			</description>
 		</method>
 		<method name="slice" qualifiers="const">

@@ -262,6 +262,10 @@
 		<member name="alignment" type="int" setter="set_horizontal_alignment" getter="get_horizontal_alignment" enum="HorizontalAlignment" default="0">
 			Text alignment as defined in the [enum HorizontalAlignment] enum.
 		</member>
+		<member name="background_read_only_texture" type="Texture2D" setter="set_background_read_only_texture" getter="get_background_read_only_texture">
+		</member>
+		<member name="background_texture" type="Texture2D" setter="set_background_texture" getter="get_background_texture">
+		</member>
 		<member name="backspace_deletes_composite_character_enabled" type="bool" setter="set_backspace_deletes_composite_character_enabled" getter="is_backspace_deletes_composite_character_enabled" default="false">
 			If [code]true[/code] and [member caret_mid_grapheme] is [code]false[/code], backspace deletes an entire composite character such as ❤️‍🩹, instead of deleting part of the composite character.
 		</member>
@@ -309,6 +313,8 @@
 			If [code]true[/code], the [LineEdit] doesn't display decoration.
 		</member>
 		<member name="focus_mode" type="int" setter="set_focus_mode" getter="get_focus_mode" overrides="Control" enum="Control.FocusMode" default="2" />
+		<member name="focus_texture" type="Texture2D" setter="set_focus_texture" getter="get_focus_texture">
+		</member>
 		<member name="keep_editing_on_text_submit" type="bool" setter="set_keep_editing_on_text_submit" getter="is_editing_kept_on_text_submit" default="false">
 			If [code]true[/code], the [LineEdit] will not exit edit mode when text is submitted by pressing [code]ui_text_submit[/code] action (by default: [kbd]Enter[/kbd] or [kbd]Kp Enter[/kbd]).
 		</member>

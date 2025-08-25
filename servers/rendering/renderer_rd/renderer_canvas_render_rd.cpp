@@ -2051,7 +2051,7 @@ void fragment() {
 
 	{
 		uint32_t cache_size = uint32_t(GLOBAL_GET("rendering/2d/batching/uniform_set_cache_size"));
-		cache_size = CLAMP(cache_size,256, 1024);
+		cache_size = CLAMP(cache_size, 256, 1024);
 		rid_set_to_uniform_set.set_capacity(cache_size);
 	}
 

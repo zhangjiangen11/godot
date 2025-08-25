@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="BBParam" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_type" qualifiers="const">
+			<return type="int" enum="Variant.Type" />
+			<description>
+			</description>
+		</method>
+		<method name="get_value">
+			<return type="Variant" />
+			<param index="0" name="scene_root" type="Node" />
+			<param index="1" name="blackboard" type="Blackboard" />
+			<param index="2" name="default" type="Variant" default="null" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="saved_value" type="Variant" setter="set_saved_value" getter="get_saved_value" default="null">
+		</member>
+		<member name="value_source" type="int" setter="set_value_source" getter="get_value_source" enum="BBParam.ValueSource" default="0">
+		</member>
+		<member name="variable" type="StringName" setter="set_variable" getter="get_variable">
+		</member>
+	</members>
+	<constants>
+		<constant name="SAVED_VALUE" value="0" enum="ValueSource">
+		</constant>
+		<constant name="BLACKBOARD_VAR" value="1" enum="ValueSource">
+		</constant>
+	</constants>
+</class>

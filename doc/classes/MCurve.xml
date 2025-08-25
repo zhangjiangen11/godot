@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MCurve" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_point">
+			<return type="int" />
+			<param index="0" name="position" type="Vector3" />
+			<param index="1" name="in" type="Vector3" />
+			<param index="2" name="out" type="Vector3" />
+			<param index="3" name="prev_conn" type="int" />
+			<param index="4" name="point_override" type="MCurveOverrideData" default="null" />
+			<param index="5" name="conn_override" type="MCurveOverrideData" default="null" />
+			<description>
+			</description>
+		</method>
+		<method name="add_point_conn_point">
+			<return type="int" />
+			<param index="0" name="position" type="Vector3" />
+			<param index="1" name="in" type="Vector3" />
+			<param index="2" name="out" type="Vector3" />
+			<param index="3" name="conn_types" type="Array" />
+			<param index="4" name="conn_points" type="PackedInt32Array" />
+			<param index="5" name="point_override" type="MCurveOverrideData" default="null" />
+			<param index="6" name="conn_overrides" type="MCurveOverrideData[]" default="null" />
+			<description>
+			</description>
+		</method>
+		<method name="add_point_conn_split">
+			<return type="int" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="t" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_points">
+			<return type="void" />
+			<description>
+			</description>
+		</method>
+		<method name="commit_conn_update">
+			<return type="void" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="commit_point_update">
+			<return type="void" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="connect_points">
+			<return type="bool" />
+			<param index="0" name="p0" type="int" />
+			<param index="1" name="p1" type="int" />
+			<param index="2" name="conn_type" type="int" enum="MCurve.ConnType" />
+			<param index="3" name="conn_ov_data" type="MCurveOverrideData" default="null" />
+			<description>
+			</description>
+		</method>
+		<method name="disconnect_conn">
+			<return type="bool" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="disconnect_points">
+			<return type="bool" />
+			<param index="0" name="p0" type="int" />
+			<param index="1" name="p1" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_active_conns">
+			<return type="PackedInt64Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_active_points">
+			<return type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_active_points_positions">
+			<return type="PackedVector3Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_closest_ratio_to_line" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="line_pos" type="Vector3" />
+			<param index="2" name="line_dir" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_closest_ratio_to_point" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_aabb">
+			<return type="AABB" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_baked_line">
+			<return type="PackedVector3Array" />
+			<param index="0" name="conn" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_baked_points">
+			<return type="PackedVector3Array" />
+			<param index="0" name="conn" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_distance_ratio">
+			<return type="float" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="distance" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_id">
+			<return type="int" />
+			<param index="0" name="p0" type="int" />
+			<param index="1" name="p1" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_ids_exist">
+			<return type="PackedInt64Array" />
+			<param index="0" name="points" type="PackedInt32Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_lenght">
+			<return type="float" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_lod">
+			<return type="int" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_points">
+			<return type="PackedInt32Array" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_position">
+			<return type="Vector3" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="t" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_tangent">
+			<return type="Vector3" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="t" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_transform">
+			<return type="Transform3D" />
+			<param index="0" name="conn_id" type="int" />
+			<param index="1" name="t" type="float" />
+			<param index="2" name="tilt" type="bool" />
+			<param index="3" name="scale" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conn_type" qualifiers="const">
+			<return type="int" enum="MCurve.ConnType" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_conns_aabb">
+			<return type="AABB" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<description>
+			</description>
+		</method>
+		<method name="get_override_entry" qualifiers="const">
+			<return type="MCurveOverrideData" />
+			<param index="0" name="id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conn_count" qualifiers="const">
+			<return type="int" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conn_overrides" qualifiers="const">
+			<return type="MCurveOverrideData[]" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conn_points" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conn_points_recursive" qualifiers="const">
+			<return type="PackedInt32Array" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conn_types" qualifiers="const">
+			<return type="Array" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conns" qualifiers="const">
+			<return type="PackedInt64Array" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conns_inc_neighbor_points" qualifiers="const">
+			<return type="PackedInt64Array" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_conns_override_entries" qualifiers="const">
+			<return type="Dictionary" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_in">
+			<return type="Vector3" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_order_tangent">
+			<return type="Vector3" />
+			<param index="0" name="point_a" type="int" />
+			<param index="1" name="point_b" type="int" />
+			<param index="2" name="t" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_order_transform">
+			<return type="Transform3D" />
+			<param index="0" name="point_a" type="int" />
+			<param index="1" name="point_b" type="int" />
+			<param index="2" name="t" type="float" />
+			<param index="3" name="tilt" type="bool" />
+			<param index="4" name="scale" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_out">
+			<return type="Vector3" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_position">
+			<return type="Vector3" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_scale">
+			<return type="float" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_point_tilt">
+			<return type="float" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_points_count">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="growed_conn" qualifiers="const">
+			<return type="PackedInt64Array" />
+			<param index="0" name="conn_ids" type="PackedInt64Array" />
+			<description>
+			</description>
+		</method>
+		<method name="has_conn" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="has_point" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="p_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="is_point_connected" qualifiers="const">
+			<return type="bool" />
+			<param index="0" name="pa" type="int" />
+			<param index="1" name="pb" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="move_point">
+			<return type="void" />
+			<param index="0" name="p_index" type="int" />
+			<param index="1" name="pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="move_point_in">
+			<return type="void" />
+			<param index="0" name="p_index" type="int" />
+			<param index="1" name="pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="move_point_out">
+			<return type="void" />
+			<param index="0" name="p_index" type="int" />
+			<param index="1" name="pos" type="Vector3" />
+			<description>
+			</description>
+		</method>
+		<method name="ray_active_conn_collision">
+			<return type="MCurveConnCollision" />
+			<param index="0" name="org" type="Vector3" />
+			<param index="1" name="dir" type="Vector3" />
+			<param index="2" name="threshold" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="ray_active_point_collision">
+			<return type="int" />
+			<param index="0" name="org" type="Vector3" />
+			<param index="1" name="dir" type="Vector3" />
+			<param index="2" name="threshold" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="remove_point">
+			<return type="void" />
+			<param index="0" name="point_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_override_entry">
+			<return type="void" />
+			<param index="0" name="id" type="int" />
+			<param index="1" name="override_data" type="MCurveOverrideData" />
+			<description>
+			</description>
+		</method>
+		<method name="set_point_scale">
+			<return type="void" />
+			<param index="0" name="p_index" type="int" />
+			<param index="1" name="val" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_point_tilt">
+			<return type="void" />
+			<param index="0" name="p_index" type="int" />
+			<param index="1" name="val" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="sort_from">
+			<return type="int" />
+			<param index="0" name="root_id" type="int" />
+			<param index="1" name="increasing" type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="swap_points">
+			<return type="void" />
+			<param index="0" name="p_a" type="int" />
+			<param index="1" name="p_b" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="toggle_conn_type">
+			<return type="void" />
+			<param index="0" name="point" type="int" />
+			<param index="1" name="conn_id" type="int" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_data" type="PackedByteArray" setter="_set_data" getter="_get_data" default="PackedByteArray(64, 0, 0, 0, 4, 0, 0, 0, 9, 0, 0, 0, 10, 0, 0, 0, 9, 0, 0, 0, 8, 0, 0, 0, 7, 0, 0, 0, 6, 0, 0, 0, 5, 0, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 226, 71, 246, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 63, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)">
+		</member>
+		<member name="active_lod_limit" type="int" setter="set_active_lod_limit" getter="get_active_lod_limit" default="2">
+		</member>
+		<member name="bake_interval" type="float" setter="set_bake_interval" getter="get_bake_interval" default="0.2">
+		</member>
+	</members>
+	<signals>
+		<signal name="connection_updated">
+			<description>
+			</description>
+		</signal>
+		<signal name="curve_updated">
+			<description>
+			</description>
+		</signal>
+		<signal name="force_update_connection">
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="force_update_point">
+			<param index="0" name="point_id" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="recreate">
+			<description>
+			</description>
+		</signal>
+		<signal name="remove_connection">
+			<param index="0" name="conn_id" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="remove_point">
+			<param index="0" name="point_id" type="int" />
+			<description>
+			</description>
+		</signal>
+		<signal name="swap_point_id">
+			<param index="0" name="p_a" type="int" />
+			<param index="1" name="p_b" type="int" />
+			<description>
+			</description>
+		</signal>
+	</signals>
+	<constants>
+		<constant name="CONN_NONE" value="0" enum="ConnType">
+		</constant>
+		<constant name="OUT_IN" value="1" enum="ConnType">
+		</constant>
+		<constant name="IN_OUT" value="2" enum="ConnType">
+		</constant>
+		<constant name="IN_IN" value="3" enum="ConnType">
+		</constant>
+		<constant name="OUT_OUT" value="4" enum="ConnType">
+		</constant>
+	</constants>
+</class>

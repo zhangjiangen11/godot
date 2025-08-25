@@ -206,6 +206,12 @@
 				Creates an unshaded material with its variants (selected and/or editable) and adds them to the internal material list. They can then be accessed with [method get_material] and used in [method EditorNode3DGizmo.add_mesh] and [method EditorNode3DGizmo.add_lines]. Should not be overridden.
 			</description>
 		</method>
+		<method name="get_gizmo">
+			<return type="EditorNode3DGizmo" />
+			<param index="0" name="_unnamed_arg0" type="Node3D" />
+			<description>
+			</description>
+		</method>
 		<method name="get_material">
 			<return type="StandardMaterial3D" />
 			<param index="0" name="name" type="String" />
@@ -215,4 +221,8 @@
 			</description>
 		</method>
 	</methods>
+	<members>
+		<member name="state" type="int" setter="set_state" getter="get_state" default="0">
+		</member>
+	</members>
 </class>

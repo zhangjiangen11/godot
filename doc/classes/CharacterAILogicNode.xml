@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="CharacterAILogicNode" inherits="RefCounted" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<members>
+		<member name="state_name" type="StringName" setter="set_state_name" getter="get_state_name" default="&amp;&quot;&quot;">
+		</member>
+		<member name="tree" type="BeehaveTree" setter="set_tree" getter="get_tree">
+		</member>
+	</members>
+</class>

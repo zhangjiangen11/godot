@@ -197,6 +197,12 @@
 				Sets [param property] value of [param object] to [param value].
 			</description>
 		</method>
+		<method name="create_class_instance">
+			<return type="Variant" />
+			<param index="0" name="class" type="StringName" />
+			<description>
+			</description>
+		</method>
 		<method name="get_class_list" qualifiers="const">
 			<return type="PackedStringArray" />
 			<description>
@@ -210,11 +216,24 @@
 				Returns the names of all the classes that directly or indirectly inherit from [param class].
 			</description>
 		</method>
+		<method name="get_instance">
+			<return type="Variant" />
+			<param index="0" name="object_id" type="int" />
+			<description>
+			</description>
+		</method>
 		<method name="get_parent_class" qualifiers="const">
 			<return type="StringName" />
 			<param index="0" name="class" type="StringName" />
 			<description>
 				Returns the parent class of [param class].
+			</description>
+		</method>
+		<method name="get_script_inheriters_from_class" qualifiers="const">
+			<return type="PackedStringArray" />
+			<param index="0" name="class" type="StringName" />
+			<param index="1" name="it_all" type="bool" default="false" />
+			<description>
 			</description>
 		</method>
 		<method name="instantiate" qualifiers="const">

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="ImageFrames" inherits="Resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="get_frame_delay" qualifiers="const">
+			<return type="float" />
+			<param index="0" name="frame" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="get_frame_image" qualifiers="const">
+			<return type="Image" />
+			<param index="0" name="frame" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="is_empty" qualifiers="const">
+			<return type="bool" />
+			<description>
+			</description>
+		</method>
+		<method name="load">
+			<return type="int" enum="Error" />
+			<param index="0" name="path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="load_apng_from_buffer">
+			<return type="int" enum="Error" />
+			<param index="0" name="buffer" type="PackedByteArray" />
+			<param index="1" name="max_frames" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="load_from_file" qualifiers="static">
+			<return type="ImageFrames" />
+			<param index="0" name="path" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="load_gif_from_buffer">
+			<return type="int" enum="Error" />
+			<param index="0" name="buffer" type="PackedByteArray" />
+			<param index="1" name="max_frames" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="load_webp_from_buffer">
+			<return type="int" enum="Error" />
+			<param index="0" name="buffer" type="PackedByteArray" />
+			<param index="1" name="max_frames" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="set_frame_delay">
+			<return type="void" />
+			<param index="0" name="frame" type="int" />
+			<param index="1" name="delay" type="float" />
+			<description>
+			</description>
+		</method>
+		<method name="set_frame_image">
+			<return type="void" />
+			<param index="0" name="frame" type="int" />
+			<param index="1" name="image" type="Image" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="frame_count" type="int" setter="set_frame_count" getter="get_frame_count" default="0">
+		</member>
+		<member name="loop_count" type="int" setter="set_loop_count" getter="get_loop_count" default="0">
+		</member>
+	</members>
+</class>

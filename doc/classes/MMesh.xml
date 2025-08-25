@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<class name="MMesh" inherits="Mesh" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../class.xsd">
+	<brief_description>
+	</brief_description>
+	<description>
+	</description>
+	<tutorials>
+	</tutorials>
+	<methods>
+		<method name="add_material_set">
+			<return type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="clear_material_set">
+			<return type="void" />
+			<param index="0" name="set_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="create_from_mesh">
+			<return type="void" />
+			<param index="0" name="mesh" type="Mesh" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh" qualifiers="const">
+			<return type="ArrayMesh" />
+			<description>
+			</description>
+		</method>
+		<method name="get_mesh_rid">
+			<return type="RID" />
+			<description>
+			</description>
+		</method>
+		<method name="is_same_mesh">
+			<return type="bool" />
+			<param index="0" name="other" type="MMesh" />
+			<description>
+			</description>
+		</method>
+		<method name="material_get" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="set_id" type="int" />
+			<param index="1" name="surface_index" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="material_set_get" qualifiers="const">
+			<return type="PackedStringArray" />
+			<param index="0" name="set_id" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="material_set_resize">
+			<return type="void" />
+			<param index="0" name="size" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="surface_get_name" qualifiers="const">
+			<return type="String" />
+			<param index="0" name="sidx" type="int" />
+			<description>
+			</description>
+		</method>
+		<method name="surface_set_name">
+			<return type="void" />
+			<param index="0" name="sidx" type="int" />
+			<param index="1" name="name" type="String" />
+			<description>
+			</description>
+		</method>
+		<method name="surfaceset_material">
+			<return type="void" />
+			<param index="0" name="set_id" type="int" />
+			<param index="1" name="surface_index" type="int" />
+			<param index="2" name="material_path" type="String" />
+			<description>
+			</description>
+		</method>
+	</methods>
+	<members>
+		<member name="_surfaces" type="Array" setter="_set_surfaces" getter="_get_surfaces" default="[[]]">
+		</member>
+	</members>
+</class>

@@ -14,6 +14,8 @@
 		<member name="size" type="Vector3" setter="set_size" getter="get_size" default="Vector3(1, 1, 1)">
 			The box's width, height and depth.
 		</member>
+		<member name="start_by_center" type="bool" setter="set_start_by_center" getter="is_start_by_center" default="true">
+		</member>
 		<member name="subdivide_depth" type="int" setter="set_subdivide_depth" getter="get_subdivide_depth" default="0">
 			Number of extra edge loops inserted along the Z axis.
 		</member>
