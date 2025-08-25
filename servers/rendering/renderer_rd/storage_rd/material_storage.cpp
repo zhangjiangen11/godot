@@ -1165,7 +1165,7 @@ bool MaterialStorage::MaterialData::update_parameters_uniform_set(const HashMap<
 
 	if (uniform_buffer_ids.size() != p_uniform_buffers.size() || storage_buffer_ids.size() != p_storage_buffers.size() || p_buffer_dirty) {
 		p_buffer_dirty = true;
-		
+
 		int i = 0;
 		uniform_buffer_ids.resize(p_uniform_buffers.size());
 		for (const ShaderCompiler::GeneratedCode::Buffer &B : p_uniform_buffers) {
@@ -1174,7 +1174,7 @@ bool MaterialStorage::MaterialData::update_parameters_uniform_set(const HashMap<
 			// int offset = 0;
 			if (p_buffer_params.has(B.bufName)) {
 				data = p_buffer_params[B.bufName];
-			} 	
+			}
 			// int j = 0;
 			// for (const ShaderLanguage::MemberNode &E : B.members) {
 			// 	_fill_std140_ubo_empty(E.datatype, E.array_size, &dataptr[offset]);
@@ -1192,7 +1192,7 @@ bool MaterialStorage::MaterialData::update_parameters_uniform_set(const HashMap<
 			// int offset = 0;
 			if (p_buffer_params.has(B.bufName)) {
 				data = p_buffer_params[B.bufName];
-			} 	
+			}
 			// int j = 0;
 			// for (const ShaderLanguage::MemberNode &E : B.members) {
 			// 	_fill_std140_ubo_empty(E.datatype, E.array_size, &dataptr[offset]);
@@ -1256,7 +1256,7 @@ bool MaterialStorage::MaterialData::update_parameters_uniform_set(const HashMap<
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_UNIFORM_BUFFER;
 			u.binding = 1 + k;
-			
+
 			if (p_buffer_dirty) {
 				print_line(vformat("Accessing u_buffer[%s] true", itos(k - j)));
 			} else {
@@ -1274,7 +1274,7 @@ bool MaterialStorage::MaterialData::update_parameters_uniform_set(const HashMap<
 			RD::Uniform u;
 			u.uniform_type = RD::UNIFORM_TYPE_STORAGE_BUFFER;
 			u.binding = 1 + k;
-			
+
 			if (p_buffer_dirty) {
 				print_line(vformat("Accessing s_buffer[%s] true", itos(k - j)));
 			} else {
@@ -2265,7 +2265,6 @@ void MaterialStorage::_material_uniform_set_erased(void *p_material) {
 	}
 }
 
-
 void MaterialStorage::_material_queue_update(Material *material, bool p_uniform, bool p_texture, bool p_buffer) {
 	MutexLock lock(material_update_list_mutex);
 	material->uniform_dirty = material->uniform_dirty || p_uniform;
@@ -2398,7 +2397,6 @@ void RendererRD::MaterialStorage::material_set_buffer(RID p_material, const Stri
 	ERR_FAIL_NULL(material);
 
 	material->buffers[p_buffer] = p_values;
-
 
 	if (material->shader && material->shader->data) { //shader is valid
 		_material_queue_update(material, false, false, true);
