@@ -74,27 +74,46 @@ protected:
 			}
 			if (multimesh->uses_custom_data) {
 				float *dataptr = w + (multimesh->motion_vectors_current_offset + p_index) * multimesh->stride_cache + multimesh->custom_data_offset_cache;
-				const float *source_ptr = color_data.ptr() + p_index * 4;
+				const float *source_ptr = custom_data.ptr() + p_index * 4;
 				memcpy(dataptr, source_ptr, 4 * 4);
 			}
 
 			if (uses_motion_vectors) {
 				{
 					float *dataptr = w + (multimesh->motion_vectors_previous_offset + p_index) * multimesh->stride_cache;
-					const float *source_ptr = pre_transform_data.ptr() + p_index * 12;
-					memcpy(dataptr, source_ptr, 12 * 4);
+					if (pre_transform_data.size() == 0) {
+						const float *source_ptr = transform_data.ptr() + p_index * 12;
+						memcpy(dataptr, source_ptr, 12 * 4);
+					} else {
+						const float *source_ptr = pre_transform_data.ptr() + p_index * 12;
+						memcpy(dataptr, source_ptr, 12 * 4);
+					}
 				}
 
 				if (multimesh->uses_colors) {
 					// Colors are packed into 2 floats.
 					float *dataptr = w + (multimesh->motion_vectors_previous_offset + p_index) * multimesh->stride_cache + multimesh->color_offset_cache;
-					const float *source_ptr = pre_color_data.ptr() + p_index * 4;
-					memcpy(dataptr, source_ptr, 4 * 4);
+					if (pre_color_data.size() == 0) {
+						if (color_data.size() > 0) {
+							const float *source_ptr = color_data.ptr() + p_index * 4;
+							memcpy(dataptr, source_ptr, 4 * 4);
+						}
+					} else {
+						const float *source_ptr = pre_color_data.ptr() + p_index * 4;
+						memcpy(dataptr, source_ptr, 4 * 4);
+					}
 				}
 				if (multimesh->uses_custom_data) {
 					float *dataptr = w + (multimesh->motion_vectors_previous_offset + p_index) * multimesh->stride_cache + multimesh->custom_data_offset_cache;
-					const float *source_ptr = pre_custom_data.ptr() + p_index * 4;
-					memcpy(dataptr, source_ptr, 4 * 4);
+					if (pre_custom_data.size() == 0) {
+						if (custom_data.size() > 0) {
+							const float *source_ptr = pre_custom_data.ptr() + p_index * 4;
+							memcpy(dataptr, source_ptr, 4 * 4);
+						}
+					} else {
+						const float *source_ptr = pre_custom_data.ptr() + p_index * 4;
+						memcpy(dataptr, source_ptr, 4 * 4);
+					}
 				}
 			}
 
