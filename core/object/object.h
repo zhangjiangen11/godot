@@ -163,7 +163,7 @@ enum PropertyUsageFlags {
 // Helper macro to use with PROPERTY_HINT_ARRAY_TYPE for arrays of specific resources:
 // PropertyInfo(Variant::ARRAY, "fallbacks", PROPERTY_HINT_ARRAY_TYPE, MAKE_RESOURCE_TYPE_HINT("Font")
 #define MAKE_RESOURCE_TYPE_HINT(m_type) vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, m_type)
-
+#ifdef TOOLS_ENABLED
 #define DECL_MEMBER_BUTTON(bt_name)          \
 	void _set_##bt_name##_property(int v) {} \
 	int _get_##bt_name##_property() {        \
@@ -175,6 +175,10 @@ enum PropertyUsageFlags {
 	ClassDB::bind_method(D_METHOD("_get_" #bt_name "_property"), &class_name::_get_##bt_name##_property);      \
 	ClassDB::bind_method(D_METHOD(#bt_name "_call"), &class_name::bt_name);                                    \
 	ADD_PROPERTY(PropertyInfo(Variant::INT, #bt_name, PROPERTY_HINT_BUTTON, "#F622AA;" lable_name ";" #bt_name "_call()", PROPERTY_USAGE_EDITOR), "_set_" #bt_name "_property", "_get_" #bt_name "_property");
+#else
+#define DECL_MEMBER_BUTTON(bt_name)
+#define ADD_MEMBER_BUTTON(bt_name, lable_name, class_name)
+#endif
 
 #define DECL_SIMPLE_MEMBER_PROPERTY(type, name)               \
 	void set_##name(const type &v) {                          \
@@ -275,6 +279,19 @@ enum PropertyUsageFlags {
 		ClassDB::bind_method(D_METHOD("get_" #name), &self_type::get_##name);                                       \
 		ADD_PROPERTY(PropertyInfo(variant_type, #name, PROPERTY_HINT_ENUM, enum_hint), "set_" #name, "get_" #name); \
 	}
+#ifdef TOOLS_ENABLED
+#define DECL_MEMBER_SHOW_NAME(property_name, show_name)    \
+	String get_##property_name##__display_name__() const { \
+		return show_name;                                  \
+	}
+#define ADD_MEMBER_SHOW_NAME(property_name)                                                                                     \
+	{                                                                                                                           \
+		ClassDB::bind_method(D_METHOD(#property_name "__display_name", ""), &self_type::get_##property_name##__display_name__); \
+	}
+#else
+#define DECL_MEMBER_SHOW_NAME(property_name, show_name)
+#define ADD_MEMBER_SHOW_NAME(property_name)
+#endif
 struct PropertyInfo {
 	Variant::Type type = Variant::NIL;
 	String name;
