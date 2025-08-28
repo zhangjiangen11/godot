@@ -1169,6 +1169,10 @@ void WorkerTaskPool::_process_task_queue(int thread_id) {
 	}
 }
 Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
+	if (!Thread::is_main_thread()) {
+		ERR_PRINT("only call man thread");
+		return Ref<TaskJobHandle>();
+	}
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
 	hand->task_name = task_name;
@@ -1201,6 +1205,10 @@ Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_
 	return hand;
 }
 Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
+	if (!Thread::is_main_thread()) {
+		ERR_PRINT("only call man thread");
+		return Ref<TaskJobHandle>();
+	}
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
 	hand->task_name = task_name;
@@ -1232,6 +1240,10 @@ Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, c
 	return hand;
 }
 Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName &_task_name, const std::function<void(int)> &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
+	if (!Thread::is_main_thread()) {
+		ERR_PRINT("only call man thread");
+		return Ref<TaskJobHandle>();
+	}
 	Ref<TaskJobHandle> hand = Ref<TaskJobHandle>(memnew(TaskJobHandle));
 	hand->init();
 	hand->task_name = _task_name;

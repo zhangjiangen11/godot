@@ -33,6 +33,9 @@
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/error/error_macros.h"
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
+#include "core/io/resource_saver.h"
 #include "core/version.h"
 #include "scene/main/scene_tree.h"
 
@@ -170,6 +173,7 @@ void Material::_bind_methods() {
 	BIND_CONSTANT(RENDER_PRIORITY_MAX);
 	BIND_CONSTANT(RENDER_PRIORITY_MIN);
 
+	ADD_SIGNAL(MethodInfo("changed_base_local", PropertyInfo(Variant::OBJECT, "old_mat", PROPERTY_HINT_RESOURCE_TYPE, "Material"), PropertyInfo(Variant::OBJECT, "new_mat", PROPERTY_HINT_RESOURCE_TYPE, "Material")));
 	GDVIRTUAL_BIND(_get_shader_rid)
 	GDVIRTUAL_BIND(_get_shader_mode)
 	GDVIRTUAL_BIND(_can_do_next_pass)
@@ -650,13 +654,25 @@ void ShaderMaterialInstance::set_base_material(const Ref<Material> &p_base) {
 	}
 	if (base.is_valid()) {
 		base->disconnect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
+#ifdef TOOLS_ENABLED
+		base->disconnect("changed_base_local", callable_mp(this, &ShaderMaterialInstance::on_changed_base_local));
+#endif
 	}
 	base = new_base;
-	base->connect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
-	if (_get_material().is_valid()) {
-		RID shader_rid = get_shader_rid();
+	if (base.is_valid()) {
+		base->connect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
+#ifdef TOOLS_ENABLED
+		base->connect("changed_base_local", callable_mp(this, &ShaderMaterialInstance::on_changed_base_local));
+#endif
+		if (_get_material().is_valid()) {
+			RID shader_rid = get_shader_rid();
 
-		RS::get_singleton()->material_set_shader(_get_material(), shader_rid);
+			RS::get_singleton()->material_set_shader(_get_material(), shader_rid);
+		}
+	} else {
+		if (_get_material().is_valid()) {
+			RS::get_singleton()->material_set_shader(_get_material(), RID());
+		}
 	}
 	is_dirty = true;
 }
@@ -724,6 +740,10 @@ void ShaderMaterialInstance::update_material(RID p_material) const {
 	}
 	is_dirty = false;
 }
+void ShaderMaterialInstance::on_changed_base_local(const Ref<Material> &p_old_base, const Ref<Material> &p_new_base) {
+	set_base_material(p_new_base);
+}
+
 ShaderMaterialInstance::~ShaderMaterialInstance() {
 	if (base.is_valid()) {
 		base->disconnect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
@@ -918,7 +938,8 @@ void BaseMaterial3D::_update_shader() {
 	}
 
 	// Add a comment to describe the shader origin (useful when converting to ShaderMaterial).
-	String code = vformat(
+	String &code = shader_code;
+	code = vformat(
 			"// NOTE: Shader automatically converted from " GODOT_VERSION_NAME " " GODOT_VERSION_FULL_CONFIG "'s %s.\n\n",
 			orm ? "ORMMaterial3D" : "StandardMaterial3D");
 
@@ -2314,6 +2335,11 @@ void BaseMaterial3D::update_material(RID p_material) const {
 	}
 }
 
+void BaseMaterial3D::set_shader_code(const String &p_code) {
+}
+String BaseMaterial3D::get_shader_code() const {
+	return shader_code;
+}
 void BaseMaterial3D::set_albedo(const Color &p_albedo) {
 	albedo = p_albedo;
 	_material_set_param(shader_names->albedo, p_albedo);
@@ -3748,6 +3774,10 @@ void BaseMaterial3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_stencil_effect_outline_thickness", "stencil_outline_thickness"), &BaseMaterial3D::set_stencil_effect_outline_thickness);
 	ClassDB::bind_method(D_METHOD("get_stencil_effect_outline_thickness"), &BaseMaterial3D::get_stencil_effect_outline_thickness);
 
+	ClassDB::bind_method(D_METHOD("set_shader_code", "code"), &BaseMaterial3D::set_shader_code);
+	ClassDB::bind_method(D_METHOD("get_shader_code"), &BaseMaterial3D::get_shader_code);
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "shader_code", PROPERTY_HINT_MULTILINE_TEXT, "", PROPERTY_USAGE_EDITOR), "set_shader_code", "get_shader_code");
+
 	ADD_GROUP("Transparency", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "transparency", PROPERTY_HINT_ENUM, "Disabled,Alpha,Alpha Scissor,Alpha Hash,Depth Pre-Pass"), "set_transparency", "get_transparency");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "alpha_scissor_threshold", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_alpha_scissor_threshold", "get_alpha_scissor_threshold");
@@ -3943,7 +3973,9 @@ void BaseMaterial3D::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "stencil_color", PROPERTY_HINT_NONE), "set_stencil_effect_color", "get_stencil_effect_color");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "stencil_outline_thickness", PROPERTY_HINT_RANGE, "0,1,0.001,or_greater,suffix:m"), "set_stencil_effect_outline_thickness", "get_stencil_effect_outline_thickness");
-
+#ifdef TOOLS_ENABLED
+	ADD_MEMBER_BUTTON(bt_change_shader_material, L"转换成ShaderMaterial", BaseMaterial3D);
+#endif
 	BIND_ENUM_CONSTANT(TEXTURE_ALBEDO);
 	BIND_ENUM_CONSTANT(TEXTURE_METALLIC);
 	BIND_ENUM_CONSTANT(TEXTURE_ROUGHNESS);
@@ -4096,6 +4128,69 @@ void BaseMaterial3D::_bind_methods() {
 	BIND_ENUM_CONSTANT(STENCIL_COMPARE_NOT_EQUAL);
 	BIND_ENUM_CONSTANT(STENCIL_COMPARE_GREATER_OR_EQUAL);
 }
+
+#ifdef TOOLS_ENABLED
+static void save_tres(const String &save_path, const Ref<Resource> &p_resource) {
+	if (FileAccess::exists(save_path)) {
+		DirAccess::remove_absolute(save_path);
+	}
+	Ref<Resource> res = ResourceCache::get_ref(save_path);
+	ResourceSaver::save(p_resource, save_path, ResourceSaver::FLAG_CHANGE_PATH);
+	if (res.is_null() || res->get_class_name() != p_resource->get_class_name()) {
+		ResourceCache::set_ref(save_path, p_resource.ptr());
+	} else {
+		if (res != p_resource) {
+			res->copy_from(p_resource);
+		}
+	}
+}
+void BaseMaterial3D::bt_change_shader_material() {
+	String self_path = get_path();
+	if (self_path.length() == 0) {
+		WARN_PRINT(L"转换成shader材质失败,材质路径为空!");
+		return;
+	}
+	if (self_path.find("::") != -1) {
+		WARN_PRINT(L"转换成shader材质失败,材质数据其他资源的子材质！" + self_path);
+		return;
+	}
+	_update_shader();
+	String code = shader_code;
+	Ref<Shader> shader;
+	shader.instantiate();
+	shader->set_code(code);
+
+	String path = self_path.get_base_dir();
+	String name = self_path.get_file().get_basename();
+	String shader_path = path + "/" + name + ".shader";
+	shader->set_path(shader_path);
+	save_tres(shader_path, shader);
+
+	HashMap<StringName, Variant> new_param_cache = param_cache;
+
+	Ref<Texture2D> new_textures[TEXTURE_MAX];
+	for (int i = 0; i < TEXTURE_MAX; i++) {
+		new_textures[i] = textures[i];
+	}
+	Ref<ShaderMaterial> shader_material;
+	shader_material.instantiate();
+	shader_material->set_shader(shader);
+	// shader参数
+	for (auto &kv : new_param_cache) {
+		shader_material->set_shader_parameter(kv.key, kv.value);
+	}
+	// shader贴图
+	for (int i = 0; i < TEXTURE_MAX; i++) {
+		if (!new_textures[i].is_valid()) {
+			continue;
+		}
+		shader_material->set_shader_parameter(shader_names->texture_names[i], new_textures[i]);
+	}
+	save_tres(self_path, shader_material);
+	// 发送材质改变
+	emit_signal("changed_base_local", this, shader_material);
+}
+#endif
 
 BaseMaterial3D::BaseMaterial3D(bool p_orm) :
 		element(this) {

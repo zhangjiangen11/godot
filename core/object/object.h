@@ -284,9 +284,9 @@ enum PropertyUsageFlags {
 	String get_##property_name##__display_name__() const { \
 		return show_name;                                  \
 	}
-#define ADD_MEMBER_SHOW_NAME(property_name)                                                                                     \
-	{                                                                                                                           \
-		ClassDB::bind_method(D_METHOD(#property_name "__display_name", ""), &self_type::get_##property_name##__display_name__); \
+#define ADD_MEMBER_SHOW_NAME(property_name)                                                                                   \
+	{                                                                                                                         \
+		ClassDB::bind_method(D_METHOD(#property_name "__display_name__"), &self_type::get_##property_name##__display_name__); \
 	}
 #else
 #define DECL_MEMBER_SHOW_NAME(property_name, show_name)

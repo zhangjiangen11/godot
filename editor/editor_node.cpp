@@ -7212,6 +7212,7 @@ void EditorNode::_resource_saved(Ref<Resource> p_resource, const String &p_path)
 	}
 
 	if (EditorFileSystem::get_singleton()) {
+		// TODO: 这个代码导致资源存储奇慢无比,后期再次进行优化
 		EditorFileSystem::get_singleton()->update_file(p_path);
 	}
 
