@@ -103,6 +103,8 @@ public:
 	static void get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes, bool _it_all = false);
 	static void save_global_classes();
 
+	static bool script_class_is_parent(const String &p_class, const String &p_inherits);
+
 	static Vector<Ref<ScriptBacktrace>> capture_script_backtraces(bool p_include_variables = false);
 
 	static void init_languages();

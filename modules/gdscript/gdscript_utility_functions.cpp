@@ -32,6 +32,7 @@
 
 #include "gdscript.h"
 
+#include "core/core_constants.h"
 #include "core/io/resource_loader.h"
 #include "core/object/class_db.h"
 #include "core/object/object.h"
@@ -454,6 +455,37 @@ struct GDScriptUtilityFunctionsDefinitions {
 		}
 	}
 
+	// 枚举值转字符串
+	static inline void enum_value_to_string(Variant *r_ret, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
+		DEBUG_VALIDATE_ARG_COUNT(2, 2);
+		if (p_args[1]->get_type() != Variant::INT) {
+			r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
+			r_error.argument = 0;
+			r_error.expected = Variant::NIL;
+			return;
+		}
+		StringName enum_name;
+		if (p_args[0]->get_type() == Variant::STRING_NAME) {
+			enum_name = *p_args[0];
+		} else if (p_args[0]->get_type() == Variant::STRING) {
+			enum_name = *p_args[0];
+		} else {
+			r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
+			r_error.argument = 0;
+			r_error.expected = Variant::NIL;
+			return;
+		}
+		int64_t value = *p_args[1];
+		HashMap<StringName, int64_t> r_values;
+		CoreConstants::get_enum_values(enum_name, &r_values);
+		for (auto &item : r_values) {
+			if (item.value == value) {
+				*r_ret = item.key;
+				return;
+			}
+		}
+		*r_ret = "";
+	}
 	static inline void is_instance_of(Variant *r_ret, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
 		DEBUG_VALIDATE_ARG_COUNT(2, 2);
 
@@ -591,6 +623,7 @@ void GDScriptUtilityFunctions::register_functions() {
 	REGISTER_FUNC( get_stack,      false, RET(ARRAY),         NOARGS,                                  false, varray(     ));
 	REGISTER_FUNC( len,            true,  RET(INT),           ARGS( ARGVAR("var")                   ), false, varray(     ));
 	REGISTER_FUNC( is_instance_of, true,  RET(BOOL),          ARGS( ARGVAR("value"), ARGVAR("type") ), false, varray(     ));
+	REGISTER_FUNC( enum_value_to_string, true,  RET(STRING_NAME),  ARGS( ARGVAR("enum_name"), ARG("enum_value", INT) ), false, varray(     ));
 	/* clang-format on */
 }
 

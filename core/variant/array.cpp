@@ -110,14 +110,23 @@ const Variant &Array::operator[](int p_idx) const {
 }
 
 int Array::size() const {
+	if (_p == nullptr) {
+		return 0;
+	}
 	return _p->array.size();
 }
 
 bool Array::is_empty() const {
+	if (_p == nullptr) {
+		return true;
+	}
 	return _p->array.is_empty();
 }
 
 void Array::clear() {
+	if (_p == nullptr) {
+		return;
+	}
 	ERR_FAIL_COND_MSG(_p->read_only, "Array is in read-only state.");
 	_p->array.clear();
 }

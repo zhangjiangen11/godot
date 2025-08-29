@@ -1639,7 +1639,7 @@ bool ClassDB::class_exists(const StringName &p_class) const {
 }
 
 bool ClassDB::is_parent_class(const StringName &p_class, const StringName &p_inherits) const {
-	return ::ClassDB::is_parent_class(p_class, p_inherits);
+	return ::ClassDB::is_parent_class(p_class, p_inherits) || ScriptServer::script_class_is_parent(p_class, p_inherits);
 }
 
 bool ClassDB::can_instantiate(const StringName &p_class) const {

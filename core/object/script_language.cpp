@@ -533,6 +533,23 @@ void ScriptServer::get_global_class_list(List<StringName> *r_global_classes) {
 	}
 }
 
+bool ScriptServer::script_class_is_parent(const String &p_class, const String &p_inherits) {
+	if (!ScriptServer::is_global_class(p_class)) {
+		return false;
+	}
+
+	String base = p_class;
+	while (base != p_inherits) {
+		if (ClassDB::class_exists(base)) {
+			return ClassDB::is_parent_class(base, p_inherits);
+		} else if (ScriptServer::is_global_class(base)) {
+			base = ScriptServer::get_global_class_base(base);
+		} else {
+			return false;
+		}
+	}
+	return true;
+}
 void ScriptServer::save_global_classes() {
 	Dictionary class_icons;
 
