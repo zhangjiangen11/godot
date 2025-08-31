@@ -55,7 +55,7 @@ public:
 	virtual ~ResourceFormatSaver() {}
 };
 
-typedef void (*ResourceSavedCallback)(Ref<Resource> p_resource, const String &p_path);
+typedef void (*ResourceSavedCallback)(const Ref<Resource> &p_resource, const String &p_path);
 typedef ResourceUID::ID (*ResourceSaverGetResourceIDForPath)(const String &p_path, bool p_generate);
 
 class ResourceSaver {
@@ -81,7 +81,7 @@ public:
 		FLAG_SAVE_BIG_ENDIAN = 16,
 		FLAG_COMPRESS = 32,
 		FLAG_REPLACE_SUBRESOURCE_PATHS = 64,
-		FLAG_CHANGE_CACHE= 1024,
+		FLAG_CHANGE_CACHE = 1024,
 	};
 
 	static Error save(const Ref<Resource> &p_resource, const String &p_path = "", uint32_t p_flags = (uint32_t)FLAG_NONE);

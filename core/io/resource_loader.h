@@ -100,7 +100,7 @@ typedef void (*ResourceLoadErrorNotify)(const String &p_text);
 typedef void (*DependencyErrorNotify)(const String &p_loading, const String &p_which, const String &p_type);
 
 typedef Error (*ResourceLoaderImport)(const String &p_path);
-typedef void (*ResourceLoadedCallback)(Ref<Resource> p_resource, const String &p_path);
+typedef void (*ResourceLoadedCallback)(const Ref<Resource> &p_resource, const String &p_path);
 
 class ResourceLoader {
 	friend class LoadToken;

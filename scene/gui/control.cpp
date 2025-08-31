@@ -848,7 +848,6 @@ void Control::set_h_grow_direction(GrowDirection p_direction) {
 	}
 
 	ERR_FAIL_INDEX((int)p_direction, 3);
-
 	data.h_grow = p_direction;
 	_size_changed();
 }

@@ -145,9 +145,8 @@ void ScrollBar::gui_input(const Ref<InputEvent> &p_event) {
 
 		if (drag.active) {
 			double ofs = orientation == VERTICAL ? m->get_position().y : m->get_position().x;
-			Ref<Texture2D> decr = theme_cache.decrement_icon;
 
-			double decr_size = orientation == VERTICAL ? decr->get_height() : decr->get_width();
+			double decr_size = orientation == VERTICAL ? theme_cache.decrement_icon->get_height() : theme_cache.decrement_icon->get_width();
 			ofs -= decr_size + theme_cache.scroll_style->get_margin(orientation == VERTICAL ? SIDE_TOP : SIDE_LEFT);
 
 			double diff = (ofs - drag.pos_at_click) / get_area_size();
@@ -161,11 +160,9 @@ void ScrollBar::gui_input(const Ref<InputEvent> &p_event) {
 			}
 		} else {
 			double ofs = orientation == VERTICAL ? m->get_position().y : m->get_position().x;
-			Ref<Texture2D> decr = theme_cache.decrement_icon;
-			Ref<Texture2D> incr = theme_cache.increment_icon;
 
-			double decr_size = orientation == VERTICAL ? decr->get_height() : decr->get_width();
-			double incr_size = orientation == VERTICAL ? incr->get_height() : incr->get_width();
+			double decr_size = orientation == VERTICAL ? theme_cache.increment_icon->get_height() : theme_cache.increment_icon->get_width();
+			double incr_size = orientation == VERTICAL ? theme_cache.increment_icon->get_height() : theme_cache.increment_icon->get_width();
 			double total = orientation == VERTICAL ? get_size().height : get_size().width;
 
 			HighlightStatus new_hilite;
@@ -234,61 +231,60 @@ void ScrollBar::_notification(int p_what) {
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
 
-			Ref<Texture2D> decr, incr;
+			Texture2D *decr = nullptr, *incr = nullptr;
 
 			if (decr_active) {
-				decr = theme_cache.decrement_pressed_icon;
-				if(user_data.decrement_pressed.is_valid()){
-					decr = user_data.decrement_pressed;
+				decr = theme_cache.decrement_pressed_icon.ptr();
+				if (user_data.decrement_pressed.is_valid()) {
+					decr = user_data.decrement_pressed.ptr();
 				}
 			} else if (highlight == HIGHLIGHT_DECR) {
-				decr = theme_cache.decrement_hl_icon;
-				if(user_data.decrement_hl.is_valid()){
-					decr = user_data.decrement_hl;
+				decr = theme_cache.decrement_hl_icon.ptr();
+				if (user_data.decrement_hl.is_valid()) {
+					decr = user_data.decrement_hl.ptr();
 				}
 			} else {
-				decr = theme_cache.decrement_icon;
-				if(user_data.decrement.is_valid()){
-					decr = user_data.decrement;
+				decr = theme_cache.decrement_icon.ptr();
+				if (user_data.decrement.is_valid()) {
+					decr = user_data.decrement.ptr();
 				}
 			}
 
 			if (incr_active) {
-				incr = theme_cache.increment_pressed_icon;
-				if(user_data.increment_pressed.is_valid()){
-					incr = user_data.increment_pressed;
+				incr = theme_cache.increment_pressed_icon.ptr();
+				if (user_data.increment_pressed.is_valid()) {
+					incr = user_data.increment_pressed.ptr();
 				}
 			} else if (highlight == HIGHLIGHT_INCR) {
-				incr = theme_cache.increment_hl_icon;
-				if(user_data.increment_hl.is_valid()){
-					incr = user_data.increment_hl;
+				incr = theme_cache.increment_hl_icon.ptr();
+				if (user_data.increment_hl.is_valid()) {
+					incr = user_data.increment_hl.ptr();
 				}
 			} else {
-				incr = theme_cache.increment_icon;
-				if(user_data.increment.is_valid()){
-					incr = user_data.increment;
+				incr = theme_cache.increment_icon.ptr();
+				if (user_data.increment.is_valid()) {
+					incr = user_data.increment.ptr();
 				}
 			}
 
 			Ref<StyleBox> grabber;
-			Ref<Texture2D> grabber_texture;
+			Texture2D *grabber_texture = nullptr;
 			if (drag.active) {
 				grabber = theme_cache.grabber_pressed_style;
-				if(user_data.grabber_pressed.is_valid()){
-					grabber_texture = user_data.grabber_pressed;
+				if (user_data.grabber_pressed.is_valid()) {
+					grabber_texture = user_data.grabber_pressed.ptr();
 				}
 			} else if (highlight == HIGHLIGHT_RANGE) {
 				grabber = theme_cache.grabber_hl_style;
-				if(user_data.grabber_hl.is_valid()){
-					grabber_texture = user_data.grabber_hl;
+				if (user_data.grabber_hl.is_valid()) {
+					grabber_texture = user_data.grabber_hl.ptr();
 				}
 			} else {
 				grabber = theme_cache.grabber_style;
-				if(user_data.grabber.is_valid()){
-					grabber_texture = user_data.grabber;
+				if (user_data.grabber.is_valid()) {
+					grabber_texture = user_data.grabber.ptr();
 				}
 			}
-
 
 			Point2 ofs;
 
@@ -309,17 +305,15 @@ void ScrollBar::_notification(int p_what) {
 			}
 
 			if (has_focus()) {
-				if(user_data.background_focus.is_valid()){
+				if (user_data.background_focus.is_valid()) {
 					user_data.background_focus->draw_rect(ci, Rect2(ofs, area));
-				}
-				else {
+				} else {
 					theme_cache.scroll_focus_style->draw(ci, Rect2(ofs, area));
 				}
 			} else {
-				if(user_data.background.is_valid()){
+				if (user_data.background.is_valid()) {
 					user_data.background->draw_rect(ci, Rect2(ofs, area));
-				}
-				else {
+				} else {
 					theme_cache.scroll_style->draw(ci, Rect2(ofs, area));
 				}
 			}
@@ -344,10 +338,9 @@ void ScrollBar::_notification(int p_what) {
 				grabber_rect.position.y = get_grabber_offset() + decr->get_height() + theme_cache.scroll_style->get_margin(SIDE_TOP);
 				grabber_rect.position.x = 0;
 			}
-			if(grabber_texture.is_valid()){
+			if (grabber_texture != nullptr) {
 				grabber_texture->draw_rect(ci, grabber_rect);
-			}
-			else {
+			} else {
 				grabber->draw(ci, grabber_rect);
 			}
 		} break;

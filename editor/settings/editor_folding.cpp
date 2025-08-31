@@ -69,7 +69,7 @@ void EditorFolding::_set_unfolds(Object *p_object, const Vector<String> &p_unfol
 	}
 }
 
-void EditorFolding::load_resource_folding(Ref<Resource> p_resource, const String &p_path) {
+void EditorFolding::load_resource_folding(const Ref<Resource> &p_resource, const String &p_path) {
 	Ref<ConfigFile> config;
 	config.instantiate();
 

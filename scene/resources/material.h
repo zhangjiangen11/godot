@@ -145,6 +145,7 @@ class ShaderMaterialInstance : public Material {
 	static void _bind_methods();
 
 public:
+	virtual bool reference() override; // returns false if refcount is at zero and didn't get increased
 	virtual RID get_rid() const override;
 	virtual RID get_shader_rid() const override;
 

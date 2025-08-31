@@ -889,7 +889,7 @@ Error ResourceLoaderBinary::load() {
 			*progress = (i + 1) / float(internal_resources.size());
 		}
 
-		resource_cache.push_back(res);
+		//resource_cache.push_back(res);
 
 		if (main) {
 			f.unref();
@@ -1218,41 +1218,44 @@ Ref<Resource> ResourceFormatLoaderBinary::load(const String &p_path, const Strin
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ, &err);
 
 	ERR_FAIL_COND_V_MSG(err != OK, Ref<Resource>(), vformat("Cannot open file '%s'.", p_path));
+	Ref<Resource> ret;
+	{
+		ResourceLoaderBinary loader;
+		switch (p_cache_mode) {
+			case CACHE_MODE_IGNORE:
+			case CACHE_MODE_REUSE:
+			case CACHE_MODE_REPLACE:
+				loader.cache_mode = p_cache_mode;
+				loader.cache_mode_for_external = CACHE_MODE_REUSE;
+				break;
+			case CACHE_MODE_IGNORE_DEEP:
+				loader.cache_mode = CACHE_MODE_IGNORE;
+				loader.cache_mode_for_external = p_cache_mode;
+				break;
+			case CACHE_MODE_REPLACE_DEEP:
+				loader.cache_mode = CACHE_MODE_REPLACE;
+				loader.cache_mode_for_external = p_cache_mode;
+				break;
+		}
+		loader.use_sub_threads = p_use_sub_threads;
+		loader.progress = r_progress;
+		String path = !p_original_path.is_empty() ? p_original_path : p_path;
+		loader.local_path = ProjectSettings::get_singleton()->localize_path(path);
+		loader.res_path = loader.local_path;
+		loader.open(f);
 
-	ResourceLoaderBinary loader;
-	switch (p_cache_mode) {
-		case CACHE_MODE_IGNORE:
-		case CACHE_MODE_REUSE:
-		case CACHE_MODE_REPLACE:
-			loader.cache_mode = p_cache_mode;
-			loader.cache_mode_for_external = CACHE_MODE_REUSE;
-			break;
-		case CACHE_MODE_IGNORE_DEEP:
-			loader.cache_mode = CACHE_MODE_IGNORE;
-			loader.cache_mode_for_external = p_cache_mode;
-			break;
-		case CACHE_MODE_REPLACE_DEEP:
-			loader.cache_mode = CACHE_MODE_REPLACE;
-			loader.cache_mode_for_external = p_cache_mode;
-			break;
-	}
-	loader.use_sub_threads = p_use_sub_threads;
-	loader.progress = r_progress;
-	String path = !p_original_path.is_empty() ? p_original_path : p_path;
-	loader.local_path = ProjectSettings::get_singleton()->localize_path(path);
-	loader.res_path = loader.local_path;
-	loader.open(f);
+		err = loader.load();
 
-	err = loader.load();
-
-	if (r_error) {
-		*r_error = err;
+		if (r_error) {
+			*r_error = err;
+		}
+		ret = loader.resource;
 	}
 
 	if (err) {
 		return Ref<Resource>();
 	}
-	return loader.resource;
+	return ret;
 }
 
 void ResourceFormatLoaderBinary::get_recognized_extensions_for_type(const String &p_type, List<String> *p_extensions) const {

@@ -613,6 +613,9 @@ void ShaderMaterialInstance::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "param_overrides"), "set_param_overrides", "get_param_overrides");
 }
+bool ShaderMaterialInstance::reference() {
+	return super_type::reference();
+}
 RID ShaderMaterialInstance::get_rid() const {
 	_check_material_rid();
 	if (is_dirty) {

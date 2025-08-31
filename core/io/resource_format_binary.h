@@ -49,7 +49,7 @@ class ResourceLoaderBinary {
 	ResourceUID::ID uid = ResourceUID::INVALID_ID;
 
 	Vector<char> str_buf;
-	List<Ref<Resource>> resource_cache;
+	//List<Ref<Resource>> resource_cache;
 
 	Vector<StringName> string_map;
 

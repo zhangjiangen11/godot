@@ -466,7 +466,7 @@ private:
 	Object *current = nullptr;
 
 	Ref<Resource> saving_resource;
-	HashSet<Ref<Resource>> saving_resources_in_path;
+	HashSet<String> saving_resources_in_path;
 
 	uint64_t update_spinner_step_msec = 0;
 	uint64_t update_spinner_step_frame = 0;
@@ -490,7 +490,7 @@ private:
 	PrintHandlerList print_handler;
 
 	HashMap<String, Ref<Texture2D>> icon_type_cache;
-	HashMap<Pair<String, String>, Ref<Texture2D>> class_icon_cache;
+	//HashMap<Pair<String, String>, Ref<Texture2D>> class_icon_cache;
 
 	ProjectUpgradeTool *project_upgrade_tool = nullptr;
 	bool run_project_upgrade_tool = false;
@@ -528,8 +528,8 @@ private:
 
 	static void _print_handler(void *p_this, const String &p_string, bool p_error, bool p_rich);
 	static void _print_handler_impl(const String &p_string, bool p_error, bool p_rich);
-	static void _resource_saved(Ref<Resource> p_resource, const String &p_path);
-	static void _resource_loaded(Ref<Resource> p_resource, const String &p_path);
+	static void _resource_saved(const Ref<Resource> &p_resource, const String &p_path);
+	static void _resource_loaded(const Ref<Resource> &p_resource, const String &p_path);
 
 	void _update_theme(bool p_skip_creation = false);
 	void _build_icon_type_cache();

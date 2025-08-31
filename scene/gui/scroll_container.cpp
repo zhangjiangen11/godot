@@ -72,14 +72,17 @@ Size2 ScrollContainer::get_minimum_size() const {
 			min_size.y += h_scroll->get_minimum_size().y;
 		}
 	}
-
-	Size2 panel_size = theme_cache.panel_style->get_minimum_size();
-	min_size += panel_size;
-	if (draw_focus_border) {
-		Size2 focus_size = theme_cache.focus_style->get_minimum_size();
-		// Only update the minimum size if the focus style's minimum size doesn't fit into the panel style's minimum size.
-		if (focus_size > panel_size) {
-			min_size += focus_size - panel_size;
+	if (theme_cache.panel_style.is_valid()) {
+		Size2 panel_size = theme_cache.panel_style->get_minimum_size();
+		min_size += panel_size;
+		if (draw_focus_border) {
+			if (theme_cache.focus_style.is_valid()) {
+				Size2 focus_size = theme_cache.focus_style->get_minimum_size();
+				// Only update the minimum size if the focus style's minimum size doesn't fit into the panel style's minimum size.
+				if (focus_size > panel_size) {
+					min_size += focus_size - panel_size;
+				}
+			}
 		}
 	}
 

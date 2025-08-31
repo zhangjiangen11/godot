@@ -34,6 +34,13 @@
 #include "scene/resources/bit_map.h"
 #include "scene/resources/placeholder_textures.h"
 
+bool ImageTexture::reference() {
+	if (!get_path().is_empty()) {
+		int a = 0;
+		a++;
+	}
+	return super_type::reference();
+}
 void ImageTexture::reload_from_file() {
 	String path = ResourceLoader::path_remap(get_path());
 	if (!path.is_resource_file()) {

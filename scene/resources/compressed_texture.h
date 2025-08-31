@@ -78,6 +78,7 @@ protected:
 	static void _bind_methods();
 
 public:
+	virtual bool reference() override; // returns false if refcount is at zero and didn't get increased
 	static Ref<Image> load_image_from_file(Ref<FileAccess> p_file, int p_size_limit);
 
 	typedef void (*TextureFormatRequestCallback)(const Ref<CompressedTexture2D> &);

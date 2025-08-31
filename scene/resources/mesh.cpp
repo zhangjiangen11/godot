@@ -1596,13 +1596,13 @@ void ArrayMesh::_create_if_empty() const {
 
 void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
 	Vector<RS::SurfaceData> surface_data;
-	Vector<Ref<Material>> surface_materials;
+	Vector<Material *> surface_materials;
 	Vector<String> surface_names;
 	Vector<bool> surface_2d;
 
 	for (int i = 0; i < p_surfaces.size(); i++) {
 		RS::SurfaceData surface;
-		Dictionary d = p_surfaces[i];
+		const Dictionary &d = p_surfaces[i];
 		ERR_FAIL_COND(!d.has("format"));
 		ERR_FAIL_COND(!d.has("primitive"));
 		ERR_FAIL_COND(!d.has("vertex_data"));
@@ -1631,7 +1631,7 @@ void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
 		}
 
 		if (d.has("lods")) {
-			Array lods = d["lods"];
+			const Array &lods = d["lods"];
 			ERR_FAIL_COND(lods.size() & 1); //must be even
 			for (int j = 0; j < lods.size(); j += 2) {
 				RS::SurfaceData::LOD lod;
@@ -1642,7 +1642,7 @@ void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
 		}
 
 		if (d.has("bone_aabbs")) {
-			Array bone_aabbs = d["bone_aabbs"];
+			const Array &bone_aabbs = d["bone_aabbs"];
 			for (int j = 0; j < bone_aabbs.size(); j++) {
 				surface.bone_aabbs.push_back(bone_aabbs[j]);
 			}
@@ -1652,10 +1652,10 @@ void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
 			surface.blend_shape_data = d["blend_shapes"];
 		}
 
-		Ref<Material> material;
+		Material *material = nullptr;
 		if (d.has("material")) {
-			material = d["material"];
-			if (material.is_valid()) {
+			material = Object::cast_to<Material>(d["material"].get_validated_object());
+			if (material != nullptr) {
 				surface.material = material->get_rid();
 			}
 		}
@@ -1706,8 +1706,9 @@ void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
 	clear_cache();
 
 	aabb = AABB();
+	surfaces.resize(surface_data.size());
 	for (int i = 0; i < surface_data.size(); i++) {
-		Surface s;
+		Surface &s = surfaces.write[i];
 		s.aabb = surface_data[i].aabb;
 		if (i == 0) {
 			aabb = s.aabb;
@@ -1724,7 +1725,7 @@ void ArrayMesh::_set_surfaces(const Array &p_surfaces) {
 		s.array_length = surface_data[i].vertex_count;
 		s.index_array_length = surface_data[i].index_count;
 
-		surfaces.push_back(s);
+		//surfaces.push_back(s);
 	}
 }
 
@@ -2365,6 +2366,9 @@ void ArrayMesh::reload_from_file() {
 	notify_property_list_changed();
 }
 
+bool ArrayMesh::reference() {
+	return super_type::reference();
+}
 ArrayMesh::ArrayMesh() {
 	//mesh is now created on demand
 	//mesh = RenderingServer::get_singleton()->mesh_create();

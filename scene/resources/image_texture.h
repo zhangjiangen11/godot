@@ -59,6 +59,7 @@ class ImageTexture : public Texture2D {
 	bool nine_draw = false;
 
 public:
+	virtual bool reference() override; // returns false if refcount is at zero and didn't get increased
 	void set_nine_draw(bool value) {
 		nine_draw = value;
 	}

@@ -32,6 +32,9 @@
 
 #include "scene/resources/bit_map.h"
 
+bool CompressedTexture2D::reference() {
+	return super_type::reference();
+}
 Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r_height, Ref<Image> &image, bool &r_request_3d, bool &r_request_normal, bool &r_request_roughness, int &mipmap_limit, int p_size_limit) {
 	alpha_cache.unref();
 

@@ -989,7 +989,7 @@ void EditorNode::_notification(int p_what) {
 			use_system_accent_color = EDITOR_GET("interface/theme/use_system_accent_color");
 
 			if (EditorThemeManager::is_generated_theme_outdated()) {
-				class_icon_cache.clear();
+				//class_icon_cache.clear();
 				_update_theme();
 				_build_icon_type_cache();
 				recent_scenes->reset_size();
@@ -1571,10 +1571,10 @@ void EditorNode::edit_resource(const Ref<Resource> &p_resource) {
 void EditorNode::save_resource_in_path(const Ref<Resource> &p_resource, const String &p_path) {
 	editor_data.apply_changes_in_editors();
 
-	if (saving_resources_in_path.has(p_resource)) {
+	if (saving_resources_in_path.has(p_resource->get_path())) {
 		return;
 	}
-	saving_resources_in_path.insert(p_resource);
+	saving_resources_in_path.insert(p_resource->get_path());
 
 	int flg = 0;
 	if (EDITOR_GET("filesystem/on_save/compress_binary_resources")) {
@@ -1591,7 +1591,7 @@ void EditorNode::save_resource_in_path(const Ref<Resource> &p_resource, const St
 			show_accept(TTR("Error saving resource!"), TTR("OK"));
 		}
 
-		saving_resources_in_path.erase(p_resource);
+		saving_resources_in_path.erase(p_resource->get_path());
 		return;
 	}
 
@@ -1602,7 +1602,7 @@ void EditorNode::save_resource_in_path(const Ref<Resource> &p_resource, const St
 	if (prev_resource.is_valid() && prev_resource != p_resource) {
 		replace_resources_in_scenes({ prev_resource }, { p_resource });
 	}
-	saving_resources_in_path.erase(p_resource);
+	saving_resources_in_path.erase(p_resource->get_path());
 
 	_resource_saved(p_resource, path);
 
@@ -4125,7 +4125,7 @@ void EditorNode::_remove_scene(int index, bool p_change_tab) {
 	// Clear icon cache in case some scripts are no longer needed or class icons are outdated.
 	// FIXME: Ideally the cache should never be cleared and only updated on per-script basis, when an icon changes.
 	editor_data.clear_script_icon_cache();
-	class_icon_cache.clear();
+	//class_icon_cache.clear();
 
 	if (editor_data.get_edited_scene() == index) {
 		// Scene to remove is current scene.
@@ -5316,12 +5316,12 @@ Ref<Texture2D> EditorNode::get_class_icon(const String &p_class, const String &p
 	const Pair<String, String> key(p_class, p_fallback);
 
 	// Take from the local cache, if available.
-	{
-		Ref<Texture2D> *icon = class_icon_cache.getptr(key);
-		if (icon) {
-			return *icon;
-		}
-	}
+	//{
+	//	Ref<Texture2D> *icon = class_icon_cache.getptr(key);
+	//	if (icon) {
+	//		return *icon;
+	//	}
+	//}
 
 	String script_path;
 	if (ScriptServer::is_global_class(p_class)) {
@@ -5331,7 +5331,7 @@ Ref<Texture2D> EditorNode::get_class_icon(const String &p_class, const String &p
 	}
 
 	Ref<Texture2D> icon = _get_class_or_script_icon(p_class, script_path, p_fallback, true);
-	class_icon_cache[key] = icon;
+	//class_icon_cache[key] = icon;
 	return icon;
 }
 
@@ -7205,8 +7205,8 @@ void EditorNode::_set_renderer_name_save_and_restart() {
 	restart_editor();
 }
 
-void EditorNode::_resource_saved(Ref<Resource> p_resource, const String &p_path) {
-	if (singleton->saving_resources_in_path.has(p_resource)) {
+void EditorNode::_resource_saved(const Ref<Resource> &p_resource, const String &p_path) {
+	if (singleton->saving_resources_in_path.has(p_resource->get_path())) {
 		// This is going to be handled by save_resource_in_path when the time is right.
 		return;
 	}
@@ -7219,7 +7219,7 @@ void EditorNode::_resource_saved(Ref<Resource> p_resource, const String &p_path)
 	singleton->editor_folding.save_resource_folding(p_resource, p_path);
 }
 
-void EditorNode::_resource_loaded(Ref<Resource> p_resource, const String &p_path) {
+void EditorNode::_resource_loaded(const Ref<Resource> &p_resource, const String &p_path) {
 	singleton->editor_folding.load_resource_folding(p_resource, p_path);
 }
 

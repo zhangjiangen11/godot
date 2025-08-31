@@ -4106,7 +4106,7 @@ void RenderForwardClustered::_geometry_instance_add_surface_with_material_chain(
 	while (material->next_pass.is_valid()) {
 		RID next_pass = material->next_pass;
 		material = static_cast<SceneShaderForwardClustered::MaterialData *>(material_storage->material_get_data(next_pass, RendererRD::MaterialStorage::SHADER_TYPE_3D));
-		if (!material || !material->shader_data->is_valid()) {
+		if (!material || material->shader_data == nullptr || !material->shader_data->is_valid()) {
 			break;
 		}
 		if (ginstance->data->dirty_dependencies) {
@@ -4126,7 +4126,7 @@ void RenderForwardClustered::_geometry_instance_add_surface(GeometryInstanceForw
 
 	if (m_src.is_valid()) {
 		material = static_cast<SceneShaderForwardClustered::MaterialData *>(material_storage->material_get_data(m_src, RendererRD::MaterialStorage::SHADER_TYPE_3D));
-		if (!material || !material->shader_data->is_valid()) {
+		if (!material || material->shader_data == nullptr || !material->shader_data->is_valid()) {
 			material = nullptr;
 		}
 	}
@@ -4148,7 +4148,7 @@ void RenderForwardClustered::_geometry_instance_add_surface(GeometryInstanceForw
 		m_src = ginstance->data->material_overlay;
 
 		material = static_cast<SceneShaderForwardClustered::MaterialData *>(material_storage->material_get_data(m_src, RendererRD::MaterialStorage::SHADER_TYPE_3D));
-		if (material && material->shader_data->is_valid()) {
+		if (material && material->shader_data != nullptr && material->shader_data->is_valid()) {
 			if (ginstance->data->dirty_dependencies) {
 				material_storage->material_update_dependency(m_src, &ginstance->data->dependency_tracker);
 			}
@@ -4800,7 +4800,7 @@ void RenderForwardClustered::mesh_generate_pipelines(RID p_mesh, bool p_backgrou
 		void *mesh_surface = mesh_storage->mesh_get_surface(p_mesh, i);
 		void *mesh_surface_shadow = mesh_surface;
 		SceneShaderForwardClustered::MaterialData *material = static_cast<SceneShaderForwardClustered::MaterialData *>(material_storage->material_get_data(materials[i], RendererRD::MaterialStorage::SHADER_TYPE_3D));
-		if (material == nullptr || !material->shader_data->is_valid()) {
+		if (material == nullptr || material->shader_data == nullptr) {
 			continue;
 		}
 
@@ -4808,7 +4808,7 @@ void RenderForwardClustered::mesh_generate_pipelines(RID p_mesh, bool p_backgrou
 		SceneShaderForwardClustered::ShaderData *shader_shadow = shader;
 		if (material->shader_data->uses_shared_shadow_material()) {
 			SceneShaderForwardClustered::MaterialData *material_shadow = static_cast<SceneShaderForwardClustered::MaterialData *>(material_storage->material_get_data(scene_shader.default_material, RendererRD::MaterialStorage::SHADER_TYPE_3D));
-			if (material_shadow != nullptr) {
+			if (material_shadow != nullptr || material_shadow->shader_data != nullptr) {
 				shader_shadow = material_shadow->shader_data;
 				if (shadow_mesh.is_valid()) {
 					mesh_surface_shadow = mesh_storage->mesh_get_surface(shadow_mesh, i);
@@ -4816,7 +4816,7 @@ void RenderForwardClustered::mesh_generate_pipelines(RID p_mesh, bool p_backgrou
 			}
 		}
 
-		if (!shader->is_valid()) {
+		if (shader == nullptr || shader->is_valid() == false) {
 			continue;
 		}
 
