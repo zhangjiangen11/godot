@@ -3324,7 +3324,7 @@ void PopupMenu::set_visible(bool p_visible) {
 			_native_popup(Rect2i(get_position(), get_size()));
 		}
 	} else {
-		if (is_inside_tree()) {
+		if (p_visible && is_inside_tree()) {
 			set_flag(FLAG_POPUP, true);
 			set_flag(FLAG_NO_FOCUS, !is_embedded());
 		}
