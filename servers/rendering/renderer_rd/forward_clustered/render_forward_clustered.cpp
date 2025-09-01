@@ -4826,9 +4826,9 @@ void RenderForwardClustered::mesh_generate_pipelines(RID p_mesh, bool p_backgrou
 		surface.shader = shader;
 		surface.shader_shadow = shader_shadow;
 		surface.instanced = mesh_storage->mesh_needs_instance(p_mesh, true);
-		surface.uses_opaque = !material->shader_data->uses_alpha_pass();
-		surface.uses_transparent = material->shader_data->uses_alpha_pass();
-		surface.uses_depth = surface.uses_opaque || (surface.uses_transparent && material->shader_data->uses_depth_in_alpha_pass());
+		surface.uses_opaque = !shader->uses_alpha_pass();
+		surface.uses_transparent = shader->uses_alpha_pass();
+		surface.uses_depth = surface.uses_opaque || (surface.uses_transparent && shader->uses_depth_in_alpha_pass());
 		surface.can_use_lightmap = mesh_storage->mesh_surface_get_format(mesh_surface) & RS::ARRAY_FORMAT_TEX_UV2;
 		_mesh_compile_pipelines_for_surface(surface, global_pipeline_data_required, RS::PIPELINE_SOURCE_MESH, &pipeline_pairs);
 	}

@@ -321,7 +321,8 @@ public:
 	static RendererRD::MaterialStorage::ShaderData *_create_shader_funcs() {
 		return static_cast<SceneShaderForwardClustered *>(singleton)->_create_shader_func();
 	}
-
+	// TODO: 这里有线程安全问题，加载线程初始化模型的时候会初始化surface【mesh_generate_pipelines】的时候会初始化shader的popline，主线程处理材质变脏的时候会修改材质，导致材质的shader数据变空
+	// 可以考虑把mesh_generate_pipelines挪到主线程里面去
 	struct MaterialData : public RendererRD::MaterialStorage::MaterialData {
 		ShaderData *shader_data = nullptr;
 		RID uniform_set;

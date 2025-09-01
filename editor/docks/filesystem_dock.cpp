@@ -849,12 +849,12 @@ void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const Strin
 }
 
 void FileSystemDock::_tree_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata) {
-	if (!p_preview.is_empty()) {
+	if (!p_small_preview.is_empty()) {
 		Array uarr = p_udata;
 		if (tree_update_id == (int)uarr[0]) {
 			TreeItem *file_item = Object::cast_to<TreeItem>(uarr[1]);
 			if (file_item) {
-				file_item->set_icon(0, ResourceLoader::load(p_preview));
+				file_item->set_icon(0, ResourceLoader::load(p_small_preview));
 			}
 		}
 	}
