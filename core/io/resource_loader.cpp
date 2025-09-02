@@ -1629,3 +1629,69 @@ SelfList<Resource>::List ResourceLoader::remapped_list;
 HashMap<String, Vector<String>> ResourceLoader::translation_remaps;
 
 ResourceLoaderImport ResourceLoader::import = nullptr;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void ThreadResourceLoader::LoadToken::load() {
+	local_path = ResourceLoader::_validate_local_path(path);
+
+	bool xl_remapped = false;
+	remapped_path = ResourceLoader::_path_remap(local_path, &xl_remapped);
+	job = WorkerTaskPool::get_singleton()->add_group_task(path, callable_mp_static(ThreadResourceLoader::_run_load_task).bind(this), 1, 1, nullptr);
+}
+
+Ref<ThreadResourceLoader::LoadToken> ThreadResourceLoader::load(const String &p_path, const String &p_type_hint, ResourceFormatLoader::CacheMode p_cache_mode) {
+	Ref<LoadToken> token = Ref<LoadToken>(memnew(LoadToken));
+	token->path = p_path;
+	String local_path = ResourceLoader::_validate_local_path(p_path);
+	token->local_path = local_path;
+	token->type_hint = p_type_hint;
+	token->cache_mode = p_cache_mode;
+	bool xl_remapped = false;
+	token->remapped_path = ResourceLoader::_path_remap(token->local_path, &xl_remapped);
+	token->job = WorkerTaskPool::get_singleton()->add_group_task(p_path, callable_mp_static(_run_load_task).bind(token), 1, 1, nullptr);
+	return token;
+}
+void ThreadResourceLoader::_run_load_task(int index, const Ref<ThreadResourceLoader::LoadToken> &token) {
+	if (token.is_null()) {
+		return;
+	}
+	// 如果任务已经结束了,就直接返回
+	if (token->is_stopped || token->is_finished) {
+		return;
+	}
+
+	token->resource = ResourceCache::get_ref(token->local_path);
+	bool ignoring = token->cache_mode == ResourceFormatLoader::CACHE_MODE_IGNORE || token->cache_mode == ResourceFormatLoader::CACHE_MODE_IGNORE_DEEP;
+	bool replacing = token->cache_mode == ResourceFormatLoader::CACHE_MODE_REPLACE || token->cache_mode == ResourceFormatLoader::CACHE_MODE_REPLACE_DEEP;
+	if (!replacing) {
+		// 如果不替换旧的资源,并且旧的资源存在,就直接返回
+		if (token->resource.is_valid()) {
+			token->progress = 1.0;
+			token->is_finished = true;
+			return;
+		}
+	}
+	Ref<Resource> resource = ResourceLoader::_load(token->remapped_path, token->remapped_path != token->local_path ? token->local_path : String(), token->type_hint, token->cache_mode, &token->error, false, &token->progress);
+
+	ResourceLoader::thread_load_mutex.lock();
+	if (replacing && resource.is_valid() && token->resource.is_valid()) {
+		token->resource->copy_from(resource);
+	}
+	token->resource = resource;
+	token->progress = 1.0; // It was fully loaded at this point, so force progress to 1.0.
+	token->is_finished = true;
+
+#ifdef TOOLS_ENABLED
+	token->resource->set_edited(false);
+	if (ResourceLoader::timestamp_on_load) {
+		uint64_t mt = FileAccess::get_modified_time(token->remapped_path);
+		//printf("mt %s: %lli\n",remapped_path.utf8().get_data(),mt);
+		token->resource->set_last_modified_time(mt);
+	}
+#endif
+	if (ResourceLoader::_loaded_callback) {
+		ResourceLoader::_loaded_callback(token->resource, token->local_path);
+	}
+	ResourceLoader::thread_load_mutex.unlock();
+}

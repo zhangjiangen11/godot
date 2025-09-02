@@ -105,6 +105,7 @@ typedef void (*ResourceLoadedCallback)(const Ref<Resource> &p_resource, const St
 class ResourceLoader {
 	friend class LoadToken;
 	friend class CoreBind::ResourceLoader;
+	friend class ThreadResourceLoader;
 
 	enum {
 		MAX_LOADERS = 64
@@ -314,4 +315,42 @@ public:
 
 	static void initialize();
 	static void finalize();
+};
+
+// 多线程资源加载
+class ThreadResourceLoader {
+public:
+	struct LoadToken : public RefCounted {
+		GDSOFTCLASS(LoadToken, RefCounted);
+
+	public:
+		// 外部参数
+		String path;
+		String type_hint;
+		bool is_stopped = false;
+		ResourceFormatLoader::CacheMode cache_mode = ResourceFormatLoader::CACHE_MODE_REUSE;
+		void load();
+
+	public:
+		// 多线程加载前的临时变量
+		String local_path;
+		String user_path;
+		String remapped_path;
+
+		Ref<TaskJobHandle> job;
+
+	public:
+		// 返回结果
+		Ref<Resource> resource;
+		float max_reported_progress = 0.0f;
+		float progress = 0.0f;
+		Error error = OK;
+		// 是否加载完成
+		bool is_finished = false;
+		ResourceLoader::ThreadLoadStatus status = ResourceLoader::THREAD_LOAD_IN_PROGRESS;
+	};
+	static Ref<ThreadResourceLoader::LoadToken> load(const String &p_path, const String &p_type_hint = "", ResourceFormatLoader::CacheMode p_cache_mode = ResourceFormatLoader::CACHE_MODE_REUSE);
+
+protected:
+	static void _run_load_task(int index, const Ref<LoadToken> &p_userdata);
 };
