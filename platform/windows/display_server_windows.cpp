@@ -2855,9 +2855,8 @@ Vector2i DisplayServerWindows::ime_get_selection() const {
 	int cursor = ImmGetCompositionStringW(wd.im_himc, GCS_CURSORPOS, nullptr, 0);
 
 	int32_t length = ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, nullptr, 0);
-	
-	if(length <= 0)
-	{
+
+	if (length <= 0) {
 		return Vector2i(cursor, 0);
 	}
 	wchar_t *string = reinterpret_cast<wchar_t *>(memalloc(length));
@@ -2891,8 +2890,7 @@ String DisplayServerWindows::ime_get_text() const {
 
 	String ret;
 	int32_t length = ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, nullptr, 0);
-	if(length <= 0)
-	{
+	if (length <= 0) {
 		return "";
 	}
 	wchar_t *string = reinterpret_cast<wchar_t *>(memalloc(length));
