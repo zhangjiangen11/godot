@@ -792,39 +792,39 @@ void PopupMenu::_draw_items() {
 	Ref<Texture2D> check[] = { theme_cache.checked, theme_cache.radio_checked, theme_cache.checked_disabled, theme_cache.radio_checked_disabled };
 	Ref<Texture2D> uncheck[] = { theme_cache.unchecked, theme_cache.radio_unchecked, theme_cache.unchecked_disabled, theme_cache.radio_unchecked_disabled };
 	Ref<Texture2D> submenu;
-	if(user_data.checked.is_valid()){
+	if (user_data.checked.is_valid()) {
 		check[0] = user_data.checked;
 	}
-	if(user_data.unchecked.is_valid()){
+	if (user_data.unchecked.is_valid()) {
 		uncheck[0] = user_data.unchecked;
 	}
-	if(user_data.radio_checked.is_valid()){
+	if (user_data.radio_checked.is_valid()) {
 		check[1] = user_data.radio_checked;
 	}
-	if(user_data.radio_unchecked.is_valid()){
+	if (user_data.radio_unchecked.is_valid()) {
 		uncheck[1] = user_data.radio_unchecked;
 	}
-	if(user_data.checked_disabled.is_valid()){
+	if (user_data.checked_disabled.is_valid()) {
 		check[2] = user_data.checked_disabled;
 	}
-	if(user_data.unchecked_disabled.is_valid()){
+	if (user_data.unchecked_disabled.is_valid()) {
 		uncheck[2] = user_data.unchecked_disabled;
 	}
-	if(user_data.radio_checked_disabled.is_valid()){
+	if (user_data.radio_checked_disabled.is_valid()) {
 		check[3] = user_data.radio_checked_disabled;
 	}
-	if(user_data.radio_unchecked_disabled.is_valid()){
+	if (user_data.radio_unchecked_disabled.is_valid()) {
 		uncheck[3] = user_data.radio_unchecked_disabled;
 	}
 
 	if (rtl) {
 		submenu = theme_cache.submenu_mirrored;
-		if(user_data.submenu_mirrored.is_valid()){
+		if (user_data.submenu_mirrored.is_valid()) {
 			submenu = user_data.submenu_mirrored;
 		}
 	} else {
 		submenu = theme_cache.submenu;
-		if(user_data.submenu.is_valid()){
+		if (user_data.submenu.is_valid()) {
 			submenu = user_data.submenu;
 		}
 	}
@@ -3125,7 +3125,6 @@ void PopupMenu::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_system_menu", "system_menu_id"), &PopupMenu::set_system_menu);
 	ClassDB::bind_method(D_METHOD("get_system_menu"), &PopupMenu::get_system_menu);
 
-	
 	ClassDB::bind_method(D_METHOD("set_checked_texture", "texture"), &PopupMenu::set_checked_texture);
 	ClassDB::bind_method(D_METHOD("get_checked_texture"), &PopupMenu::get_checked_texture);
 

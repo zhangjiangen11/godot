@@ -1431,6 +1431,7 @@ static void _get_all_mesh_instances(Node3D *p_node, List<MeshInstance3D *> *r_in
 	}
 }
 
+#ifdef TOOLS_ENABLED
 void Node3D::bt_conver_child_to_multi_mesh() {
 	List<MeshInstance3D *> instances;
 	List<MultiMeshInstance3D *> multi_instances;
@@ -1521,6 +1522,7 @@ void Node3D::bt_conver_child_to_multi_mesh() {
 		}
 	}
 }
+#endif
 
 void Node3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_transform", "local"), &Node3D::set_transform);
