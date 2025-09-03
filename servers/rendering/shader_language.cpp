@@ -10487,10 +10487,10 @@ Error ShaderLanguage::_parse_shader(const HashMap<StringName, FunctionInfo> &p_f
 								if (is_name_used(shader, member->name)) {
 									_set_redefinition_error(String(member->name));
 									return ERR_PARSE_ERROR;
-								}	
+								}
 							}
 							member_names.insert(member->name);
-							
+
 							tk = _get_token();
 
 							if (tk.type == TK_BRACKET_OPEN) {

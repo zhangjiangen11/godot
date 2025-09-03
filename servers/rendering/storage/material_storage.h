@@ -30,9 +30,9 @@
 
 #pragma once
 
+#include "core/variant/typed_dictionary.h"
 #include "servers/rendering_server.h"
 #include "utilities.h"
-#include "core/variant/typed_dictionary.h"
 
 class RendererMaterialStorage {
 public:
@@ -136,11 +136,11 @@ public:
 			int alignment_gap;
 			if (!std430 && alignment < std140_alignment) {
 				alignment = std140_alignment;
-			} 
+			}
 			alignment_gap = alignment - (struct_data.size() % alignment);
 			alignment_data.resize_initialized(alignment_gap);
 			struct_data.append_array(alignment_data);
-			
+
 			data.append_array(struct_data);
 			return;
 		}
@@ -161,13 +161,12 @@ public:
 					PackedByteArray alignment_data;
 					alignment_data.resize_initialized(alignment_gap);
 					array_value_data.append_array(alignment_data);
-				} 
+				}
 				array_data.append_array(array_value_data);
 			}
 			data.append_array(array_data);
 			return;
 		}
-
 
 		PackedByteArray out;
 		int data_size;
@@ -177,17 +176,17 @@ public:
 		switch (value.get_type()) {
 			case Variant::FLOAT: {
 				out.resize_initialized(4);
-				*((float*) val_out) = value;
+				*((float *)val_out) = value;
 				data_size = 4;
 			} break;
 			case Variant::INT: {
 				out.resize_initialized(4);
-				*((int*) val_out) = value;
+				*((int *)val_out) = value;
 				data_size = 4;
 			} break;
 			case Variant::BOOL: {
 				out.resize_initialized(4);
-				*((bool*) val_out) = value;
+				*((bool *)val_out) = value;
 				data_size = 4;
 			} break;
 			case Variant::VECTOR2: {
@@ -222,12 +221,12 @@ public:
 			} break;
 			default: {
 				// should never be reached
-			} return;
+			}
+				return;
 		}
 		if (!empty) {
 			memcpy(out.ptrw(), val_out, data_size);
-		} 
+		}
 		data.append_array(out);
 	}
 };
-

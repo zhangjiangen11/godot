@@ -2476,13 +2476,13 @@ void MaterialStorage::material_set_buffer(RID p_material, const StringName &p_bu
 	// 	if (!p_values.has(e_name)) {
 	// 		WARN_PRINT(vformat("No value provided for field \"%s\" of buffer \"%s\"", e_name, p_buffer));
 	// 		valid = false;
-			
+
 	// 	} else {
 	// 		if (p_values[e_name].get_type() != e_val.get_type()) {
 	// 			WARN_PRINT(vformat("Wrong value type provided for field \"%s\" of buffer \"%s\"", e_name, p_buffer));
 	// 			valid = false;
 	// 		}
-	// 	}		
+	// 	}
 	// 	if (!valid) {
 	// 		Variant new_val = Variant(e_val);
 	// 		format_buffer_data(data, buffer_format, new_val, true);
@@ -2522,13 +2522,13 @@ void MaterialStorage::material_update_buffer(RID p_material, const StringName &p
 	// 	if (!p_values.has(e_name)) {
 	// 		WARN_PRINT(vformat("No value provided for field \"%s\" of buffer \"%s\"", e_name, p_buffer));
 	// 		valid = false;
-			
+
 	// 	} else {
 	// 		if (p_values[e_name].get_type() != e_val.get_type()) {
 	// 			WARN_PRINT(vformat("Wrong value type provided for field \"%s\" of buffer \"%s\"", e_name, p_buffer));
 	// 			valid = false;
 	// 		}
-	// 	}		
+	// 	}
 	// 	if (!valid) {
 	// 		Variant new_val = Variant(e_val);
 	// 		format_buffer_data(data, buffer_format, new_val, true);

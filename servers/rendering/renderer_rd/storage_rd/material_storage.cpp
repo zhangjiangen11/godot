@@ -2440,7 +2440,7 @@ void MaterialStorage::material_set_buffer(RID p_material, const StringName &p_bu
 				WARN_PRINT(vformat("Wrong value type provided for field \"%s\" of buffer \"%s\": expected type %s and got type %s", e_name, p_buffer, Variant::get_type_name(e_val.get_type()), Variant::get_type_name(p_values[e_name].get_type())));
 				valid = false;
 			}
-		}		
+		}
 		if (!valid) {
 			Variant new_val = Variant(e_val);
 			format_buffer_data(data, buffer_format, new_val, true);
@@ -2475,7 +2475,6 @@ void MaterialStorage::material_update_buffer(RID p_material, const StringName &p
 	for (const KeyValue<Variant, Variant> &entry : buffer) {
 		const StringName &e_name = entry.key;
 		const Variant &e_val = entry.value;
-
 
 		if (!p_values.has(e_name)) {
 			format_buffer_data(data, buffer_format, e_val, true);
@@ -2512,7 +2511,6 @@ void MaterialStorage::material_update_buffer(RID p_material, const StringName &p
 		_material_queue_update(material, true, true, true);
 	}
 }
-
 
 ShaderBuffer MaterialStorage::material_get_buffer(RID p_material, const StringName &p_buffer) const {
 	Material *material = material_owner.get_or_null(p_material);

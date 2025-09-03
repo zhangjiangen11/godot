@@ -495,8 +495,6 @@ uint32_t get_offset(SL::MemberNode *m, uint32_t &offset, const SL::ShaderNode *s
 	return retval;
 }
 
-
-
 TypedDictionary<StringName, Variant> fill_struct_dict(const SL::ShaderNode::Struct &in_struct, const HashMap<StringName, SL::ShaderNode::Struct> &structs) {
 	TypedDictionary<StringName, Variant> output;
 	for (SL::MemberNode *st_mem : in_struct.shader_struct->members) {
@@ -1751,7 +1749,7 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 					// Mark the error line to be visible without having to look at
 					// the trace at the end.
 					error_msg += vformat("E%4d-> %s\n", i + 1, V[i]);
-				} else if(i < err_line + 5){
+				} else if (i < err_line + 5) {
 					error_msg += (vformat("%5d | %s\n", i + 1, V[i]));
 				}
 			}
@@ -1768,7 +1766,7 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 		}
 
 		// _err_print_error(nullptr, file.utf8().get_data(), line, parser.get_error_text().utf8().get_data(), false, ERR_HANDLER_SHADER);
-		ERR_FAIL_V_MSG(err,file + "(" + String::num_int64(line) + "):\n" + parser.get_error_text() + "\n" + error_msg);
+		ERR_FAIL_V_MSG(err, file + "(" + String::num_int64(line) + "):\n" + parser.get_error_text() + "\n" + error_msg);
 	}
 
 	r_gen_code.defines.clear();

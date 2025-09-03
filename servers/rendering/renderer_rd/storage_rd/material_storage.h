@@ -504,7 +504,7 @@ public:
 					buf_dict[member.name] = structs[member.struct_name].duplicate();
 				}
 			} else {
-				if (member.array_size != 0 ) {
+				if (member.array_size != 0) {
 					Array out = Array();
 					out.set_typed(ShaderLanguage::shader_datatype_to_variant(member.datatype).get_type(), "", Variant());
 					if (member.array_size > 0) {

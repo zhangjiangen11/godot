@@ -504,9 +504,9 @@ void ShaderMaterial::update_shader_buffer(const StringName &buf_name, const Type
 
 TypedDictionary<StringName, Variant> ShaderMaterial::get_shader_buffer(const StringName &buf_name) const {
 	RID material_rid = _get_material();
-	return RS::get_singleton()->material_get_buffer(material_rid, buf_name);;
+	return RS::get_singleton()->material_get_buffer(material_rid, buf_name);
+	;
 }
-
 
 void ShaderMaterial::set_shader_buffer_raw(const StringName &buf_name, const PackedByteArray &buf) {
 	RID material_rid = _get_material();
