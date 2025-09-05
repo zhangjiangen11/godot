@@ -486,6 +486,87 @@ struct GDScriptUtilityFunctionsDefinitions {
 		}
 		*r_ret = "";
 	}
+
+	static inline void select(Variant *r_ret, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
+		DEBUG_VALIDATE_ARG_COUNT(3, 3);
+		bool value = false;
+
+		if (p_args[0]->get_type() == Variant::BOOL) {
+			value = *p_args[0];
+		} else if (p_args[0]->get_type() == Variant::INT) {
+			int64_t i = *p_args[0];
+			value = i > 0;
+		} else if (p_args[0]->get_type() == Variant::FLOAT) {
+			double i = *p_args[0];
+			value = i > 0;
+		} else if (p_args[0]->get_type() == Variant::RID) {
+			RID i = *p_args[0];
+			value = i != RID();
+		} else if (p_args[0]->get_type() == Variant::OBJECT) {
+			Object *i = p_args[0]->get_validated_object();
+			value = i != nullptr;
+		} else if (p_args[0]->get_type() == Variant::CALLABLE) {
+			const Callable &i = *p_args[0];
+			value = i.is_valid();
+		} else if (p_args[0]->get_type() == Variant::STRING_NAME) {
+			const StringName &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::STRING) {
+			const String &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::NODE_PATH) {
+			const NodePath &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::DICTIONARY) {
+			const Dictionary &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::ARRAY) {
+			const Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_BYTE_ARRAY) {
+			const Vector<uint8_t> &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_INT32_ARRAY) {
+			const PackedInt32Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_INT64_ARRAY) {
+			const PackedInt64Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_FLOAT32_ARRAY) {
+			const PackedFloat32Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_FLOAT64_ARRAY) {
+			const PackedFloat64Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_STRING_ARRAY) {
+			const PackedStringArray &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_VECTOR2_ARRAY) {
+			const PackedVector2Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_VECTOR3_ARRAY) {
+			const PackedVector3Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_VECTOR4_ARRAY) {
+			const PackedVector4Array &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::PACKED_COLOR_ARRAY) {
+			const PackedColorArray &i = *p_args[0];
+			value = !i.is_empty();
+		} else if (p_args[0]->get_type() == Variant::NIL) {
+			value = false;
+		} else {
+			r_error.error = Callable::CallError::CALL_ERROR_INVALID_ARGUMENT;
+			r_error.argument = 0;
+			r_error.expected = Variant::NIL;
+			return;
+		}
+		if (value) {
+			*r_ret = *p_args[1];
+		} else {
+			*r_ret = *p_args[2];
+		}
+	}
 	static inline void is_instance_of(Variant *r_ret, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
 		DEBUG_VALIDATE_ARG_COUNT(2, 2);
 
@@ -608,6 +689,7 @@ void GDScriptUtilityFunctions::register_functions() {
 	REGISTER_FUNC( convert,        true,  RETVAR,             ARGS( ARGVAR("what"), ARGTYPE("type") ), false, varray(     ));
 #endif // DISABLE_DEPRECATED
 	REGISTER_FUNC( type_exists,    true,  RET(BOOL),          ARGS( ARG("type", STRING_NAME)        ), false, varray(     ));
+	REGISTER_FUNC( select,         true,  RETVAR,             ARGS( ARGVAR("v"), ARGVAR("a"), ARGVAR("b")), false, varray(     ));
 	REGISTER_FUNC( _char,          true,  RET(STRING),        ARGS( ARG("code", INT)                ), false, varray(     ));
 	REGISTER_FUNC( ord,            true,  RET(INT),           ARGS( ARG("char", STRING)             ), false, varray(     ));
 	REGISTER_FUNC( range,          false, RET(ARRAY),         NOARGS,                                  true,  varray(     ));

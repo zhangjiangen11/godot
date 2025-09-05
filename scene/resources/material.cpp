@@ -934,6 +934,7 @@ void BaseMaterial3D::_update_shader() {
 				RS::get_singleton()->material_set_shader(_get_material(), shader_rid);
 			}
 
+			emit_changed();
 			return;
 		}
 	}
@@ -4207,8 +4208,8 @@ void BaseMaterial3D::bt_change_shader_material() {
 	shader->set_code(code);
 
 	String path = self_path.get_base_dir();
-	String name = self_path.get_file().get_basename();
-	String shader_path = path + "/" + name + ".shader";
+	String _name = self_path.get_file().get_basename();
+	String shader_path = path + "/" + _name + ".shader";
 	shader->set_path(shader_path);
 	save_tres(shader_path, shader);
 
