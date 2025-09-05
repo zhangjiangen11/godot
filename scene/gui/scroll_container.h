@@ -150,6 +150,7 @@ public:
 		user_data.background_focus = p_background_focus;
 	}
 	Ref<Texture2D> get_background_focus() const { return user_data.background_focus; }
+
 public:
 	// hscroll bar
 	void set_h_sb_background(const Ref<Texture2D> &p_background) {
@@ -157,37 +158,37 @@ public:
 	}
 	Ref<Texture2D> get_h_sb_background() const { return h_scroll->get_background(); }
 
-	void set_h_sb_background_focus(const Ref<Texture2D> &p_background_focus){
+	void set_h_sb_background_focus(const Ref<Texture2D> &p_background_focus) {
 		h_scroll->set_background_focus(p_background_focus);
 	}
 	Ref<Texture2D> get_h_sb_background_focus() const { return h_scroll->get_background_focus(); }
 
-	void set_h_sb_increment(const Ref<Texture2D> &p_increment){
+	void set_h_sb_increment(const Ref<Texture2D> &p_increment) {
 		h_scroll->set_increment(p_increment);
 	}
 	Ref<Texture2D> get_h_sb_increment() const { return h_scroll->get_increment(); }
 
-	void set_h_sb_increment_hl(const Ref<Texture2D> &p_increment_hl){
+	void set_h_sb_increment_hl(const Ref<Texture2D> &p_increment_hl) {
 		h_scroll->set_increment_hl(p_increment_hl);
 	}
 	Ref<Texture2D> get_h_sb_increment_hl() const { return h_scroll->get_increment_hl(); }
 
-	void set_h_sb_increment_pressed(const Ref<Texture2D> &p_increment_pressed){
+	void set_h_sb_increment_pressed(const Ref<Texture2D> &p_increment_pressed) {
 		h_scroll->set_increment_pressed(p_increment_pressed);
 	}
 	Ref<Texture2D> get_h_sb_increment_pressed() const { return h_scroll->get_increment_pressed(); }
 
-	void set_h_sb_decrement(const Ref<Texture2D> &p_decrement){
+	void set_h_sb_decrement(const Ref<Texture2D> &p_decrement) {
 		h_scroll->set_decrement(p_decrement);
 	}
 	Ref<Texture2D> get_h_sb_decrement() const { return h_scroll->get_decrement(); }
 
-	void set_h_sb_decrement_hl(const Ref<Texture2D> &p_decrement_hl){
+	void set_h_sb_decrement_hl(const Ref<Texture2D> &p_decrement_hl) {
 		h_scroll->set_decrement_hl(p_decrement_hl);
 	}
 	Ref<Texture2D> get_h_sb_decrement_hl() const { return h_scroll->get_decrement_hl(); }
 
-	void set_h_sb_decrement_pressed(const Ref<Texture2D> &p_decrement_pressed){
+	void set_h_sb_decrement_pressed(const Ref<Texture2D> &p_decrement_pressed) {
 		h_scroll->set_decrement_pressed(p_decrement_pressed);
 	}
 	Ref<Texture2D> get_h_sb_decrement_pressed() const { return h_scroll->get_decrement_pressed(); }
@@ -197,12 +198,12 @@ public:
 	}
 	Ref<Texture2D> get_h_sb_grabber() const { return h_scroll->get_grabber(); }
 
-	void set_h_sb_grabber_hl(const Ref<Texture2D> &p_grabber_hl){
+	void set_h_sb_grabber_hl(const Ref<Texture2D> &p_grabber_hl) {
 		h_scroll->set_grabber_hl(p_grabber_hl);
 	}
 	Ref<Texture2D> get_h_sb_grabber_hl() const { return h_scroll->get_grabber_hl(); }
 
-	void set_h_sb_grabber_pressed(const Ref<Texture2D> &p_grabber_pressed){
+	void set_h_sb_grabber_pressed(const Ref<Texture2D> &p_grabber_pressed) {
 		h_scroll->set_grabber_pressed(p_grabber_pressed);
 	}
 	Ref<Texture2D> get_h_sb_grabber_pressed() const { return h_scroll->get_grabber_pressed(); }
@@ -214,37 +215,37 @@ public:
 	}
 	Ref<Texture2D> get_v_sb_background() const { return v_scroll->get_background(); }
 
-	void set_v_sb_background_focus(const Ref<Texture2D> &p_background_focus){
+	void set_v_sb_background_focus(const Ref<Texture2D> &p_background_focus) {
 		v_scroll->set_background_focus(p_background_focus);
 	}
 	Ref<Texture2D> get_v_sb_background_focus() const { return v_scroll->get_background_focus(); }
 
-	void set_v_sb_increment(const Ref<Texture2D> &p_increment){
+	void set_v_sb_increment(const Ref<Texture2D> &p_increment) {
 		v_scroll->set_increment(p_increment);
 	}
 	Ref<Texture2D> get_v_sb_increment() const { return v_scroll->get_increment(); }
 
-	void set_v_sb_increment_hl(const Ref<Texture2D> &p_increment_hl){
+	void set_v_sb_increment_hl(const Ref<Texture2D> &p_increment_hl) {
 		v_scroll->set_increment_hl(p_increment_hl);
 	}
 	Ref<Texture2D> get_v_sb_increment_hl() const { return v_scroll->get_increment_hl(); }
 
-	void set_v_sb_increment_pressed(const Ref<Texture2D> &p_increment_pressed){
+	void set_v_sb_increment_pressed(const Ref<Texture2D> &p_increment_pressed) {
 		v_scroll->set_increment_pressed(p_increment_pressed);
 	}
 	Ref<Texture2D> get_v_sb_increment_pressed() const { return v_scroll->get_increment_pressed(); }
 
-	void set_v_sb_decrement(const Ref<Texture2D> &p_decrement){
+	void set_v_sb_decrement(const Ref<Texture2D> &p_decrement) {
 		v_scroll->set_decrement(p_decrement);
 	}
 	Ref<Texture2D> get_v_sb_decrement() const { return v_scroll->get_decrement(); }
 
-	void set_v_sb_decrement_hl(const Ref<Texture2D> &p_decrement_hl){
+	void set_v_sb_decrement_hl(const Ref<Texture2D> &p_decrement_hl) {
 		v_scroll->set_decrement_hl(p_decrement_hl);
 	}
 	Ref<Texture2D> get_v_sb_decrement_hl() const { return v_scroll->get_decrement_hl(); }
 
-	void set_v_sb_decrement_pressed(const Ref<Texture2D> &p_decrement_pressed){
+	void set_v_sb_decrement_pressed(const Ref<Texture2D> &p_decrement_pressed) {
 		v_scroll->set_decrement_pressed(p_decrement_pressed);
 	}
 	Ref<Texture2D> get_v_sb_decrement_pressed() const { return v_scroll->get_decrement_pressed(); }
@@ -254,15 +255,16 @@ public:
 	}
 	Ref<Texture2D> get_v_sb_grabber() const { return v_scroll->get_grabber(); }
 
-	void set_v_sb_grabber_hl(const Ref<Texture2D> &p_grabber_hl){
+	void set_v_sb_grabber_hl(const Ref<Texture2D> &p_grabber_hl) {
 		v_scroll->set_grabber_hl(p_grabber_hl);
 	}
 	Ref<Texture2D> get_v_sb_grabber_hl() const { return v_scroll->get_grabber_hl(); }
 
-	void set_v_sb_grabber_pressed(const Ref<Texture2D> &p_grabber_pressed){
+	void set_v_sb_grabber_pressed(const Ref<Texture2D> &p_grabber_pressed) {
 		v_scroll->set_grabber_pressed(p_grabber_pressed);
 	}
 	Ref<Texture2D> get_v_sb_grabber_pressed() const { return v_scroll->get_grabber_pressed(); }
+
 public:
 	void set_scroll_on_drag_hover(bool p_scroll);
 
@@ -277,5 +279,4 @@ public:
 
 	ScrollContainer();
 };
-
 VARIANT_ENUM_CAST(ScrollContainer::ScrollMode);

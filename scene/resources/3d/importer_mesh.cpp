@@ -590,6 +590,7 @@ Ref<ArrayMesh> ImporterMesh::get_mesh(const Ref<ArrayMesh> &p_base) {
 		if (mesh.is_null()) {
 			mesh.instantiate();
 		}
+		mesh->clear_surfaces();
 		mesh->set_name(get_name());
 		if (has_meta("import_id")) {
 			mesh->set_meta("import_id", get_meta("import_id"));
@@ -676,9 +677,7 @@ Array ImporterMesh::get_lod_meshes() {
 	max_lod_count += 1;
 	for (int lod = 0; lod < max_lod_count; lod++) {
 		Ref<ArrayMesh> lod_mesh;
-		if (lod_mesh.is_null()) {
-			lod_mesh.instantiate();
-		}
+		lod_mesh.instantiate();
 		lod_mesh->set_name(get_name());
 		if (has_meta("import_id")) {
 			lod_mesh->set_meta("import_id", get_meta("import_id"));
