@@ -225,6 +225,7 @@ void EditorResourcePreview::_generate_preview(String &r_texture_path, String &r_
 				new_size.x = MAX(1, new_size.x * aspect);
 			}
 			small_image->resize(new_size.x, new_size.y, Image::INTERPOLATE_CUBIC);
+			small_image->convert(Image::FORMAT_RGBA4444);
 
 			// Make sure the image is always square.
 			if (aspect != 1.0) {

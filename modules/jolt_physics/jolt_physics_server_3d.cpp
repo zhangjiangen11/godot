@@ -544,6 +544,10 @@ void JoltPhysicsServer3D::body_set_space(RID p_body, RID p_space) {
 		space = space_owner.get_or_null(p_space);
 		ERR_FAIL_NULL(space);
 	}
+	const JoltSpace3D *old_space = body->get_space();
+	if (space == old_space) {
+		return; //pointless
+	}
 
 	body->set_space(space);
 }

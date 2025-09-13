@@ -6327,10 +6327,6 @@ void RenderingDevice::sync() {
 
 	_begin_frame(true);
 
-	RID id = RID();
-	while (free_id_stack.pop(id)) {
-		rd_free(id);
-	}
 	local_device_processing = false;
 }
 

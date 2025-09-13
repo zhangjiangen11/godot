@@ -80,7 +80,7 @@ void Resource::set_path(const String &p_path, bool p_take_over) {
 		MutexLock lock(ResourceCache::lock);
 
 		if (!path_cache.is_empty()) {
-			ResourceCache::resources.erase(path_cache);
+			ResourceCache::remove_ref(path_cache);
 		}
 
 		path_cache = "";
@@ -90,7 +90,7 @@ void Resource::set_path(const String &p_path, bool p_take_over) {
 		if (existing.is_valid()) {
 			if (p_take_over) {
 				existing->path_cache = String();
-				ResourceCache::resources.erase(p_path);
+				ResourceCache::remove_ref(p_path);
 			} else {
 				ERR_FAIL_MSG(vformat("Another resource is loaded from path '%s' (possible cyclic resource inclusion).", p_path));
 			}
@@ -99,7 +99,7 @@ void Resource::set_path(const String &p_path, bool p_take_over) {
 		path_cache = p_path;
 
 		if (!path_cache.is_empty()) {
-			ResourceCache::resources[path_cache] = this;
+			ResourceCache::set_ref(path_cache, this);
 		}
 	}
 
@@ -794,18 +794,32 @@ Resource::~Resource() {
 		return;
 	}
 
-	MutexLock lock(ResourceCache::lock);
+	//MutexLock lock(ResourceCache::lock);
 	// Only unregister from the cache if this is the actual resource listed there.
 	// (Other resources can have the same value in `path_cache` if loaded with `CACHE_IGNORE`.)
 	HashMap<String, Resource *>::Iterator E = ResourceCache::resources.find(path_cache);
 	if (likely(E && E->value == this)) {
-		ResourceCache::resources.remove(E);
+		ResourceCache::remove_ref(E->key);
 	}
 }
 
 HashMap<String, Resource *> ResourceCache::resources;
 #ifdef TOOLS_ENABLED
+struct ResourcePathCache
+{
+	int count = 0;
+	HashMap<String, Resource*> path_res;
+	_FORCE_INLINE_ void insert(const String& p_path, Resource* res) {
+		path_res.insert(p_path, res);
+		++count;
+	}
+	_FORCE_INLINE_ void erase(const String& p_path) {
+		path_res.erase(p_path);
+		--count;
+	}
+};
 HashMap<String, HashMap<String, String>> ResourceCache::resource_path_cache;
+static HashMap<StringName, ResourcePathCache> resource_by_type;
 #endif
 
 Mutex ResourceCache::lock;
@@ -851,6 +865,17 @@ bool ResourceCache::has(const String &p_path) {
 	return true;
 }
 
+void ResourceCache::remove_ref(const String &p_path) {
+	MutexLock mutex_lock(lock);
+	auto it = resources.find(p_path);
+	if (it != resources.end()) {
+		Resource *ref = it->value;
+#ifdef TOOLS_ENABLED
+		resource_by_type[ref->cache_class_name].erase(p_path);
+#endif
+		resources.remove(it);
+	}
+}
 Ref<Resource> ResourceCache::get_ref(const String &p_path) {
 	Ref<Resource> ref;
 	{
@@ -878,7 +903,11 @@ void ResourceCache::set_ref(const String &p_path, Resource *r_res) {
 	}
 	MutexLock mutex_lock(lock);
 	r_res->set_path_cache(p_path);
+	r_res->cache_class_name = r_res->get_class_name();
 	resources[p_path] = r_res;
+#ifdef TOOLS_ENABLED
+	resource_by_type[r_res->cache_class_name].insert(p_path, r_res);
+#endif
 }
 
 void ResourceCache::get_cached_resources(List<Ref<Resource>> *p_resources) {

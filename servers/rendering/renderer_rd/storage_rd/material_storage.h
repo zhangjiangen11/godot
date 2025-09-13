@@ -227,6 +227,12 @@ private:
 		HashMap<StringName, HashMap<int, RID>> default_texture_parameter;
 		HashSet<Material *> owners;
 		bool embedded = false;
+		Mutex mutex;
+		void add_owenr(Material *p_mat);
+		void remove_owenr(Material *p_mat);
+		void update_owenr(MaterialStorage *ms, bool is_notify = false);
+		Shader();
+		Shader(const Shader &p_other);
 	};
 
 	typedef ShaderData *(*ShaderDataRequestFunction)();

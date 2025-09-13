@@ -273,6 +273,11 @@ RD::DataFormat RenderForwardClustered::RenderBufferDataForwardClustered::get_vox
 uint32_t RenderForwardClustered::RenderBufferDataForwardClustered::get_voxelgi_usage_bits(bool p_resolve, bool p_msaa, bool p_storage) {
 	return RenderSceneBuffersRD::get_color_usage_bits(p_resolve, p_msaa, p_storage);
 }
+RenderForwardClustered::RenderBufferDataForwardClustered::RenderBufferDataForwardClustered() {
+}
+RenderForwardClustered::RenderBufferDataForwardClustered::~RenderBufferDataForwardClustered() {
+	free_data();
+}
 
 void RenderForwardClustered::setup_render_buffer_data(Ref<RenderSceneBuffersRD> p_render_buffers) {
 	Ref<RenderBufferDataForwardClustered> data;

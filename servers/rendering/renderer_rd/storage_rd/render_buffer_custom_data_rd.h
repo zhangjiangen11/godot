@@ -40,6 +40,8 @@ class RenderBufferCustomDataRD : public RefCounted {
 public:
 	virtual void configure(RenderSceneBuffersRD *p_render_buffers) = 0;
 	virtual void free_data() = 0; // called on cleanup
+	virtual ~RenderBufferCustomDataRD() {
+	}
 
 private:
 };

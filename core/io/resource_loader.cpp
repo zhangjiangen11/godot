@@ -699,7 +699,7 @@ ResourceLoader::ThreadLoadStatus ResourceLoader::load_threaded_get_status(const 
 		MutexLock thread_load_lock(thread_load_mutex);
 
 		if (!user_load_tokens.has(p_path)) {
-			print_verbose("load_threaded_get_status(): No threaded load for resource path '" + p_path + "' has been initiated or its result has already been collected.");
+			//print_verbose("load_threaded_get_status(): No threaded load for resource path '" + p_path + "' has been initiated or its result has already been collected.");
 			return THREAD_LOAD_INVALID_RESOURCE;
 		}
 

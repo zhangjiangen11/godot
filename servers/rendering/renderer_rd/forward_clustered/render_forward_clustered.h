@@ -161,6 +161,8 @@ public:
 		static uint32_t get_normal_roughness_usage_bits(bool p_resolve, bool p_msaa, bool p_storage);
 		static RD::DataFormat get_voxelgi_format();
 		static uint32_t get_voxelgi_usage_bits(bool p_resolve, bool p_msaa, bool p_storage);
+		RenderBufferDataForwardClustered();
+		~RenderBufferDataForwardClustered();
 	};
 
 private:

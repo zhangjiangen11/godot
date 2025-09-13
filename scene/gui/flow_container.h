@@ -95,6 +95,12 @@ public:
 
 	virtual Size2 get_minimum_size() const override;
 
+	void set_h_separation(int p_separation) { theme_cache.h_separation = p_separation; }
+	void set_v_separation(int p_separation) { theme_cache.v_separation = p_separation; }
+
+	int get_h_separation() const { return theme_cache.h_separation; }
+	int get_v_separation() const { return theme_cache.v_separation; }
+
 	virtual Vector<int> get_allowed_size_flags_horizontal() const override;
 	virtual Vector<int> get_allowed_size_flags_vertical() const override;
 

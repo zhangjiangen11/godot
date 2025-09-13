@@ -71,6 +71,7 @@ private:
 	String name;
 	String path_cache;
 	String scene_unique_id;
+	StringName cache_class_name;
 
 #ifdef TOOLS_ENABLED
 	uint64_t last_modified_time = 0;
@@ -210,6 +211,8 @@ class ResourceCache {
 	friend void unregister_core_types();
 	static void clear();
 	friend void register_core_types();
+
+	static void remove_ref(const String &p_path);
 
 public:
 	static bool has(const String &p_path);

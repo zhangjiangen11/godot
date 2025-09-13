@@ -2325,8 +2325,8 @@ void BaseMaterial3D::_check_material_rid() {
 
 void BaseMaterial3D::flush_changes() {
 	SelfList<BaseMaterial3D>::List copy;
+	MutexLock lock(material_mutex);
 	{
-		MutexLock lock(material_mutex);
 		while (SelfList<BaseMaterial3D> *E = dirty_materials.first()) {
 			dirty_materials.remove(E);
 			copy.add(E);
@@ -3388,6 +3388,7 @@ BaseMaterial3D::EmissionOperator BaseMaterial3D::get_emission_operator() const {
 }
 
 RID BaseMaterial3D::get_rid() const {
+	MutexLock lock(material_mutex);
 	const_cast<BaseMaterial3D *>(this)->_update_shader();
 	const_cast<BaseMaterial3D *>(this)->_check_material_rid();
 	return _get_material();

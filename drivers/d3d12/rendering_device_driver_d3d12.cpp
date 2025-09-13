@@ -339,18 +339,18 @@ const RenderingDeviceDriverD3D12::D3D12Format RenderingDeviceDriverD3D12::RD_TO_
 
 static String hresult_to_string(HRESULT hr) {
 	// 动态分配缓冲区（最多 256 字节）
-	LPTSTR str = (LPTSTR)alloca(256);
+	LPWSTR str = (LPWSTR)alloca(256 * 2);
 	String ret;
 	if (str == NULL) {
 		return ret;
 	}
 
 	// 从系统获取错误信息
-	FormatMessageA(
+	FormatMessageW(
 			FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 			str, 256, NULL);
-	ret.append_utf8((const char *)str);
+	ret.append_utf16((char16_t*)str, 256);
 	return ret;
 }
 

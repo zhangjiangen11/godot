@@ -90,6 +90,9 @@ private:
 		virtual void configure(RenderSceneBuffersRD *p_render_buffers) override;
 
 		RID get_motion_vectors_fb();
+		~RenderBufferDataForwardMobile() {
+			free_data();
+		}
 
 	private:
 		RenderSceneBuffersRD *render_buffers = nullptr;

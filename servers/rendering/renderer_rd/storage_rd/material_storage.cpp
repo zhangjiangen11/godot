@@ -552,6 +552,40 @@ _FORCE_INLINE_ static void _fill_std140_ubo_empty(ShaderLanguage::DataType type,
 }
 
 ///////////////////////////////////////////////////////////////////////////
+void MaterialStorage::Shader::add_owenr(Material *p_mat) {
+	if (p_mat == nullptr) {
+		return;
+	}
+	mutex.lock();
+	owners.insert(p_mat);
+	mutex.unlock();
+}
+void MaterialStorage::Shader::remove_owenr(Material *p_mat) {
+	if (p_mat == nullptr) {
+		return;
+	}
+	mutex.lock();
+	owners.erase(p_mat);
+	mutex.unlock();
+}
+void MaterialStorage::Shader::update_owenr(MaterialStorage *ms, bool is_notify) {
+	mutex.lock();
+
+	for (Material *E : owners) {
+		Material *material = E;
+		if (is_notify) {
+			material->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_MATERIAL);
+		}
+		ms->_material_queue_update(material, false, true);
+	}
+	mutex.unlock();
+}
+MaterialStorage::Shader::Shader() {
+}
+MaterialStorage::Shader::Shader(const Shader &p_other) :
+		data(p_other.data), code(p_other.code), path_hint(p_other.path_hint), type(p_other.type), default_texture_parameter(p_other.default_texture_parameter), owners(p_other.owners), embedded(p_other.embedded) {
+}
+///////////////////////////////////////////////////////////////////////////
 // MaterialStorage::ShaderData
 
 void MaterialStorage::ShaderData::set_path_hint(const String &p_hint) {
@@ -2157,11 +2191,12 @@ void MaterialStorage::shader_set_code(RID p_shader, const String &p_code) {
 		buffer_list.~Vector(); // I want him gone
 	}
 
-	for (Material *E : shader->owners) {
-		Material *material = E;
-		material->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_MATERIAL);
-		_material_queue_update(material, true, true, true);
-	}
+	//for (Material *E : shader->owners) {
+	//	Material *material = E;
+	//	material->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_MATERIAL);
+	//	_material_queue_update(material, true, true, true);
+	//}
+	shader->update_owenr(this, true);
 }
 
 void MaterialStorage::shader_set_path_hint(RID p_shader, const String &p_path) {
@@ -2209,10 +2244,11 @@ void MaterialStorage::shader_set_default_texture_parameter(RID p_shader, const S
 	if (shader->data) {
 		shader->data->set_default_texture_parameter(p_name, p_texture, p_index);
 	}
-	for (Material *E : shader->owners) {
-		Material *material = E;
-		_material_queue_update(material, false, true);
-	}
+	//for (Material *E : shader->owners) {
+	//	Material *material = E;
+	//	_material_queue_update(material, false, true);
+	//}
+	shader->update_owenr(this);
 }
 
 RID MaterialStorage::shader_get_default_texture_parameter(RID p_shader, const StringName &p_name, int p_index) const {
@@ -2371,7 +2407,7 @@ void MaterialStorage::material_set_shader(RID p_material, RID p_shader) {
 	}
 
 	if (material->shader) {
-		material->shader->owners.erase(material);
+		material->shader->remove_owenr(material);
 		material->shader = nullptr;
 		material->shader_type = SHADER_TYPE_MAX;
 	}
@@ -2387,7 +2423,7 @@ void MaterialStorage::material_set_shader(RID p_material, RID p_shader) {
 	material->shader = shader;
 	material->shader_type = shader->type;
 	material->shader_id = p_shader.get_local_index();
-	shader->owners.insert(material);
+	shader->add_owenr(material);
 
 	if (shader->type == SHADER_TYPE_MAX) {
 		return;

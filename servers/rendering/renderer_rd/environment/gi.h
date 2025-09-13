@@ -463,6 +463,9 @@ public:
 
 		virtual void configure(RenderSceneBuffersRD *p_render_buffers) override {}
 		virtual void free_data() override;
+		~RenderBuffersGI() {
+			free_data();
+		}
 	};
 
 	/* VOXEL GI API */

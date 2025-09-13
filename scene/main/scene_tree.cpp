@@ -1980,6 +1980,13 @@ void SceneTree::_bind_methods() {
 }
 
 SceneTree *SceneTree::singleton = nullptr;
+struct IdleCallbackLevel {
+	SceneTree::IdleCallback callback;
+	int level;
+	_FORCE_INLINE_ static bool compare(const IdleCallbackLevel &l, const IdleCallbackLevel &r) {
+		return l.level > r.level;
+	}
+};
 
 SceneTree::IdleCallback SceneTree::idle_callbacks[SceneTree::MAX_IDLE_CALLBACKS];
 int SceneTree::idle_callback_count = 0;
@@ -1990,7 +1997,7 @@ void SceneTree::_call_idle_callbacks() {
 	}
 }
 
-void SceneTree::add_idle_callback(IdleCallback p_callback) {
+void SceneTree::add_idle_callback(IdleCallback p_callback, int p_level) {
 	ERR_FAIL_COND(idle_callback_count >= MAX_IDLE_CALLBACKS);
 	idle_callbacks[idle_callback_count++] = p_callback;
 }
