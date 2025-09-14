@@ -44,6 +44,9 @@ public:
 		ERR_FAIL_COND_MSG(!is_same_typed(p_array), "Cannot assign an array with a different element type.");
 		Array::operator=(p_array);
 	}
+	_FORCE_INLINE_ void operator=(const std::initializer_list<Variant> p_init) {
+		Array::operator=(Array(p_init));
+	}
 	_FORCE_INLINE_ TypedArray(const Variant &p_variant) :
 			TypedArray(Array(p_variant)) {
 	}

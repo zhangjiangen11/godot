@@ -2378,6 +2378,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 	}
 
 	const Item::Command *c = p_item->commands;
+	Color modulated;
 	while (c) {
 		if (skipping && c->type != Item::Command::TYPE_ANIMATION_SLICE) {
 			c = c->next;
@@ -2404,7 +2405,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 					rect_repeat = RenderingServer::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED;
 				}
 
-				Color modulated = rect->modulate * base_color;
+				modulated = rect->modulate * base_color;
 				if (use_linear_colors) {
 					modulated = modulated.srgb_to_linear();
 				}
@@ -2551,7 +2552,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 					}
 				}
 
-				Color modulated = np->color * base_color;
+				modulated = np->color * base_color;
 				if (use_linear_colors) {
 					modulated = modulated.srgb_to_linear();
 				}
@@ -2819,7 +2820,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 					r_sdf_used |= particles_storage->particles_has_collision(particles);
 				}
 
-				Color modulated = modulate * base_color;
+				modulated = modulate * base_color;
 				if (use_linear_colors) {
 					modulated = modulated.srgb_to_linear();
 				}

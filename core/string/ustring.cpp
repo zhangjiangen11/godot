@@ -173,7 +173,7 @@ void String::append_utf32(const Span<char32_t> &p_cstr) {
 
 	// Copy the string, and check for UTF-32 problems.
 	for (; src < end; ++src, ++dst) {
-		const char32_t chr = *src;
+		const char32_t &chr = *src;
 		if ((chr & 0xfffff800) == 0xd800) {
 			print_unicode_error(vformat("Unpaired surrogate (%x)", (uint32_t)chr), true);
 			*dst = _replacement_char;
@@ -3279,7 +3279,7 @@ int String::find(const char *p_str, int p_from) const {
 	const char32_t *src = get_data();
 
 	if (src_len == 1) {
-		const char32_t needle = p_str[0];
+		const char32_t &needle = p_str[0];
 
 		for (int i = p_from; i < len; i++) {
 			if (src[i] == needle) {
