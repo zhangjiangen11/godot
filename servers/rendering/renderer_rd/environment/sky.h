@@ -129,6 +129,7 @@ private:
 		virtual bool casts_shadows() const;
 		virtual RS::ShaderNativeSourceCode get_native_source_code() const;
 		virtual Pair<ShaderRD *, RID> get_native_shader_and_version() const;
+		virtual bool uses_alpha_pass() const override { return false; }
 
 		SkyShaderData() {}
 		virtual ~SkyShaderData();

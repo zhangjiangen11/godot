@@ -166,6 +166,7 @@ void Material::_bind_methods() {
 	ClassDB::set_method_flags(get_class_static(), StringName("inspect_native_shader_code"), METHOD_FLAGS_DEFAULT | METHOD_FLAG_EDITOR);
 
 	ClassDB::bind_method(D_METHOD("create_placeholder"), &Material::create_placeholder);
+	ClassDB::bind_method(D_METHOD("is_transparency"), &Material::is_transparency);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "render_priority", PROPERTY_HINT_RANGE, itos(RENDER_PRIORITY_MIN) + "," + itos(RENDER_PRIORITY_MAX) + ",1"), "set_render_priority", "get_render_priority");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "next_pass", PROPERTY_HINT_RESOURCE_TYPE, "Material"), "set_next_pass", "get_next_pass");
@@ -571,6 +572,13 @@ void ShaderMaterial::update_material(RID p_material) const {
 		}
 	}
 }
+bool ShaderMaterial::is_transparency() {
+	RID shader_rid = shader.is_valid() ? shader->get_rid() : RID();
+	if (shader_rid.is_null()) {
+		return false;
+	}
+	return RS::get_singleton()->shader_is_alpha(shader_rid);
+}
 
 void ShaderMaterial::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_shader", "shader"), &ShaderMaterial::set_shader);
@@ -687,6 +695,12 @@ Dictionary ShaderMaterialInstance::get_param_overrides() const {
 		ret[it.key] = it.value;
 	}
 	return ret;
+}
+bool ShaderMaterialInstance::is_transparency() {
+	if (base.is_null()) {
+		return false;
+	}
+	return base->is_transparency();
 }
 void ShaderMaterialInstance::set_base_material(const Ref<Material> &p_base) {
 	if (base == p_base) {
