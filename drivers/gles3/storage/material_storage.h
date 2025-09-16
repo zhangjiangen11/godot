@@ -61,6 +61,7 @@ struct ShaderData {
 	virtual bool is_parameter_texture(const StringName &p_param) const;
 
 	virtual void set_code(const String &p_Code) = 0;
+	virtual bool uses_alpha_pass() const = 0;
 	virtual bool is_animated() const = 0;
 	virtual bool casts_shadows() const = 0;
 	virtual RS::ShaderNativeSourceCode get_native_source_code() const { return RS::ShaderNativeSourceCode(); }
@@ -174,6 +175,7 @@ struct CanvasShaderData : public ShaderData {
 	virtual bool is_animated() const;
 	virtual bool casts_shadows() const;
 	virtual RS::ShaderNativeSourceCode get_native_source_code() const;
+	virtual bool uses_alpha_pass() const override { return true; }
 
 	CanvasShaderData();
 	virtual ~CanvasShaderData();
@@ -219,6 +221,7 @@ struct SkyShaderData : public ShaderData {
 	virtual bool is_animated() const;
 	virtual bool casts_shadows() const;
 	virtual RS::ShaderNativeSourceCode get_native_source_code() const;
+	virtual bool uses_alpha_pass() const override { return false; }
 	SkyShaderData();
 	virtual ~SkyShaderData();
 };
@@ -353,6 +356,15 @@ struct SceneShaderData : public ShaderData {
 	virtual bool casts_shadows() const;
 	virtual RS::ShaderNativeSourceCode get_native_source_code() const;
 
+	bool uses_alpha_pass() const override {
+		bool has_read_screen_alpha = uses_screen_texture || uses_depth_texture || uses_normal_texture;
+		bool has_base_alpha = (uses_alpha && (!uses_alpha_clip));
+		bool has_blend_alpha = uses_blend_alpha;
+		bool has_alpha = has_base_alpha || has_blend_alpha;
+		bool no_depth_draw = depth_draw == DEPTH_DRAW_DISABLED;
+		bool no_depth_test = depth_test != DEPTH_TEST_ENABLED;
+		return has_alpha || has_read_screen_alpha || no_depth_draw || no_depth_test;
+	}
 	SceneShaderData();
 	virtual ~SceneShaderData();
 };
@@ -403,6 +415,7 @@ struct ParticlesShaderData : public ShaderData {
 	virtual void set_code(const String &p_Code);
 	virtual bool is_animated() const;
 	virtual bool casts_shadows() const;
+	bool uses_alpha_pass() const override { return true; }
 	virtual RS::ShaderNativeSourceCode get_native_source_code() const;
 
 	ParticlesShaderData() {}
@@ -605,6 +618,7 @@ public:
 	virtual void shader_set_code(RID p_shader, const String &p_code) override;
 	virtual void shader_set_path_hint(RID p_shader, const String &p_path) override;
 	virtual String shader_get_code(RID p_shader) const override;
+	virtual bool shader_is_alpha(RID p_shader) const override;
 	virtual void get_shader_parameter_list(RID p_shader, List<PropertyInfo> *p_param_list) const override;
 
 	virtual void shader_set_default_texture_parameter(RID p_shader, const StringName &p_name, RID p_texture, int p_index) override;

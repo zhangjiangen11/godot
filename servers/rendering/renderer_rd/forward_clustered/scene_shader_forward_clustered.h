@@ -275,7 +275,7 @@ public:
 		uint64_t last_pass = 0;
 		uint32_t index = 0;
 
-		_FORCE_INLINE_ bool uses_alpha_pass() const {
+		bool uses_alpha_pass() const override {
 			bool has_read_screen_alpha = uses_screen_texture || uses_depth_texture || uses_normal_texture;
 			bool has_base_alpha = (uses_alpha && (!uses_alpha_clip || uses_alpha_antialiasing)) || has_read_screen_alpha;
 			bool has_blend_alpha = uses_blend_alpha;

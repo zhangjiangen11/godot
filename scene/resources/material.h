@@ -91,6 +91,7 @@ public:
 	virtual Variant get_shader_parameter(const StringName &p_param) const { return Variant(); }
 	virtual void update_material(RID p_material) const {}
 	virtual void update_dirty() const {}
+	virtual bool is_transparency() { return false; }
 
 	Material();
 	virtual ~Material();
@@ -145,6 +146,7 @@ public:
 	virtual RID get_rid() const override;
 	virtual RID get_shader_rid() const override;
 	virtual void update_material(RID p_material) const override;
+	virtual bool is_transparency() override;
 
 	ShaderMaterial();
 	~ShaderMaterial();
@@ -183,6 +185,7 @@ public:
 			return Shader::MODE_SPATIAL;
 		}
 	}
+	virtual bool is_transparency() override;
 	virtual ~ShaderMaterialInstance();
 
 protected:
@@ -967,6 +970,7 @@ public:
 
 	virtual Shader::Mode get_shader_mode() const override;
 
+	virtual bool is_transparency() override;
 	BaseMaterial3D(bool p_orm);
 	virtual ~BaseMaterial3D();
 };

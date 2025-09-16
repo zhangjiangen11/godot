@@ -3587,6 +3587,9 @@ RID BaseMaterial3D::get_shader_rid() const {
 Shader::Mode BaseMaterial3D::get_shader_mode() const {
 	return Shader::MODE_SPATIAL;
 }
+bool BaseMaterial3D::is_transparency() {
+	return transparency != TRANSPARENCY_DISABLED;
+}
 
 void BaseMaterial3D::_bind_methods() {
 	static_assert(sizeof(MaterialKey) == 16, "MaterialKey should be 16 bytes");

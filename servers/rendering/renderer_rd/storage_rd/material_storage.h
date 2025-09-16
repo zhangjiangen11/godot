@@ -83,6 +83,7 @@ public:
 		virtual bool casts_shadows() const = 0;
 		virtual RS::ShaderNativeSourceCode get_native_source_code() const = 0;
 		virtual Pair<ShaderRD *, RID> get_native_shader_and_version() const = 0;
+		virtual bool uses_alpha_pass() const = 0;
 
 		virtual ~ShaderData() {}
 
@@ -431,6 +432,7 @@ public:
 	virtual void shader_set_code(RID p_shader, const String &p_code) override;
 	virtual void shader_set_path_hint(RID p_shader, const String &p_path) override;
 	virtual String shader_get_code(RID p_shader) const override;
+	virtual bool shader_is_alpha(RID p_shader) const override;
 	virtual void get_shader_parameter_list(RID p_shader, List<PropertyInfo> *p_param_list) const override;
 
 	virtual void shader_set_default_texture_parameter(RID p_shader, const StringName &p_name, RID p_texture, int p_index) override;

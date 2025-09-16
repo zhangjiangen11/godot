@@ -2214,6 +2214,11 @@ String MaterialStorage::shader_get_code(RID p_shader) const {
 	ERR_FAIL_NULL_V(shader, String());
 	return shader->code;
 }
+bool MaterialStorage::shader_is_alpha(RID p_shader) const {
+	Shader *shader = shader_owner.get_or_null(p_shader);
+	ERR_FAIL_NULL_V(shader, false);
+	return shader->data->uses_alpha_pass();
+}
 
 void MaterialStorage::get_shader_parameter_list(RID p_shader, List<PropertyInfo> *p_param_list) const {
 	Shader *shader = shader_owner.get_or_null(p_shader);
