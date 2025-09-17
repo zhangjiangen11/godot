@@ -35,13 +35,13 @@
 
 #define ANIM_MIN_LENGTH 0.001
 
-
 class Animation : public Resource {
 	GDCLASS(Animation, Resource);
 	RES_BASE_EXTENSION("anim");
-	typedef void (*pf_get_animation_group_names)(Array* p_names);
+	typedef void (*pf_get_animation_group_names)(Array *p_names);
 	static pf_get_animation_group_names get_animation_group_names_func;
 	static pf_get_animation_group_names get_animation_tags_func;
+
 public:
 	typedef uint32_t TypeHash;
 	static void set_pf_get_animation_group_names(pf_get_animation_group_names p_func) { get_animation_group_names_func = p_func; }
@@ -118,8 +118,8 @@ public:
 		bool imported = false;
 		bool enabled = true;
 		virtual ~Track() {}
-		
-		virtual Track* duplicate() const {return nullptr;}
+
+		virtual Track *duplicate() const { return nullptr; }
 	};
 
 public:
@@ -142,10 +142,10 @@ public:
 	/* POSITION TRACK */
 
 	struct PositionTrack : public Track {
-		Vector<TKey<Vector3>> positions;
+		LocalVector<TKey<Vector3>> positions;
 		int32_t compressed_track = -1;
 		PositionTrack() { type = TYPE_POSITION_3D; }
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			PositionTrack *nt = memnew(PositionTrack);
 			nt->positions = positions;
 			nt->compressed_track = compressed_track;
@@ -163,10 +163,10 @@ public:
 	/* ROTATION TRACK */
 
 	struct RotationTrack : public Track {
-		Vector<TKey<Quaternion>> rotations;
+		LocalVector<TKey<Quaternion>> rotations;
 		int32_t compressed_track = -1;
 		RotationTrack() { type = TYPE_ROTATION_3D; }
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			RotationTrack *nt = memnew(RotationTrack);
 			nt->rotations = rotations;
 			nt->compressed_track = compressed_track;
@@ -184,10 +184,10 @@ public:
 	/* SCALE TRACK */
 
 	struct ScaleTrack : public Track {
-		Vector<TKey<Vector3>> scales;
+		LocalVector<TKey<Vector3>> scales;
 		int32_t compressed_track = -1;
 		ScaleTrack() { type = TYPE_SCALE_3D; }
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			ScaleTrack *nt = memnew(ScaleTrack);
 			nt->scales = scales;
 			nt->compressed_track = compressed_track;
@@ -205,10 +205,10 @@ public:
 	/* BLEND SHAPE TRACK */
 
 	struct BlendShapeTrack : public Track {
-		Vector<TKey<float>> blend_shapes;
+		LocalVector<TKey<float>> blend_shapes;
 		int32_t compressed_track = -1;
 		BlendShapeTrack() { type = TYPE_BLEND_SHAPE; }
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			BlendShapeTrack *nt = memnew(BlendShapeTrack);
 			nt->blend_shapes = blend_shapes;
 			nt->compressed_track = compressed_track;
@@ -228,13 +228,13 @@ public:
 	struct ValueTrack : public Track {
 		UpdateMode update_mode = UPDATE_CONTINUOUS;
 		bool update_on_seek = false;
-		Vector<TKey<Variant>> values;
+		LocalVector<TKey<Variant>> values;
 
 		ValueTrack() {
 			type = TYPE_VALUE;
 		}
 
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			ValueTrack *nt = memnew(ValueTrack);
 			nt->values = values;
 			nt->path = path;
@@ -258,9 +258,9 @@ public:
 	};
 
 	struct MethodTrack : public Track {
-		Vector<MethodKey> methods;
+		LocalVector<MethodKey> methods;
 		MethodTrack() { type = TYPE_METHOD; }
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			MethodTrack *nt = memnew(MethodTrack);
 			nt->methods = methods;
 			nt->path = path;
@@ -286,13 +286,13 @@ public:
 	};
 
 	struct BezierTrack : public Track {
-		Vector<TKey<BezierKey>> values;
+		LocalVector<TKey<BezierKey>> values;
 
 		BezierTrack() {
 			type = TYPE_BEZIER;
 		}
 
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			BezierTrack *nt = memnew(BezierTrack);
 			nt->values = values;
 			nt->path = path;
@@ -317,14 +317,14 @@ public:
 	};
 
 	struct AudioTrack : public Track {
-		Vector<TKey<AudioKey>> values;
+		LocalVector<TKey<AudioKey>> values;
 		bool use_blend = true;
 
 		AudioTrack() {
 			type = TYPE_AUDIO;
 		}
 
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			AudioTrack *nt = memnew(AudioTrack);
 			nt->values = values;
 			nt->path = path;
@@ -342,13 +342,13 @@ public:
 	/* ANIMATION TRACK */
 
 	struct AnimationTrack : public Track {
-		Vector<TKey<StringName>> values;
+		LocalVector<TKey<StringName>> values;
 
 		AnimationTrack() {
 			type = TYPE_ANIMATION;
 		}
 
-		virtual Track* duplicate() const override {
+		virtual Track *duplicate() const override {
 			AnimationTrack *nt = memnew(AnimationTrack);
 			nt->values = values;
 			nt->path = path;
@@ -372,11 +372,11 @@ public:
 		MarkerKey() = default;
 	};
 
-	Vector<MarkerKey> marker_names; // time -> name
+	LocalVector<MarkerKey> marker_names; // time -> name
 	HashMap<StringName, double> marker_times; // name -> time
 	HashMap<StringName, Color> marker_colors; // name -> color
 
-	Vector<Track *> tracks;
+	LocalVector<Track *> tracks;
 	bool is_human_animation = false;
 	Vector<uint8_t> human_bone_mask;
 	// 动画分组:人形,怪物
@@ -392,11 +392,11 @@ public:
 	template <typename T, typename V>
 	int _insert(double p_time, T &p_keys, const V &p_value);
 
-	int _marker_insert(double p_time, Vector<MarkerKey> &p_keys, const MarkerKey &p_value);
+	int _marker_insert(double p_time, LocalVector<MarkerKey> &p_keys, const MarkerKey &p_value);
 
 	template <typename K>
 
-	inline int _find(const Vector<K> &p_keys, double p_time, bool p_backward = false, bool p_limit = false) const;
+	inline int _find(const LocalVector<K> &p_keys, double p_time, bool p_backward = false, bool p_limit = false) const;
 
 	_FORCE_INLINE_ Vector3 _interpolate(const Vector3 &p_a, const Vector3 &p_b, real_t p_c) const;
 	_FORCE_INLINE_ Quaternion _interpolate(const Quaternion &p_a, const Quaternion &p_b, real_t p_c) const;
@@ -411,10 +411,10 @@ public:
 	_FORCE_INLINE_ Variant _cubic_interpolate_angle_in_time(const Variant &p_pre_a, const Variant &p_a, const Variant &p_b, const Variant &p_post_b, real_t p_c, real_t p_pre_a_t, real_t p_b_t, real_t p_post_b_t) const;
 
 	template <typename T>
-	_FORCE_INLINE_ T _interpolate(const Vector<TKey<T>> &p_keys, double p_time, InterpolationType p_interp, bool p_loop_wrap, bool *p_ok, bool p_backward = false) const;
+	_FORCE_INLINE_ T _interpolate(const LocalVector<TKey<T>> &p_keys, double p_time, InterpolationType p_interp, bool p_loop_wrap, bool *p_ok, bool p_backward = false) const;
 
 	template <typename T>
-	_FORCE_INLINE_ void _track_get_key_indices_in_range(const Vector<T> &p_array, double from_time, double to_time, List<int> *p_indices, bool p_is_backward) const;
+	_FORCE_INLINE_ void _track_get_key_indices_in_range(const LocalVector<T> &p_array, double from_time, double to_time, List<int> *p_indices, bool p_is_backward) const;
 
 	double length = 1.0;
 	real_t step = DEFAULT_STEP;
@@ -542,17 +542,16 @@ protected:
 #endif // DISABLE_DEPRECATED
 
 public:
-
-	void set_human_bone_mask(const Vector<uint8_t>& p_human_bone_mask);
+	void set_human_bone_mask(const Vector<uint8_t> &p_human_bone_mask);
 	Vector<uint8_t> get_human_bone_mask() const;
 
-	void add_track_ins(Track* p_track, int p_at_pos = -1);
+	void add_track_ins(Track *p_track, int p_at_pos = -1);
 	int add_track(TrackType p_type, int p_at_pos = -1);
 	void remove_track(int p_track);
 
 	Track *get_track(int p_track);
 
-	_FORCE_INLINE_ const Vector<Track *> get_tracks() {
+	_FORCE_INLINE_ const LocalVector<Track *> &get_tracks() {
 		return tracks;
 	}
 
@@ -657,11 +656,11 @@ public:
 
 	void copy_track(int p_track, Ref<Animation> p_to_animation);
 
-	void set_human_bone_mapping(const Dictionary &p_mapping,bool is_only_enable_human = false);
+	void set_human_bone_mapping(const Dictionary &p_mapping, bool is_only_enable_human = false);
 
 	void track_get_key_indices_in_range(int p_track, double p_time, double p_delta, List<int> *p_indices, Animation::LoopedFlag p_looped_flag = Animation::LOOPED_FLAG_NONE) const;
 
-	void set_track_info(const TypedArray<StringName> & p_track_info);
+	void set_track_info(const TypedArray<StringName> &p_track_info);
 	TypedArray<StringName> get_track_info() const;
 	void add_marker(const StringName &p_name, double p_time);
 	void remove_marker(const StringName &p_name);
@@ -683,15 +682,14 @@ public:
 	void set_step(real_t p_step);
 	real_t get_step() const;
 
+	void set_bone_map(const Ref<Resource> &p_bone_map);
+	Ref<Resource> get_bone_map() const;
 
-	void set_bone_map(const Ref<Resource>& p_bone_map);
-	Ref<Resource> get_bone_map() const ;
-	
 	void set_is_human_animation(bool p_is_human_animation);
 	bool get_is_human_animation() const;
 
 	void remap_node_to_bone_name(const Vector<String> &p_bone_names);
-	void get_node_names(HashSet<String>& p_bone_names);
+	void get_node_names(HashSet<String> &p_bone_names);
 
 	Array editor_get_animation_Group() const;
 	Array editor_get_animation_tags() const;
@@ -721,7 +719,7 @@ public:
 		return animation_tag;
 	}
 
-	void set_human_config(const Ref<Resource>& p_human_config) {
+	void set_human_config(const Ref<Resource> &p_human_config) {
 		human_config = p_human_config;
 	}
 	Ref<Resource> get_human_config() const {
@@ -771,13 +769,14 @@ public:
 	~Animation();
 };
 class HumanAnimationBoneNameMapping {
-	static HumanAnimationBoneNameMapping* singleton;
+	static HumanAnimationBoneNameMapping *singleton;
 
 public:
-	static HumanAnimationBoneNameMapping* get_singleton();
+	static HumanAnimationBoneNameMapping *get_singleton();
 	void MapAnimationBoneName(const Ref<Animation> &p_animation);
-	void UnmapAnimationBoneName(Animation* p_animation) ;
+	void UnmapAnimationBoneName(Animation *p_animation);
 	StringName get_bone_name(const StringName &p_bone);
+
 protected:
 	HashMap<StringName, StringName> mapping;
 	HashSet<int64_t> cache_animation;
