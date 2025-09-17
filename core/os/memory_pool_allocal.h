@@ -247,14 +247,16 @@ public:
 
 public:
 	static int get_block_size(uint64_t p_block) {
-		if (p_block == 0) {
+		if (p_block < 200) {
+			// 非法值，不可能存在这么小的指针
 			return 0;
 		}
 		Block *block = (Block *)p_block;
 		return block->size;
 	}
 	static int get_block_offset(uint64_t p_block) {
-		if (p_block == 0) {
+		if (p_block < 200) {
+			// 非法值，不可能存在这么小的指针
 			return 0;
 		}
 		Block *block = (Block *)p_block;
@@ -262,7 +264,8 @@ public:
 	}
 
 	static int get_block_end(uint64_t p_block) {
-		if (p_block == 0) {
+		if (p_block < 200) {
+			// 非法值，不可能存在这么小的指针
 			return 0;
 		}
 		Block *block = (Block *)p_block;

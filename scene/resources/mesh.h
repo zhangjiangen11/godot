@@ -203,7 +203,7 @@ public:
 	static ConvexDecompositionFunc convex_decomposition_function;
 
 	Vector<Ref<Shape3D>> convex_decompose(const Ref<MeshConvexDecompositionSettings> &p_settings) const;
-	Ref<ConvexPolygonShape3D> create_convex_shape(bool p_clean = true, bool p_simplify = false) const;
+	Ref<ConvexPolygonShape3D> create_convex_shape(bool p_clean = true, bool p_simplify = false, bool p_skip_transparency = false) const;
 	Ref<ConcavePolygonShape3D> create_trimesh_shape() const;
 #endif // PHYSICS_3D_DISABLED
 

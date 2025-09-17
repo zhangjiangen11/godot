@@ -536,7 +536,7 @@ Vector<Face3> Mesh::get_surface_faces(int p_surface) const {
 }
 
 #ifndef PHYSICS_3D_DISABLED
-Ref<ConvexPolygonShape3D> Mesh::create_convex_shape(bool p_clean, bool p_simplify) const {
+Ref<ConvexPolygonShape3D> Mesh::create_convex_shape(bool p_clean, bool p_simplify, bool p_skip_transparency) const {
 	if (p_simplify) {
 		Ref<MeshConvexDecompositionSettings> settings = Ref<MeshConvexDecompositionSettings>();
 		settings.instantiate();
@@ -552,6 +552,12 @@ Ref<ConvexPolygonShape3D> Mesh::create_convex_shape(bool p_clean, bool p_simplif
 
 	Vector<Vector3> vertices;
 	for (int i = 0; i < get_surface_count(); i++) {
+		if (p_skip_transparency) {
+			Ref<Material> material = surface_get_material(i);
+			if (material.is_valid() && material->is_transparency()) {
+				continue;
+			}
+		}
 		Array a = surface_get_arrays(i);
 		ERR_FAIL_COND_V(a.is_empty(), Ref<ConvexPolygonShape3D>());
 		Vector<Vector3> v = a[ARRAY_VERTEX];
