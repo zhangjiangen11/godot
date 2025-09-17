@@ -6691,15 +6691,11 @@ Animation::Animation() {
 }
 
 Animation::~Animation() {
-<<<<<<< HEAD
 	HumanAnimationBoneNameMapping *mapping = HumanAnimationBoneNameMapping::get_singleton();
 	if (mapping != nullptr) {
 		mapping->UnmapAnimationBoneName(this);
 	}
-	for (int i = 0; i < tracks.size(); i++) {
-=======
 	for (uint32_t i = 0; i < tracks.size(); i++) {
->>>>>>> adb2ec043ed61ea8451f2593171d7163303b7ba5
 		memdelete(tracks[i]);
 	}
 }

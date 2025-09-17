@@ -56,7 +56,7 @@ Size2 TextureButton::get_minimum_size() const {
 		}
 	}
 
-	return Size2();
+	return rscale;
 }
 
 bool TextureButton::has_point(const Point2 &p_point) const {

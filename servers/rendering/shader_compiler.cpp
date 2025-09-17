@@ -452,7 +452,7 @@ static String _get_global_shader_uniform_from_type_and_index(const String &p_buf
 uint32_t get_offset(SL::MemberNode *m, uint32_t &offset, const SL::ShaderNode *shader, SL::ShaderNode::Buffer::BufferFormat format = SL::ShaderNode::Buffer::BUFFORMAT_STD140) {
 	int d_alignment;
 	int d_size;
-	uint32_t local_offset;
+	uint32_t local_offset = 0;
 	if (m->datatype == SL::TYPE_STRUCT) {
 		for (SL::MemberNode *st_m : shader->structs[m->struct_name].shader_struct->members) {
 			_ALLOW_DISCARD_ get_offset(st_m, local_offset, shader);
@@ -819,7 +819,7 @@ String ShaderCompiler::_dump_node_code(const SL::Node *p_node, int p_level, Gene
 				TypedDictionary<StringName, Dictionary> buffer_structs;
 				uint32_t total_offset = 0;
 				for (SL::MemberNode *m : buf.shader_buffer->members) {
-					uint32_t offset = 0;
+					offset = 0;
 					if (m->datatype == SL::TYPE_STRUCT) {
 						buffer_code += _mkid(m->struct_name);
 						if (!buffer_structs.has(m->struct_name)) {
