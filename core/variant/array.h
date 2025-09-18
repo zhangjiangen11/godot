@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/templates/span.h"
 #include "core/typedefs.h"
 
 #include "core/templates/vector.h"
@@ -220,6 +221,11 @@ public:
 		return array;
 	}
 	static Array create_read_only();
+
+	Span<Variant> span() const;
+	operator Span<Variant>() const {
+		return this->span();
+	}
 
 	Array(const Array &p_base, uint32_t p_type, const StringName &p_class_name, const Variant &p_script);
 	Array(const Array &p_from);
