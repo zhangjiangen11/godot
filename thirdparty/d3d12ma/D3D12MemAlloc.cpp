@@ -5973,7 +5973,7 @@ HRESULT AllocatorPimpl::CreateResource(
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
 	D3D12_RESOURCE_DESC1 finalResourceDesc1;
 #endif
-	D3D12_RESOURCE_ALLOCATION_INFO resAllocInfo;
+	D3D12_RESOURCE_ALLOCATION_INFO resAllocInfo = { 0, 0 };
 	if (createParams.Variant == CREATE_RESOURCE_PARAMS::VARIANT_WITH_STATE) {
 		finalResourceDesc = *createParams.GetResourceDesc();
 		finalCreateParams.AccessResourceDesc() = &finalResourceDesc;

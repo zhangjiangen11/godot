@@ -904,7 +904,7 @@ Vector<uint8_t> Animation::get_human_bone_mask() const {
 	return human_bone_mask;
 }
 void Animation::add_track_ins(Track *p_track, int p_at_pos) {
-	if (p_at_pos < 0 || p_at_pos >= tracks.size()) {
+	if (p_at_pos < 0 || (uint32_t)p_at_pos >= tracks.size()) {
 		p_at_pos = tracks.size();
 	}
 	tracks.insert(p_at_pos, p_track);
@@ -3869,7 +3869,7 @@ void Animation::set_track_info(const TypedArray<StringName> &p_track_info) {
 }
 TypedArray<StringName> Animation::get_track_info() const {
 	TypedArray<StringName> ret;
-	for (int i = 0; i < tracks.size(); i++) {
+	for (uint32_t i = 0; i < tracks.size(); i++) {
 		ret.push_back(StringName(tracks[i]->path.operator String()));
 	}
 	return ret;
@@ -3989,7 +3989,7 @@ void Animation::remap_node_to_bone_name(const Vector<String> &p_bone_names) {
 		bone_names.insert(p_bone_names[i]);
 	}
 
-	for (int i = 0; i < tracks.size(); i++) {
+	for (uint32_t i = 0; i < tracks.size(); i++) {
 		AnimationTrack *at = static_cast<AnimationTrack *>(tracks[i]);
 		if (at->type == TYPE_POSITION_3D || at->type == TYPE_ROTATION_3D || at->type == TYPE_SCALE_3D) {
 			String path_name = at->path;
@@ -4004,7 +4004,7 @@ void Animation::remap_node_to_bone_name(const Vector<String> &p_bone_names) {
 	}
 }
 void Animation::get_node_names(HashSet<String> &p_bone_names) {
-	for (int i = 0; i < tracks.size(); i++) {
+	for (uint32_t i = 0; i < tracks.size(); i++) {
 		AnimationTrack *at = static_cast<AnimationTrack *>(tracks[i]);
 		if (at->type == TYPE_POSITION_3D || at->type == TYPE_ROTATION_3D || at->type == TYPE_SCALE_3D) {
 			String path_name = at->path;
@@ -4038,7 +4038,7 @@ void Animation::set_human_bone_mapping(const Dictionary &p_mapping, bool is_only
 	if (p_mapping.size() == 0) {
 		return;
 	}
-	for (int i = 0; i < tracks.size(); i++) {
+	for (uint32_t i = 0; i < tracks.size(); i++) {
 		String _name = tracks[i]->path;
 		if (!_name.begins_with("Skeleton3D:")) {
 			continue;
