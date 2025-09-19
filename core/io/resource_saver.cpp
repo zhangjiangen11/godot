@@ -97,7 +97,7 @@ void ResourceFormatSaver::_bind_methods() {
 	GDVIRTUAL_BIND(_recognize_path, "resource", "path");
 }
 
-Error ResourceSaver::save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags) {
+Error ResourceSaver::save(const Ref<Resource> &p_resource, const String &p_path, uint32_t p_flags, bool notify) {
 	ERR_FAIL_COND_V_MSG(p_resource.is_null(), ERR_INVALID_PARAMETER, vformat("Can't save empty resource to path '%s'.", p_path));
 	String path = p_path;
 	if (path.is_empty()) {
@@ -122,7 +122,7 @@ Error ResourceSaver::save(const Ref<Resource> &p_resource, const String &p_path,
 		String local_path = ProjectSettings::get_singleton()->localize_path(path);
 
 		if (p_flags & FLAG_CHANGE_PATH) {
-			p_resource->set_path(local_path,true);
+			p_resource->set_path(local_path, true);
 		}
 
 		err = saver[i]->save(p_resource, path, p_flags);
@@ -145,8 +145,7 @@ Error ResourceSaver::save(const Ref<Resource> &p_resource, const String &p_path,
 				p_resource->set_path(old_path);
 			}
 
-
-			if (save_callback && path.begins_with("res://")) {
+			if (notify && save_callback && path.begins_with("res://")) {
 				save_callback(p_resource, path);
 			}
 
