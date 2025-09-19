@@ -425,7 +425,7 @@ void FlowContainer::set_child_alignment(AlignmentMode p_alignment) {
 	child_alignment = p_alignment;
 	_resort();
 }
-AlignmentMode FlowContainer::get_child_alignment() const {
+FlowContainer::AlignmentMode FlowContainer::get_child_alignment() const {
 	return child_alignment;
 }
 
