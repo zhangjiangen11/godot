@@ -56,7 +56,9 @@ private:
 
 	bool vertical = false;
 	bool reverse_fill = false;
+	bool change_child_size = true;
 	AlignmentMode alignment = ALIGNMENT_BEGIN;
+	AlignmentMode child_alignment = ALIGNMENT_CENTER;
 	LastWrapAlignmentMode last_wrap_alignment = LAST_WRAP_ALIGNMENT_INHERIT;
 
 	struct ThemeCache {
@@ -100,6 +102,12 @@ public:
 
 	int get_h_separation() const { return theme_cache.h_separation; }
 	int get_v_separation() const { return theme_cache.v_separation; }
+
+	void set_change_child_size(bool p_change_child_size);
+	bool get_change_child_size() const;
+
+	void set_child_alignment(AlignmentMode p_alignment);
+	AlignmentMode get_child_alignment() const;
 
 	virtual Vector<int> get_allowed_size_flags_horizontal() const override;
 	virtual Vector<int> get_allowed_size_flags_vertical() const override;

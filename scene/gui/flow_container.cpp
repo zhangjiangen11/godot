@@ -222,7 +222,9 @@ void FlowContainer::_resort() {
 			child_size = child->get_size();
 		} else if (vertical) { /* VERTICAL */
 			if (child->get_h_size_flags().has_flag(SIZE_FILL) || child->get_h_size_flags().has_flag(SIZE_SHRINK_CENTER) || child->get_h_size_flags().has_flag(SIZE_SHRINK_END)) {
-				child_size.width = line_data.min_line_height;
+				if (change_child_size) {
+					child_size.width = line_data.min_line_height;
+				}
 			}
 
 			if (child->get_v_size_flags().has_flag(SIZE_EXPAND)) {
@@ -232,7 +234,9 @@ void FlowContainer::_resort() {
 
 		} else { /* HORIZONTAL */
 			if (child->get_v_size_flags().has_flag(SIZE_FILL) || child->get_v_size_flags().has_flag(SIZE_SHRINK_CENTER) || child->get_v_size_flags().has_flag(SIZE_SHRINK_END)) {
-				child_size.height = line_data.min_line_height;
+				if (change_child_size) {
+					child_size.height = line_data.min_line_height;
+				}
 			}
 
 			if (child->get_h_size_flags().has_flag(SIZE_EXPAND)) {
@@ -242,6 +246,19 @@ void FlowContainer::_resort() {
 		}
 
 		Rect2 child_rect = Rect2(ofs, child_size);
+		if (child_alignment == ALIGNMENT_CENTER) {
+			if (vertical) {
+				child_rect.position.x += (line_data.min_line_height - child_rect.size.width) / 2.0;
+			} else {
+				child_rect.position.y += (line_data.min_line_height - child_rect.size.height) / 2.0;
+			}
+		} else if (child_alignment == ALIGNMENT_END) {
+			if (vertical) {
+				child_rect.position.x += line_data.min_line_height - child_rect.size.width;
+			} else {
+				child_rect.position.y += line_data.min_line_height - child_rect.size.height;
+			}
+		}
 		if (reverse_fill && !vertical) {
 			child_rect.position.y = get_rect().size.y - child_rect.position.y - child_rect.size.height;
 		}
@@ -390,6 +407,27 @@ void FlowContainer::set_reverse_fill(bool p_reverse_fill) {
 bool FlowContainer::is_reverse_fill() const {
 	return reverse_fill;
 }
+void FlowContainer::set_change_child_size(bool p_change_child_size) {
+	if (change_child_size == p_change_child_size) {
+		return;
+	}
+	change_child_size = p_change_child_size;
+	_resort();
+}
+bool FlowContainer::get_change_child_size() const {
+	return change_child_size;
+}
+
+void FlowContainer::set_child_alignment(AlignmentMode p_alignment) {
+	if (child_alignment == p_alignment) {
+		return;
+	}
+	child_alignment = p_alignment;
+	_resort();
+}
+AlignmentMode FlowContainer::get_child_alignment() const {
+	return child_alignment;
+}
 
 FlowContainer::FlowContainer(bool p_vertical) {
 	vertical = p_vertical;
@@ -407,6 +445,10 @@ void FlowContainer::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_vertical"), &FlowContainer::is_vertical);
 	ClassDB::bind_method(D_METHOD("set_reverse_fill", "reverse_fill"), &FlowContainer::set_reverse_fill);
 	ClassDB::bind_method(D_METHOD("is_reverse_fill"), &FlowContainer::is_reverse_fill);
+	ClassDB::bind_method(D_METHOD("set_change_child_size", "change_child_size"), &FlowContainer::set_change_child_size);
+	ClassDB::bind_method(D_METHOD("get_change_child_size"), &FlowContainer::get_change_child_size);
+	ClassDB::bind_method(D_METHOD("set_child_alignment", "child_alignment"), &FlowContainer::set_child_alignment);
+	ClassDB::bind_method(D_METHOD("get_child_alignment"), &FlowContainer::get_child_alignment);
 
 	BIND_ENUM_CONSTANT(ALIGNMENT_BEGIN);
 	BIND_ENUM_CONSTANT(ALIGNMENT_CENTER);
@@ -416,7 +458,9 @@ void FlowContainer::_bind_methods() {
 	BIND_ENUM_CONSTANT(LAST_WRAP_ALIGNMENT_CENTER);
 	BIND_ENUM_CONSTANT(LAST_WRAP_ALIGNMENT_END);
 
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "change_child_size"), "set_change_child_size", "get_change_child_size");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "alignment", PROPERTY_HINT_ENUM, "Begin,Center,End"), "set_alignment", "get_alignment");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "child_alignment", PROPERTY_HINT_ENUM, "Begin,Center,End"), "set_child_alignment", "get_child_alignment");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "last_wrap_alignment", PROPERTY_HINT_ENUM, "Inherit,Begin,Center,End"), "set_last_wrap_alignment", "get_last_wrap_alignment");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "vertical"), "set_vertical", "is_vertical");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "reverse_fill"), "set_reverse_fill", "is_reverse_fill");

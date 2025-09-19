@@ -459,14 +459,14 @@ template <typename R, typename A, typename B>
 class OperatorEvaluatorShiftRightVector {
 public:
 	static void evaluate(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid) {
-		const A &a = *VariantGetInternalPtr<A>::get_ptr(&p_left);
-		const B &b = *VariantGetInternalPtr<B>::get_ptr(&p_right);
+		const A &a = VariantInternalAccessor<A>::get(&p_left);
+		const B &b = VariantInternalAccessor<B>::get(&p_right);
 
 		*r_ret = a >> b;
 		r_valid = true;
 	}
 	static inline void validated_evaluate(const Variant *left, const Variant *right, Variant *r_ret) {
-		*VariantGetInternalPtr<R>::get_ptr(r_ret) = *VariantGetInternalPtr<A>::get_ptr(left) >> *VariantGetInternalPtr<B>::get_ptr(right);
+		VariantInternalAccessor<R>::get(r_ret) = VariantInternalAccessor<A>::get(left) >> VariantInternalAccessor<B>::get(right);
 	}
 	static void ptr_evaluate(const void *left, const void *right, void *r_ret) {
 		PtrToArg<R>::encode(PtrToArg<A>::convert(left) >> PtrToArg<B>::convert(right), r_ret);
@@ -478,14 +478,14 @@ template <typename R, typename A, typename B>
 class OperatorEvaluatorShiftLeftVector {
 public:
 	static void evaluate(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid) {
-		const A &a = *VariantGetInternalPtr<A>::get_ptr(&p_left);
-		const B &b = *VariantGetInternalPtr<B>::get_ptr(&p_right);
+		const A &a = VariantInternalAccessor<A>::get(&p_left);
+		const B &b = VariantInternalAccessor<B>::get(&p_right);
 
 		*r_ret = a << b;
 		r_valid = true;
 	}
 	static inline void validated_evaluate(const Variant *left, const Variant *right, Variant *r_ret) {
-		*VariantGetInternalPtr<R>::get_ptr(r_ret) = *VariantGetInternalPtr<A>::get_ptr(left) << *VariantGetInternalPtr<B>::get_ptr(right);
+		VariantInternalAccessor<R>::get(r_ret) = VariantInternalAccessor<A>::get(left) << VariantInternalAccessor<B>::get(right);
 	}
 	static void ptr_evaluate(const void *left, const void *right, void *r_ret) {
 		PtrToArg<R>::encode(PtrToArg<A>::convert(left) << PtrToArg<B>::convert(right), r_ret);
