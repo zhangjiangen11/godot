@@ -566,7 +566,7 @@ Ref<ConvexPolygonShape3D> Mesh::create_convex_shape(bool p_clean, bool p_simplif
 
 	Ref<ConvexPolygonShape3D> shape = memnew(ConvexPolygonShape3D);
 
-	if (p_clean) {
+	if (p_clean && vertices.size() > 0) {
 		Geometry3D::MeshData md;
 		Error err = ConvexHullComputer::convex_hull(vertices, md);
 		if (err == OK) {
