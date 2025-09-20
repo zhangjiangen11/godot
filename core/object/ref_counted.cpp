@@ -156,6 +156,7 @@ Ref<RefCounted> RefCounted::duplicate(bool p_subresources) const {
 }
 RefCounted::RefCounted() :
 		Object(true), self_is_destory(false) {
+	_define_ancestry(AncestralClass::REF_COUNTED);
 	refcount.init();
 	refcount_init.init();
 }

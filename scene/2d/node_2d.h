@@ -115,6 +115,8 @@ public:
 	Transform2D get_relative_transform_to_parent(const Node *p_parent) const;
 
 	Transform2D get_transform() const override;
+
+	Node2D();
 };
 // 多材质2d节点渲染
 class Node2DMultiMaterial : public Node2D {

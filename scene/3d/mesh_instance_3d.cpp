@@ -941,6 +941,7 @@ void MeshInstance3D::_bind_methods() {
 }
 
 MeshInstance3D::MeshInstance3D() {
+	_define_ancestry(AncestralClass::MESH_INSTANCE_3D);
 }
 
 MeshInstance3D::~MeshInstance3D() {

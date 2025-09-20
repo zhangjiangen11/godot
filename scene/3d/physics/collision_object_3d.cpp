@@ -747,6 +747,8 @@ PackedStringArray CollisionObject3D::get_configuration_warnings() const {
 }
 
 CollisionObject3D::CollisionObject3D() {
+	_define_ancestry(AncestralClass::COLLISION_OBJECT_3D);
+
 	set_notify_transform(true);
 	//owner=
 
@@ -754,6 +756,8 @@ CollisionObject3D::CollisionObject3D() {
 }
 
 CollisionObject3D::~CollisionObject3D() {
+	_define_ancestry(AncestralClass::COLLISION_OBJECT_3D);
+
 	ERR_FAIL_NULL(PhysicsServer3D::get_singleton());
 	PhysicsServer3D::get_singleton()->free(rid);
 }
