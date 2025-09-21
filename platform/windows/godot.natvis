@@ -84,11 +84,9 @@
 	</Type>
 
 	<Type Name="StringName" IncludeView="NodePathHelper">
-		<DisplayString Condition="_data &amp;&amp; _data->cname">{_data->cname,s8b}</DisplayString>
-		<DisplayString Condition="_data &amp;&amp; !_data->cname">{_data->name,s32b}</DisplayString>
+		<DisplayString Condition="_data" >{_data->name,s32b}</DisplayString>
 		<DisplayString Condition="!_data">[empty]</DisplayString>
-		<StringView Condition="_data &amp;&amp; _data->cname">_data->cname,s8b</StringView>
-		<StringView Condition="_data &amp;&amp; !_data->cname">_data->name,s32b</StringView>
+		<StringView Condition="_data">_data->name,s32b</StringView>
 	</Type>
 
 	<Type Name="HashSet&lt;*,*,*&gt;">
@@ -251,11 +249,9 @@
 	</Type>
 
 	<Type Name="StringName">
-		<DisplayString Condition="_data &amp;&amp; _data->cname">{_data->cname,na}</DisplayString>
-		<DisplayString Condition="_data &amp;&amp; !_data->cname">{_data->name,s32}</DisplayString>
+		<DisplayString Condition="_data">{_data->name,s32}</DisplayString>
 		<DisplayString Condition="!_data">[empty]</DisplayString>
-		<StringView Condition="_data &amp;&amp; _data->cname">_data->cname,na</StringView>
-		<StringView Condition="_data &amp;&amp; !_data->cname">_data->name,s32</StringView>
+		<StringView Condition="_data">_data->name,s32</StringView>
 	</Type>
 
 	<!-- can't cast the opaque to ::StringName because Natvis does not support global namespace specifier? -->
