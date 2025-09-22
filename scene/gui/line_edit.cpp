@@ -1351,7 +1351,7 @@ void LineEdit::_notification(int p_what) {
 				}
 			}
 
-			if (has_focus() && is_editable()) {
+			if (has_focus(true) && is_editable()) {
 				if (user_data.focus.is_valid()) {
 					user_data.focus->draw_rect(ci, Rect2(Point2(), size));
 				} else {

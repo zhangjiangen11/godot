@@ -990,9 +990,9 @@ void EditorProperty::grab_focus(int p_focusable) {
 
 	if (p_focusable >= 0) {
 		ERR_FAIL_INDEX(p_focusable, focusables.size());
-		focusables[p_focusable]->grab_focus();
+		focusables[p_focusable]->grab_focus(true);
 	} else {
-		focusables[0]->grab_focus();
+		focusables[0]->grab_focus(true);
 	}
 }
 
@@ -1004,7 +1004,7 @@ void EditorProperty::select(int p_focusable) {
 
 	if (p_focusable >= 0) {
 		ERR_FAIL_INDEX(p_focusable, focusables.size());
-		focusables[p_focusable]->grab_focus();
+		focusables[p_focusable]->grab_focus(true);
 	} else {
 		selected = true;
 		queue_redraw();
