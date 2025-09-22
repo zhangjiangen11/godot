@@ -1115,7 +1115,23 @@ void Object::merge_meta_from(const Object *p_src) {
 		set_meta(key, p_src->get_meta(key));
 	}
 }
+//
 
+bool Object::has_edit_property(const StringName &p_name) const {
+	return edit_properties.has(p_name);
+}
+void Object::set_edit_property(const StringName &p_name, const Variant &p_value) {
+	edit_properties[p_name] = p_value;
+}
+void Object::remove_edit_property(const StringName &p_name) {
+	edit_properties.erase(p_name);
+}
+Variant Object::get_edit_property(const StringName &p_name, const Variant &p_default) const {
+	if (edit_properties.has(p_name)) {
+		return edit_properties[p_name];
+	}
+	return p_default;
+}
 TypedArray<Dictionary> Object::_get_property_list_bind() const {
 	List<PropertyInfo> lpi;
 	get_property_list(&lpi);
@@ -1844,6 +1860,11 @@ void Object::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_meta", "name", "default"), &Object::get_meta, DEFVAL(Variant()));
 	ClassDB::bind_method(D_METHOD("has_meta", "name"), &Object::has_meta);
 	ClassDB::bind_method(D_METHOD("get_meta_list"), &Object::_get_meta_list_bind);
+
+	ClassDB::bind_method(D_METHOD("has_edit_property", "property"), &Object::has_edit_property);
+	ClassDB::bind_method(D_METHOD("set_edit_property", "property", "value"), &Object::set_edit_property);
+	ClassDB::bind_method(D_METHOD("remove_edit_property", "property"), &Object::remove_edit_property);
+	ClassDB::bind_method(D_METHOD("get_edit_properties", "properties", "default"), &Object::get_edit_property, DEFVAL(Variant()));
 
 	ClassDB::bind_method(D_METHOD("add_user_signal", "signal", "arguments"), &Object::_add_user_signal, DEFVAL(Array()));
 	ClassDB::bind_method(D_METHOD("has_user_signal", "signal"), &Object::_has_user_signal);

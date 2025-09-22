@@ -796,6 +796,7 @@ private:
 	Variant script; // Reference does not exist yet, store it in a Variant.
 	HashMap<StringName, Variant> metadata;
 	HashMap<StringName, Variant *> metadata_properties;
+	HashMap<StringName, Variant> edit_properties;
 	mutable const StringName *_class_name_ptr = nullptr;
 
 	void _add_user_signal(const String &p_name, const Array &p_args = Array());
@@ -1068,6 +1069,12 @@ public:
 	MTVIRTUAL Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const;
 	MTVIRTUAL void get_meta_list(List<StringName> *p_list) const;
 	MTVIRTUAL void merge_meta_from(const Object *p_src);
+
+	//
+	MTVIRTUAL bool has_edit_property(const StringName &p_name) const;
+	MTVIRTUAL void set_edit_property(const StringName &p_name, const Variant &p_value);
+	MTVIRTUAL void remove_edit_property(const StringName &p_name);
+	MTVIRTUAL Variant get_edit_property(const StringName &p_name, const Variant &p_default = Variant()) const;
 
 #ifdef TOOLS_ENABLED
 	void set_edited(bool p_edited);
