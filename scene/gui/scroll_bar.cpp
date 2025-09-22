@@ -304,12 +304,8 @@ void ScrollBar::_notification(int p_what) {
 				area.height -= incr->get_height() + decr->get_height();
 			}
 
-			if (has_focus()) {
-				if (user_data.background_focus.is_valid()) {
-					user_data.background_focus->draw_rect(ci, Rect2(ofs, area));
-				} else {
-					theme_cache.scroll_focus_style->draw(ci, Rect2(ofs, area));
-				}
+			if (has_focus(true)) {
+				theme_cache.scroll_focus_style->draw(ci, Rect2(ofs, area));
 			} else {
 				if (user_data.background.is_valid()) {
 					user_data.background->draw_rect(ci, Rect2(ofs, area));
