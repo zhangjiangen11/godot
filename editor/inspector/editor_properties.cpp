@@ -409,8 +409,8 @@ void EditorPropertyTextEnum::update_property() {
 	int default_option = options.find(current_value);
 
 	// The list can change in the loose mode.
+	custom_value_edit->set_text(current_value);
 	if (loose_mode) {
-		custom_value_edit->set_text(current_value);
 		option_button->clear();
 
 		// Manually entered value.
