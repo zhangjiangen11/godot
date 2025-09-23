@@ -222,15 +222,9 @@ void TileSetScenesCollectionSourceEditor::_tile_set_scenes_collection_source_cha
 	tile_set_scenes_collection_source_changed_needs_update = true;
 }
 
-void TileSetScenesCollectionSourceEditor::_scene_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_ud) {
-	int index = p_ud;
-
-	if (index >= 0 && index < scene_tiles_list->get_item_count()) {
-		if (p_preview.is_empty()) {
-			scene_tiles_list->set_item_icon(index, Ref<Texture2D>());
-		} else {
-			scene_tiles_list->set_item_icon(index, ResourceLoader::load(p_preview));
-		}
+void TileSetScenesCollectionSourceEditor::_scene_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_idx) {
+	if (p_idx >= 0 && p_idx < scene_tiles_list->get_item_count()) {
+		scene_tiles_list->set_item_icon(p_idx, ResourceLoader::load(p_preview));
 	}
 }
 
@@ -331,8 +325,7 @@ void TileSetScenesCollectionSourceEditor::_update_scenes_list() {
 		int item_index = 0;
 		if (scene.is_valid()) {
 			item_index = scene_tiles_list->add_item(vformat("%s (path:%s id:%d)", scene->get_path().get_file().get_basename(), scene->get_path(), scene_id));
-			Variant udata = i;
-			EditorResourcePreview::get_singleton()->queue_edited_resource_preview(scene, this, "_scene_thumbnail_done", udata);
+			EditorResourcePreview::get_singleton()->queue_edited_resource_preview(scene, callable_mp(this, &TileSetScenesCollectionSourceEditor::_scene_thumbnail_done).bind(i));
 		} else {
 			item_index = scene_tiles_list->add_item(TTR("Tile with Invalid Scene"), get_editor_theme_icon(SNAME("PackedScene")));
 		}
@@ -507,8 +500,6 @@ bool TileSetScenesCollectionSourceEditor::_can_drop_data_fw(const Point2 &p_poin
 
 void TileSetScenesCollectionSourceEditor::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("source_id_changed", PropertyInfo(Variant::INT, "source_id")));
-
-	ClassDB::bind_method(D_METHOD("_scene_thumbnail_done"), &TileSetScenesCollectionSourceEditor::_scene_thumbnail_done);
 }
 
 TileSetScenesCollectionSourceEditor::TileSetScenesCollectionSourceEditor() {
