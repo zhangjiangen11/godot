@@ -2307,6 +2307,95 @@ Ref<Image> TextureStorage::_validate_texture_format(const Ref<Image> &p_image, T
 		} break; // astc 8x8 HDR
 		case Image::FORMAT_RGB10A2: {
 			r_format.format = RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32;
+			break;
+		}
+		case Image::FORMAT_R16: {
+			if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R16_UNORM, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				r_format.format = RD::DATA_FORMAT_R16_UNORM;
+			} else {
+				// Not supported, reconvert.
+				r_format.format = RD::DATA_FORMAT_R32_SFLOAT;
+				image->convert(Image::FORMAT_RF);
+			}
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break; // unorm16
+		case Image::FORMAT_RG16: {
+			if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R16G16_UNORM, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				r_format.format = RD::DATA_FORMAT_R16G16_UNORM;
+			} else {
+				// Not supported, reconvert.
+				r_format.format = RD::DATA_FORMAT_R32G32_SFLOAT;
+				image->convert(Image::FORMAT_RGF);
+			}
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case Image::FORMAT_RGB16: {
+			if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R16G16B16_UNORM, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				r_format.format = RD::DATA_FORMAT_R16G16B16_UNORM;
+			} else {
+				// Not supported, reconvert.
+				if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R16G16B16A16_UNORM, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+					r_format.format = RD::DATA_FORMAT_R16G16B16A16_UNORM;
+					image->convert(Image::FORMAT_RGBA16);
+				} else {
+					r_format.format = RD::DATA_FORMAT_R32G32B32A32_SFLOAT;
+					image->convert(Image::FORMAT_RGBAF);
+				}
+			}
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case Image::FORMAT_RGBA16: {
+			if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R16G16B16A16_UNORM, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				r_format.format = RD::DATA_FORMAT_R16G16B16A16_UNORM;
+			} else {
+				// Not supported, reconvert.
+				r_format.format = RD::DATA_FORMAT_R32G32B32A32_SFLOAT;
+				image->convert(Image::FORMAT_RGBAF);
+			}
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_A;
+		} break;
+		case Image::FORMAT_R16I: {
+			r_format.format = RD::DATA_FORMAT_R16_UINT;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break; // uint16
+		case Image::FORMAT_RG16I: {
+			r_format.format = RD::DATA_FORMAT_R16G16_UINT;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case Image::FORMAT_RGB16I: {
+			//this format is not mandatory for specification, check if supported first
+			if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R16G16B16_UINT, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
+				r_format.format = RD::DATA_FORMAT_R16G16B16_UINT;
+			} else {
+				//not supported, reconvert
+				r_format.format = RD::DATA_FORMAT_R16G16B16A16_UINT;
+				image->convert(Image::FORMAT_RGBA16I);
+			}
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case Image::FORMAT_RGBA16I: {
+			r_format.format = RD::DATA_FORMAT_R16G16B16A16_UINT;
 			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
 			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
 			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
@@ -2704,7 +2793,7 @@ void TextureStorage::_texture_format_from_rd(RD::DataFormat p_rd_format, Texture
 			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_A;
 		} break; // astc 8x8
 		case RD::DATA_FORMAT_D16_UNORM: {
-			r_format.image_format = Image::FORMAT_RH;
+			r_format.image_format = Image::FORMAT_R16;
 			r_format.rd_format = RD::DATA_FORMAT_D16_UNORM;
 			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
 			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_ZERO;
@@ -2722,6 +2811,66 @@ void TextureStorage::_texture_format_from_rd(RD::DataFormat p_rd_format, Texture
 		case RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32: {
 			r_format.image_format = Image::FORMAT_RGB10A2;
 			r_format.rd_format = RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32;
+		} break;
+		case RD::DATA_FORMAT_R16_UNORM: {
+			r_format.image_format = Image::FORMAT_R16;
+			r_format.rd_format = RD::DATA_FORMAT_R16_UNORM;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break; // unorm16
+		case RD::DATA_FORMAT_R16G16_UNORM: {
+			r_format.image_format = Image::FORMAT_RG16;
+			r_format.rd_format = RD::DATA_FORMAT_R16G16_UNORM;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case RD::DATA_FORMAT_R16G16B16_UNORM: {
+			r_format.image_format = Image::FORMAT_RGB16;
+			r_format.rd_format = RD::DATA_FORMAT_R16G16B16_UNORM;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case RD::DATA_FORMAT_R16G16B16A16_UNORM: {
+			r_format.image_format = Image::FORMAT_RGBA16;
+			r_format.rd_format = RD::DATA_FORMAT_R16G16B16A16_UNORM;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_A;
+		} break;
+		case RD::DATA_FORMAT_R16_UINT: {
+			r_format.image_format = Image::FORMAT_R16I;
+			r_format.rd_format = RD::DATA_FORMAT_R16_UINT;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break; // uint16
+		case RD::DATA_FORMAT_R16G16_UINT: {
+			r_format.image_format = Image::FORMAT_RG16I;
+			r_format.rd_format = RD::DATA_FORMAT_R16G16_UINT;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case RD::DATA_FORMAT_R16G16B16_UINT: {
+			r_format.image_format = Image::FORMAT_RGB16I;
+			r_format.rd_format = RD::DATA_FORMAT_R16G16B16_UINT;
+			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
+			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
+			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
+			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
+		} break;
+		case RD::DATA_FORMAT_R16G16B16A16_UINT: {
+			r_format.image_format = Image::FORMAT_RGBA16I;
+			r_format.rd_format = RD::DATA_FORMAT_R16G16B16A16_UINT;
 			r_format.swizzle_r = RD::TEXTURE_SWIZZLE_R;
 			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_G;
 			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_B;
