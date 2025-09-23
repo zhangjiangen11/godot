@@ -354,6 +354,39 @@ static Error get_src_texture_format(Image *r_img, RD::DataFormat &r_format) {
 		case Image::FORMAT_RGB10A2:
 			r_format = RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32;
 			break;
+		case Image::FORMAT_R16:
+			r_format = RD::DATA_FORMAT_R16_UNORM;
+			break;
+
+		case Image::FORMAT_RG16:
+			r_format = RD::DATA_FORMAT_R16G16_UNORM;
+			break;
+
+		case Image::FORMAT_RGB16:
+			r_img->convert(Image::FORMAT_RGBA16);
+			r_format = RD::DATA_FORMAT_R16G16B16A16_UNORM;
+			break;
+
+		case Image::FORMAT_RGBA16:
+			r_format = RD::DATA_FORMAT_R16G16B16A16_UNORM;
+			break;
+
+		case Image::FORMAT_R16I:
+			r_format = RD::DATA_FORMAT_R16_UINT;
+			break;
+
+		case Image::FORMAT_RG16I:
+			r_format = RD::DATA_FORMAT_R16G16_UINT;
+			break;
+
+		case Image::FORMAT_RGB16I:
+			r_img->convert(Image::FORMAT_RGBA16I);
+			r_format = RD::DATA_FORMAT_R16G16B16A16_UINT;
+			break;
+
+		case Image::FORMAT_RGBA16I:
+			r_format = RD::DATA_FORMAT_R16G16B16A16_UINT;
+			break;
 
 		default: {
 			return ERR_UNAVAILABLE;

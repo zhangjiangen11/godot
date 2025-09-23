@@ -850,6 +850,9 @@ public:
 	void notify_thread_safe(int p_notification);
 
 	String log_node(const String &_space = "");
+	/* HELPER */
+
+	bool is_instance() const { return !data.scene_file_path.is_empty(); }
 
 	// These inherited functions need proper multithread locking when overridden in Node.
 #ifdef DEBUG_ENABLED
