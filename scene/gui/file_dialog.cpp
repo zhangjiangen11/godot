@@ -1444,7 +1444,17 @@ void FileDialog::_select_drive(int p_idx) {
 
 void FileDialog::_change_dir(const String &p_new_dir) {
 	if (root_prefix.is_empty()) {
-		dir_access->change_dir(p_new_dir);
+		if (p_new_dir.begins_with("res://")) {
+			dir_access = DirAccess::open(p_new_dir);
+			access = ACCESS_RESOURCES;
+		}
+		else if (p_new_dir.begins_with("user://")) {
+			dir_access = DirAccess::open(p_new_dir);
+			access = ACCESS_USERDATA;
+		}
+		else {
+			dir_access->change_dir(p_new_dir);
+		}
 	} else {
 		String old_dir = dir_access->get_current_dir();
 		dir_access->change_dir(p_new_dir);
