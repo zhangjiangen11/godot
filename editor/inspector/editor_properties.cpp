@@ -607,9 +607,9 @@ void EditorTextEnum::update_property() {
 	String current_value = get_edited_property_value();
 	int default_option = options.find(current_value);
 
+	custom_value_edit->set_text(current_value);
 	// The list can change in the loose mode.
 	if (loose_mode) {
-		custom_value_edit->set_text(current_value);
 		option_button->clear();
 
 		// Manually entered value.
