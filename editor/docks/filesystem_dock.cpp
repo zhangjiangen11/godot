@@ -830,7 +830,7 @@ void FileSystemDock::navigate_to_path(const String &p_path) {
 }
 
 void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_index, const String &p_filename) {
-	if (p_preview.is_valid()) {
+	if (!p_preview.is_empty()) {
 		if (p_index < files->get_item_count() && files->get_item_text(p_index) == p_filename && files->get_item_metadata(p_index) == p_path) {
 			if (file_list_display_mode == FILE_LIST_DISPLAY_LIST) {
 				if (!p_small_preview.is_empty()) {
@@ -845,7 +845,7 @@ void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const Strin
 
 void FileSystemDock::_tree_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_update_id, ObjectID p_item) {
 	TreeItem *item = ObjectDB::get_instance<TreeItem>(p_item);
-	if (item && tree_update_id == p_update_id && p_small_preview.is_valid()) {
+	if (item && tree_update_id == p_update_id && !p_small_preview.is_empty()) {
 		item->set_icon(0, ResourceLoader::load(p_small_preview));
 	}
 }

@@ -512,7 +512,7 @@ void EditorFileDialog::_post_popup() {
 }
 
 void EditorFileDialog::_thumbnail_result(const String &p_path, const String &p_preview, const String &p_small_preview) {
-	if (display_mode == DISPLAY_LIST || p_preview.is_null()) {
+	if (display_mode == DISPLAY_LIST || p_preview.is_empty()) {
 		return;
 	}
 

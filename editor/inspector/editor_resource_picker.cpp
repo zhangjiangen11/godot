@@ -110,11 +110,6 @@ void EditorResourcePicker::_update_resource() {
 				assign_button->set_text(name);
 				assign_button->set_tooltip_text(TTR("Type:") + " " + class_name);
 			}
-
-			if (edited_resource->get_path().is_resource_file()) {
-				resource_path = edited_resource->get_path() + "\n";
-			}
-			assign_button->set_tooltip_text(resource_path + TTR("Type:") + " " + class_name);
 		}
 	} else if (edited_resource.is_valid()) {
 		assign_button->set_tooltip_text(resource_path + TTR("Type:") + " " + edited_resource->get_class());
