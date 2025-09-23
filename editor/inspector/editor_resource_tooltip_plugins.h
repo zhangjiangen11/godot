@@ -41,7 +41,7 @@ class VBoxContainer;
 class EditorResourceTooltipPlugin : public RefCounted {
 	GDCLASS(EditorResourceTooltipPlugin, RefCounted);
 
-	void _thumbnail_ready(const String &p_path, const String &p_preview, const String &p_small_preview, const Variant &p_udata);
+	void _thumbnail_ready(const String &p_path, const String &p_preview, const String &p_small_preview, ObjectID p_trect_id);
 
 protected:
 	static void _bind_methods();
