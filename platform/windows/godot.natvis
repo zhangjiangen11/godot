@@ -32,9 +32,9 @@
 
 	<Type Name="Dictionary">
 		<Expand>
-			<Item Name="[size]">_p &amp;&amp; _p->variant_map._head_element ? _p->variant_map._size  : 0</Item>
+			<Item Name="[size]">_p &amp;&amp; _p->variant_map._head_element ? _p->variant_map._size : 0</Item>
 			<LinkedListItems>
-				<Size>_p &amp;&amp; _p->variant_map._head_element ? _p->variant_map._size  : 0</Size>
+				<Size>_p &amp;&amp; _p->variant_map._head_element ? _p->variant_map._size : 0</Size>
 				<HeadPointer>_p ? _p->variant_map._head_element : nullptr</HeadPointer>
 				<NextPointer>next</NextPointer>
 				<ValueNode Name="[{data.key}]">(*this),view(MapHelper)</ValueNode>
@@ -91,10 +91,10 @@
 
 	<Type Name="HashSet&lt;*,*,*&gt;">
 		<Expand>
-			<Item Name="[size]">_size </Item>
+			<Item Name="[size]">_size</Item>
 			<ArrayItems>
-				<Size>_size </Size>
-				<ValuePointer>($T1 *) keys._cowdata._ptr</ValuePointer>
+				<Size>_size</Size>
+				<ValuePointer>($T1 *) _keys._cowdata._ptr</ValuePointer>
 			</ArrayItems>
 		</Expand>
 	</Type>
@@ -110,9 +110,9 @@
 	<!-- elements displayed by index -->
 	<Type Name="HashMap&lt;*,*,*,*,*&gt;" Priority="Medium">
 		<Expand>
-			<Item Name="[size]">_head_element ? _size  : 0</Item>
+			<Item Name="[size]">_head_element ? _size : 0</Item>
 			<LinkedListItems>
-				<Size>_head_element ? _size  : 0</Size>
+				<Size>_head_element ? _size : 0</Size>
 				<HeadPointer>_head_element</HeadPointer>
 				<NextPointer>next</NextPointer>
 				<ValueNode>(*this)</ValueNode>
@@ -124,9 +124,9 @@
 	<!-- show elements by index by specifying "ShowElementsByIndex"-->
 	<Type Name="HashMap&lt;*,*,*,*,*&gt;" ExcludeView="ShowElementsByIndex" Priority="MediumHigh">
 		<Expand>
-			<Item Name="[size]">_head_element ? _size  : 0</Item>
+			<Item Name="[size]">_head_element ? _size : 0</Item>
 			<LinkedListItems>
-				<Size>_head_element ? _size  : 0</Size>
+				<Size>_head_element ? _size : 0</Size>
 				<HeadPointer>_head_element</HeadPointer>
 				<NextPointer>next</NextPointer>
 				<ValueNode Name="[{data.key}]">(*this),view(MapHelper)</ValueNode>
