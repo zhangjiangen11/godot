@@ -304,6 +304,8 @@ void TextureRegionEditor::_texture_overlay_input(const Ref<InputEvent> &p_input)
 	mtx.columns[2] = -draw_ofs * draw_zoom;
 	mtx.scale_basis(Vector2(draw_zoom, draw_zoom));
 
+	bool cancel_drag = false;
+
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	Ref<InputEventMouseButton> mb = p_input;
 	if (mb.is_valid()) {
@@ -490,26 +492,37 @@ void TextureRegionEditor::_texture_overlay_input(const Ref<InputEvent> &p_input)
 				creating = false;
 			}
 
-		} else if (mb->get_button_index() == MouseButton::RIGHT && mb->is_pressed()) {
-			if (drag) {
-				drag = false;
-				if (edited_margin >= 0) {
-					static Side side[4] = { SIDE_TOP, SIDE_BOTTOM, SIDE_LEFT, SIDE_RIGHT };
-					if (node_ninepatch) {
-						node_ninepatch->set_patch_margin(side[edited_margin], prev_margin);
-					}
-					if (res_stylebox.is_valid()) {
-						res_stylebox->set_texture_margin(side[edited_margin], prev_margin);
-					}
-					edited_margin = -1;
-				} else {
-					_apply_rect(rect_prev);
-					rect = rect_prev;
-					texture_preview->queue_redraw();
-					texture_overlay->queue_redraw();
-					drag_index = -1;
-				}
+		} else if (drag && mb->get_button_index() == MouseButton::RIGHT && mb->is_pressed()) {
+			cancel_drag = true;
+		}
+	}
+
+	Ref<InputEventKey> k = p_input;
+	if (k.is_valid() && k->is_pressed() && k->get_keycode() == Key::ESCAPE) {
+		if (drag) {
+			cancel_drag = true;
+		} else {
+			hide();
+		}
+	}
+
+	if (cancel_drag) {
+		drag = false;
+		if (edited_margin >= 0) {
+			static Side side[4] = { SIDE_TOP, SIDE_BOTTOM, SIDE_LEFT, SIDE_RIGHT };
+			if (node_ninepatch) {
+				node_ninepatch->set_patch_margin(side[edited_margin], prev_margin);
 			}
+			if (res_stylebox.is_valid()) {
+				res_stylebox->set_texture_margin(side[edited_margin], prev_margin);
+			}
+			edited_margin = -1;
+		} else {
+			_apply_rect(rect_prev);
+			rect = rect_prev;
+			texture_preview->queue_redraw();
+			texture_overlay->queue_redraw();
+			drag_index = -1;
 		}
 	}
 
@@ -1135,6 +1148,8 @@ TextureRegionEditor::TextureRegionEditor() {
 	set_title(TTR("Region Editor"));
 	set_process_shortcut_input(true);
 	set_ok_button_text(TTR("Close"));
+	// Handled manually, to allow canceling dragging.
+	set_close_on_escape(false);
 
 	// A power-of-two value works better as a default grid size.
 	snap_offset = EditorSettings::get_singleton()->get_project_metadata("texture_region_editor", "snap_offset", Vector2());
