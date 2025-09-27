@@ -90,6 +90,7 @@ enum {
 	OBJECT_EXTERNAL_RESOURCE = 1,
 	OBJECT_INTERNAL_RESOURCE = 2,
 	OBJECT_EXTERNAL_RESOURCE_INDEX = 3,
+	OBJECT_REFCOUNDED_OBJECT = 4,
 	// Version 2: Added 64-bit support for float and int.
 	// Version 3: Changed NodePath encoding.
 	// Version 4: New string ID for ext/subresources, breaks forward compat.
@@ -395,6 +396,27 @@ Error ResourceLoaderBinary::parse_variant(Variant &r_v) {
 				case OBJECT_EMPTY: {
 					//do none
 
+				} break;
+				case OBJECT_REFCOUNDED_OBJECT: {
+					String class_name = get_unicode_string();
+					Object *obj = ClassDB::instantiate(class_name);
+
+					uint32_t len = f->get_32();
+
+					Dictionary d; //last bit means shared
+					len &= 0x7FFFFFFF;
+					for (uint32_t i = 0; i < len; i++) {
+						Variant key;
+						Error err = parse_variant(key);
+						ERR_FAIL_COND_V_MSG(err, ERR_FILE_CORRUPT, "Error when trying to parse Variant.");
+						Variant value;
+						err = parse_variant(value);
+						ERR_FAIL_COND_V_MSG(err, ERR_FILE_CORRUPT, "Error when trying to parse Variant.");
+
+						obj->set(key, value);
+					}
+
+					r_v = obj;
 				} break;
 				case OBJECT_INTERNAL_RESOURCE: {
 					uint32_t index = f->get_32();
@@ -1868,23 +1890,58 @@ void ResourceFormatSaverBinaryInstance::write_variant(Ref<FileAccess> f, const V
 		case Variant::OBJECT: {
 			f->store_32(VARIANT_OBJECT);
 			Ref<Resource> res = p_property;
-			if (res.is_null() || res->get_meta(SNAME("_skip_save_"), false)) {
+			Ref<RefCounted> ref = p_property;
+			if (ref.is_null()) {
 				f->store_32(OBJECT_EMPTY);
 				return; // Don't save it.
 			}
+			if (res.is_null()) {
+				// 属于自定义对象
+				f->store_32(OBJECT_REFCOUNDED_OBJECT);
+				String class_name = ref->get_class();
+				save_unicode_string(f, class_name);
+				List<PropertyInfo> property_list;
 
-			if (!res->is_built_in()) {
-				f->store_32(OBJECT_EXTERNAL_RESOURCE_INDEX);
-				f->store_32(uint32_t(external_resources[res]));
+				ref->get_property_list(&property_list);
+				List<PropertyInfo>::Element *I = property_list.front();
+				// 把属性存储到字典中
+				Dictionary property_dict;
+				while (I) {
+					PropertyInfo pi = I->get();
+
+					if (pi.usage & PROPERTY_USAGE_STORAGE) {
+						Variant v = ref->get(I->get().name);
+						property_dict[I->get().name] = v;
+					}
+
+					I = I->next();
+				}
+				// 存储属性的数量
+				f->store_32(uint32_t(property_dict.size()));
+				for (const KeyValue<Variant, Variant> &kv : property_dict) {
+					write_variant(f, kv.key, resource_map, external_resources, string_map);
+					write_variant(f, kv.value, resource_map, external_resources, string_map);
+				}
 			} else {
-				if (!resource_map.has(res)) {
+				// 属于资产
+				if (res->get_meta(SNAME("_skip_save_"), false)) {
 					f->store_32(OBJECT_EMPTY);
-					ERR_FAIL_MSG("Resource was not pre cached for the resource section, most likely due to circular reference.");
+					return; // Don't save it.
 				}
 
-				f->store_32(OBJECT_INTERNAL_RESOURCE);
-				f->store_32(uint32_t(resource_map[res]));
-				//internal resource
+				if (!res->is_built_in()) {
+					f->store_32(OBJECT_EXTERNAL_RESOURCE_INDEX);
+					f->store_32(uint32_t(external_resources[res]));
+				} else {
+					if (!resource_map.has(res)) {
+						f->store_32(OBJECT_EMPTY);
+						ERR_FAIL_MSG("Resource was not pre cached for the resource section, most likely due to circular reference.");
+					}
+
+					f->store_32(OBJECT_INTERNAL_RESOURCE);
+					f->store_32(uint32_t(resource_map[res]));
+					//internal resource
+				}
 			}
 
 		} break;
