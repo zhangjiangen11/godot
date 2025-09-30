@@ -361,6 +361,15 @@ public:
 
 		return result;
 	}
+	_FORCE_INLINE_ void swap(const Size& p_index, const Size& p_new_index) {
+		Size s = size();
+		if (p_index >= s || p_new_index >= s) {
+			return;
+		}
+		T var = write[p_index];
+		write[p_index] = write[p_new_index];
+		write[p_new_index] = var;
+	}
 
 	bool operator==(const Vector<T> &p_arr) const {
 		Size s = size();
