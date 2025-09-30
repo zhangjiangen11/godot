@@ -40,7 +40,7 @@ namespace {
 
 bool _is_vertex_hole(const JPH::VertexList &p_vertices, int p_index) {
 	const float height = p_vertices[(size_t)p_index].y;
-	return height == FLT_MAX || Math::is_nan(height);
+	return height >= 65500.0f || Math::is_nan(height);
 }
 
 bool _is_triangle_hole(const JPH::VertexList &p_vertices, int p_index0, int p_index1, int p_index2) {
