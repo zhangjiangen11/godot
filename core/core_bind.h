@@ -496,7 +496,6 @@ public:
 	Variant wait_to_finish();
 
 	static uint64_t get_caller_id();
-	static bool is_main_thread();
 	static void set_thread_safety_checks_enabled(bool p_enabled);
 	static bool is_main_thread();
 };

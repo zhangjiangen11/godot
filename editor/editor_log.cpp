@@ -54,11 +54,7 @@ void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_f
 	if (p_errorexp && p_errorexp[0]) {
 		err_str = String::utf8(p_errorexp).replace("[", "[lb]");
 	} else {
-<<<<<<< HEAD
-		err_str = String::utf8(p_file) + "(" + itos(p_line) + "): - " + String::utf8(p_error);
-=======
-		err_str = vformat("[url]%s:%d[/url] - %s", String::utf8(p_file).replace("[", "[lb]"), p_line, String::utf8(p_error).replace("[", "[lb]"));
->>>>>>> d705613db3752115f5b1244494bde6471fe6700d
+		err_str = String::utf8(p_file).replace("[", "[lb]") + "(" + itos(p_line) + "): - " + String::utf8(p_error).replace("[", "[lb]");
 	}
 
 	MessageType message_type = p_type == ERR_HANDLER_WARNING ? MSG_TYPE_WARNING : MSG_TYPE_ERROR;

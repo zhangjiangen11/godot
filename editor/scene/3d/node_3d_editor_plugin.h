@@ -92,7 +92,7 @@ class ViewportRotationControl : public Control {
 protected:
 	void _notification(int p_what);
 	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-	void _draw() override;
+	void _draw();
 	void _draw_axis(const Axis2D &p_axis);
 	void _get_sorted_axis(Vector<Axis2D> &r_axis);
 	void _update_focus();
@@ -365,11 +365,6 @@ private:
 		TRANSFORM_XY,
 	};
 
-	enum RotationGizmoMode {
-		ROTATION_GIZMO_DEFAULT,
-		ROTATION_GIZMO_ARCBALL
-	};
-
 	struct EditData {
 		TransformMode mode;
 		TransformPlane plane;
@@ -381,7 +376,6 @@ private:
 		Point2 original_mouse_pos;
 		bool snap = false;
 		bool show_rotation_line = false;
-		bool is_trackball = false;
 		Ref<EditorNode3DGizmo> gizmo;
 		int gizmo_handle = 0;
 		bool gizmo_handle_secondary = false;
@@ -461,7 +455,6 @@ private:
 	int zoom_failed_attempts_count = 0;
 
 	RID move_gizmo_instance[3], move_plane_gizmo_instance[3], rotate_gizmo_instance[4], scale_gizmo_instance[3], scale_plane_gizmo_instance[3], axis_gizmo_instance[3];
-	RID trackball_sphere_instance;
 
 	String last_message;
 	String message;
@@ -473,7 +466,7 @@ private:
 	void _update_camera(real_t p_interp_delta);
 	void _update_navigation_controls_visibility();
 	Transform3D to_camera_transform(const Cursor &p_cursor) const;
-	void _draw() override;
+	void _draw();
 
 	// These allow tool scripts to set the 3D cursor location by updating the camera transform.
 	Transform3D last_camera_transform;
@@ -536,12 +529,6 @@ private:
 	void update_transform(bool p_shift);
 	void update_transform_numeric();
 	void finish_transform();
-
-	// Arcball rotation helper functions
-	Vector3 _arcball_project_to_sphere(const Vector2 &p_point, real_t p_radius) const;
-	Quaternion _arcball_compute_rotation(const Vector2 &p_from, const Vector2 &p_to, real_t p_radius) const;
-	bool _is_arcball_mode_enabled() const;
-	bool _is_arcball_invert_enabled() const;
 
 	void register_shortcut_action(const String &p_path, const String &p_name, Key p_keycode, bool p_physical = false);
 	void shortcut_changed_callback(const Ref<Shortcut> p_shortcut, const String &p_shortcut_path);
@@ -708,15 +695,12 @@ private:
 	Vector3 grid_camera_last_update_position;
 
 	Ref<ArrayMesh> move_gizmo[3], move_plane_gizmo[3], rotate_gizmo[4], scale_gizmo[3], scale_plane_gizmo[3], axis_gizmo[3];
-	Ref<ArrayMesh> trackball_sphere_gizmo;
 	Ref<StandardMaterial3D> gizmo_color[3];
 	Ref<StandardMaterial3D> plane_gizmo_color[3];
-	Ref<ShaderMaterial> rotate_gizmo_color[4];
+	Ref<ShaderMaterial> rotate_gizmo_color[3];
 	Ref<StandardMaterial3D> gizmo_color_hl[3];
 	Ref<StandardMaterial3D> plane_gizmo_color_hl[3];
-	Ref<ShaderMaterial> rotate_gizmo_color_hl[4];
-	Ref<StandardMaterial3D> trackball_sphere_material;
-	Ref<StandardMaterial3D> trackball_sphere_material_hl;
+	Ref<ShaderMaterial> rotate_gizmo_color_hl[3];
 
 	Ref<Node3DGizmo> current_hover_gizmo;
 	int current_hover_gizmo_handle;
@@ -994,7 +978,6 @@ public:
 	Ref<ArrayMesh> get_rotate_gizmo(int idx) const { return rotate_gizmo[idx]; }
 	Ref<ArrayMesh> get_scale_gizmo(int idx) const { return scale_gizmo[idx]; }
 	Ref<ArrayMesh> get_scale_plane_gizmo(int idx) const { return scale_plane_gizmo[idx]; }
-	Ref<ArrayMesh> get_trackball_sphere_gizmo() const { return trackball_sphere_gizmo; }
 
 	void update_grid();
 	void update_transform_gizmo();

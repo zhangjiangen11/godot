@@ -108,16 +108,8 @@ constexpr real_t GIZMO_RING_HALF_WIDTH = 0.1;
 constexpr real_t GIZMO_PLANE_SIZE = 0.2;
 constexpr real_t GIZMO_PLANE_DST = 0.3;
 constexpr real_t GIZMO_CIRCLE_SIZE = 1.1;
-constexpr real_t GIZMO_VIEW_ROTATION_SIZE = 1.25;
 constexpr real_t GIZMO_SCALE_OFFSET = GIZMO_CIRCLE_SIZE + 0.3;
 constexpr real_t GIZMO_ARROW_OFFSET = GIZMO_CIRCLE_SIZE + 0.3;
-
-constexpr real_t TRACKBALL_SENSITIVITY = 0.005;
-constexpr int TRACKBALL_SPHERE_RINGS = 16;
-constexpr int TRACKBALL_SPHERE_SECTORS = 32;
-constexpr real_t TRACKBALL_HIGHLIGHT_ALPHA = 0.01;
-constexpr int GIZMO_HIGHLIGHT_AXIS_VIEW_ROTATION = 15;
-constexpr int GIZMO_HIGHLIGHT_AXIS_TRACKBALL = 16;
 
 constexpr real_t ZOOM_FREELOOK_MIN = 0.01;
 constexpr real_t ZOOM_FREELOOK_MULTIPLIER = 1.08;
@@ -1385,8 +1377,6 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 
 	if (spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_SELECT || spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_ROTATE) {
 		int col_axis = -1;
-		bool view_rotation_selected = false;
-		bool trackball_selected = false;
 
 		Vector3 hit_position;
 		Vector3 hit_normal;
@@ -1426,56 +1416,11 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 			}
 		}
 
-		if (col_axis == -1) {
-			Vector3 ray_to_center = gt.origin - ray_pos;
-			real_t ray_length_to_center = ray_to_center.dot(ray);
-			Vector3 closest_point_on_ray = ray_pos + ray * ray_length_to_center;
-			real_t distance_ray_to_center = closest_point_on_ray.distance_to(gt.origin);
-
-			real_t view_rotation_radius = gizmo_scale * GIZMO_VIEW_ROTATION_SIZE;
-			real_t circumference_tolerance = gizmo_scale * GIZMO_RING_HALF_WIDTH * 0.3;
-			real_t normal_ring_outer = gizmo_scale * (GIZMO_CIRCLE_SIZE + GIZMO_RING_HALF_WIDTH);
-
-			if (Math::abs(distance_ray_to_center - view_rotation_radius) < circumference_tolerance &&
-					ray_length_to_center > 0 && distance_ray_to_center > normal_ring_outer) {
-				view_rotation_selected = true;
-			} else if (distance_ray_to_center < gizmo_scale * (GIZMO_CIRCLE_SIZE - GIZMO_RING_HALF_WIDTH) && ray_length_to_center > 0) {
-				trackball_selected = true;
-			}
-		}
-
-		if (view_rotation_selected) {
-			if (p_highlight_only) {
-				spatial_editor->select_gizmo_highlight_axis(GIZMO_HIGHLIGHT_AXIS_VIEW_ROTATION);
-			} else {
-				_edit.mode = TRANSFORM_ROTATE;
-				_compute_edit(p_screenpos);
-				_edit.plane = TRANSFORM_VIEW;
-				_edit.accumulated_rotation_angle = 0.0;
-				_edit.rotation_axis = _get_camera_normal();
-				_edit.gizmo_initiated = true;
-			}
-			return true;
-		} else if (trackball_selected) {
-			if (p_highlight_only) {
-				spatial_editor->select_gizmo_highlight_axis(GIZMO_HIGHLIGHT_AXIS_TRACKBALL);
-			} else {
-				_edit.mode = TRANSFORM_ROTATE;
-				_compute_edit(p_screenpos);
-				_edit.plane = TRANSFORM_VIEW;
-				_edit.is_trackball = true;
-				_edit.show_rotation_line = false;
-				_edit.accumulated_rotation_angle = 0.0;
-				_edit.rotation_axis = _get_camera_normal();
-				_edit.gizmo_initiated = true;
-				spatial_editor->select_gizmo_highlight_axis(-1);
-			}
-			return true;
-		} else if (col_axis != -1) {
+		if (col_axis != -1) {
 			if (p_highlight_only) {
 				spatial_editor->select_gizmo_highlight_axis(col_axis + 3);
 			} else {
-				//handle axis-specific rotate
+				//handle rotate
 				_edit.mode = TRANSFORM_ROTATE;
 				_compute_edit(p_screenpos);
 				_edit.plane = TransformPlane(TRANSFORM_X_AXIS + col_axis);
@@ -1553,14 +1498,6 @@ bool Node3DEditorViewport::_transform_gizmo_select(const Vector2 &p_screenpos, b
 		}
 	}
 
-	if (_is_arcball_mode_enabled() && !p_highlight_only && spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_ROTATE) {
-		// we only want to arcball when rotate tool is active and didn't click on a specific rotation ring
-		_edit.mode = TRANSFORM_ROTATE;
-		_compute_edit(p_screenpos);
-		_edit.plane = TRANSFORM_VIEW;
-		return true;
-	}
-
 	if (p_highlight_only) {
 		spatial_editor->select_gizmo_highlight_axis(-1);
 	}
@@ -1634,69 +1571,6 @@ Transform3D Node3DEditorViewport::_compute_transform(TransformMode p_mode, const
 			ERR_FAIL_V_MSG(Transform3D(), "Invalid mode in '_compute_transform'");
 		}
 	}
-}
-
-Vector3 Node3DEditorViewport::_arcball_project_to_sphere(const Vector2 &p_point, real_t p_radius) const {
-	// convert screen coordinates to normalized coordinates (-1 to 1)
-	Vector2 viewport_size = get_size();
-	Vector2 normalized = Vector2(
-			(2.0 * p_point.x / viewport_size.x) - 1.0,
-			1.0 - (2.0 * p_point.y / viewport_size.y));
-
-	real_t length_squared = normalized.length_squared();
-	real_t radius_squared = p_radius * p_radius;
-
-	// make sure it doesn't misbehave if we click outside the virtual sphere or near the edges
-	Vector3 result;
-	if (length_squared <= radius_squared * 0.5) {
-		// we're dragging on the sphere
-		result = Vector3(normalized.x, normalized.y, Math::sqrt(radius_squared - length_squared));
-	} else {
-		// we're outside sphere, project to edge (hyperbolic sheet)
-		// https://raw.org/code/trackball-rotation-using-quaternions/
-		real_t z = radius_squared * 0.5 / Math::sqrt(length_squared);
-		result = Vector3(normalized.x, normalized.y, z);
-	}
-
-	return result.normalized();
-}
-
-Quaternion Node3DEditorViewport::_arcball_compute_rotation(const Vector2 &p_from, const Vector2 &p_to, real_t p_radius) const {
-	Vector3 from_sphere = _arcball_project_to_sphere(p_from, p_radius);
-	Vector3 to_sphere = _arcball_project_to_sphere(p_to, p_radius);
-
-	// ensure vectors are properly normalized
-	from_sphere = from_sphere.normalized();
-	to_sphere = to_sphere.normalized();
-
-	Vector3 axis = from_sphere.cross(to_sphere);
-	real_t axis_length = axis.length();
-
-	if (axis_length < CMP_EPSILON) {
-		// no rotation or vectors are parallel/antiparallel
-		return Quaternion();
-	}
-
-	// calculate angle using dot product, clamped to avoid numerical errors
-	real_t dot_product = CLAMP(from_sphere.dot(to_sphere), -1.0, 1.0);
-	real_t angle = Math::acos(dot_product);
-
-	// make sure the axis is normalized and valid
-	axis = axis.normalized();
-	if (!axis.is_normalized() || Math::is_nan(axis.x) || Math::is_nan(axis.y) || Math::is_nan(axis.z)) {
-		return Quaternion();
-	}
-
-	// create rotation in camera-local coordinate system
-	return Quaternion(axis, angle);
-}
-
-bool Node3DEditorViewport::_is_arcball_mode_enabled() const {
-	return int(EDITOR_GET("editors/3d/rotation/rotation_gizmo_mode")) == ROTATION_GIZMO_ARCBALL;
-}
-
-bool Node3DEditorViewport::_is_arcball_invert_enabled() const {
-	return EDITOR_GET("editors/3d/rotation/arcball_invert");
 }
 
 void Node3DEditorViewport::_surface_mouse_enter() {
@@ -3450,31 +3324,25 @@ void Node3DEditorViewport::_notification(int p_what) {
 				// Color labels depending on performance level ("good" = green, "OK" = yellow, "bad" = red).
 				// Middle point is at 15 ms.
 				cpu_time_label->set_text(vformat(TTR("CPU Time: %s ms"), rtos(cpu_time).pad_decimals(2)));
-				//cpu_time_label->add_theme_color_override(
-				//		SceneStringName(font_color),
-				//		frame_time_gradient->get_color_at_offset(
-				//				Math::remap(cpu_time, 0, 30, 0, 1)));
-				cpu_time_label->set_modulate(frame_time_gradient->get_color_at_offset(
-						Math::remap(cpu_time, 0, 30, 0, 1)));
+				cpu_time_label->add_theme_color_override(
+						SceneStringName(font_color),
+						frame_time_gradient->get_color_at_offset(
+								Math::remap(cpu_time, 0, 30, 0, 1)));
 
 				gpu_time_label->set_text(vformat(TTR("GPU Time: %s ms"), rtos(gpu_time).pad_decimals(2)));
 				// Middle point is at 15 ms.
-				//gpu_time_label->add_theme_color_override(
-				//		SceneStringName(font_color),
-				//		frame_time_gradient->get_color_at_offset(
-				//				Math::remap(gpu_time, 0, 30, 0, 1)));
-				gpu_time_label->set_modulate(frame_time_gradient->get_color_at_offset(
-						Math::remap(gpu_time, 0, 30, 0, 1)));
+				gpu_time_label->add_theme_color_override(
+						SceneStringName(font_color),
+						frame_time_gradient->get_color_at_offset(
+								Math::remap(gpu_time, 0, 30, 0, 1)));
 
 				const double fps = 1000.0 / gpu_time;
 				fps_label->set_text(vformat(TTR("FPS: %d"), fps));
 				// Middle point is at 60 FPS.
-				//fps_label->add_theme_color_override(
-				//		SceneStringName(font_color),
-				//		frame_time_gradient->get_color_at_offset(
-				//				Math::remap(fps, 110, 10, 0, 1)));
-				fps_label->set_modulate(frame_time_gradient->get_color_at_offset(
-						Math::remap(fps, 110, 10, 0, 1)));
+				fps_label->add_theme_color_override(
+						SceneStringName(font_color),
+						frame_time_gradient->get_color_at_offset(
+								Math::remap(fps, 110, 10, 0, 1)));
 			}
 
 			if (lock_rotation) {
@@ -3679,9 +3547,6 @@ void Node3DEditorViewport::_draw() {
 
 		Color handle_color;
 		switch (_edit.plane) {
-			case TRANSFORM_VIEW:
-				handle_color = Color(1.0, 1.0, 1.0, 1.0);
-				break;
 			case TRANSFORM_X_AXIS:
 				handle_color = get_theme_color(SNAME("axis_x_color"), EditorStringName(Editor));
 				break;
@@ -4341,6 +4206,15 @@ void Node3DEditorViewport::_init_gizmo_instance(int p_idx) {
 		RS::get_singleton()->instance_geometry_set_flag(move_plane_gizmo_instance[i], RS::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, true);
 		RS::get_singleton()->instance_geometry_set_flag(move_plane_gizmo_instance[i], RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
 
+		rotate_gizmo_instance[i] = RS::get_singleton()->instance_create();
+		RS::get_singleton()->instance_set_base(rotate_gizmo_instance[i], spatial_editor->get_rotate_gizmo(i)->get_rid());
+		RS::get_singleton()->instance_set_scenario(rotate_gizmo_instance[i], get_tree()->get_root()->get_world_3d()->get_scenario());
+		RS::get_singleton()->instance_set_visible(rotate_gizmo_instance[i], false);
+		RS::get_singleton()->instance_geometry_set_cast_shadows_setting(rotate_gizmo_instance[i], RS::SHADOW_CASTING_SETTING_OFF);
+		RS::get_singleton()->instance_set_layer_mask(rotate_gizmo_instance[i], layer);
+		RS::get_singleton()->instance_geometry_set_flag(rotate_gizmo_instance[i], RS::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, true);
+		RS::get_singleton()->instance_geometry_set_flag(rotate_gizmo_instance[i], RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
+
 		scale_gizmo_instance[i] = RS::get_singleton()->instance_create();
 		RS::get_singleton()->instance_set_base(scale_gizmo_instance[i], spatial_editor->get_scale_gizmo(i)->get_rid());
 		RS::get_singleton()->instance_set_scenario(scale_gizmo_instance[i], get_tree()->get_root()->get_world_3d()->get_scenario());
@@ -4360,9 +4234,6 @@ void Node3DEditorViewport::_init_gizmo_instance(int p_idx) {
 		RS::get_singleton()->instance_geometry_set_flag(scale_plane_gizmo_instance[i], RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
 
 		axis_gizmo_instance[i] = RS::get_singleton()->instance_create();
-	}
-
-	for (int i = 0; i < 3; i++) {
 		RS::get_singleton()->instance_set_base(axis_gizmo_instance[i], spatial_editor->get_axis_gizmo(i)->get_rid());
 		RS::get_singleton()->instance_set_scenario(axis_gizmo_instance[i], get_tree()->get_root()->get_world_3d()->get_scenario());
 		RS::get_singleton()->instance_set_visible(axis_gizmo_instance[i], true);
@@ -4372,26 +4243,15 @@ void Node3DEditorViewport::_init_gizmo_instance(int p_idx) {
 		RS::get_singleton()->instance_geometry_set_flag(axis_gizmo_instance[i], RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
 	}
 
-	for (int i = 0; i < 4; i++) {
-		rotate_gizmo_instance[i] = RS::get_singleton()->instance_create();
-		RS::get_singleton()->instance_set_base(rotate_gizmo_instance[i], spatial_editor->get_rotate_gizmo(i)->get_rid());
-		RS::get_singleton()->instance_set_scenario(rotate_gizmo_instance[i], get_tree()->get_root()->get_world_3d()->get_scenario());
-		RS::get_singleton()->instance_set_visible(rotate_gizmo_instance[i], false);
-		RS::get_singleton()->instance_geometry_set_cast_shadows_setting(rotate_gizmo_instance[i], RS::SHADOW_CASTING_SETTING_OFF);
-		RS::get_singleton()->instance_set_layer_mask(rotate_gizmo_instance[i], layer);
-		RS::get_singleton()->instance_geometry_set_flag(rotate_gizmo_instance[i], RS::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, true);
-		RS::get_singleton()->instance_geometry_set_flag(rotate_gizmo_instance[i], RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
-	}
-
-	// Create trackball sphere instance
-	trackball_sphere_instance = RS::get_singleton()->instance_create();
-	RS::get_singleton()->instance_set_base(trackball_sphere_instance, spatial_editor->get_trackball_sphere_gizmo()->get_rid());
-	RS::get_singleton()->instance_set_scenario(trackball_sphere_instance, get_tree()->get_root()->get_world_3d()->get_scenario());
-	RS::get_singleton()->instance_set_visible(trackball_sphere_instance, false);
-	RS::get_singleton()->instance_geometry_set_cast_shadows_setting(trackball_sphere_instance, RS::SHADOW_CASTING_SETTING_OFF);
-	RS::get_singleton()->instance_set_layer_mask(trackball_sphere_instance, layer);
-	RS::get_singleton()->instance_geometry_set_flag(trackball_sphere_instance, RS::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, true);
-	RS::get_singleton()->instance_geometry_set_flag(trackball_sphere_instance, RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
+	// Rotation white outline
+	rotate_gizmo_instance[3] = RS::get_singleton()->instance_create();
+	RS::get_singleton()->instance_set_base(rotate_gizmo_instance[3], spatial_editor->get_rotate_gizmo(3)->get_rid());
+	RS::get_singleton()->instance_set_scenario(rotate_gizmo_instance[3], get_tree()->get_root()->get_world_3d()->get_scenario());
+	RS::get_singleton()->instance_set_visible(rotate_gizmo_instance[3], false);
+	RS::get_singleton()->instance_geometry_set_cast_shadows_setting(rotate_gizmo_instance[3], RS::SHADOW_CASTING_SETTING_OFF);
+	RS::get_singleton()->instance_set_layer_mask(rotate_gizmo_instance[3], layer);
+	RS::get_singleton()->instance_geometry_set_flag(rotate_gizmo_instance[3], RS::INSTANCE_FLAG_IGNORE_OCCLUSION_CULLING, true);
+	RS::get_singleton()->instance_geometry_set_flag(rotate_gizmo_instance[3], RS::INSTANCE_FLAG_USE_BAKED_LIGHT, false);
 }
 
 void Node3DEditorViewport::_finish_gizmo_instances() {
@@ -4503,6 +4363,7 @@ void Node3DEditorViewport::update_transform_gizmo_view() {
 			RenderingServer::get_singleton()->instance_set_visible(scale_plane_gizmo_instance[i], false);
 			RenderingServer::get_singleton()->instance_set_visible(axis_gizmo_instance[i], false);
 		}
+		// Rotation white outline
 		RenderingServer::get_singleton()->instance_set_visible(rotate_gizmo_instance[3], false);
 		return;
 	}
@@ -4535,6 +4396,7 @@ void Node3DEditorViewport::update_transform_gizmo_view() {
 			RenderingServer::get_singleton()->instance_set_visible(scale_gizmo_instance[i], false);
 			RenderingServer::get_singleton()->instance_set_visible(scale_plane_gizmo_instance[i], false);
 		}
+		// Rotation white outline
 		RenderingServer::get_singleton()->instance_set_visible(rotate_gizmo_instance[3], false);
 		return;
 	}
@@ -4563,18 +4425,7 @@ void Node3DEditorViewport::update_transform_gizmo_view() {
 		RenderingServer::get_singleton()->instance_set_transform(axis_gizmo_instance[i], xform);
 	}
 
-	Transform3D view_rotation_xform = xform;
-	view_rotation_xform.orthonormalize();
-	view_rotation_xform.basis.scale(scale);
-	RenderingServer::get_singleton()->instance_set_transform(rotate_gizmo_instance[3], view_rotation_xform);
-	RenderingServer::get_singleton()->instance_set_visible(rotate_gizmo_instance[3], show_rotate_gizmo);
-
-	bool can_show_trackball = spatial_editor->is_gizmo_visible() && !_edit.instant && transform_gizmo_visible && !collision_reposition && !hide_during_rotation;
-	bool show_trackball_sphere = can_show_trackball && (spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_SELECT || spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_ROTATE) && !hide_during_trackball;
-	RenderingServer::get_singleton()->instance_set_transform(trackball_sphere_instance, view_rotation_xform);
-	RenderingServer::get_singleton()->instance_set_visible(trackball_sphere_instance, show_trackball_sphere);
-
-	bool show_axes = spatial_editor->is_gizmo_visible() && _edit.mode != TRANSFORM_NONE && !hide_during_trackball;
+	bool show_axes = spatial_editor->is_gizmo_visible() && _edit.mode != TRANSFORM_NONE;
 	RenderingServer *rs = RenderingServer::get_singleton();
 	rs->instance_set_visible(axis_gizmo_instance[0], show_axes && (_edit.plane == TRANSFORM_X_AXIS || _edit.plane == TRANSFORM_XY || _edit.plane == TRANSFORM_XZ));
 	rs->instance_set_visible(axis_gizmo_instance[1], show_axes && (_edit.plane == TRANSFORM_Y_AXIS || _edit.plane == TRANSFORM_XY || _edit.plane == TRANSFORM_YZ));
@@ -5781,58 +5632,61 @@ void Node3DEditorViewport::update_transform(bool p_shift) {
 				plane = Plane(_get_camera_normal(), _edit.center);
 			}
 
-			// if we're arcballing
-			if (_edit.plane == TRANSFORM_VIEW && _is_arcball_mode_enabled()) {
-				// calculate mouse movement in screen space
-				Vector2 mouse_delta = _edit.mouse_pos - _edit.original_mouse_pos;
+			Vector3 local_axis;
+			Vector3 global_axis;
+			switch (_edit.plane) {
+				case TRANSFORM_VIEW:
+					// local_axis unused
+					global_axis = plane.normal;
+					break;
+				case TRANSFORM_X_AXIS:
+					local_axis = Vector3(1, 0, 0);
+					break;
+				case TRANSFORM_Y_AXIS:
+					local_axis = Vector3(0, 1, 0);
+					break;
+				case TRANSFORM_Z_AXIS:
+					local_axis = Vector3(0, 0, 1);
+					break;
+				case TRANSFORM_YZ:
+				case TRANSFORM_XZ:
+				case TRANSFORM_XY:
+					break;
+			}
 
-				// get camera transform for proper coordinate mapping
-				Transform3D camera_transform = camera->get_global_transform();
-				Vector3 camera_right = camera_transform.basis.get_column(0).normalized();
-				Vector3 camera_up = camera_transform.basis.get_column(1).normalized();
+			if (_edit.plane != TRANSFORM_VIEW) {
+				global_axis = spatial_editor->get_gizmo_transform().basis.xform(local_axis).normalized();
+			}
 
-				// Scale factor for responsiveness - smaller values = more sensitive
-				real_t sensitivity = 0.005;
+			Vector3 intersection;
+			if (!plane.intersects_ray(ray_pos, ray, &intersection)) {
+				break;
+			}
 
-				// invert or not?
-				real_t invert_factor = _is_arcball_invert_enabled() ? -1.0 : 1.0;
+			Vector3 click;
+			if (!plane.intersects_ray(_edit.click_ray_pos, _edit.click_ray, &click)) {
+				break;
+			}
 
-				Vector3 current_rotation_vector = (intersection - _edit.center).normalized();
+			Vector3 current_rotation_vector = (intersection - _edit.center).normalized();
 
-				if (_edit.initial_click_vector == Vector3()) {
-					_edit.initial_click_vector = (click - _edit.center).normalized();
-					_edit.previous_rotation_vector = current_rotation_vector;
-					_edit.accumulated_rotation_angle = 0.0;
-					_edit.display_rotation_angle = 0.0;
-				}
+			if (_edit.initial_click_vector == Vector3()) {
+				_edit.initial_click_vector = (click - _edit.center).normalized();
+				_edit.previous_rotation_vector = current_rotation_vector;
+				_edit.accumulated_rotation_angle = 0.0;
+				_edit.display_rotation_angle = 0.0;
+			}
 
-				static const float orthogonal_threshold = Math::cos(Math::deg_to_rad(85.0f));
-				bool axis_is_orthogonal = Math::abs(plane.normal.dot(global_axis)) < orthogonal_threshold;
+			static const float orthogonal_threshold = Math::cos(Math::deg_to_rad(85.0f));
+			bool axis_is_orthogonal = Math::abs(plane.normal.dot(global_axis)) < orthogonal_threshold;
 
-				// make separate rotations for each axis
-				Quaternion horizontal_rotation = Quaternion(camera_up, horizontal_angle);
-				Quaternion vertical_rotation = Quaternion(camera_right, vertical_angle);
-
-				// now combine the two rotations, we want horizontal first to make it feel natural
-				Quaternion combined_rotation = horizontal_rotation * vertical_rotation;
-
-				// convert back to axis-angle for apply_transform
-				Vector3 final_axis;
-				real_t final_angle;
-				combined_rotation.get_axis_angle(final_axis, final_angle);
-
-				// nan check
-				if (final_axis.length() > CMP_EPSILON && final_axis.is_normalized() &&
-						!Math::is_nan(final_axis.x) && !Math::is_nan(final_axis.y) && !Math::is_nan(final_axis.z)) {
-					// snapping while arcballing feels weird, just add a message
-					String msg = vformat(TTR("Arcball Rotating %s degrees."), String::num(Math::rad_to_deg(final_angle), snap_step_decimals));
-					if (_edit.snap || spatial_editor->is_snap_enabled()) {
-						msg += TTR(" (Snapping not supported in arcball mode)");
-					}
-
-					set_message(msg);
-					apply_transform(final_axis, final_angle);
-				}
+			double angle = 0.0f;
+			if (axis_is_orthogonal) {
+				_edit.show_rotation_line = false;
+				Vector3 projection_axis = plane.normal.cross(global_axis);
+				Vector3 delta = intersection - click;
+				float projection = delta.dot(projection_axis);
+				angle = (projection * (Math::PI / 2.0f)) / (gizmo_scale * GIZMO_CIRCLE_SIZE);
 			} else {
 				_edit.show_rotation_line = true;
 				Vector3 click_axis = (click - _edit.center).normalized();
@@ -6737,22 +6591,10 @@ void Node3DEditor::select_gizmo_highlight_axis(int p_axis) {
 	for (int i = 0; i < 3; i++) {
 		move_gizmo[i]->surface_set_material(0, i == p_axis ? gizmo_color_hl[i] : gizmo_color[i]);
 		move_plane_gizmo[i]->surface_set_material(0, (i + 6) == p_axis ? plane_gizmo_color_hl[i] : plane_gizmo_color[i]);
+		rotate_gizmo[i]->surface_set_material(0, (i + 3) == p_axis ? rotate_gizmo_color_hl[i] : rotate_gizmo_color[i]);
 		scale_gizmo[i]->surface_set_material(0, (i + 9) == p_axis ? gizmo_color_hl[i] : gizmo_color[i]);
 		scale_plane_gizmo[i]->surface_set_material(0, (i + 12) == p_axis ? plane_gizmo_color_hl[i] : plane_gizmo_color[i]);
 	}
-
-	for (int i = 0; i < 4; i++) {
-		bool highlight;
-		if (i == 3) {
-			highlight = (p_axis == GIZMO_HIGHLIGHT_AXIS_VIEW_ROTATION);
-		} else {
-			highlight = (i + 3) == p_axis;
-		}
-		rotate_gizmo[i]->surface_set_material(0, highlight ? rotate_gizmo_color_hl[i] : rotate_gizmo_color[i]);
-	}
-
-	bool highlight_trackball = (p_axis == GIZMO_HIGHLIGHT_AXIS_TRACKBALL);
-	trackball_sphere_gizmo->surface_set_material(0, highlight_trackball ? trackball_sphere_material_hl : trackball_sphere_material);
 }
 
 void Node3DEditor::update_transform_gizmo() {
@@ -7739,7 +7581,7 @@ void fragment() {
 		Vector3 ivec2 = Vector3(-1, 0, 0);
 		Vector3 ivec3 = Vector3(0, -1, 0);
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 3; i++) {
 			Color col;
 			switch (i) {
 				case 0:
@@ -7751,146 +7593,124 @@ void fragment() {
 				case 2:
 					col = get_theme_color(SNAME("axis_z_color"), EditorStringName(Editor));
 					break;
-				case 3:
-					col = Color(0.75, 0.75, 0.75, 1.0);
-					break;
 				default:
 					col = Color();
 					break;
 			}
 
-			if (i < 3) {
-				col.a = EDITOR_GET("editors/3d/manipulator_gizmo_opacity");
-			}
+			col.a = EDITOR_GET("editors/3d/manipulator_gizmo_opacity");
 
-			if (i < 3) {
-				move_gizmo[i].instantiate();
-				move_plane_gizmo[i].instantiate();
-				scale_gizmo[i].instantiate();
-				scale_plane_gizmo[i].instantiate();
-				axis_gizmo[i].instantiate();
-			}
-
+			move_gizmo[i].instantiate();
+			move_plane_gizmo[i].instantiate();
 			rotate_gizmo[i].instantiate();
+			scale_gizmo[i].instantiate();
+			scale_plane_gizmo[i].instantiate();
+			axis_gizmo[i].instantiate();
 
+			Ref<StandardMaterial3D> mat = memnew(StandardMaterial3D);
+			mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
+			mat->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
+			mat->set_on_top_of_alpha();
+			mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
+			mat->set_albedo(col);
+			gizmo_color[i] = mat;
+
+			Ref<StandardMaterial3D> mat_hl = mat->duplicate();
 			const Color albedo = col.from_hsv(col.get_h(), 0.25, 1.0, 1);
+			mat_hl->set_albedo(albedo);
+			gizmo_color_hl[i] = mat_hl;
 
-			Ref<StandardMaterial3D> mat;
-			Ref<StandardMaterial3D> mat_hl;
-
-			if (i < 3) {
-				// Only create standard materials for X, Y, Z axes (move/scale gizmos)
-				mat.instantiate();
-				mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
-				mat->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
-				mat->set_on_top_of_alpha();
-				mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
-				mat->set_albedo(col);
-				gizmo_color[i] = mat;
-
-				mat_hl = mat->duplicate();
-				mat_hl->set_albedo(albedo);
-				gizmo_color_hl[i] = mat_hl;
-			}
-
-			// Only create translate gizmo for X, Y, Z axes (not view rotation)
-			if (i < 3) {
-				//translate
-				{
-					Ref<SurfaceTool> surftool;
-					surftool.instantiate();
-					surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
-
-					// Arrow profile
-					const int arrow_points = 5;
-					Vector3 arrow[5] = {
-						nivec * 0.0 + ivec * 0.0,
-						nivec * 0.01 + ivec * 0.0,
-						nivec * 0.01 + ivec * GIZMO_ARROW_OFFSET,
-						nivec * 0.065 + ivec * GIZMO_ARROW_OFFSET,
-						nivec * 0.0 + ivec * (GIZMO_ARROW_OFFSET + GIZMO_ARROW_SIZE),
-					};
-
-					int arrow_sides = 16;
-
-					const real_t arrow_sides_step = Math::TAU / arrow_sides;
-					for (int k = 0; k < arrow_sides; k++) {
-						Basis ma(ivec, k * arrow_sides_step);
-						Basis mb(ivec, (k + 1) * arrow_sides_step);
-
-						for (int j = 0; j < arrow_points - 1; j++) {
-							Vector3 points[4] = {
-								ma.xform(arrow[j]),
-								mb.xform(arrow[j]),
-								mb.xform(arrow[j + 1]),
-								ma.xform(arrow[j + 1]),
-							};
-							surftool->add_vertex(points[0]);
-							surftool->add_vertex(points[1]);
-							surftool->add_vertex(points[2]);
-
-							surftool->add_vertex(points[0]);
-							surftool->add_vertex(points[2]);
-							surftool->add_vertex(points[3]);
-						}
-					}
-
-					surftool->set_material(mat);
-					surftool->commit(move_gizmo[i]);
-				}
-
-				// Plane Translation
-				{
-					Ref<SurfaceTool> surftool;
-					surftool.instantiate();
-					surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
-
-					Vector3 vec = ivec2 - ivec3;
-					Vector3 plane[4] = {
-						vec * GIZMO_PLANE_DST,
-						vec * GIZMO_PLANE_DST + ivec2 * GIZMO_PLANE_SIZE,
-						vec * (GIZMO_PLANE_DST + GIZMO_PLANE_SIZE),
-						vec * GIZMO_PLANE_DST - ivec3 * GIZMO_PLANE_SIZE
-					};
-
-					Basis ma(ivec, Math::PI / 2);
-
-					Vector3 points[4] = {
-						ma.xform(plane[0]),
-						ma.xform(plane[1]),
-						ma.xform(plane[2]),
-						ma.xform(plane[3]),
-					};
-					surftool->add_vertex(points[0]);
-					surftool->add_vertex(points[1]);
-					surftool->add_vertex(points[2]);
-
-					surftool->add_vertex(points[0]);
-					surftool->add_vertex(points[2]);
-					surftool->add_vertex(points[3]);
-
-					Ref<StandardMaterial3D> plane_mat;
-					plane_mat.instantiate();
-					plane_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
-					plane_mat->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
-					plane_mat->set_on_top_of_alpha();
-					plane_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
-					plane_mat->set_cull_mode(StandardMaterial3D::CULL_DISABLED);
-					plane_mat->set_albedo(col);
-					plane_gizmo_color[i] = plane_mat; // needed, so we can draw planes from both sides
-					surftool->set_material(plane_mat);
-					surftool->commit(move_plane_gizmo[i]);
-
-					Ref<StandardMaterial3D> plane_mat_hl = plane_mat->duplicate();
-					plane_mat_hl->set_albedo(albedo);
-					plane_gizmo_color_hl[i] = plane_mat_hl; // needed, so we can draw planes from both sides
-				}
-			}
-
-			// Rotate - for all 4 indices (X, Y, Z, and view rotation)
+			//translate
 			{
-				Ref<SurfaceTool> surftool;
-				surftool.instantiate();
+				Ref<SurfaceTool> surftool = memnew(SurfaceTool);
+				surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
+
+				// Arrow profile
+				const int arrow_points = 5;
+				Vector3 arrow[5] = {
+					nivec * 0.0 + ivec * 0.0,
+					nivec * 0.01 + ivec * 0.0,
+					nivec * 0.01 + ivec * GIZMO_ARROW_OFFSET,
+					nivec * 0.065 + ivec * GIZMO_ARROW_OFFSET,
+					nivec * 0.0 + ivec * (GIZMO_ARROW_OFFSET + GIZMO_ARROW_SIZE),
+				};
+
+				int arrow_sides = 16;
+
+				const real_t arrow_sides_step = Math::TAU / arrow_sides;
+				for (int k = 0; k < arrow_sides; k++) {
+					Basis ma(ivec, k * arrow_sides_step);
+					Basis mb(ivec, (k + 1) * arrow_sides_step);
+
+					for (int j = 0; j < arrow_points - 1; j++) {
+						Vector3 points[4] = {
+							ma.xform(arrow[j]),
+							mb.xform(arrow[j]),
+							mb.xform(arrow[j + 1]),
+							ma.xform(arrow[j + 1]),
+						};
+						surftool->add_vertex(points[0]);
+						surftool->add_vertex(points[1]);
+						surftool->add_vertex(points[2]);
+
+						surftool->add_vertex(points[0]);
+						surftool->add_vertex(points[2]);
+						surftool->add_vertex(points[3]);
+					}
+				}
+
+				surftool->set_material(mat);
+				surftool->commit(move_gizmo[i]);
+			}
+
+			// Plane Translation
+			{
+				Ref<SurfaceTool> surftool = memnew(SurfaceTool);
+				surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
+
+				Vector3 vec = ivec2 - ivec3;
+				Vector3 plane[4] = {
+					vec * GIZMO_PLANE_DST,
+					vec * GIZMO_PLANE_DST + ivec2 * GIZMO_PLANE_SIZE,
+					vec * (GIZMO_PLANE_DST + GIZMO_PLANE_SIZE),
+					vec * GIZMO_PLANE_DST - ivec3 * GIZMO_PLANE_SIZE
+				};
+
+				Basis ma(ivec, Math::PI / 2);
+
+				Vector3 points[4] = {
+					ma.xform(plane[0]),
+					ma.xform(plane[1]),
+					ma.xform(plane[2]),
+					ma.xform(plane[3]),
+				};
+				surftool->add_vertex(points[0]);
+				surftool->add_vertex(points[1]);
+				surftool->add_vertex(points[2]);
+
+				surftool->add_vertex(points[0]);
+				surftool->add_vertex(points[2]);
+				surftool->add_vertex(points[3]);
+
+				Ref<StandardMaterial3D> plane_mat = memnew(StandardMaterial3D);
+				plane_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
+				plane_mat->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
+				plane_mat->set_on_top_of_alpha();
+				plane_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
+				plane_mat->set_cull_mode(StandardMaterial3D::CULL_DISABLED);
+				plane_mat->set_albedo(col);
+				plane_gizmo_color[i] = plane_mat; // needed, so we can draw planes from both sides
+				surftool->set_material(plane_mat);
+				surftool->commit(move_plane_gizmo[i]);
+
+				Ref<StandardMaterial3D> plane_mat_hl = plane_mat->duplicate();
+				plane_mat_hl->set_albedo(albedo);
+				plane_gizmo_color_hl[i] = plane_mat_hl; // needed, so we can draw planes from both sides
+			}
+
+			// Rotate
+			{
+				Ref<SurfaceTool> surftool = memnew(SurfaceTool);
 				surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
 
 				int n = 128; // number of circle segments
@@ -7900,8 +7720,7 @@ void fragment() {
 				for (int j = 0; j < n; ++j) {
 					Basis basis = Basis(ivec, j * step);
 
-					real_t circle_size = (i == 3) ? GIZMO_VIEW_ROTATION_SIZE : GIZMO_CIRCLE_SIZE;
-					Vector3 vertex = basis.xform(ivec2 * circle_size);
+					Vector3 vertex = basis.xform(ivec2 * GIZMO_CIRCLE_SIZE);
 
 					for (int k = 0; k < m; ++k) {
 						Vector2 ofs = Vector2(Math::cos((Math::TAU * k) / m), Math::sin((Math::TAU * k) / m));
@@ -7931,9 +7750,8 @@ void fragment() {
 
 				Ref<Shader> rotate_shader = memnew(Shader);
 
-				// Use special shader for view rotation (index 3) with camera-relative transformation
-				if (i == 3) {
-					rotate_shader->set_code(R"(
+				rotate_shader->set_code(R"(
+// 3D editor rotation manipulator gizmo shader.
 
 shader_type spatial;
 
@@ -7951,12 +7769,11 @@ mat3 orthonormalize(mat3 m) {
 
 void vertex() {
 	mat3 mv = orthonormalize(mat3(MODELVIEW_MATRIX));
-	mv = inverse(mv);
-	VERTEX += NORMAL * 0.008;
-	vec3 camera_dir_local = mv * vec3(0.0, 0.0, 1.0);
-	vec3 camera_up_local = mv * vec3(0.0, 1.0, 0.0);
-	mat3 rotation_matrix = mat3(cross(camera_dir_local, camera_up_local), camera_up_local, camera_dir_local);
-	VERTEX = rotation_matrix * VERTEX;
+	vec3 n = mv * VERTEX;
+	float orientation = dot(vec3(0.0, 0.0, -1.0), n);
+	if (orientation <= 0.005) {
+		VERTEX += NORMAL * 0.02;
+	}
 }
 
 void fragment() {
@@ -7964,10 +7781,27 @@ void fragment() {
 	ALPHA = albedo.a;
 }
 )");
-				} else {
-					// Standard shader for X, Y, Z rotation gizmos
-					rotate_shader->set_code(R"(
-// 3D editor rotation manipulator gizmo shader.
+
+				Ref<ShaderMaterial> rotate_mat = memnew(ShaderMaterial);
+				rotate_mat->set_render_priority(Material::RENDER_PRIORITY_MAX);
+				rotate_mat->set_shader(rotate_shader);
+				rotate_mat->set_shader_parameter("albedo", col);
+				rotate_gizmo_color[i] = rotate_mat;
+
+				Array arrays = surftool->commit_to_arrays();
+				rotate_gizmo[i]->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+				rotate_gizmo[i]->surface_set_material(0, rotate_mat);
+
+				Ref<ShaderMaterial> rotate_mat_hl = rotate_mat->duplicate();
+				rotate_mat_hl->set_shader_parameter("albedo", albedo);
+				rotate_gizmo_color_hl[i] = rotate_mat_hl;
+
+				if (i == 2) { // Rotation white outline
+					Ref<ShaderMaterial> border_mat = rotate_mat->duplicate();
+
+					Ref<Shader> border_shader = memnew(Shader);
+					border_shader->set_code(R"(
+// 3D editor rotation manipulator gizmo shader (white outline).
 
 shader_type spatial;
 
@@ -7985,11 +7819,12 @@ mat3 orthonormalize(mat3 m) {
 
 void vertex() {
 	mat3 mv = orthonormalize(mat3(MODELVIEW_MATRIX));
-	vec3 n = mv * VERTEX;
-	float orientation = dot(vec3(0.0, 0.0, -1.0), n);
-	if (orientation <= 0.005) {
-		VERTEX += NORMAL * 0.02;
-	}
+	mv = inverse(mv);
+	VERTEX += NORMAL * 0.008;
+	vec3 camera_dir_local = mv * vec3(0.0, 0.0, 1.0);
+	vec3 camera_up_local = mv * vec3(0.0, 1.0, 0.0);
+	mat3 rotation_matrix = mat3(cross(camera_dir_local, camera_up_local), camera_up_local, camera_dir_local);
+	VERTEX = rotation_matrix * VERTEX;
 }
 
 void fragment() {
@@ -7997,194 +7832,121 @@ void fragment() {
 	ALPHA = albedo.a;
 }
 )");
+
+					border_mat->set_shader(border_shader);
+					border_mat->set_shader_parameter("albedo", Color(0.75, 0.75, 0.75, col.a / 3.0));
+
+					rotate_gizmo[3].instantiate();
+					rotate_gizmo[3]->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
+					rotate_gizmo[3]->surface_set_material(0, border_mat);
 				}
-
-				Ref<ShaderMaterial> rotate_mat;
-				rotate_mat.instantiate();
-				rotate_mat->set_render_priority(Material::RENDER_PRIORITY_MAX);
-				rotate_mat->set_shader(rotate_shader);
-				rotate_mat->set_shader_parameter("albedo", col);
-				rotate_gizmo_color[i] = rotate_mat;
-
-				Array arrays = surftool->commit_to_arrays();
-				rotate_gizmo[i]->add_surface_from_arrays(Mesh::PRIMITIVE_TRIANGLES, arrays);
-				rotate_gizmo[i]->surface_set_material(0, rotate_mat);
-
-				Ref<ShaderMaterial> rotate_mat_hl = rotate_mat->duplicate();
-				// For view rotation, use bright white; for axes, use highlight color
-				Color highlight_color = (i == 3) ? Color(1.0, 1.0, 1.0, 1.0) : albedo;
-				rotate_mat_hl->set_shader_parameter("albedo", highlight_color);
-				rotate_gizmo_color_hl[i] = rotate_mat_hl;
 			}
 
-			// Only create scale gizmo for X, Y, Z axes (not view rotation)
-			if (i < 3) {
-				// Scale
-				{
-					Ref<SurfaceTool> surftool;
-					surftool.instantiate();
-					surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
+			// Scale
+			{
+				Ref<SurfaceTool> surftool = memnew(SurfaceTool);
+				surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
 
-					// Cube arrow profile
-					const int arrow_points = 6;
-					Vector3 arrow[6] = {
-						nivec * 0.0 + ivec * 0.0,
-						nivec * 0.01 + ivec * 0.0,
-						nivec * 0.01 + ivec * 1.0 * GIZMO_SCALE_OFFSET,
-						nivec * 0.07 + ivec * 1.0 * GIZMO_SCALE_OFFSET,
-						nivec * 0.07 + ivec * 1.11 * GIZMO_SCALE_OFFSET,
-						nivec * 0.0 + ivec * 1.11 * GIZMO_SCALE_OFFSET,
-					};
+				// Cube arrow profile
+				const int arrow_points = 6;
+				Vector3 arrow[6] = {
+					nivec * 0.0 + ivec * 0.0,
+					nivec * 0.01 + ivec * 0.0,
+					nivec * 0.01 + ivec * 1.0 * GIZMO_SCALE_OFFSET,
+					nivec * 0.07 + ivec * 1.0 * GIZMO_SCALE_OFFSET,
+					nivec * 0.07 + ivec * 1.11 * GIZMO_SCALE_OFFSET,
+					nivec * 0.0 + ivec * 1.11 * GIZMO_SCALE_OFFSET,
+				};
 
-					int arrow_sides = 4;
+				int arrow_sides = 4;
 
-					const real_t arrow_sides_step = Math::TAU / arrow_sides;
-					for (int k = 0; k < 4; k++) {
-						Basis ma(ivec, k * arrow_sides_step);
-						Basis mb(ivec, (k + 1) * arrow_sides_step);
+				const real_t arrow_sides_step = Math::TAU / arrow_sides;
+				for (int k = 0; k < 4; k++) {
+					Basis ma(ivec, k * arrow_sides_step);
+					Basis mb(ivec, (k + 1) * arrow_sides_step);
 
-						for (int j = 0; j < arrow_points - 1; j++) {
-							Vector3 points[4] = {
-								ma.xform(arrow[j]),
-								mb.xform(arrow[j]),
-								mb.xform(arrow[j + 1]),
-								ma.xform(arrow[j + 1]),
-							};
-							surftool->add_vertex(points[0]);
-							surftool->add_vertex(points[1]);
-							surftool->add_vertex(points[2]);
+					for (int j = 0; j < arrow_points - 1; j++) {
+						Vector3 points[4] = {
+							ma.xform(arrow[j]),
+							mb.xform(arrow[j]),
+							mb.xform(arrow[j + 1]),
+							ma.xform(arrow[j + 1]),
+						};
+						surftool->add_vertex(points[0]);
+						surftool->add_vertex(points[1]);
+						surftool->add_vertex(points[2]);
 
-							surftool->add_vertex(points[0]);
-							surftool->add_vertex(points[2]);
-							surftool->add_vertex(points[3]);
-						}
+						surftool->add_vertex(points[0]);
+						surftool->add_vertex(points[2]);
+						surftool->add_vertex(points[3]);
 					}
-
-					surftool->set_material(mat);
-					surftool->commit(scale_gizmo[i]);
 				}
 
-				// Plane Scale
-				{
-					Ref<SurfaceTool> surftool;
-					surftool.instantiate();
-					surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
+				surftool->set_material(mat);
+				surftool->commit(scale_gizmo[i]);
+			}
 
-					Vector3 vec = ivec2 - ivec3;
-					Vector3 plane[4] = {
-						vec * GIZMO_PLANE_DST,
-						vec * GIZMO_PLANE_DST + ivec2 * GIZMO_PLANE_SIZE,
-						vec * (GIZMO_PLANE_DST + GIZMO_PLANE_SIZE),
-						vec * GIZMO_PLANE_DST - ivec3 * GIZMO_PLANE_SIZE
-					};
+			// Plane Scale
+			{
+				Ref<SurfaceTool> surftool = memnew(SurfaceTool);
+				surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
 
-					Basis ma(ivec, Math::PI / 2);
+				Vector3 vec = ivec2 - ivec3;
+				Vector3 plane[4] = {
+					vec * GIZMO_PLANE_DST,
+					vec * GIZMO_PLANE_DST + ivec2 * GIZMO_PLANE_SIZE,
+					vec * (GIZMO_PLANE_DST + GIZMO_PLANE_SIZE),
+					vec * GIZMO_PLANE_DST - ivec3 * GIZMO_PLANE_SIZE
+				};
 
-					Vector3 points[4] = {
-						ma.xform(plane[0]),
-						ma.xform(plane[1]),
-						ma.xform(plane[2]),
-						ma.xform(plane[3]),
-					};
-					surftool->add_vertex(points[0]);
-					surftool->add_vertex(points[1]);
-					surftool->add_vertex(points[2]);
+				Basis ma(ivec, Math::PI / 2);
 
-					surftool->add_vertex(points[0]);
-					surftool->add_vertex(points[2]);
-					surftool->add_vertex(points[3]);
+				Vector3 points[4] = {
+					ma.xform(plane[0]),
+					ma.xform(plane[1]),
+					ma.xform(plane[2]),
+					ma.xform(plane[3]),
+				};
+				surftool->add_vertex(points[0]);
+				surftool->add_vertex(points[1]);
+				surftool->add_vertex(points[2]);
 
-					Ref<StandardMaterial3D> plane_mat;
-					plane_mat.instantiate();
-					plane_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
-					plane_mat->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
-					plane_mat->set_on_top_of_alpha();
-					plane_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
-					plane_mat->set_cull_mode(StandardMaterial3D::CULL_DISABLED);
-					plane_mat->set_albedo(col);
-					plane_gizmo_color[i] = plane_mat; // needed, so we can draw planes from both sides
-					surftool->set_material(plane_mat);
-					surftool->commit(scale_plane_gizmo[i]);
+				surftool->add_vertex(points[0]);
+				surftool->add_vertex(points[2]);
+				surftool->add_vertex(points[3]);
 
-					Ref<StandardMaterial3D> plane_mat_hl = plane_mat->duplicate();
-					plane_mat_hl->set_albedo(col.from_hsv(col.get_h(), 0.25, 1.0, 1));
-					plane_gizmo_color_hl[i] = plane_mat_hl; // needed, so we can draw planes from both sides
-				}
+				Ref<StandardMaterial3D> plane_mat = memnew(StandardMaterial3D);
+				plane_mat->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
+				plane_mat->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
+				plane_mat->set_on_top_of_alpha();
+				plane_mat->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
+				plane_mat->set_cull_mode(StandardMaterial3D::CULL_DISABLED);
+				plane_mat->set_albedo(col);
+				plane_gizmo_color[i] = plane_mat; // needed, so we can draw planes from both sides
+				surftool->set_material(plane_mat);
+				surftool->commit(scale_plane_gizmo[i]);
 
-				// Lines to visualize transforms locked to an axis/plane
-				{
-					Ref<SurfaceTool> surftool;
-					surftool.instantiate();
-					surftool->begin(Mesh::PRIMITIVE_LINE_STRIP);
+				Ref<StandardMaterial3D> plane_mat_hl = plane_mat->duplicate();
+				plane_mat_hl->set_albedo(col.from_hsv(col.get_h(), 0.25, 1.0, 1));
+				plane_gizmo_color_hl[i] = plane_mat_hl; // needed, so we can draw planes from both sides
+			}
 
-					Vector3 vec;
-					vec[i] = 1;
+			// Lines to visualize transforms locked to an axis/plane
+			{
+				Ref<SurfaceTool> surftool = memnew(SurfaceTool);
+				surftool->begin(Mesh::PRIMITIVE_LINE_STRIP);
 
-					// line extending through infinity(ish)
-					surftool->add_vertex(vec * -1048576);
-					surftool->add_vertex(Vector3());
-					surftool->add_vertex(vec * 1048576);
-					surftool->set_material(mat_hl);
-					surftool->commit(axis_gizmo[i]);
-				}
+				Vector3 vec;
+				vec[i] = 1;
+
+				// line extending through infinity(ish)
+				surftool->add_vertex(vec * -1048576);
+				surftool->add_vertex(Vector3());
+				surftool->add_vertex(vec * 1048576);
+				surftool->set_material(mat_hl);
+				surftool->commit(axis_gizmo[i]);
 			}
 		}
-	}
-
-	// Create trackball sphere
-	{
-		trackball_sphere_gizmo.instantiate();
-		Ref<SurfaceTool> surftool;
-		surftool.instantiate();
-		surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
-
-		const int sphere_rings = TRACKBALL_SPHERE_RINGS;
-		const int sphere_sectors = TRACKBALL_SPHERE_SECTORS;
-		const real_t sphere_radius = GIZMO_CIRCLE_SIZE;
-
-		for (int r = 0; r <= sphere_rings; ++r) {
-			for (int s = 0; s <= sphere_sectors; ++s) {
-				real_t ring_angle = Math::PI * r / sphere_rings;
-				real_t sector_angle = 2.0 * Math::PI * s / sphere_sectors;
-
-				Vector3 vertex(
-						sphere_radius * Math::sin(ring_angle) * Math::cos(sector_angle),
-						sphere_radius * Math::cos(ring_angle),
-						sphere_radius * Math::sin(ring_angle) * Math::sin(sector_angle));
-
-				surftool->set_normal(vertex.normalized());
-				surftool->add_vertex(vertex);
-			}
-		}
-
-		for (int r = 0; r < sphere_rings; ++r) {
-			for (int s = 0; s < sphere_sectors; ++s) {
-				int current = r * (sphere_sectors + 1) + s;
-				int next = current + sphere_sectors + 1;
-
-				surftool->add_index(current);
-				surftool->add_index(next);
-				surftool->add_index(current + 1);
-
-				surftool->add_index(current + 1);
-				surftool->add_index(next);
-				surftool->add_index(next + 1);
-			}
-		}
-
-		trackball_sphere_material.instantiate();
-		trackball_sphere_material->set_shading_mode(StandardMaterial3D::SHADING_MODE_UNSHADED);
-		trackball_sphere_material->set_flag(StandardMaterial3D::FLAG_DISABLE_FOG, true);
-		trackball_sphere_material->set_transparency(StandardMaterial3D::TRANSPARENCY_ALPHA);
-		trackball_sphere_material->set_cull_mode(StandardMaterial3D::CULL_DISABLED);
-		trackball_sphere_material->set_albedo(Color(1.0, 1.0, 1.0, 0.0));
-		trackball_sphere_material->set_flag(StandardMaterial3D::FLAG_DISABLE_DEPTH_TEST, true);
-
-		trackball_sphere_material_hl = trackball_sphere_material->duplicate();
-		trackball_sphere_material_hl->set_albedo(Color(1.0, 1.0, 1.0, TRACKBALL_HIGHLIGHT_ALPHA));
-
-		surftool->set_material(trackball_sphere_material);
-		surftool->commit(trackball_sphere_gizmo);
 	}
 
 	_generate_selection_boxes();

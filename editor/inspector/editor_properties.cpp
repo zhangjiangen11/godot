@@ -4182,6 +4182,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			} else if (p_hint == PROPERTY_HINT_ENUM_DYNAMIC_LIST) {
 				EditorPropertyTextEnum *editor = memnew(EditorPropertyTextEnum);
 				Vector<String> options;
+				Vector<String> option_names;
 				if (p_object->has_method(p_hint_text)) {
 					Array options_array = p_object->call(p_hint_text);
 					for (int i = 0; i < options_array.size(); i++) {
@@ -4189,7 +4190,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 						options.push_back(opt);
 					}
 				}
-				editor->setup(options, false, (p_hint == PROPERTY_HINT_ENUM_SUGGESTION));
+				editor->setup(options, option_names, false, (p_hint == PROPERTY_HINT_ENUM_SUGGESTION));
 				editor->set_dynamic(true, p_hint_text);
 				return editor;
 			} else if (p_hint == PROPERTY_HINT_INPUT_NAME) {
@@ -4388,7 +4389,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 						options.push_back(opt);
 					}
 				}
-				editor->setup(options, true, (p_hint == PROPERTY_HINT_ENUM_SUGGESTION));
+				editor->setup(options, Vector<String>(), true, (p_hint == PROPERTY_HINT_ENUM_SUGGESTION));
 				editor->set_dynamic(true, p_hint_text);
 				return editor;
 			} else if (p_hint == PROPERTY_HINT_INPUT_NAME) {

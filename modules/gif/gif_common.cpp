@@ -164,7 +164,7 @@ Error gif_load_from_buffer_t(T *p_dest, const uint8_t *p_buffer, int p_buffer_le
 			static_cast<ImageFrames *>(p_dest)->set_frame_delay(current_frame, delay);
 		}
 
-		const int row_size = current_frame_desc.Width * RGBA_COUNT;
+		int row_size = current_frame_desc.Width * RGBA_COUNT;
 		// What should happen after the frame has been drawn.
 		switch (gcb.DisposalMode) {
 			// Make the area of the current frame transparent.

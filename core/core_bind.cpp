@@ -1533,10 +1533,6 @@ void Thread::set_thread_safety_checks_enabled(bool p_enabled) {
 	set_current_thread_safe_for_nodes(!p_enabled);
 }
 
-bool Thread::is_main_thread() {
-	return ::Thread::is_main_thread();
-}
-
 void Thread::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start", "callable", "priority"), &Thread::start, DEFVAL(PRIORITY_NORMAL));
 	ClassDB::bind_method(D_METHOD("get_id"), &Thread::get_id);

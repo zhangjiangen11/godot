@@ -6299,11 +6299,6 @@ void RenderingDevice::swap_buffers(bool p_present) {
 	// Advance to the next frame and begin recording again.
 	frame = (frame + 1) % frames.size();
 	_begin_frame(true);
-
-	RID id = RID();
-	while (free_id_stack.pop(id)) {
-		rd_free(id);
-	}
 }
 
 void RenderingDevice::submit() {
@@ -7173,11 +7168,6 @@ uint64_t RenderingDevice::limit_get(Limit p_limit) const {
 
 void RenderingDevice::finalize() {
 	ERR_RENDER_THREAD_GUARD();
-
-	RID id = RID();
-	while (free_id_stack.pop(id)) {
-		rd_free(id);
-	}
 
 	if (!frames.is_empty()) {
 		// Wait for all frames to have finished rendering.
