@@ -34,6 +34,7 @@
 #include "core/input/input.h"
 #include "core/io/image_loader.h"
 #include "core/io/resource_loader.h"
+#include "core/message_manager.h"
 #include "core/object/message_queue.h"
 #include "core/object/worker_thread_pool.h"
 #include "core/os/os.h"
@@ -626,6 +627,7 @@ void SceneTree::iteration_prepare() {
 bool SceneTree::physics_process(double p_time) {
 	current_frame++;
 
+	MessageManager::get_singleton()->emit(SNAME("physics_process"), { p_time });
 	flush_transform_notifications();
 
 	if (MainLoop::physics_process(p_time)) {

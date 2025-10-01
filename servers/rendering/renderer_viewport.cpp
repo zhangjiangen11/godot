@@ -32,6 +32,7 @@
 
 #include "core/config/project_settings.h"
 #include "core/math/transform_interpolator.h"
+#include "core/message_manager.h"
 #include "core/object/worker_thread_pool.h"
 #include "renderer_canvas_cull.h"
 #include "renderer_scene_cull.h"
@@ -286,6 +287,7 @@ void RendererViewport::_configure_3d_render_buffers(Viewport *p_viewport) {
 }
 
 void RendererViewport::_draw_3d(Viewport *p_viewport) {
+	MessageManager::get_singleton()->emit(SNAME("viewport_draw_3d"), { p_viewport->scenario });
 #ifndef _3D_DISABLED
 	RENDER_TIMESTAMP("> Render 3D Scene");
 
@@ -319,6 +321,7 @@ void RendererViewport::_draw_3d(Viewport *p_viewport) {
 }
 
 void RendererViewport::_draw_viewport(Viewport *p_viewport) {
+	MessageManager::get_singleton()->emit(SNAME("viewport_predraw"), { p_viewport->scenario });
 	if (p_viewport->measure_render_time) {
 		String rt_id = "vp_begin_" + itos(p_viewport->self.get_id());
 		RSG::utilities->capture_timestamp(rt_id);
@@ -382,6 +385,7 @@ void RendererViewport::_draw_viewport(Viewport *p_viewport) {
 	}
 
 	if (can_draw_2d) {
+		MessageManager::get_singleton()->emit(SNAME("viewport_draw_2d"), { p_viewport->scenario });
 		RBMap<Viewport::CanvasKey, Viewport::CanvasData *> canvas_map;
 
 		Rect2 clip_rect(0, 0, p_viewport->size.x, p_viewport->size.y);
@@ -728,6 +732,7 @@ void RendererViewport::_draw_viewport(Viewport *p_viewport) {
 		RSG::utilities->capture_timestamp(rt_id);
 		timestamp_vp_map[rt_id] = p_viewport->self;
 	}
+	MessageManager::get_singleton()->emit(SNAME("viewport_post_draw"), { p_viewport->scenario });
 }
 
 void RendererViewport::draw_viewports(bool p_swap_buffers) {

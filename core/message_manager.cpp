@@ -123,6 +123,7 @@ void MessageManager::unregister_message(const StringName &p_message, const Calla
 	}
 	List<Callable>::Element *it = callables->find(p_callable);
 	if (it != nullptr) {
+		// 不破坏原有的List结构
 		it->get().clear();
 	}
 }
@@ -145,6 +146,7 @@ void MessageManager::unregister_enum_message(int64_t p_message, const Callable &
 	}
 	List<Callable>::Element *it = callables->find(p_callable);
 	if (it != nullptr) {
+		// 不破坏原有的List结构
 		it->get().clear();
 	}
 }
