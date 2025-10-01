@@ -1543,7 +1543,6 @@ void Thread::_bind_methods() {
 	ClassDB::bind_static_method("Thread", D_METHOD("is_main_thread"), &Thread::is_main_thread);
 	ClassDB::bind_static_method("Thread", D_METHOD("get_caller_id"), &Thread::get_caller_id);
 	ClassDB::bind_static_method("Thread", D_METHOD("set_thread_safety_checks_enabled", "enabled"), &Thread::set_thread_safety_checks_enabled);
-	ClassDB::bind_static_method("Thread", D_METHOD("is_main_thread"), &Thread::is_main_thread);
 
 	BIND_ENUM_CONSTANT(PRIORITY_LOW);
 	BIND_ENUM_CONSTANT(PRIORITY_NORMAL);
