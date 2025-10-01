@@ -156,7 +156,7 @@ protected:
 	void cb_update_options(OptionButton *p_ob);
 
 public:
-	void setup(const Vector<String> &p_options, bool p_string_name = false, bool p_loose_mode = false);
+	void setup(const Vector<String> &p_options, const Vector<String> &p_option_names = {}, bool p_string_name = false, bool p_loose_mode = false);
 	virtual void update_property() override;
 	void set_dynamic(bool p_is_dynamic, const String &p_method) {
 		is_dynamic_options = p_is_dynamic;

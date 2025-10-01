@@ -607,7 +607,7 @@ void Node2DMultiMaterial::remove_item(uint64_t p_owenr) {
 	while (it) {
 		if (it->owner == p_owenr) {
 			if (it->canvas_item.is_valid()) {
-				RenderingServer::get_singleton()->free(it->canvas_item);
+				RenderingServer::get_singleton()->free_rid(it->canvas_item);
 			}
 			items.erase(it);
 			break;
@@ -618,7 +618,7 @@ void Node2DMultiMaterial::remove_item(uint64_t p_owenr) {
 void Node2DMultiMaterial::clear() {
 	for (auto &it : items) {
 		if (it.canvas_item.is_valid()) {
-			RenderingServer::get_singleton()->free(it.canvas_item);
+			RenderingServer::get_singleton()->free_rid(it.canvas_item);
 		}
 	}
 	items.clear();

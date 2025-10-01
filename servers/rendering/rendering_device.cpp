@@ -173,7 +173,7 @@ void RenderingDevice::_free_dependencies(RID p_id) {
 	HashMap<RID, HashSet<RID>>::Iterator E = dependency_map.find(p_id);
 	if (E) {
 		while (E->value.size()) {
-			rd_free(*E->value.begin());
+			free_rid(*E->value.begin());
 		}
 		dependency_map.remove(E);
 	}
@@ -6054,15 +6054,11 @@ bool RenderingDevice::_dependencies_make_mutable(RID p_id, RDG::ResourceTracker 
 /**** FRAME MANAGEMENT ****/
 /**************************/
 
-void RenderingDevice::free(RID p_id) {
-	rd_free(p_id);
-	//free_id_stack.push(p_id);
-}
-void RenderingDevice::rd_free(RID p_id) {
+void RenderingDevice::free_rid(RID p_rid) {
 	ERR_RENDER_THREAD_GUARD();
 
-	_free_dependencies(p_id); // Recursively erase dependencies first, to avoid potential API problems.
-	_free_internal(p_id);
+	_free_dependencies(p_rid); // Recursively erase dependencies first, to avoid potential API problems.
+	_free_internal(p_rid);
 }
 bool RenderingDevice::has_texture(RID p_id) {
 	return texture_owner.get_or_null(p_id) != nullptr;
@@ -7009,7 +7005,7 @@ void RenderingDevice::_free_rids(T &p_owner, const char *p_type) {
 				print_line(String(" - ") + resource_names[rid]);
 			}
 #endif
-			free(rid);
+			free_rid(rid);
 		}
 	}
 }
@@ -7227,7 +7223,7 @@ void RenderingDevice::finalize() {
 						print_line(String(" - ") + resource_names[texture_rid]);
 					}
 #endif
-					free(texture_rid);
+					free_rid(texture_rid);
 				} else {
 					owned_non_shared.push_back(texture_rid);
 				}
@@ -7239,7 +7235,7 @@ void RenderingDevice::finalize() {
 					print_line(String(" - ") + resource_names[texture_rid]);
 				}
 #endif
-				free(texture_rid);
+				free_rid(texture_rid);
 			}
 		}
 	}
@@ -7481,7 +7477,7 @@ void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("compute_list_add_barrier", "compute_list"), &RenderingDevice::compute_list_add_barrier);
 	ClassDB::bind_method(D_METHOD("compute_list_end"), &RenderingDevice::compute_list_end);
 
-	ClassDB::bind_method(D_METHOD("free_rid", "rid"), &RenderingDevice::free);
+	ClassDB::bind_method(D_METHOD("free_rid", "rid"), &RenderingDevice::free_rid);
 
 	ClassDB::bind_method(D_METHOD("capture_timestamp", "name"), &RenderingDevice::capture_timestamp);
 	ClassDB::bind_method(D_METHOD("get_captured_timestamps_count"), &RenderingDevice::get_captured_timestamps_count);
