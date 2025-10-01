@@ -3696,7 +3696,7 @@ void Node3DEditorViewport::_draw() {
 				break;
 		}
 
-		if (!_edit.is_trackball && _is_rotation_arc_visible() && !_edit.initial_click_vector.is_zero_approx()) {
+		if (_is_rotation_arc_visible() && !_edit.initial_click_vector.is_zero_approx()) {
 			Vector3 up = _edit.rotation_axis;
 			Vector3 right = _edit.initial_click_vector;
 
@@ -3704,18 +3704,16 @@ void Node3DEditorViewport::_draw() {
 			right.normalize();
 			Vector3 forward = up.cross(right);
 
-			real_t rotation_radius = (_edit.plane == TRANSFORM_VIEW) ? GIZMO_VIEW_ROTATION_SIZE : GIZMO_CIRCLE_SIZE;
-
 			const int circle_segments = 64;
 			Vector<Point2> circle_points;
 			for (int i = 0; i <= circle_segments; i++) {
 				float angle = (float(i) / float(circle_segments)) * Math::TAU;
-				Vector3 point_3d = _edit.center + gizmo_scale * rotation_radius * (right * Math::cos(angle) + forward * Math::sin(angle));
+				Vector3 point_3d = _edit.center + gizmo_scale * GIZMO_CIRCLE_SIZE * (right * Math::cos(angle) + forward * Math::sin(angle));
 				Point2 point_2d = point_to_screen(point_3d);
 				circle_points.push_back(point_2d);
 			}
 
-			Color circle_color = (_edit.plane == TRANSFORM_VIEW) ? Color(1.0, 1.0, 1.0, 0.8) : handle_color.from_hsv(handle_color.get_h(), 0.6, 1.0, 0.8);
+			Color circle_color = handle_color.from_hsv(handle_color.get_h(), 0.6, 1.0, 0.8);
 			for (int i = 0; i < circle_points.size() - 1; i++) {
 				RenderingServer::get_singleton()->canvas_item_add_line(
 						ci,
@@ -3751,8 +3749,8 @@ void Node3DEditorViewport::_draw() {
 				float angle1 = Math::lerp(start_angle, end_angle, t1);
 				float angle2 = Math::lerp(start_angle, end_angle, t2);
 
-				Vector3 point1_3d = _edit.center + gizmo_scale * rotation_radius * (right * Math::cos(angle1) + forward * Math::sin(angle1));
-				Vector3 point2_3d = _edit.center + gizmo_scale * rotation_radius * (right * Math::cos(angle2) + forward * Math::sin(angle2));
+				Vector3 point1_3d = _edit.center + gizmo_scale * GIZMO_CIRCLE_SIZE * (right * Math::cos(angle1) + forward * Math::sin(angle1));
+				Vector3 point2_3d = _edit.center + gizmo_scale * GIZMO_CIRCLE_SIZE * (right * Math::cos(angle2) + forward * Math::sin(angle2));
 
 				Point2 center_2d = center;
 				Point2 point1_2d = point_to_screen(point1_3d);
@@ -3771,9 +3769,9 @@ void Node3DEditorViewport::_draw() {
 				RenderingServer::get_singleton()->canvas_item_add_polygon(ci, triangle_points, triangle_colors);
 			}
 
-			Color edge_color = (_edit.plane == TRANSFORM_VIEW) ? Color(1.0, 1.0, 1.0, 0.7) : handle_color.from_hsv(handle_color.get_h(), 0.8, 1.0, 0.7);
+			Color edge_color = handle_color.from_hsv(handle_color.get_h(), 0.8, 1.0, 0.7);
 
-			Vector3 start_point_3d = _edit.center + gizmo_scale * rotation_radius * right;
+			Vector3 start_point_3d = _edit.center + gizmo_scale * GIZMO_CIRCLE_SIZE * right;
 			Point2 start_point_2d = point_to_screen(start_point_3d);
 			RenderingServer::get_singleton()->canvas_item_add_line(
 					ci,
@@ -3782,7 +3780,7 @@ void Node3DEditorViewport::_draw() {
 					edge_color,
 					Math::round(2 * EDSCALE));
 
-			Vector3 end_point_3d = _edit.center + gizmo_scale * rotation_radius * (right * Math::cos(_edit.accumulated_rotation_angle) + forward * Math::sin(_edit.accumulated_rotation_angle));
+			Vector3 end_point_3d = _edit.center + gizmo_scale * GIZMO_CIRCLE_SIZE * (right * Math::cos(display_angle) + forward * Math::sin(display_angle));
 			Point2 end_point_2d = point_to_screen(end_point_3d);
 			RenderingServer::get_singleton()->canvas_item_add_line(
 					ci,
@@ -4399,19 +4397,15 @@ void Node3DEditorViewport::_init_gizmo_instance(int p_idx) {
 void Node3DEditorViewport::_finish_gizmo_instances() {
 	ERR_FAIL_NULL(RenderingServer::get_singleton());
 	for (int i = 0; i < 3; i++) {
-		RS::get_singleton()->free(move_gizmo_instance[i]);
-		RS::get_singleton()->free(move_plane_gizmo_instance[i]);
-		RS::get_singleton()->free(rotate_gizmo_instance[i]);
-		RS::get_singleton()->free(scale_gizmo_instance[i]);
-		RS::get_singleton()->free(scale_plane_gizmo_instance[i]);
-		RS::get_singleton()->free(axis_gizmo_instance[i]);
+		RS::get_singleton()->free_rid(move_gizmo_instance[i]);
+		RS::get_singleton()->free_rid(move_plane_gizmo_instance[i]);
+		RS::get_singleton()->free_rid(rotate_gizmo_instance[i]);
+		RS::get_singleton()->free_rid(scale_gizmo_instance[i]);
+		RS::get_singleton()->free_rid(scale_plane_gizmo_instance[i]);
+		RS::get_singleton()->free_rid(axis_gizmo_instance[i]);
 	}
-
-	for (int i = 0; i < 4; i++) {
-		RS::get_singleton()->free(rotate_gizmo_instance[i]);
-	}
-
-	RS::get_singleton()->free(trackball_sphere_instance);
+	// Rotation white outline
+	RS::get_singleton()->free_rid(rotate_gizmo_instance[3]);
 }
 
 void Node3DEditorViewport::_toggle_camera_preview(bool p_activate) {
@@ -4546,11 +4540,8 @@ void Node3DEditorViewport::update_transform_gizmo_view() {
 	}
 
 	bool hide_during_rotation = _is_rotation_arc_visible();
-	bool hide_during_trackball = (_edit.mode == TRANSFORM_ROTATE && _edit.is_trackball);
 
-	bool show_gizmo = spatial_editor->is_gizmo_visible() && !_edit.instant && transform_gizmo_visible && !collision_reposition && !hide_during_rotation && !hide_during_trackball;
-	bool show_rotate_gizmo = show_gizmo && (spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_SELECT || spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_ROTATE);
-
+	bool show_gizmo = spatial_editor->is_gizmo_visible() && !_edit.instant && transform_gizmo_visible && !collision_reposition && !hide_during_rotation;
 	for (int i = 0; i < 3; i++) {
 		Transform3D axis_angle;
 		if (xform.basis.get_column(i).normalized().dot(xform.basis.get_column((i + 1) % 3).normalized()) < 1.0) {
@@ -4563,6 +4554,7 @@ void Node3DEditorViewport::update_transform_gizmo_view() {
 		RenderingServer::get_singleton()->instance_set_transform(move_plane_gizmo_instance[i], axis_angle);
 		RenderingServer::get_singleton()->instance_set_visible(move_plane_gizmo_instance[i], show_gizmo && (spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_SELECT || spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_MOVE));
 		RenderingServer::get_singleton()->instance_set_transform(rotate_gizmo_instance[i], axis_angle);
+		bool show_rotate_gizmo = show_gizmo && (spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_SELECT || spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_ROTATE);
 		RenderingServer::get_singleton()->instance_set_visible(rotate_gizmo_instance[i], show_rotate_gizmo);
 		RenderingServer::get_singleton()->instance_set_transform(scale_gizmo_instance[i], axis_angle);
 		RenderingServer::get_singleton()->instance_set_visible(scale_gizmo_instance[i], show_gizmo && (spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_SCALE));
@@ -4587,6 +4579,13 @@ void Node3DEditorViewport::update_transform_gizmo_view() {
 	rs->instance_set_visible(axis_gizmo_instance[0], show_axes && (_edit.plane == TRANSFORM_X_AXIS || _edit.plane == TRANSFORM_XY || _edit.plane == TRANSFORM_XZ));
 	rs->instance_set_visible(axis_gizmo_instance[1], show_axes && (_edit.plane == TRANSFORM_Y_AXIS || _edit.plane == TRANSFORM_XY || _edit.plane == TRANSFORM_YZ));
 	rs->instance_set_visible(axis_gizmo_instance[2], show_axes && (_edit.plane == TRANSFORM_Z_AXIS || _edit.plane == TRANSFORM_XZ || _edit.plane == TRANSFORM_YZ));
+
+	// Rotation white outline
+	xform.orthonormalize();
+	xform.basis.scale(scale);
+	RenderingServer::get_singleton()->instance_set_transform(rotate_gizmo_instance[3], xform);
+	bool show_white_outline = spatial_editor->is_gizmo_visible() && !_edit.instant && transform_gizmo_visible && !collision_reposition && (spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_SELECT || spatial_editor->get_tool_mode() == Node3DEditor::TOOL_MODE_ROTATE);
+	RenderingServer::get_singleton()->instance_set_visible(rotate_gizmo_instance[3], show_white_outline && !hide_during_rotation);
 }
 
 void Node3DEditorViewport::set_state(const Dictionary &p_state) {
@@ -5798,9 +5797,17 @@ void Node3DEditorViewport::update_transform(bool p_shift) {
 				// invert or not?
 				real_t invert_factor = _is_arcball_invert_enabled() ? -1.0 : 1.0;
 
-				// make the 2 rotation components based on moving mouse up/down and left/right
-				real_t horizontal_angle = invert_factor * mouse_delta.x * sensitivity;
-				real_t vertical_angle = invert_factor * mouse_delta.y * sensitivity;
+				Vector3 current_rotation_vector = (intersection - _edit.center).normalized();
+
+				if (_edit.initial_click_vector == Vector3()) {
+					_edit.initial_click_vector = (click - _edit.center).normalized();
+					_edit.previous_rotation_vector = current_rotation_vector;
+					_edit.accumulated_rotation_angle = 0.0;
+					_edit.display_rotation_angle = 0.0;
+				}
+
+				static const float orthogonal_threshold = Math::cos(Math::deg_to_rad(85.0f));
+				bool axis_is_orthogonal = Math::abs(plane.normal.dot(global_axis)) < orthogonal_threshold;
 
 				// make separate rotations for each axis
 				Quaternion horizontal_rotation = Quaternion(camera_up, horizontal_angle);
@@ -5827,72 +5834,32 @@ void Node3DEditorViewport::update_transform(bool p_shift) {
 					apply_transform(final_axis, final_angle);
 				}
 			} else {
-				// OG Godot rotation behavior when we're not arcballing or for axis-specific rotations
-				Vector3 local_axis;
-				Vector3 global_axis;
-				switch (_edit.plane) {
-					case TRANSFORM_VIEW:
-						// local_axis unused
-						global_axis = plane.normal;
-						break;
-					case TRANSFORM_X_AXIS:
-						local_axis = Vector3(1, 0, 0);
-						break;
-					case TRANSFORM_Y_AXIS:
-						local_axis = Vector3(0, 1, 0);
-						break;
-					case TRANSFORM_Z_AXIS:
-						local_axis = Vector3(0, 0, 1);
-						break;
-					case TRANSFORM_YZ:
-					case TRANSFORM_XZ:
-					case TRANSFORM_XY:
-						break;
-				}
-
-				if (_edit.plane != TRANSFORM_VIEW) {
-					global_axis = spatial_editor->get_gizmo_transform().basis.xform(local_axis).normalized();
-				}
-
-				Vector3 intersection;
-				if (!plane.intersects_ray(ray_pos, ray, &intersection)) {
-					break;
-				}
-
-				Vector3 click;
-				if (!plane.intersects_ray(_edit.click_ray_pos, _edit.click_ray, &click)) {
-					break;
-				}
-
-				static const float orthogonal_threshold = Math::cos(Math::deg_to_rad(85.0f));
-				bool axis_is_orthogonal = Math::abs(plane.normal.dot(global_axis)) < orthogonal_threshold;
-
-				double angle = 0.0f;
-				if (axis_is_orthogonal) {
-					_edit.show_rotation_line = false;
-					Vector3 projection_axis = plane.normal.cross(global_axis);
-					Vector3 delta = intersection - click;
-					float projection = delta.dot(projection_axis);
-					angle = (projection * (Math::PI / 2.0f)) / (gizmo_scale * GIZMO_CIRCLE_SIZE);
-				} else {
-					_edit.show_rotation_line = true;
-					Vector3 click_axis = (click - _edit.center).normalized();
-					Vector3 current_axis = (intersection - _edit.center).normalized();
-					angle = click_axis.signed_angle_to(current_axis, global_axis);
-				}
-
-				if (_edit.snap || spatial_editor->is_snap_enabled()) {
-					snap = spatial_editor->get_rotate_snap();
-				}
-				angle = Math::snapped(Math::rad_to_deg(angle), snap);
-				set_message(vformat(TTR("Rotating %s degrees."), String::num(angle, snap_step_decimals)));
-				angle = Math::deg_to_rad(angle);
-
-				bool local_coords = (spatial_editor->are_local_coords_enabled() && _edit.plane != TRANSFORM_VIEW); // Disable local transformation for TRANSFORM_VIEW
-
-				Vector3 compute_axis = local_coords ? local_axis : global_axis;
-				apply_transform(compute_axis, angle);
+				_edit.show_rotation_line = true;
+				Vector3 click_axis = (click - _edit.center).normalized();
+				angle = click_axis.signed_angle_to(current_rotation_vector, global_axis);
 			}
+
+			if (_edit.previous_rotation_vector != Vector3()) {
+				double delta_angle = _edit.previous_rotation_vector.signed_angle_to(current_rotation_vector, global_axis);
+				_edit.accumulated_rotation_angle += delta_angle;
+			}
+			_edit.previous_rotation_vector = current_rotation_vector;
+
+			bool snapping = _edit.snap || spatial_editor->is_snap_enabled();
+			if (snapping) {
+				snap = spatial_editor->get_rotate_snap();
+				_edit.display_rotation_angle = Math::deg_to_rad(Math::snapped(Math::rad_to_deg(_edit.accumulated_rotation_angle), snap));
+			} else {
+				_edit.display_rotation_angle = _edit.accumulated_rotation_angle;
+			}
+			angle = Math::snapped(Math::rad_to_deg(angle), snap);
+			set_message(vformat(TTR("Rotating %s degrees."), String::num(angle, snap_step_decimals)));
+			angle = Math::deg_to_rad(angle);
+
+			bool local_coords = (spatial_editor->are_local_coords_enabled() && _edit.plane != TRANSFORM_VIEW); // Disable local transformation for TRANSFORM_VIEW
+
+			Vector3 compute_axis = local_coords ? local_axis : global_axis;
+			apply_transform(compute_axis, angle);
 		} break;
 		default: {
 		}
@@ -5969,7 +5936,6 @@ void Node3DEditorViewport::finish_transform() {
 	_edit.numeric_input = 0;
 	_edit.numeric_next_decimal = 0;
 	_edit.numeric_negate = false;
-	_edit.is_trackball = false;
 	_edit.initial_click_vector = Vector3();
 	_edit.previous_rotation_vector = Vector3();
 	_edit.accumulated_rotation_angle = 0.0;
@@ -6754,16 +6720,16 @@ Node3DEditor *Node3DEditor::singleton = nullptr;
 Node3DEditorSelectedItem::~Node3DEditorSelectedItem() {
 	ERR_FAIL_NULL(RenderingServer::get_singleton());
 	if (sbox_instance.is_valid()) {
-		RenderingServer::get_singleton()->free(sbox_instance);
+		RenderingServer::get_singleton()->free_rid(sbox_instance);
 	}
 	if (sbox_instance_offset.is_valid()) {
-		RenderingServer::get_singleton()->free(sbox_instance_offset);
+		RenderingServer::get_singleton()->free_rid(sbox_instance_offset);
 	}
 	if (sbox_instance_xray.is_valid()) {
-		RenderingServer::get_singleton()->free(sbox_instance_xray);
+		RenderingServer::get_singleton()->free_rid(sbox_instance_xray);
 	}
 	if (sbox_instance_xray_offset.is_valid()) {
-		RenderingServer::get_singleton()->free(sbox_instance_xray_offset);
+		RenderingServer::get_singleton()->free_rid(sbox_instance_xray_offset);
 	}
 }
 
@@ -8463,17 +8429,17 @@ void Node3DEditor::_init_grid() {
 }
 
 void Node3DEditor::_finish_indicators() {
-	RenderingServer::get_singleton()->free(origin_instance);
-	RenderingServer::get_singleton()->free(origin_multimesh);
-	RenderingServer::get_singleton()->free(origin_mesh);
+	RenderingServer::get_singleton()->free_rid(origin_instance);
+	RenderingServer::get_singleton()->free_rid(origin_multimesh);
+	RenderingServer::get_singleton()->free_rid(origin_mesh);
 
 	_finish_grid();
 }
 
 void Node3DEditor::_finish_grid() {
 	for (int i = 0; i < 3; i++) {
-		RenderingServer::get_singleton()->free(grid_instance[i]);
-		RenderingServer::get_singleton()->free(grid[i]);
+		RenderingServer::get_singleton()->free_rid(grid_instance[i]);
+		RenderingServer::get_singleton()->free_rid(grid[i]);
 	}
 }
 

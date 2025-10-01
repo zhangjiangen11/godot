@@ -1611,9 +1611,14 @@ public:
 
 	void _set_max_fps(int p_max_fps);
 
-	void free(RID p_id);
-	void rd_free(RID p_id);
+	void free_rid(RID p_rid);
+	void free(RID p_rid) {
+		free_rid(p_rid);
+	}
 	bool has_texture(RID p_id);
+#ifndef DISABLE_DEPRECATED
+	//[[deprecated("Use `free_rid()` instead.")]]
+#endif // DISABLE_DEPRECATED
 
 	/****************/
 	/**** Timing ****/

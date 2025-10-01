@@ -60,10 +60,10 @@ TextureStorage::CanvasTexture::~CanvasTexture() {
 void TextureStorage::Texture::cleanup() {
 	if (RD::get_singleton()->texture_is_valid(rd_texture_srgb)) {
 		//erase this first, as it's a dependency of the one below
-		RD::get_singleton()->free(rd_texture_srgb);
+		RD::get_singleton()->free_rid(rd_texture_srgb);
 	}
 	if (RD::get_singleton()->texture_is_valid(rd_texture)) {
-		RD::get_singleton()->free(rd_texture);
+		RD::get_singleton()->free_rid(rd_texture);
 	}
 	if (canvas_texture) {
 		memdelete(canvas_texture);
@@ -620,13 +620,13 @@ TextureStorage::~TextureStorage() {
 	}
 
 	if (decal_atlas.texture.is_valid()) {
-		RD::get_singleton()->free(decal_atlas.texture);
+		RD::get_singleton()->free_rid(decal_atlas.texture);
 	}
 
 	//def textures
 	for (int i = 0; i < DEFAULT_RD_TEXTURE_MAX; i++) {
 		if (default_rd_textures[i].is_valid()) {
-			RD::get_singleton()->free(default_rd_textures[i]);
+			RD::get_singleton()->free_rid(default_rd_textures[i]);
 		}
 	}
 
@@ -900,7 +900,7 @@ void TextureStorage::texture_2d_initialize(RID p_texture, const Ref<Image> &p_im
 		rd_view.format_override = texture.rd_format_srgb;
 		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
 		if (texture.rd_texture_srgb.is_null()) {
-			RD::get_singleton()->free(texture.rd_texture);
+			RD::get_singleton()->free_rid(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
 		}
 	}
@@ -1012,7 +1012,7 @@ void TextureStorage::texture_2d_layered_initialize(RID p_texture, const Vector<R
 		rd_view.format_override = texture.rd_format_srgb;
 		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
 		if (texture.rd_texture_srgb.is_null()) {
-			RD::get_singleton()->free(texture.rd_texture);
+			RD::get_singleton()->free_rid(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
 		}
 	}
@@ -1129,7 +1129,7 @@ void TextureStorage::texture_3d_initialize(RID p_texture, Image::Format p_format
 		rd_view.format_override = texture.rd_format_srgb;
 		texture.rd_texture_srgb = RD::get_singleton()->texture_create_shared(rd_view, texture.rd_texture);
 		if (texture.rd_texture_srgb.is_null()) {
-			RD::get_singleton()->free(texture.rd_texture);
+			RD::get_singleton()->free_rid(texture.rd_texture);
 			ERR_FAIL_COND(texture.rd_texture_srgb.is_null());
 		}
 	}
@@ -1450,11 +1450,11 @@ void TextureStorage::texture_proxy_update(RID p_texture, RID p_proxy_to) {
 	if (tex->proxy_to.is_valid()) {
 		//unlink proxy
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture)) {
-			RD::get_singleton()->free(tex->rd_texture);
+			RD::get_singleton()->free_rid(tex->rd_texture);
 			tex->rd_texture = RID();
 		}
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture_srgb)) {
-			RD::get_singleton()->free(tex->rd_texture_srgb);
+			RD::get_singleton()->free_rid(tex->rd_texture_srgb);
 			tex->rd_texture_srgb = RID();
 		}
 		Texture *prev_tex = texture_owner.get_or_null(tex->proxy_to);
@@ -1594,9 +1594,9 @@ void TextureStorage::texture_replace(RID p_texture, RID p_by_texture) {
 	}
 
 	if (tex->rd_texture_srgb.is_valid()) {
-		RD::get_singleton()->free(tex->rd_texture_srgb);
+		RD::get_singleton()->free_rid(tex->rd_texture_srgb);
 	}
-	RD::get_singleton()->free(tex->rd_texture);
+	RD::get_singleton()->free_rid(tex->rd_texture);
 
 	if (tex->canvas_texture) {
 		memdelete(tex->canvas_texture);
@@ -3036,7 +3036,7 @@ void TextureStorage::update_decal_atlas() {
 	decal_atlas.dirty = false;
 
 	if (decal_atlas.texture.is_valid()) {
-		RD::get_singleton()->free(decal_atlas.texture);
+		RD::get_singleton()->free_rid(decal_atlas.texture);
 		decal_atlas.texture = RID();
 		decal_atlas.texture_srgb = RID();
 		decal_atlas.texture_mipmaps.clear();
@@ -3280,7 +3280,7 @@ void TextureStorage::decal_instance_set_sorting_offset(RID p_decal_instance, flo
 
 void TextureStorage::free_decal_data() {
 	if (decal_buffer.is_valid()) {
-		RD::get_singleton()->free(decal_buffer);
+		RD::get_singleton()->free_rid(decal_buffer);
 		decal_buffer = RID();
 	}
 
@@ -3506,16 +3506,16 @@ void TextureStorage::_clear_render_target(RenderTarget *rt) {
 	}
 
 	if (rt->color.is_valid()) {
-		RD::get_singleton()->free(rt->color);
+		RD::get_singleton()->free_rid(rt->color);
 	}
 	rt->color_slices.clear(); // these are automatically freed.
 
 	if (rt->color_multisample.is_valid()) {
-		RD::get_singleton()->free(rt->color_multisample);
+		RD::get_singleton()->free_rid(rt->color_multisample);
 	}
 
 	if (rt->backbuffer.is_valid()) {
-		RD::get_singleton()->free(rt->backbuffer);
+		RD::get_singleton()->free_rid(rt->backbuffer);
 		rt->backbuffer = RID();
 		rt->backbuffer_mipmaps.clear();
 		rt->backbuffer_uniform_set = RID(); //chain deleted
@@ -3607,10 +3607,10 @@ void TextureStorage::_update_render_target(RenderTarget *rt) {
 
 		//free existing textures
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture)) {
-			RD::get_singleton()->free(tex->rd_texture);
+			RD::get_singleton()->free_rid(tex->rd_texture);
 		}
 		if (RD::get_singleton()->texture_is_valid(tex->rd_texture_srgb)) {
-			RD::get_singleton()->free(tex->rd_texture_srgb);
+			RD::get_singleton()->free_rid(tex->rd_texture_srgb);
 		}
 
 		tex->rd_texture = RID();
@@ -3671,7 +3671,7 @@ void TextureStorage::_create_render_target_backbuffer(RenderTarget *rt) {
 
 	if (rt->framebuffer_uniform_set.is_valid() && RD::get_singleton()->uniform_set_is_valid(rt->framebuffer_uniform_set)) {
 		//the new one will require the backbuffer.
-		RD::get_singleton()->free(rt->framebuffer_uniform_set);
+		RD::get_singleton()->free_rid(rt->framebuffer_uniform_set);
 		rt->framebuffer_uniform_set = RID();
 	}
 	//create mipmaps
@@ -4130,7 +4130,7 @@ RID TextureStorage::render_target_get_sdf_texture(RID p_render_target) {
 void TextureStorage::_render_target_allocate_sdf(RenderTarget *rt) {
 	ERR_FAIL_COND(rt->sdf_buffer_write_fb.is_valid());
 	if (rt->sdf_buffer_read.is_valid()) {
-		RD::get_singleton()->free(rt->sdf_buffer_read);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_read);
 		rt->sdf_buffer_read = RID();
 	}
 
@@ -4230,13 +4230,13 @@ void TextureStorage::_render_target_allocate_sdf(RenderTarget *rt) {
 
 void TextureStorage::_render_target_clear_sdf(RenderTarget *rt) {
 	if (rt->sdf_buffer_read.is_valid()) {
-		RD::get_singleton()->free(rt->sdf_buffer_read);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_read);
 		rt->sdf_buffer_read = RID();
 	}
 	if (rt->sdf_buffer_write_fb.is_valid()) {
-		RD::get_singleton()->free(rt->sdf_buffer_write);
-		RD::get_singleton()->free(rt->sdf_buffer_process[0]);
-		RD::get_singleton()->free(rt->sdf_buffer_process[1]);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_write);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_process[0]);
+		RD::get_singleton()->free_rid(rt->sdf_buffer_process[1]);
 		rt->sdf_buffer_write = RID();
 		rt->sdf_buffer_write_fb = RID();
 		rt->sdf_buffer_process[0] = RID();
@@ -4437,7 +4437,7 @@ void TextureStorage::render_target_gen_back_buffer_mipmaps(RID p_render_target, 
 			return; //nothing to do
 		}
 	}
-	RD::get_singleton()->draw_command_begin_label("Gaussian Blur Mipmaps2");
+	RD::get_singleton()->draw_command_begin_label("Gaussian Blur Mipmaps Pass 2");
 	//then mipmap blur
 	RID prev_texture = rt->backbuffer_mipmap0;
 	Size2i texture_size = rt->size;
