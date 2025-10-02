@@ -3369,6 +3369,108 @@ Array Image::split_terrain_image(const Vector2i &p_tile_size) const {
 	}
 	return images;
 }
+float Image::get_terrain_height(const Vector2i &p_tile_pos, const Vector2 &height_range) const {
+	Color c = get_pixel(p_tile_pos.x, p_tile_pos.y);
+	return Math::lerp(height_range.x, height_range.y, c.r);
+}
+static bool check_terrain_flatness(const Image &p_image, const Vector2i &p_tile_pos, const Vector2i &p_tile_size, int lod) {
+	int step[] = { 1, 2, 4, 8, 16 };
+	float range[] = { 0.0001, 0.1, 0.5, 1, 2 };
+	float min_height = 1000000000;
+	float max_height = -1000000000;
+
+	// 边框是否为纯平
+	bool is_edage_flatness = true;
+	// 中心是否为纯平
+	bool is_center_flatness = true;
+	for (int i = 0; i <= 64; i += step[lod]) {
+		for (int j = 0; j <= 64; j += step[lod]) {
+			float height = p_image.get_terrain_height(Vector2i(p_tile_pos.x + i, p_tile_pos.y + j), Vector2(0, 1));
+			min_height = MIN(min_height, height);
+			max_height = MAX(max_height, height);
+		}
+	}
+	return (max_height - min_height) < range[lod];
+}
+// 0代表未激活，1代表激活,2 代表lod1(64*64)是平的，3代表lod2(32*32)是平的，4代表lod3(16*16)是平的,5代表lod4(8*8)是平的,7代表lod5(4*4)是平的
+Vector<uint8_t> Image::build_terrain_flatness(const Vector2& height_range,const Vector2i &p_tile_size) const {
+	Vector<uint8_t> flatness;
+	if (width == 0 || height == 0 || p_tile_size.x <= 0 || p_tile_size.y <= 0) {
+		return flatness;
+	}
+	if (p_tile_size.x > width || p_tile_size.y > height) {
+		return flatness;
+	}
+	int x_count = (width - 1) / p_tile_size.x;
+	int y_count = (height - 1) / p_tile_size.y;
+	if (x_count * p_tile_size.x + 1 != width || y_count * p_tile_size.y + 1 != height) {
+		return flatness;
+	}
+	flatness.resize(x_count * y_count);
+	int chunk_index = 0;
+	for (int x = 0; x < width - 1; x += p_tile_size.x) {
+		for (int y = 0; y < height - 1; y += p_tile_size.y, chunk_index++) {
+			bool is_skip = true;
+			for (int cx = 0; cx <= p_tile_size.x; cx++) {
+				for (int cy = 0; cy <= p_tile_size.y; cy++) {
+					int px = x + cx;
+					int py = y + cy;
+					float c = get_terrain_height(Vector2i(px, py), height_range);
+					if (c > 0.1) {
+						is_skip = false;
+						break;
+					}
+				}
+			}
+			// 都在地底下，就直接跳过吧
+			if (is_skip) {
+				continue;
+			}
+			flatness.write[chunk_index] = 1;
+			// lod4
+			{
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 4)) {
+					flatness.write[chunk_index] = 6;
+				} else {
+					continue;
+				}
+			}
+			// lod3
+			{
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 3)) {
+					flatness.write[chunk_index] = 5;
+				} else {
+					continue;
+				}
+			}
+			// lod2
+			{
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 2)) {
+					flatness.write[chunk_index] = 4;
+				} else {
+					continue;
+				}
+			}
+			// lod1
+			{
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 1)) {
+					flatness.write[chunk_index] = 3;
+				} else {
+					continue;
+				}
+			}
+			// lod0
+			{
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 0)) {
+					flatness.write[chunk_index] = 2;
+				} else {
+					continue;
+				}
+			}
+		}
+	}
+	return flatness;
+}
 
 void Image::_set_data(const Dictionary &p_data) {
 	ERR_FAIL_COND(!p_data.has("width"));
@@ -3971,6 +4073,8 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("fill", "color"), &Image::fill);
 	ClassDB::bind_method(D_METHOD("fill_rect", "rect", "color"), &Image::fill_rect);
 	ClassDB::bind_method(D_METHOD("split_terrain_image", "terrain_size"), &Image::split_terrain_image);
+	ClassDB::bind_method(D_METHOD("get_terrain_height", "p_tile_pos", "height_range"), &Image::get_terrain_height);
+	ClassDB::bind_method(D_METHOD("build_terrain_flatness"), &Image::build_terrain_flatness);
 
 	ClassDB::bind_method(D_METHOD("get_used_rect"), &Image::get_used_rect);
 	ClassDB::bind_method(D_METHOD("get_region", "region"), &Image::get_region);
