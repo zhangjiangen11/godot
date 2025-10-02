@@ -420,6 +420,7 @@ public:
 	void blend_rect_mask(const Ref<Image> &p_src, const Ref<Image> &p_mask, const Rect2i &p_src_rect, const Point2i &p_dest);
 	void fill(const Color &p_color);
 	void fill_rect(const Rect2i &p_rect, const Color &p_color);
+	Array split_terrain_image(const Vector2i &p_tile_size) const;
 
 	Rect2i get_used_rect() const;
 	Ref<Image> get_region(const Rect2i &p_area) const;

@@ -3339,6 +3339,36 @@ void Image::fill_rect(const Rect2i &p_rect, const Color &p_color) {
 		}
 	}
 }
+Array Image::split_terrain_image(const Vector2i &p_tile_size) const {
+	TypedArray<Image> images;
+	Ref<Image> self_img = (Image *)this;
+	if (width == 0 || height == 0 || p_tile_size.x <= 0 || p_tile_size.y <= 0) {
+		self_img->set_name(get_name() + "_0_0");
+		images.push_back(self_img);
+		return images;
+	}
+	if (p_tile_size.x > width || p_tile_size.y > height) {
+		self_img->set_name(get_name() + "_0_0");
+		images.push_back(self_img);
+		return images;
+	}
+	int x_count = (width - 1) / p_tile_size.x;
+	int y_count = (height - 1) / p_tile_size.y;
+	if (x_count * p_tile_size.x + 1 != width || y_count * p_tile_size.y + 1 != height) {
+		self_img->set_name(get_name() + "_0_0");
+		images.push_back(self_img);
+		return images;
+	}
+	for (int x = 0; x < x_count; x++) {
+		for (int y = 0; y < y_count; y++) {
+			Ref<Image> img = memnew(Image(p_tile_size.x + 1, p_tile_size.y + 1, false, format));
+			img->set_name(get_name() + "_" + itos(x) + "_" + itos(y));
+			img->blit_rect(self_img, Rect2i(x * p_tile_size.x, y * p_tile_size.y, p_tile_size.x + 1, p_tile_size.y + 1), Point2i(0, 0));
+			images.push_back(img);
+		}
+	}
+	return images;
+}
 
 void Image::_set_data(const Dictionary &p_data) {
 	ERR_FAIL_COND(!p_data.has("width"));
@@ -3940,6 +3970,7 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("blend_rect_mask", "src", "mask", "src_rect", "dst"), &Image::blend_rect_mask);
 	ClassDB::bind_method(D_METHOD("fill", "color"), &Image::fill);
 	ClassDB::bind_method(D_METHOD("fill_rect", "rect", "color"), &Image::fill_rect);
+	ClassDB::bind_method(D_METHOD("split_terrain_image", "terrain_size"), &Image::split_terrain_image);
 
 	ClassDB::bind_method(D_METHOD("get_used_rect"), &Image::get_used_rect);
 	ClassDB::bind_method(D_METHOD("get_region", "region"), &Image::get_region);
