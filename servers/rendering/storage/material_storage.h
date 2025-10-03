@@ -30,8 +30,7 @@
 
 #pragma once
 
-#include "core/variant/typed_dictionary.h"
-#include "servers/rendering_server.h"
+#include "servers/rendering/rendering_server.h"
 #include "utilities.h"
 
 class RendererMaterialStorage {

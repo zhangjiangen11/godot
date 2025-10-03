@@ -31,8 +31,7 @@
 #pragma once
 
 #include "scene/3d/node_3d.h"
-#include "servers/audio_server.h"
-#include "servers/audio/audio_stream.h"
+#include "servers/audio/audio_server.h"
 
 #ifndef PHYSICS_3D_DISABLED
 class Area3D;
