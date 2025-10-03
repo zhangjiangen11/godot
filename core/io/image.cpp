@@ -3393,7 +3393,7 @@ static bool check_terrain_flatness(const Image &p_image, const Vector2i &p_tile_
 	return (max_height - min_height) < range[lod];
 }
 // 0代表未激活，1代表激活,2 代表lod1(64*64)是平的，3代表lod2(32*32)是平的，4代表lod3(16*16)是平的,5代表lod4(8*8)是平的,7代表lod5(4*4)是平的
-Vector<uint8_t> Image::build_terrain_flatness(const Vector2& height_range,const Vector2i &p_tile_size) const {
+Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const Vector2i &p_tile_size) const {
 	Vector<uint8_t> flatness;
 	if (width == 0 || height == 0 || p_tile_size.x <= 0 || p_tile_size.y <= 0) {
 		return flatness;
@@ -4100,6 +4100,7 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("load_dds_from_buffer", "buffer"), &Image::load_dds_from_buffer);
 
 	ClassDB::bind_method(D_METHOD("load_svg_from_buffer", "buffer", "scale"), &Image::load_svg_from_buffer, DEFVAL(1.0));
+	ClassDB::bind_method(D_METHOD("load_file_form_extension", "file_path"), &Image::load_file_form_extension);
 	ClassDB::bind_method(D_METHOD("load_svg_from_string", "svg_str", "scale"), &Image::load_svg_from_string, DEFVAL(1.0));
 
 	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE), "_set_data", "_get_data");
@@ -4644,6 +4645,36 @@ Error Image::load_svg_from_buffer(const Vector<uint8_t> &p_array, float scale) {
 	copy_internals_from(image);
 
 	return OK;
+}
+Error Image::load_file_form_extension(const String &path) {
+	if (!FileAccess::exists(path)) {
+		return ERR_FILE_CANT_OPEN;
+	}
+	Vector<uint8_t> buffer = FileAccess::get_file_as_bytes(path);
+	if (buffer.is_empty()) {
+		return ERR_FILE_CANT_READ;
+	}
+	String ext = path.get_extension().to_lower();
+	if (ext == "png") {
+		return load_png_from_buffer(buffer);
+	} else if (ext == "jpg" || ext == "jpeg") {
+		return load_jpg_from_buffer(buffer);
+	} else if (ext == "webp") {
+		return load_webp_from_buffer(buffer);
+	} else if (ext == "tga") {
+		return load_tga_from_buffer(buffer);
+	} else if (ext == "bmp") {
+		return load_tga_from_buffer(buffer);
+	} else if (ext == "gif") {
+		return load_tga_from_buffer(buffer);
+	} else if (ext == "dds") {
+		return load_dds_from_buffer(buffer);
+	} else if (ext == "ktx") {
+		return load_ktx_from_buffer(buffer);
+	} else if (ext == "svg") {
+		return load_svg_from_buffer(buffer);
+	}
+	return ERR_FILE_UNRECOGNIZED;
 }
 
 Error Image::load_svg_from_string(const String &p_svg_str, float scale) {
