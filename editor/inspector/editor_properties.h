@@ -137,6 +137,7 @@ class EditorPropertyTextEnum : public EditorProperty {
 	String dyn_options_method;
 
 	Vector<String> options;
+	Vector<String> option_names;
 	bool string_name = false;
 	bool loose_mode = false;
 
