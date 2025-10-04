@@ -3383,8 +3383,8 @@ static bool check_terrain_flatness(const Image &p_image, const Vector2i &p_tile_
 	bool is_edage_flatness = true;
 	// 中心是否为纯平
 	bool is_center_flatness = true;
-	for (int i = 0; i <= 64; i += step[lod]) {
-		for (int j = 0; j <= 64; j += step[lod]) {
+	for (int j = 0; j <= 64; j += step[lod]) {
+		for (int i = 0; i <= 64; i += step[lod]) {
 			float height = p_image.get_terrain_height(Vector2i(p_tile_pos.x + i, p_tile_pos.y + j), Vector2(0, 1));
 			min_height = MIN(min_height, height);
 			max_height = MAX(max_height, height);
@@ -3408,11 +3408,11 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 	}
 	flatness.resize(x_count * y_count);
 	int chunk_index = 0;
-	for (int x = 0; x < width - 1; x += p_tile_size.x) {
-		for (int y = 0; y < height - 1; y += p_tile_size.y, chunk_index++) {
+	for (int y = 0; y < height - 1; y += p_tile_size.y, chunk_index++) {
+		for (int x = 0; x < width - 1; x += p_tile_size.x) {
 			bool is_skip = true;
-			for (int cx = 0; cx <= p_tile_size.x; cx++) {
-				for (int cy = 0; cy <= p_tile_size.y; cy++) {
+			for (int cy = 0; cy <= p_tile_size.y; cy++) {
+				for (int cx = 0; cx <= p_tile_size.x; cx++) {
 					int px = x + cx;
 					int py = y + cy;
 					float c = get_terrain_height(Vector2i(px, py), height_range);
