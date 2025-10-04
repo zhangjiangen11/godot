@@ -43,7 +43,7 @@
 #include "modules/glslang/shader_compile.h"
 #endif
 
-#include "servers/rendering_server.h"
+#include "servers/rendering/rendering_server.h"
 
 #include "servers/rendering/rendering_server_globals.h"
 #include "servers/rendering/storage/texture_storage.h"

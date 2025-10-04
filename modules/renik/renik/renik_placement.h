@@ -31,7 +31,7 @@
 #ifndef RENIK_PLACEMENT_H
 #define RENIK_PLACEMENT_H
 
-#include "servers/physics_server_3d.h"
+#include "servers/physics_3d/physics_server_3d.h"
 #include <core/config/engine.h>
 #include <scene/3d/node_3d.h>
 #include <scene/main/node.h>

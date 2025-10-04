@@ -37,6 +37,7 @@
 #include "scene/3d/velocity_tracker_3d.h"
 #include "scene/audio/audio_stream_player_internal.h"
 #include "scene/main/viewport.h"
+#include "servers/audio/audio_stream.h"
 
 #ifndef PHYSICS_3D_DISABLED
 #include "scene/3d/physics/area_3d.h"
