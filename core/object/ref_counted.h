@@ -218,6 +218,8 @@ public:
 		ref(memnew(T(p_params...)));
 	}
 
+	uint32_t hash() const { return HashMapHasherDefault::hash(reference); }
+
 	Ref() = default;
 
 	~Ref() {

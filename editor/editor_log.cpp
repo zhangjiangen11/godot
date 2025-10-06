@@ -42,6 +42,7 @@
 #include "editor/themes/editor_scale.h"
 #include "modules/regex/regex.h"
 #include "scene/gui/separator.h"
+#include "scene/main/timer.h"
 #include "scene/resources/font.h"
 
 //

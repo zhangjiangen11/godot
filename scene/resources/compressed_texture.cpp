@@ -30,6 +30,7 @@
 
 #include "compressed_texture.h"
 
+#include "core/io/file_access.h"
 #include "scene/resources/bit_map.h"
 
 bool CompressedTexture2D::reference() {
