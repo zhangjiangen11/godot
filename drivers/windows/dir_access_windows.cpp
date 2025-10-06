@@ -323,7 +323,11 @@ Error DirAccessWindows::remove(String p_path) {
 	if ((fileAttr & FILE_ATTRIBUTE_DIRECTORY)) {
 		return RemoveDirectoryW((LPCWSTR)(path_utf16.get_data())) != 0 ? OK : FAILED;
 	} else {
-		return DeleteFileW((LPCWSTR)(path_utf16.get_data())) != 0 ? OK : FAILED;
+		BOOL rs = DeleteFileW((LPCWSTR)(path_utf16.get_data()));
+		if (rs == 0) {
+			DWORD err = GetLastError();
+		}
+		return rs != 0 ? OK : FAILED;
 	}
 }
 

@@ -1712,7 +1712,7 @@ void EditorFileSystem::scan_changes() {
 		set_process(true);
 		scan_total = 0;
 		Thread::Settings s;
-		s.priority = Thread::PRIORITY_LOW;
+		s.priority = Thread::PRIORITY_NORMAL;
 		thread_sources.start(_thread_func_sources, this, s);
 	}
 }
