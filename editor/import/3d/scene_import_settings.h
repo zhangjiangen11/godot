@@ -49,6 +49,9 @@
 class EditorFileDialog;
 class EditorInspector;
 class SceneImportSettingsData;
+class MeshEditor;
+class MaterialEditor;
+class SubViewportContainer;
 class Timer;
 
 class SceneImportSettingsDialog : public ConfirmationDialog {
