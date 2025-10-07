@@ -1128,6 +1128,7 @@ void main() {
 #endif
 
 	float ao_highp = 1.0;
+	float specular_scale = 1.0;
 	float ao_light_affect_highp = 0.0;
 
 	float alpha_highp = 1.0;
@@ -2213,7 +2214,7 @@ void main() {
 #ifdef MODE_UNSHADED
 	hvec4 out_color = hvec4(albedo, alpha);
 #else // MODE_UNSHADED
-	hvec4 out_color = hvec4(emission + ambient_light + diffuse_light + direct_specular_light + indirect_specular_light, alpha);
+	hvec4 out_color = hvec4(emission + ambient_light + diffuse_light + ((direct_specular_light + indirect_specular_light) * specular_scale), alpha);
 #endif // MODE_UNSHADED
 
 #ifndef FOG_DISABLED

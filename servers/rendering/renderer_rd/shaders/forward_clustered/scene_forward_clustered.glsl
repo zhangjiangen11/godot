@@ -1208,6 +1208,7 @@ void fragment_shader(in SceneData scene_data) {
 #endif
 
 	float ao = 1.0;
+	float specular_scale = 1.0;
 	float ao_light_affect = 0.0;
 
 	float alpha_highp = float(instances.data[instance_index].flags >> INSTANCE_FLAGS_FADE_SHIFT) / float(255.0);
@@ -2865,7 +2866,7 @@ void fragment_shader(in SceneData scene_data) {
 #ifdef MODE_UNSHADED
 	frag_color = vec4(albedo, alpha);
 #else
-	frag_color = vec4(emission + ambient_light + diffuse_light + direct_specular_light + indirect_specular_light, alpha);
+	frag_color = vec4(emission + ambient_light + diffuse_light + ((direct_specular_light + indirect_specular_light) * specular_scale), alpha);
 //frag_color = vec4(1.0);
 #endif //USE_NO_SHADING
 

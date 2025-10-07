@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include "core/object/object.h"
 #include "core/string/string_name.h"
 #include "core/templates/hash_map.h"
 #include "core/templates/list.h"
@@ -41,25 +42,17 @@ template <typename T>
 class TypedArray;
 class GlolaleTicker : public Object {
 	GDCLASS(GlolaleTicker, Object);
-	static void _bind_methods()
-	{
-
+	static void _bind_methods() {
 	}
+
 public:
-	virtual void pre_tick(float delta)
-	{
-
+	virtual void pre_tick(float delta) {
 	}
-	virtual void tick(float delta)
-	{
-
+	virtual void tick(float delta) {
 	}
-	virtual void post_tick(float delta)
-	{
-		
+	virtual void post_tick(float delta) {
 	}
 };
-
 
 class Engine {
 public:
@@ -241,7 +234,7 @@ public:
 
 	void increment_frames_drawn();
 	bool notify_frame_server_synced();
-	
+
 	LocalVector<GlolaleTicker *> global_tickers;
 
 	void add_globale_ticker(GlolaleTicker *p_ticker);
