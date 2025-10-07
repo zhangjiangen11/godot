@@ -431,7 +431,29 @@ void ResourceImporterTexture::_save_ctex(const Ref<Image> &p_image, const String
 			comp_source = Image::COMPRESS_SOURCE_SRGB;
 		}
 
-		used_channels = image->detect_used_channels(comp_source);
+		HashMap<String, Image::UsedChannels> rechannel;
+		rechannel["r"] = Image::USED_CHANNELS_L;
+		rechannel["rg"] = Image::USED_CHANNELS_RG;
+		rechannel["rgb"] = Image::USED_CHANNELS_RGB;
+		rechannel["rgba"] = Image::USED_CHANNELS_RGBA;
+		rechannel["l"] = Image::USED_CHANNELS_L;
+		rechannel["la"] = Image::USED_CHANNELS_LA;
+
+		String file_name = p_image->get_path().get_file().get_basename().to_lower();
+		file_name = file_name.get_basename();
+		bool is_remap = false;
+		if (file_name.contains_char('@')) {
+			// 重定义类型，一般texture3d，texturearray 需要制定类型，所以需要必须要转换成相同的格式，防止出现压缩格式不一致，导致加载失败
+			String type = file_name.get_slice("@", 1);
+			if (rechannel.has(type)) {
+				used_channels = rechannel[type];
+				is_remap = true;
+			}
+		}
+
+		if (!is_remap) {
+			used_channels = image->detect_used_channels(comp_source);
+		}
 	}
 
 	save_to_ctex_format(f, image, p_compress_mode, used_channels, p_vram_compression, p_lossy_quality, p_basisu_params);
@@ -794,6 +816,7 @@ Error ResourceImporterTexture::import(ResourceUID::ID p_source_id, const String 
 	if (err != OK) {
 		return err;
 	}
+	image->set_path(p_source_file);
 	images_imported.push_back(image);
 
 	// Load the editor-only image.
