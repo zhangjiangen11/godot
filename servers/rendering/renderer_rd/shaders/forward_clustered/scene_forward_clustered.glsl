@@ -1684,6 +1684,7 @@ void fragment_shader(in SceneData scene_data) {
 	vec3 cc_ref_vec = vec3(0.0);
 
 	if (bool(scene_data.flags & SCENE_DATA_FLAGS_USE_REFLECTION_CUBEMAP)) {
+		// We want to use geometric normal, not normal_map
 		cc_ref_vec = reflect(-view, geo_normal);
 		cc_ref_vec = mix(cc_ref_vec, geo_normal, mix(0.001, 0.1, clearcoat_roughness));
 
