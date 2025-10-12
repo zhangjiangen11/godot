@@ -31,6 +31,7 @@
 #include "node_2d.h"
 
 #include "scene/main/viewport.h"
+#include "scene/resources/material.h"
 
 #ifdef TOOLS_ENABLED
 Dictionary Node2D::_edit_get_state() const {

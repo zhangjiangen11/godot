@@ -1076,10 +1076,10 @@ public:
 	DEBUG_VIRTUAL void merge_meta_from(const Object *p_src);
 
 	//
-	MTVIRTUAL bool has_edit_property(const StringName &p_name) const;
-	MTVIRTUAL void set_edit_property(const StringName &p_name, const Variant &p_value);
-	MTVIRTUAL void remove_edit_property(const StringName &p_name);
-	MTVIRTUAL Variant get_edit_property(const StringName &p_name, const Variant &p_default = Variant()) const;
+	DEBUG_VIRTUAL bool has_edit_property(const StringName &p_name) const;
+	DEBUG_VIRTUAL void set_edit_property(const StringName &p_name, const Variant &p_value);
+	DEBUG_VIRTUAL void remove_edit_property(const StringName &p_name);
+	DEBUG_VIRTUAL Variant get_edit_property(const StringName &p_name, const Variant &p_default = Variant()) const;
 
 #ifdef TOOLS_ENABLED
 	void set_edited(bool p_edited);
