@@ -339,7 +339,7 @@ void EditorSceneTabs::_scene_tabs_resized() {
 }
 
 void EditorSceneTabs::_tab_preview_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_tab) {
-	if (p_preview.is_empty()) {
+	if (!p_preview.is_empty()) {
 		tab_preview->set_texture(ResourceLoader::load(p_preview));
 
 		Rect2 rect = scene_tabs->get_tab_rect(p_tab);
