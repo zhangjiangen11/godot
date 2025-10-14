@@ -33,6 +33,7 @@
 #include "core/io/image_loader.h"
 #include "scene/resources/bit_map.h"
 #include "scene/resources/placeholder_textures.h"
+#include "servers/rendering/rendering_server.h"
 
 bool ImageTexture::reference() {
 	if (!get_path().is_empty()) {
