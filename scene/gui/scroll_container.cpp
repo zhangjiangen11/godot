@@ -105,6 +105,9 @@ bool ScrollContainer::_is_v_scroll_visible() const {
 }
 
 Rect2 ScrollContainer::_get_margins() const {
+	if (theme_cache.panel_style.is_null()) {
+		return Rect2(0, 0, 0, 0);
+	}
 	float right_margin = theme_cache.panel_style->get_margin(SIDE_RIGHT);
 	float left_margin = theme_cache.panel_style->get_margin(SIDE_LEFT);
 	float top_margin = theme_cache.panel_style->get_margin(SIDE_TOP);

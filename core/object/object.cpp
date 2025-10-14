@@ -1679,6 +1679,9 @@ bool Object::_disconnect(const StringName &p_signal, const Callable &p_callable,
 	if (!s) {
 		bool signal_is_valid = ClassDB::has_signal(get_class_name(), p_signal) ||
 				(script_instance && script_instance->get_script()->has_script_signal(p_signal));
+		if (signal_is_valid) {
+			return false;
+		}
 		ERR_FAIL_COND_V_MSG(signal_is_valid, false, vformat("Attempt to disconnect a nonexistent connection from '%s'. Signal: '%s', callable: '%s'.", to_string(), p_signal, p_callable));
 	}
 

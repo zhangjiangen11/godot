@@ -190,6 +190,11 @@ Error RDShaderFile::parse_versions_from_text(const String &p_text, const String 
 				if (code.is_empty()) {
 					continue;
 				}
+#ifdef REAL_T_IS_DOUBLE
+				{
+					code += "\n#define USE_DOUBLE_PRECISION \n";
+				}
+#endif
 				code = code.replace("#VERSION_DEFINES", E.value);
 				String error;
 #ifdef MODULE_GLSLANG_ENABLED

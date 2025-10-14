@@ -1140,12 +1140,13 @@ void main() {
 	vec3 binormal_highp = vec3(0.0);
 	vec3 tangent_highp = vec3(0.0);
 #endif
-
 #ifdef NORMAL_USED
+	vec3 vertex_normal = normal_interp;
 	vec3 normal_highp = normal_interp;
 #if defined(DO_SIDE_CHECK)
 	if (!gl_FrontFacing) {
 		normal_highp = -normal_highp;
+		vertex_normal = -vertex_normal;
 	}
 #endif // DO_SIDE_CHECK
 #endif // NORMAL_USED
