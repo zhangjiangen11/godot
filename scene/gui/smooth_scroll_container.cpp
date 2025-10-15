@@ -1,5 +1,6 @@
 #include "smooth_scroll_container.h"
 #include "scene/animation/tween.h"
+#include "scene/resources/gradient.h"
 #include "scene/main/viewport.h"
 
 ScrollDamper::ScrollDamper() {

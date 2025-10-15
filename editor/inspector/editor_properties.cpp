@@ -4280,7 +4280,7 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 			} else {
 				EditorPropertyRangeHint hint = _parse_range_hint(p_hint, p_hint_text, default_float_step);
 				EditorPropertyVector2i *editor = memnew(EditorPropertyVector2i(p_wide));
-				editor->setup(hint.min, hint.max, hint.step, hint.hide_control, p_hint == PROPERTY_HINT_LINK, hint.suffix, hint.radians_as_degrees);
+				editor->setup(hint, p_hint == PROPERTY_HINT_LINK, false);
 				return editor;
 			}
 

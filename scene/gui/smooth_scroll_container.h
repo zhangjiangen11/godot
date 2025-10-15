@@ -2,7 +2,7 @@
 #include "core/io/resource.h"
 #include "scene/main/timer.h"
 #include "scene/gui/scroll_container.h"
-
+class Gradient;
 class ScrollDamper : public Resource {
 	GDCLASS(ScrollDamper, Resource)
 
