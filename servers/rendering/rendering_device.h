@@ -148,6 +148,32 @@ private:
 		STAGING_REQUIRED_ACTION_FLUSH_AND_STALL_ALL,
 		STAGING_REQUIRED_ACTION_STALL_PREVIOUS,
 	};
+	enum DefaultRDTexture {
+		DEFAULT_WHITE,
+		DEFAULT_BLACK,
+		DEFAULT_TRANSPARENT,
+		DEFAULT_NORMAL,
+		DEFAULT_ANISO,
+		DEFAULT_DEPTH,
+		DEFAULT_MULTIMESH_BUFFER,
+		DEFAULT_CUBEMAP_BLACK,
+		DEFAULT_CUBEMAP_ARRAY_BLACK,
+		DEFAULT_CUBEMAP_WHITE,
+		DEFAULT_CUBEMAP_ARRAY_WHITE,
+		DEFAULT_CUBEMAP_TRANSPARENT,
+		DEFAULT_CUBEMAP_ARRAY_TRANSPARENT,
+		DEFAULT_3D_WHITE,
+		DEFAULT_3D_BLACK,
+		DEFAULT_3D_TRANSPARENT,
+		DEFAULT_2D_ARRAY_WHITE,
+		DEFAULT_2D_ARRAY_BLACK,
+		DEFAULT_2D_ARRAY_TRANSPARENT,
+		DEFAULT_2D_ARRAY_NORMAL,
+		DEFAULT_2D_ARRAY_DEPTH,
+		DEFAULT_2D_UINT,
+		DEFAULT_VRS,
+		DEFAULT_MAX
+	};
 
 	struct StagingBufferBlock {
 		RDD::BufferID driver_id;
@@ -419,6 +445,7 @@ public:
 
 	void texture_set_discardable(RID p_texture, bool p_discardable);
 	bool texture_is_discardable(RID p_texture);
+	RID texture_rd_get_default(DefaultRDTexture p_texture);
 
 public:
 	/*************/
@@ -1766,6 +1793,7 @@ VARIANT_BITFIELD_CAST(RenderingDevice::DrawFlags);
 VARIANT_BITFIELD_CAST(RenderingDevice::BarrierMask);
 VARIANT_ENUM_CAST(RenderingDevice::InitialAction)
 VARIANT_ENUM_CAST(RenderingDevice::FinalAction)
+VARIANT_ENUM_CAST(RenderingDevice::DefaultRDTexture)
 #endif
 
 typedef RenderingDevice RD;

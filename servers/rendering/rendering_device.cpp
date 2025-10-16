@@ -2415,6 +2415,9 @@ bool RenderingDevice::texture_is_discardable(RID p_texture) {
 
 	return texture->is_discardable;
 }
+RID RenderingDevice::texture_rd_get_default(DefaultRDTexture p_texture) {
+	return RenderingServerGlobals::texture_storage->texture_rd_get_default(p_texture);
+}
 
 Error RenderingDevice::texture_clear(RID p_texture, const Color &p_color, uint32_t p_base_mipmap, uint32_t p_mipmaps, uint32_t p_base_layer, uint32_t p_layers) {
 	ERR_RENDER_THREAD_GUARD_V(ERR_UNAVAILABLE);
@@ -7405,6 +7408,7 @@ void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("uniform_buffer_create", "size_bytes", "data", "creation_bits"), &RenderingDevice::_uniform_buffer_create, DEFVAL(Vector<uint8_t>()), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("storage_buffer_create", "size_bytes", "data", "usage", "creation_bits"), &RenderingDevice::_storage_buffer_create, DEFVAL(Vector<uint8_t>()), DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("texture_buffer_create", "size_bytes", "format", "data"), &RenderingDevice::_texture_buffer_create, DEFVAL(Vector<uint8_t>()));
+	ClassDB::bind_method(D_METHOD("texture_rd_get_default", "texture_name"), &RenderingDevice::texture_rd_get_default);
 
 	ClassDB::bind_method(D_METHOD("uniform_set_create", "uniforms", "shader", "shader_set"), &RenderingDevice::_uniform_set_create);
 	ClassDB::bind_method(D_METHOD("uniform_set_is_valid", "uniform_set"), &RenderingDevice::uniform_set_is_valid);
@@ -8100,6 +8104,32 @@ void RenderingDevice::_bind_methods() {
 	BIND_BITFIELD_FLAG(DRAW_IGNORE_STENCIL);
 	BIND_BITFIELD_FLAG(DRAW_CLEAR_ALL);
 	BIND_BITFIELD_FLAG(DRAW_IGNORE_ALL);
+
+	//
+	BIND_ENUM_CONSTANT(DEFAULT_WHITE);
+	BIND_ENUM_CONSTANT(DEFAULT_BLACK);
+	BIND_ENUM_CONSTANT(DEFAULT_TRANSPARENT);
+	BIND_ENUM_CONSTANT(DEFAULT_NORMAL);
+	BIND_ENUM_CONSTANT(DEFAULT_ANISO);
+	BIND_ENUM_CONSTANT(DEFAULT_DEPTH);
+	BIND_ENUM_CONSTANT(DEFAULT_MULTIMESH_BUFFER);
+	BIND_ENUM_CONSTANT(DEFAULT_CUBEMAP_BLACK);
+	BIND_ENUM_CONSTANT(DEFAULT_CUBEMAP_ARRAY_BLACK);
+	BIND_ENUM_CONSTANT(DEFAULT_CUBEMAP_WHITE);
+	BIND_ENUM_CONSTANT(DEFAULT_CUBEMAP_ARRAY_WHITE);
+	BIND_ENUM_CONSTANT(DEFAULT_CUBEMAP_TRANSPARENT);
+	BIND_ENUM_CONSTANT(DEFAULT_CUBEMAP_ARRAY_TRANSPARENT);
+	BIND_ENUM_CONSTANT(DEFAULT_3D_WHITE);
+	BIND_ENUM_CONSTANT(DEFAULT_3D_BLACK);
+	BIND_ENUM_CONSTANT(DEFAULT_3D_TRANSPARENT);
+	BIND_ENUM_CONSTANT(DEFAULT_2D_ARRAY_WHITE);
+	BIND_ENUM_CONSTANT(DEFAULT_2D_ARRAY_BLACK);
+	BIND_ENUM_CONSTANT(DEFAULT_2D_ARRAY_TRANSPARENT);
+	BIND_ENUM_CONSTANT(DEFAULT_2D_ARRAY_NORMAL);
+	BIND_ENUM_CONSTANT(DEFAULT_2D_ARRAY_DEPTH);
+	BIND_ENUM_CONSTANT(DEFAULT_2D_UINT);
+	BIND_ENUM_CONSTANT(DEFAULT_VRS);
+	BIND_ENUM_CONSTANT(DEFAULT_MAX);
 }
 
 void RenderingDevice::make_current() {

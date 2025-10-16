@@ -108,6 +108,7 @@ public:
 	virtual void texture_rd_initialize(RID p_texture, const RID &p_rd_texture, const RS::TextureLayeredType p_layer_type = RS::TEXTURE_LAYERED_2D_ARRAY) = 0;
 	virtual RID texture_get_rd_texture(RID p_texture, bool p_srgb = false) const = 0;
 	virtual uint64_t texture_get_native_handle(RID p_texture, bool p_srgb = false) const = 0;
+	virtual RID texture_rd_get_default(uint32_t p_default_type) = 0;
 
 	/* Decal API */
 	virtual RID decal_allocate() = 0;

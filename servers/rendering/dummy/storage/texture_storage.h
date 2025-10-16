@@ -49,6 +49,7 @@ public:
 	TextureStorage();
 	~TextureStorage();
 
+	virtual RID texture_rd_get_default(uint32_t p_default_type) override { return RID(); }
 	/* Canvas Texture API */
 
 	virtual RID canvas_texture_allocate() override { return RID(); }

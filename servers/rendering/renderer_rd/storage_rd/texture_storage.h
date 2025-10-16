@@ -485,8 +485,12 @@ private:
 public:
 	static TextureStorage *get_singleton();
 
-	_FORCE_INLINE_ RID texture_rd_get_default(DefaultRDTexture p_texture) {
-		return default_rd_textures[p_texture];
+	virtual RID texture_rd_get_default(uint32_t p_default_type) override {
+		if (p_default_type >= DEFAULT_RD_TEXTURE_MAX) {
+			return RID();
+		}
+
+		return default_rd_textures[p_default_type];
 	}
 
 	TextureStorage();

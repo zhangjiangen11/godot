@@ -125,17 +125,17 @@ enum DefaultGLTexture {
 	DEFAULT_GL_TEXTURE_NORMAL,
 	DEFAULT_GL_TEXTURE_ANISO,
 	DEFAULT_GL_TEXTURE_DEPTH,
-	DEFAULT_GL_TEXTURE_CUBEMAP_BLACK,
+	DEFAULT_GL_TEXTURE_CUBEMAP_BLACK = 7,
 	//DEFAULT_GL_TEXTURE_CUBEMAP_ARRAY_BLACK, // Cubemap Arrays not supported in GL 3.3 or GL ES 3.0
-	DEFAULT_GL_TEXTURE_CUBEMAP_WHITE,
-	DEFAULT_GL_TEXTURE_CUBEMAP_TRANSPARENT,
-	DEFAULT_GL_TEXTURE_3D_WHITE,
+	DEFAULT_GL_TEXTURE_CUBEMAP_WHITE = 9,
+	DEFAULT_GL_TEXTURE_CUBEMAP_TRANSPARENT = 11,
+	DEFAULT_GL_TEXTURE_3D_WHITE = 13,
 	DEFAULT_GL_TEXTURE_3D_BLACK,
 	DEFAULT_GL_TEXTURE_3D_TRANSPARENT,
 	DEFAULT_GL_TEXTURE_2D_ARRAY_WHITE,
 	DEFAULT_GL_TEXTURE_2D_ARRAY_BLACK,
 	DEFAULT_GL_TEXTURE_2D_ARRAY_TRANSPARENT,
-	DEFAULT_GL_TEXTURE_2D_UINT,
+	DEFAULT_GL_TEXTURE_2D_UINT = 21,
 	DEFAULT_GL_TEXTURE_EXT,
 	DEFAULT_GL_TEXTURE_MAX
 };
@@ -489,10 +489,16 @@ private:
 
 public:
 	static TextureStorage *get_singleton();
-
 	TextureStorage();
 	virtual ~TextureStorage();
 
+	virtual RID texture_rd_get_default(uint32_t p_default_type) override {
+		if (p_default_type >= DEFAULT_GL_TEXTURE_MAX) {
+			return RID();
+		}
+
+		return default_gl_textures[p_default_type];
+	}
 	_FORCE_INLINE_ RID texture_gl_get_default(DefaultGLTexture p_texture) {
 		return default_gl_textures[p_texture];
 	}

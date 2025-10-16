@@ -56,7 +56,9 @@ static const GLenum _cube_side_enum[6] = {
 
 TextureStorage::TextureStorage() {
 	singleton = this;
-
+	for (int i = 0; i < DEFAULT_GL_TEXTURE_MAX; i++) {
+		default_gl_textures[i] = RID();
+	}
 	{ //create default textures
 		{ // White Textures
 
