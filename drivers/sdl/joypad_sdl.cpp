@@ -281,6 +281,42 @@ void JoypadSDL::process_events() {
 							static_cast<JoyButton>(sdl_event.gbutton.button), // Godot button constants are intentionally the same as SDL's, so we can just straight up use them
 							sdl_event.gbutton.down);
 					break;
+
+				case SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN:
+				case SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION:
+				case SDL_EVENT_GAMEPAD_TOUCHPAD_UP:
+					Input::get_singleton()->set_joy_touchpad_finger(
+							joy_id,
+							sdl_event.gtouchpad.touchpad,
+							sdl_event.gtouchpad.finger,
+							sdl_event.gtouchpad.pressure,
+							Vector2(sdl_event.gtouchpad.x, sdl_event.gtouchpad.y));
+					break;
+				case SDL_EVENT_GAMEPAD_SENSOR_UPDATE: {
+					Vector3 value = Vector3(
+							sdl_event.gsensor.data[0],
+							sdl_event.gsensor.data[1],
+							sdl_event.gsensor.data[2]);
+
+					switch (sdl_event.gsensor.sensor) {
+						case SDL_SENSOR_ACCEL:
+							Input::get_singleton()->set_joy_accelerometer(joy_id, value);
+
+							joypads[joy_id].accelerometer_gravity = 0.8 * joypads[joy_id].accelerometer_gravity + 0.2 * value;
+							Input::get_singleton()->set_joy_gravity(joy_id, joypads[joy_id].accelerometer_gravity);
+							break;
+
+						case SDL_SENSOR_GYRO:
+							// By default the rotation is positive in the counter-clockwise direction.
+							// We revert it here to be positive in the clockwise direction.
+							Input::get_singleton()->set_joy_gyroscope(joy_id, -value);
+							break;
+
+						default:
+							// Godot currently doesn't support anything other than the main accelerometer and the main gyroscope sensors
+							continue;
+					}
+				} break;
 			}
 		}
 	}
@@ -303,6 +339,51 @@ void JoypadSDL::close_joypad(int p_pad_idx) {
 
 SDL_Joystick *JoypadSDL::Joypad::get_sdl_joystick() const {
 	return SDL_GetJoystickFromID(sdl_instance_idx);
+}
+int JoypadSDL::Joypad::get_joy_num_touchpads() const {
+	return SDL_GetNumGamepadTouchpads(get_sdl_gamepad());
+}
+bool JoypadSDL::Joypad::send_joy_packet(const void *p_data, int p_size) {
+	return SDL_SendJoystickEffect(get_sdl_joystick(), p_data, p_size);
+}
+bool JoypadSDL::Joypad::has_joy_light() const {
+	SDL_PropertiesID propertiesID = SDL_GetJoystickProperties(get_sdl_joystick());
+	if (propertiesID == 0) {
+		return false;
+	}
+	return SDL_GetBooleanProperty(propertiesID, SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, false) || SDL_GetBooleanProperty(propertiesID, SDL_PROP_JOYSTICK_CAP_MONO_LED_BOOLEAN, false);
+}
+
+bool JoypadSDL::Joypad::set_joy_light(Color p_color) {
+	Color linear = p_color.srgb_to_linear();
+	return SDL_SetJoystickLED(get_sdl_joystick(), linear.get_r8(), linear.get_g8(), linear.get_b8());
+}
+
+SDL_Joystick *JoypadSDL::Joypad::get_sdl_joystick() const {
+	return SDL_GetJoystickFromID(sdl_instance_idx);
+}
+bool JoypadSDL::Joypad::has_joy_accelerometer() const {
+	return SDL_GamepadHasSensor(get_sdl_gamepad(), SDL_SENSOR_ACCEL);
+}
+
+bool JoypadSDL::Joypad::has_joy_gyroscope() const {
+	return SDL_GamepadHasSensor(get_sdl_gamepad(), SDL_SENSOR_GYRO);
+}
+
+bool JoypadSDL::Joypad::set_joy_accelerometer_enabled(bool p_enable) {
+	bool result = SDL_SetGamepadSensorEnabled(get_sdl_gamepad(), SDL_SENSOR_ACCEL, p_enable);
+	if (!result) {
+		print_verbose(vformat("Error while trying to enable joypad accelerometer: %s", SDL_GetError()));
+	}
+	return result;
+}
+
+bool JoypadSDL::Joypad::set_joy_gyroscope_enabled(bool p_enable) {
+	bool result = SDL_SetGamepadSensorEnabled(get_sdl_gamepad(), SDL_SENSOR_GYRO, p_enable);
+	if (!result) {
+		print_verbose(vformat("Error while trying to enable joypad gyroscope: %s", SDL_GetError()));
+	}
+	return result;
 }
 
 SDL_Gamepad *JoypadSDL::Joypad::get_sdl_gamepad() const {

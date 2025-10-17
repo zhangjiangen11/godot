@@ -143,14 +143,45 @@ void Input::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("start_joy_vibration", "device", "weak_magnitude", "strong_magnitude", "duration"), &Input::start_joy_vibration, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("stop_joy_vibration", "device"), &Input::stop_joy_vibration);
 	ClassDB::bind_method(D_METHOD("vibrate_handheld", "duration_ms", "amplitude"), &Input::vibrate_handheld, DEFVAL(500), DEFVAL(-1.0));
+	ClassDB::bind_method(D_METHOD("joy_adaptive_triggers_off", "device", "axis"), &Input::joy_adaptive_triggers_off);
+	ClassDB::bind_method(D_METHOD("joy_adaptive_triggers_feedback", "device", "axis", "position", "strength"), &Input::joy_adaptive_triggers_feedback);
+	ClassDB::bind_method(D_METHOD("joy_adaptive_triggers_weapon", "device", "axis", "start_position", "end_position", "strength"), &Input::joy_adaptive_triggers_weapon);
+	ClassDB::bind_method(D_METHOD("joy_adaptive_triggers_vibration", "device", "axis", "position", "amplitude", "frequency"), &Input::joy_adaptive_triggers_vibration);
+	ClassDB::bind_method(D_METHOD("joy_adaptive_triggers_multi_feedback", "device", "axis", "strengths"), &Input::joy_adaptive_triggers_multi_feedback);
+	ClassDB::bind_method(D_METHOD("joy_adaptive_triggers_slope_feedback", "device", "axis", "start_position", "end_position", "start_strength", "end_strength"), &Input::joy_adaptive_triggers_slope_feedback);
+	ClassDB::bind_method(D_METHOD("joy_adaptive_triggers_multi_vibration", "device", "axis", "frequency", "amplitudes"), &Input::joy_adaptive_triggers_multi_vibration);
+	ClassDB::bind_method(D_METHOD("send_joy_packet", "device", "packet"), &Input::send_joy_packet);
 	ClassDB::bind_method(D_METHOD("get_gravity"), &Input::get_gravity);
 	ClassDB::bind_method(D_METHOD("get_accelerometer"), &Input::get_accelerometer);
 	ClassDB::bind_method(D_METHOD("get_magnetometer"), &Input::get_magnetometer);
 	ClassDB::bind_method(D_METHOD("get_gyroscope"), &Input::get_gyroscope);
+	ClassDB::bind_method(D_METHOD("get_joy_touchpad_finger_position", "device", "touchpad", "finger"), &Input::get_joy_touchpad_finger_position);
+	ClassDB::bind_method(D_METHOD("get_joy_touchpad_finger_pressure", "device", "touchpad", "finger"), &Input::get_joy_touchpad_finger_pressure);
+	ClassDB::bind_method(D_METHOD("get_joy_touchpad_fingers", "device", "touchpad"), &Input::get_joy_touchpad_fingers);
+	ClassDB::bind_method(D_METHOD("get_joy_num_touchpads", "device"), &Input::get_joy_num_touchpads);
+	ClassDB::bind_method(D_METHOD("is_joy_accelerometer_enabled", "device"), &Input::is_joy_accelerometer_enabled);
+	ClassDB::bind_method(D_METHOD("is_joy_gyroscope_enabled", "device"), &Input::is_joy_gyroscope_enabled);
+	ClassDB::bind_method(D_METHOD("get_joy_accelerometer", "device"), &Input::get_joy_accelerometer);
+	ClassDB::bind_method(D_METHOD("get_joy_gravity", "device"), &Input::get_joy_gravity);
+	ClassDB::bind_method(D_METHOD("get_joy_gyroscope", "device"), &Input::get_joy_gyroscope);
+	ClassDB::bind_method(D_METHOD("start_joy_motion_calibration", "device"), &Input::start_joy_motion_calibration);
+	ClassDB::bind_method(D_METHOD("step_joy_motion_calibration", "device"), &Input::step_joy_motion_calibration);
+	ClassDB::bind_method(D_METHOD("stop_joy_motion_calibration", "device"), &Input::stop_joy_motion_calibration);
+	ClassDB::bind_method(D_METHOD("clear_joy_motion_calibration", "device"), &Input::clear_joy_motion_calibration);
+	ClassDB::bind_method(D_METHOD("get_joy_motion_calibration", "device"), &Input::get_joy_motion_calibration);
+	ClassDB::bind_method(D_METHOD("set_joy_motion_calibration", "device", "calibration_info"), &Input::set_joy_motion_calibration);
+	ClassDB::bind_method(D_METHOD("is_joy_motion_calibrated", "device"), &Input::is_joy_motion_calibrated);
+	ClassDB::bind_method(D_METHOD("is_joy_motion_calibrating", "device"), &Input::is_joy_motion_calibrating);
 	ClassDB::bind_method(D_METHOD("set_gravity", "value"), &Input::set_gravity);
 	ClassDB::bind_method(D_METHOD("set_accelerometer", "value"), &Input::set_accelerometer);
 	ClassDB::bind_method(D_METHOD("set_magnetometer", "value"), &Input::set_magnetometer);
 	ClassDB::bind_method(D_METHOD("set_gyroscope", "value"), &Input::set_gyroscope);
+	ClassDB::bind_method(D_METHOD("set_joy_accelerometer_enabled", "device", "enable"), &Input::set_joy_accelerometer_enabled);
+	ClassDB::bind_method(D_METHOD("set_joy_gyroscope_enabled", "device", "enable"), &Input::set_joy_gyroscope_enabled);
+	ClassDB::bind_method(D_METHOD("has_joy_accelerometer", "device"), &Input::has_joy_accelerometer);
+	ClassDB::bind_method(D_METHOD("has_joy_gyroscope", "device"), &Input::has_joy_gyroscope);
+	ClassDB::bind_method(D_METHOD("set_joy_light", "device", "color"), &Input::set_joy_light);
+	ClassDB::bind_method(D_METHOD("has_joy_light", "device"), &Input::has_joy_light);
 	ClassDB::bind_method(D_METHOD("get_last_mouse_velocity"), &Input::get_last_mouse_velocity);
 	ClassDB::bind_method(D_METHOD("get_last_mouse_screen_velocity"), &Input::get_last_mouse_screen_velocity);
 	ClassDB::bind_method(D_METHOD("get_mouse_button_mask"), &Input::get_mouse_button_mask);
@@ -731,6 +762,238 @@ Vector3 Input::get_gyroscope() const {
 	return gyroscope;
 }
 
+Vector2 Input::get_joy_touchpad_finger_position(int p_device, int p_touchpad, int p_finger) const {
+	_THREAD_SAFE_METHOD_
+	if (!joy_touch.has(p_device) || !joy_touch[p_device].touchpad_fingers.has(p_touchpad) || !joy_touch[p_device].touchpad_fingers[p_touchpad].has(p_finger)) {
+		return Vector2();
+	}
+	return joy_touch[p_device].touchpad_fingers[p_touchpad][p_finger].position;
+}
+
+float Input::get_joy_touchpad_finger_pressure(int p_device, int p_touchpad, int p_finger) const {
+	_THREAD_SAFE_METHOD_
+	if (!joy_touch.has(p_device) || !joy_touch[p_device].touchpad_fingers.has(p_touchpad) || !joy_touch[p_device].touchpad_fingers[p_touchpad].has(p_finger)) {
+		return 0.0f;
+	}
+	return joy_touch[p_device].touchpad_fingers[p_touchpad][p_finger].pressure;
+}
+
+TypedArray<int> Input::get_joy_touchpad_fingers(int p_device, int p_touchpad) const {
+	_THREAD_SAFE_METHOD_
+	if (!joy_touch.has(p_device) || !joy_touch[p_device].touchpad_fingers.has(p_touchpad)) {
+		return TypedArray<int>();
+	}
+
+	TypedArray<int> result;
+	for (auto &i : joy_touch[p_device].touchpad_fingers[p_touchpad]) {
+		result.append(i.key);
+	}
+	return result;
+}
+
+int Input::get_joy_num_touchpads(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	if (!joy_touch.has(p_device)) {
+		return 0;
+	}
+	return joy_touch[p_device].num_touchpads;
+}
+bool Input::is_joy_accelerometer_enabled(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	return joy_motion.has(p_device) && joy_motion[p_device].accelerometer_enabled;
+}
+
+bool Input::is_joy_gyroscope_enabled(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	return joy_motion.has(p_device) && joy_motion[p_device].gyroscope_enabled;
+}
+
+Vector3 Input::get_joy_accelerometer(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	if (!joy_motion.has(p_device)) {
+		return Vector3();
+	}
+
+	if (!joy_motion[p_device].calibration.calibrated) {
+		return joy_motion[p_device].accelerometer;
+	}
+
+	const MotionInfo &motion = joy_motion[p_device];
+	// Calibrated accelerometer doesn't include gravity
+	Vector3 value = (motion.accelerometer - motion.gravity) - motion.calibration.accelerometer_offset;
+	if (std::abs(value.x) < motion.calibration.accelerometer_deadzone) {
+		value.x = 0;
+	}
+	if (std::abs(value.y) < motion.calibration.accelerometer_deadzone) {
+		value.y = 0;
+	}
+	if (std::abs(value.z) < motion.calibration.accelerometer_deadzone) {
+		value.z = 0;
+	}
+	return value;
+}
+
+Vector3 Input::get_joy_gravity(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	if (!joy_motion.has(p_device)) {
+		return Vector3();
+	}
+	// Does gravity need calibration?
+	return joy_motion[p_device].gravity;
+}
+
+Vector3 Input::get_joy_gyroscope(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	if (!joy_motion.has(p_device)) {
+		return Vector3();
+	}
+
+	if (!joy_motion[p_device].calibration.calibrated) {
+		return joy_motion[p_device].gyroscope;
+	}
+
+	const MotionInfo &motion = joy_motion[p_device];
+	Vector3 value = motion.gyroscope - motion.calibration.accelerometer_offset;
+	if (std::abs(value.x) < motion.calibration.gyroscope_deadzone) {
+		value.x = 0;
+	}
+	if (std::abs(value.y) < motion.calibration.gyroscope_deadzone) {
+		value.y = 0;
+	}
+	if (std::abs(value.z) < motion.calibration.gyroscope_deadzone) {
+		value.z = 0;
+	}
+	return value;
+}
+
+#define CALIBRATION_SETUP            \
+	if (!joy_motion.has(p_device)) { \
+		return;                      \
+	}                                \
+	auto &calibration = joy_motion[p_device].calibration;
+
+#define CALIBRATION_SETUP_RETURN(m_return) \
+	if (!joy_motion.has(p_device)) {       \
+		return m_return;                   \
+	}                                      \
+	auto &calibration = joy_motion[p_device].calibration;
+
+#define CALIBRATE_SENSOR(m_sensor)                              \
+	vector_sum = Vector3();                                     \
+	for (Vector3 step : calibration.m_sensor##_steps) {         \
+		vector_sum += step;                                     \
+	}                                                           \
+	vector_sum /= calibration.m_sensor##_steps.size();          \
+                                                                \
+	deadzone = 0.0f;                                            \
+	for (Vector3 step : calibration.m_sensor##_steps) {         \
+		deadzone = MAX(deadzone, (step - vector_sum).length()); \
+	}                                                           \
+                                                                \
+	calibration.m_sensor##_offset = vector_sum;                 \
+	calibration.m_sensor##_deadzone = deadzone;                 \
+	calibration.m_sensor##_steps.clear();
+
+void Input::start_joy_motion_calibration(int p_device) {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP;
+
+	ERR_FAIL_COND_MSG(calibration.in_progress, "Calibration already in progress.");
+
+	clear_joy_motion_calibration(p_device);
+	calibration.in_progress = true;
+}
+
+void Input::step_joy_motion_calibration(int p_device) {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP;
+
+	ERR_FAIL_COND_MSG(!calibration.in_progress, "Calibration hasn't been started.");
+
+	const MotionInfo &motion = joy_motion[p_device];
+	calibration.accelerometer_steps.push_back(motion.accelerometer - motion.gravity);
+	calibration.gyroscope_steps.push_back(motion.gyroscope);
+}
+
+void Input::stop_joy_motion_calibration(int p_device) {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP;
+
+	ERR_FAIL_COND_MSG(!calibration.in_progress, "Calibration hasn't been started.");
+
+	if (calibration.accelerometer_steps.size() < 10) {
+		WARN_PRINT_ED("Not enough joypad motion sensors calibration steps, "
+					  "you should call Input.step_joy_motion_calibration() at least 10 times.");
+	}
+
+	Vector3 vector_sum;
+	float deadzone = 0.0f;
+
+	CALIBRATE_SENSOR(accelerometer);
+	CALIBRATE_SENSOR(gyroscope);
+
+	calibration.in_progress = false;
+	calibration.calibrated = true;
+}
+
+void Input::clear_joy_motion_calibration(int p_device) {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP;
+
+	// Calibration might be in progress and the user might want to reset the progress,
+	// so no need to stop the calibration.
+	//calibration.in_progress = false;
+	calibration.accelerometer_steps.clear();
+	calibration.gyroscope_steps.clear();
+	calibration.accelerometer_offset = Vector3();
+	calibration.gyroscope_offset = Vector3();
+	calibration.accelerometer_deadzone = 0.0f;
+	calibration.gyroscope_deadzone = 0.0f;
+	calibration.calibrated = false;
+}
+
+Dictionary Input::get_joy_motion_calibration(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP_RETURN({});
+
+	if (!calibration.calibrated) {
+		return {};
+	}
+
+	Dictionary result;
+	result["accelerometer_offset"] = calibration.accelerometer_offset;
+	result["accelerometer_deadzone"] = calibration.accelerometer_deadzone;
+	result["gyroscope_offset"] = calibration.gyroscope_offset;
+	result["gyroscope_deadzone"] = calibration.gyroscope_deadzone;
+	return result;
+}
+
+void Input::set_joy_motion_calibration(int p_device, Dictionary p_calibration_info) {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP;
+
+	ERR_FAIL_COND_MSG(calibration.in_progress, "Calibration already in progress.");
+
+	calibration.accelerometer_offset = p_calibration_info["accelerometer_offset"];
+	calibration.accelerometer_deadzone = p_calibration_info["accelerometer_deadzone"];
+	calibration.gyroscope_offset = p_calibration_info["gyroscope_offset"];
+	calibration.gyroscope_deadzone = p_calibration_info["gyroscope_deadzone"];
+	calibration.in_progress = false;
+	calibration.calibrated = true;
+}
+
+bool Input::is_joy_motion_calibrated(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP_RETURN(false);
+	return calibration.calibrated;
+}
+
+bool Input::is_joy_motion_calibrating(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	CALIBRATION_SETUP_RETURN(false);
+	return calibration.in_progress;
+}
+
 void Input::_parse_input_event_impl(const Ref<InputEvent> &p_event, bool p_is_emulated) {
 	// This function does the final delivery of the input event to user land.
 	// Regardless where the event came from originally, this has to happen on the main thread.
@@ -994,6 +1257,81 @@ void Input::set_joy_features(int p_device, JoypadFeatures *p_features) {
 	_update_joypad_features(p_device);
 }
 
+void Input::set_joy_touchpad_finger(int p_device, int p_touchpad, int p_finger, float p_pressure, Vector2 p_value) {
+	_THREAD_SAFE_METHOD_
+	if (p_pressure > 0.0f) {
+		joy_touch[p_device].touchpad_fingers[p_touchpad][p_finger] = TouchpadFingerInfo{ p_value, p_pressure };
+	} else {
+		joy_touch[p_device].touchpad_fingers[p_touchpad].erase(p_finger);
+	}
+}
+// TODO: event
+bool Input::set_joy_accelerometer_enabled(int p_device, bool p_enable) {
+	_THREAD_SAFE_METHOD_
+	if (!joy_names.has(p_device) || joy_names[p_device].features == nullptr) {
+		return false;
+	}
+	bool enabled = joy_names[p_device].features->set_joy_accelerometer_enabled(p_enable);
+	joy_motion[p_device].accelerometer = Vector3();
+	joy_motion[p_device].accelerometer_enabled = enabled;
+	return enabled;
+}
+
+bool Input::set_joy_gyroscope_enabled(int p_device, bool p_enable) {
+	_THREAD_SAFE_METHOD_
+	if (!joy_names.has(p_device) || joy_names[p_device].features == nullptr) {
+		return false;
+	}
+	bool enabled = joy_names[p_device].features->set_joy_gyroscope_enabled(p_enable);
+	joy_motion[p_device].gyroscope = Vector3();
+	joy_motion[p_device].gyroscope_enabled = enabled;
+	return enabled;
+}
+
+void Input::set_joy_accelerometer(int p_device, const Vector3 &p_value) {
+	_THREAD_SAFE_METHOD_
+	if (!joy_motion.has(p_device)) {
+		return;
+	}
+	joy_motion[p_device].accelerometer = p_value;
+}
+
+void Input::set_joy_gravity(int p_device, const Vector3 &p_value) {
+	_THREAD_SAFE_METHOD_
+	if (!joy_motion.has(p_device)) {
+		return;
+	}
+	joy_motion[p_device].gravity = p_value;
+}
+
+void Input::set_joy_gyroscope(int p_device, const Vector3 &p_value) {
+	_THREAD_SAFE_METHOD_
+	if (!joy_motion.has(p_device)) {
+		return;
+	}
+	joy_motion[p_device].gyroscope = p_value;
+}
+
+bool Input::has_joy_accelerometer(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	return joy_motion.has(p_device) && joy_motion[p_device].has_accelerometer;
+}
+
+bool Input::has_joy_gyroscope(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	return joy_motion.has(p_device) && joy_motion[p_device].has_gyroscope;
+}
+bool Input::set_joy_light(int p_device, Color p_color) {
+	if (!joy_names.has(p_device) || joy_names[p_device].features == nullptr) {
+		return false;
+	}
+	return joy_names[p_device].features->set_joy_light(p_color);
+}
+
+bool Input::has_joy_light(int p_device) const {
+	return joy_names.has(p_device) && joy_names[p_device].has_light;
+}
+
 void Input::start_joy_vibration(int p_device, float p_weak_magnitude, float p_strong_magnitude, float p_duration) {
 	_THREAD_SAFE_METHOD_
 	if (p_weak_magnitude < 0.f || p_weak_magnitude > 1.f || p_strong_magnitude < 0.f || p_strong_magnitude > 1.f) {
@@ -1019,6 +1357,291 @@ void Input::stop_joy_vibration(int p_device) {
 
 void Input::vibrate_handheld(int p_duration_ms, float p_amplitude) {
 	OS::get_singleton()->vibrate_handheld(p_duration_ms, p_amplitude);
+}
+
+/*
+	PS5 trigger effect documentation:
+	https://controllers.fandom.com/wiki/Sony_DualSense#FFB_Trigger_Modes
+*/
+typedef struct
+{
+	uint8_t ucEnableBits1; /* 0 */
+	uint8_t ucEnableBits2; /* 1 */
+	uint8_t ucRumbleRight; /* 2 */
+	uint8_t ucRumbleLeft; /* 3 */
+	uint8_t ucHeadphoneVolume; /* 4 */
+	uint8_t ucSpeakerVolume; /* 5 */
+	uint8_t ucMicrophoneVolume; /* 6 */
+	uint8_t ucAudioEnableBits; /* 7 */
+	uint8_t ucMicLightMode; /* 8 */
+	uint8_t ucAudioMuteBits; /* 9 */
+	uint8_t rgucRightTriggerEffect[11]; /* 10 */
+	uint8_t rgucLeftTriggerEffect[11]; /* 21 */
+	uint8_t rgucUnknown1[6]; /* 32 */
+	uint8_t ucLedFlags; /* 38 */
+	uint8_t rgucUnknown2[2]; /* 39 */
+	uint8_t ucLedAnim; /* 41 */
+	uint8_t ucLedBrightness; /* 42 */
+	uint8_t ucPadLights; /* 43 */
+	uint8_t ucLedRed; /* 44 */
+	uint8_t ucLedGreen; /* 45 */
+	uint8_t ucLedBlue; /* 46 */
+} DS5EffectsState_t;
+
+#define DUALSENSE_CHECK_TRIGGER                                                                                          \
+	ERR_FAIL_COND_MSG(!joy_names.has(p_device), "Joypad not connected.");                                                \
+	ERR_FAIL_COND_MSG(joy_names[p_device].features == nullptr, "Adaptive triggers are not supported on this platform."); \
+	ERR_FAIL_COND_MSG(p_axis != JoyAxis::TRIGGER_LEFT && p_axis != JoyAxis::TRIGGER_RIGHT,                               \
+			"Invalid trigger axis, please specify either JOY_AXIS_TRIGGER_LEFT or JOY_AXIS_TRIGGER_RIGHT.");
+
+#define DUALSENSE_SETUP_TRIGGER_EFFECT                                                                              \
+	DS5EffectsState_t state;                                                                                        \
+	uint8_t *values = p_axis == JoyAxis::TRIGGER_LEFT ? state.rgucLeftTriggerEffect : state.rgucRightTriggerEffect; \
+	memset(&state, 0, sizeof(state));                                                                               \
+	state.ucEnableBits1 |= p_axis == JoyAxis::TRIGGER_LEFT ? 0x08 : 0x04;
+
+#define DUALSENSE_SEND_EFFECT \
+	joy_names[p_device].features->send_joy_packet(&state, sizeof(state));
+
+// Credit for the values-generating code: Copyright (c) 2021-2022 John "Nielk1" Klein
+// https://gist.github.com/Nielk1/6d54cc2c00d2201ccb8c2720ad7538db
+
+void Input::joy_adaptive_triggers_off(int p_device, JoyAxis p_axis) {
+	_THREAD_SAFE_METHOD_
+	DUALSENSE_CHECK_TRIGGER;
+	DUALSENSE_SETUP_TRIGGER_EFFECT;
+	values[0] = 0x05;
+	DUALSENSE_SEND_EFFECT;
+}
+
+void Input::joy_adaptive_triggers_feedback(int p_device, JoyAxis p_axis, int p_position, int p_strength) {
+	if (p_strength == 0) {
+		joy_adaptive_triggers_off(p_device, p_axis);
+		return;
+	}
+
+	_THREAD_SAFE_METHOD_
+	DUALSENSE_CHECK_TRIGGER;
+
+	ERR_FAIL_COND_MSG(p_position < 0 || p_position > 9, "The value of parameter \"position\" must be between 0 and 9.");
+	ERR_FAIL_COND_MSG(p_strength < 0 || p_strength > 8, "The value of parameter \"strength\" must be between 0 and 9.");
+
+	DUALSENSE_SETUP_TRIGGER_EFFECT;
+
+	uint8_t force_value = (uint8_t)((p_strength - 1) & 0x07);
+	uint32_t force_zones = 0;
+	uint16_t active_zones = 0;
+	for (int i = p_position; i < 10; i++) {
+		force_zones |= (uint32_t)(force_value << (3 * i));
+		active_zones |= (uint16_t)(1 << i);
+	}
+
+	values[0] = 0x21;
+	values[1] = (uint8_t)((active_zones >> 0) & 0xFF);
+	values[2] = (uint8_t)((active_zones >> 8) & 0xFF);
+	values[3] = (uint8_t)((force_zones >> 0) & 0xFF);
+	values[4] = (uint8_t)((force_zones >> 8) & 0xFF);
+	values[5] = (uint8_t)((force_zones >> 16) & 0xFF);
+	values[6] = (uint8_t)((force_zones >> 24) & 0xFF);
+
+	DUALSENSE_SEND_EFFECT;
+}
+
+void Input::joy_adaptive_triggers_weapon(int p_device, JoyAxis p_axis, int p_start_position, int p_end_position, int p_strength) {
+	if (p_strength == 0) {
+		joy_adaptive_triggers_off(p_device, p_axis);
+		return;
+	}
+
+	_THREAD_SAFE_METHOD_
+	DUALSENSE_CHECK_TRIGGER;
+
+	ERR_FAIL_COND_MSG(p_start_position < 2 || p_start_position > 7,
+			"The value of parameter \"start_position\" must be between 2 and 7.");
+	ERR_FAIL_COND_MSG(p_end_position <= p_start_position || p_end_position > 8,
+			"The value of parameter \"end_position\" must be between p_start_position+1 and 8.");
+	ERR_FAIL_COND_MSG(p_strength < 0 || p_strength > 8,
+			"The value of parameter \"strength\" must be between 0 and 8.");
+
+	DUALSENSE_SETUP_TRIGGER_EFFECT;
+
+	uint16_t start_and_stop_zones = (uint16_t)((1 << p_start_position) | (1 << p_end_position));
+
+	values[0] = 0x25;
+	values[1] = (uint8_t)((start_and_stop_zones >> 0) & 0xFF);
+	values[2] = (uint8_t)((start_and_stop_zones >> 8) & 0xFF);
+	values[3] = (uint8_t)(p_strength - 1);
+
+	DUALSENSE_SEND_EFFECT;
+}
+
+void Input::joy_adaptive_triggers_vibration(int p_device, JoyAxis p_axis, int p_position, int p_amplitude, int p_frequency) {
+	if (p_amplitude == 0 || p_frequency == 0) {
+		joy_adaptive_triggers_off(p_device, p_axis);
+		return;
+	}
+
+	_THREAD_SAFE_METHOD_
+	DUALSENSE_CHECK_TRIGGER;
+
+	ERR_FAIL_COND_MSG(p_position < 0 || p_position > 9, "The value of parameter \"position\" must be between 0 and 9.");
+	ERR_FAIL_COND_MSG(p_amplitude < 0 || p_amplitude > 8, "The value of parameter \"amplitude\" must be between 0 and 8.");
+	ERR_FAIL_COND_MSG(p_frequency < 0 || p_frequency > 255, "The value of parameter \"frequency\" must be between 0 and 255.");
+
+	DUALSENSE_SETUP_TRIGGER_EFFECT;
+
+	uint8_t strength_value = (uint8_t)((p_amplitude - 1) & 0x7);
+	uint32_t amplitude_zones = 0;
+	uint16_t active_zones = 0;
+
+	for (int i = p_position; i < 10; i++) {
+		amplitude_zones |= (uint32_t)(strength_value << (3 * i));
+		active_zones |= (uint16_t)(1 << i);
+	}
+
+	values[0] = 0x26;
+	values[1] = (uint8_t)((active_zones >> 0) & 0xFF);
+	values[2] = (uint8_t)((active_zones >> 8) & 0xFF);
+	values[3] = (uint8_t)((amplitude_zones >> 0) & 0xFF);
+	values[4] = (uint8_t)((amplitude_zones >> 8) & 0xFF);
+	values[5] = (uint8_t)((amplitude_zones >> 16) & 0xFF);
+	values[6] = (uint8_t)((amplitude_zones >> 24) & 0xFF);
+	values[9] = (uint8_t)p_frequency;
+
+	DUALSENSE_SEND_EFFECT;
+}
+
+void Input::joy_adaptive_triggers_multi_feedback(int p_device, JoyAxis p_axis, TypedArray<int> p_strengths) {
+	ERR_FAIL_COND_MSG(p_strengths.size() != 10, "The \"strengths\" parameter array must have 10 elements.");
+
+	bool have_positive_values = false;
+	for (int i = 0; i < 10; i++) {
+		if (p_strengths[i].operator int() > 0) {
+			have_positive_values = true;
+			break;
+		}
+	}
+	if (!have_positive_values) {
+		joy_adaptive_triggers_off(p_device, p_axis);
+		return;
+	}
+
+	_THREAD_SAFE_METHOD_
+	DUALSENSE_CHECK_TRIGGER;
+	DUALSENSE_SETUP_TRIGGER_EFFECT;
+
+	uint32_t force_zones = 0;
+	uint16_t active_zones = 0;
+
+	for (int i = 0; i < 10; i++) {
+		int strength = p_strengths[i];
+		ERR_FAIL_COND_MSG(strength < 0 || strength > 8,
+				vformat("The value of parameter strengths[%d] must be between 0 and 8.", i));
+
+		if (strength > 0) {
+			uint8_t force_value = (uint8_t)((strength - 1) & 0x07);
+			force_zones |= (uint32_t)(force_value << (3 * i));
+			active_zones |= (uint16_t)(1 << i);
+		}
+	}
+
+	values[0] = 0x21;
+	values[1] = (uint8_t)((active_zones >> 0) & 0xFF);
+	values[2] = (uint8_t)((active_zones >> 8) & 0xFF);
+	values[3] = (uint8_t)((force_zones >> 0) & 0xFF);
+	values[4] = (uint8_t)((force_zones >> 8) & 0xFF);
+	values[5] = (uint8_t)((force_zones >> 16) & 0xFF);
+	values[6] = (uint8_t)((force_zones >> 24) & 0xFF);
+
+	DUALSENSE_SEND_EFFECT;
+}
+
+void Input::joy_adaptive_triggers_slope_feedback(int p_device, JoyAxis p_axis, int p_start_position, int p_end_position, int p_start_strength, int p_end_strength) {
+	//_THREAD_SAFE_METHOD_ // joy_adaptive_triggers_multi_feedback already handles this
+	DUALSENSE_CHECK_TRIGGER;
+
+	ERR_FAIL_COND_MSG(p_start_position < 0 || p_start_position > p_end_position,
+			"The value of parameter \"start_position\" must be between 0 and the value of \"end_position\" parameter.");
+	ERR_FAIL_COND_MSG(p_end_position <= p_start_position || p_end_position > 9,
+			"The value of parameter \"end_position\" must be between the value of \"start_position\" parameter + 1 and 9.");
+	ERR_FAIL_COND_MSG(p_start_strength < 1 || p_start_position > 8,
+			"The value of parameter \"start_strength\" must be between 1 and 8.");
+	ERR_FAIL_COND_MSG(p_end_strength < 1 || p_end_strength > 8,
+			"The value of parameter \"end_strength\" must be between 1 and 8.");
+
+	TypedArray<int> strengths;
+	float slope = 1.0f * (p_end_strength - p_start_strength) / (p_end_position - p_start_position);
+	for (int i = 0; i < 10; i++) {
+		if (i < p_start_position) {
+			strengths.append(0);
+		} else if (i <= p_end_position) {
+			strengths.append((uint8_t)round(p_start_strength + slope * (i - p_start_position)));
+		} else {
+			strengths.append(p_end_strength);
+		}
+	}
+
+	joy_adaptive_triggers_multi_feedback(p_device, p_axis, strengths);
+}
+
+void Input::joy_adaptive_triggers_multi_vibration(int p_device, JoyAxis p_axis, int p_frequency, TypedArray<int> p_amplitudes) {
+	ERR_FAIL_COND_MSG(p_frequency < 0 || p_frequency > 255, "The value of parameter \"frequency\" must be between 0 and 255.");
+	ERR_FAIL_COND_MSG(p_amplitudes.size() != 10, "The \"amplitudes\" parameter array must have 10 elements.");
+
+	bool have_positive_values = false;
+	for (int i = 0; i < 10; i++) {
+		if (p_amplitudes[i].operator int() > 0) {
+			have_positive_values = true;
+			break;
+		}
+	}
+	if (!have_positive_values || p_frequency == 0) {
+		joy_adaptive_triggers_off(p_device, p_axis);
+		return;
+	}
+
+	_THREAD_SAFE_METHOD_
+	DUALSENSE_CHECK_TRIGGER;
+	DUALSENSE_SETUP_TRIGGER_EFFECT;
+
+	uint32_t strength_zones = 0;
+	uint16_t active_zones = 0;
+
+	for (int i = 0; i < 10; i++) {
+		int amplitude = p_amplitudes[i];
+		ERR_FAIL_COND_MSG(amplitude < 0 || amplitude > 8,
+				vformat("The value of parameter amplitude[%d] must be between 0 and 8.", i));
+		if (amplitude > 0) {
+			uint8_t strength_value = (uint8_t)((amplitude - 1) * 0x07);
+			strength_zones |= (uint32_t)(strength_value << (3 * i));
+			active_zones |= (uint16_t)(1 << i);
+		}
+	}
+
+	values[0] = 0x26;
+	values[1] = (uint8_t)((active_zones >> 0) & 0xFF);
+	values[2] = (uint8_t)((active_zones >> 8) & 0xFF);
+	values[3] = (uint8_t)((strength_zones >> 0) & 0xFF);
+	values[4] = (uint8_t)((strength_zones >> 8) & 0xFF);
+	values[5] = (uint8_t)((strength_zones >> 16) & 0xFF);
+	values[6] = (uint8_t)((strength_zones >> 24) & 0xFF);
+	values[9] = (uint8_t)p_frequency;
+
+	DUALSENSE_SEND_EFFECT;
+}
+
+bool Input::send_joy_packet(int p_device, PackedByteArray p_packet) {
+	_THREAD_SAFE_METHOD_
+
+	ERR_FAIL_COND_V_MSG(!joy_names.has(p_device), false, "Joypad not connected.");
+	ERR_FAIL_COND_V_MSG(joy_names[p_device].features == nullptr, false, "Sending custom joypad packets is not supported on this platform.");
+
+	if (p_packet.size() == 0) {
+		WARN_PRINT("Packet size is 0. Skipping sending the packet.");
+		return false;
+	}
+
+	return joy_names[p_device].features->send_joy_packet(p_packet.ptr(), p_packet.size());
 }
 
 void Input::set_gravity(const Vector3 &p_gravity) {
@@ -1492,6 +2115,17 @@ void Input::_update_joypad_features(int p_device) {
 	}
 	// Do something based on the features. For example, we can save the information about
 	// the joypad having motion sensors, LED light, etc.
+	if (joy_names[p_device].features->has_joy_accelerometer()) {
+		joy_motion[p_device].has_accelerometer = true;
+	}
+	if (joy_names[p_device].features->has_joy_gyroscope()) {
+		joy_motion[p_device].has_gyroscope = true;
+	}
+	// Do something based on the features. For example, we can save the information about
+	// the joypad having motion sensors, LED light, etc.
+	if (joy_names[p_device].features->has_joy_light()) {
+		joy_names[p_device].has_light = true;
+	}
 }
 
 Input::JoyEvent Input::_get_mapped_button_event(const JoyDeviceMapping &mapping, JoyButton p_button) {
