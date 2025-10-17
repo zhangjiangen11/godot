@@ -60,7 +60,7 @@ Vector<uint8_t> compile_glslang_shader(RenderingDeviceCommons::ShaderStage p_sta
 
 	glslang::TShader shader(stages[p_stage]);
 
-	String code = p_source_code.remove_annotate();
+	String code = p_source_code.remove_annotate().utf8();
 	String device_api_defines = RenderingDevice::get_singleton()->get_device_api_name().to_upper();
 	code += "\n#define RENDER_API_" + device_api_defines + "\n";
 	CharString cs = code.ascii();
