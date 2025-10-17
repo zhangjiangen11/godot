@@ -112,11 +112,13 @@ Vector<int> TriangleMesh::_get_indices() const {
 void TriangleMesh::create(const Vector<Vector3> &p_faces, const Vector<int32_t> &p_surface_indices) {
 	valid = false;
 
-	ERR_FAIL_COND(p_surface_indices.size() && p_surface_indices.size() != p_faces.size());
-
 	int fc = p_faces.size();
 	ERR_FAIL_COND(!fc || ((fc % 3) != 0));
 	fc /= 3;
+	if (p_surface_indices.size() && p_surface_indices.size() != fc) {
+		ERR_FAIL_COND(p_surface_indices.size() && p_surface_indices.size() != p_faces.size() / 3);
+	}
+
 	triangles.resize(fc);
 
 	bvh.resize(fc * 3); //will never be larger than this (todo make better)

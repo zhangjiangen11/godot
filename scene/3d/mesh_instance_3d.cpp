@@ -255,7 +255,9 @@ Node *MeshInstance3D::create_trimesh_collision_node() {
 
 void MeshInstance3D::create_trimesh_collision() {
 	StaticBody3D *static_body = Object::cast_to<StaticBody3D>(create_trimesh_collision_node());
-	ERR_FAIL_NULL(static_body);
+	if (static_body == nullptr) {
+		return;
+	}
 	static_body->set_name(String(get_name()) + "_col");
 
 	add_child(static_body, true);
