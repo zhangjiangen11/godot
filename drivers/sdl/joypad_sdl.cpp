@@ -343,6 +343,18 @@ int JoypadSDL::Joypad::get_joy_num_touchpads() const {
 bool JoypadSDL::Joypad::send_joy_packet(const void *p_data, int p_size) {
 	return SDL_SendJoystickEffect(get_sdl_joystick(), p_data, p_size);
 }
+bool JoypadSDL::Joypad::has_joy_light() const {
+	SDL_PropertiesID propertiesID = SDL_GetJoystickProperties(get_sdl_joystick());
+	if (propertiesID == 0) {
+		return false;
+	}
+	return SDL_GetBooleanProperty(propertiesID, SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, false) || SDL_GetBooleanProperty(propertiesID, SDL_PROP_JOYSTICK_CAP_MONO_LED_BOOLEAN, false);
+}
+
+bool JoypadSDL::Joypad::set_joy_light(Color p_color) {
+	Color linear = p_color.srgb_to_linear();
+	return SDL_SetJoystickLED(get_sdl_joystick(), linear.get_r8(), linear.get_g8(), linear.get_b8());
+}
 
 SDL_Joystick *JoypadSDL::Joypad::get_sdl_joystick() const {
 	return SDL_GetJoystickFromID(sdl_instance_idx);
