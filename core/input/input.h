@@ -89,6 +89,7 @@ public:
 
 		virtual bool set_joy_accelerometer_enabled(bool p_enable) { return false; }
 		virtual bool set_joy_gyroscope_enabled(bool p_enable) { return false; }
+		virtual bool send_joy_packet(const void *p_data, int p_size) { return false; }
 	};
 
 	static constexpr int32_t JOYPADS_MAX = 16;
@@ -433,6 +434,16 @@ public:
 	void start_joy_vibration(int p_device, float p_weak_magnitude, float p_strong_magnitude, float p_duration = 0);
 	void stop_joy_vibration(int p_device);
 	void vibrate_handheld(int p_duration_ms = 500, float p_amplitude = -1.0);
+
+	void joy_adaptive_triggers_off(int p_device, JoyAxis p_axis);
+	void joy_adaptive_triggers_feedback(int p_device, JoyAxis p_axis, int p_position, int p_strength);
+	void joy_adaptive_triggers_weapon(int p_device, JoyAxis p_axis, int p_start_position, int p_end_position, int p_strength);
+	void joy_adaptive_triggers_vibration(int p_device, JoyAxis p_axis, int p_position, int p_amplitude, int p_frequency);
+	void joy_adaptive_triggers_multi_feedback(int p_device, JoyAxis p_axis, TypedArray<int> p_strengths);
+	void joy_adaptive_triggers_slope_feedback(int p_device, JoyAxis p_axis, int p_start_position, int p_end_position, int p_start_strength, int p_end_strength);
+	void joy_adaptive_triggers_multi_vibration(int p_device, JoyAxis p_axis, int p_frequency, TypedArray<int> p_amplitudes);
+
+	bool send_joy_packet(int p_device, PackedByteArray p_packet);
 
 	void set_mouse_position(const Point2 &p_posf);
 

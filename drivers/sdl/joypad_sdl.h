@@ -73,6 +73,9 @@ private:
 		bool set_joy_accelerometer_enabled(bool p_enable) override;
 		bool set_joy_gyroscope_enabled(bool p_enable) override;
 
+		bool send_joy_packet(const void *p_data, int p_size) override;
+
+		SDL_Joystick *get_sdl_joystick() const;
 		SDL_Gamepad *get_sdl_gamepad() const;
 	};
 
