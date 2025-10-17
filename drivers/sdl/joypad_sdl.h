@@ -61,11 +61,10 @@ private:
 
 		bool supports_force_feedback = false;
 		uint64_t ff_effect_timestamp = 0;
+		Vector3 accelerometer_gravity = Vector3();
 
 		int get_joy_num_touchpads() const override;
 
-		SDL_Joystick *get_sdl_joystick() const;
-		Vector3 accelerometer_gravity = Vector3();
 
 		bool has_joy_accelerometer() const override;
 		bool has_joy_gyroscope() const override;

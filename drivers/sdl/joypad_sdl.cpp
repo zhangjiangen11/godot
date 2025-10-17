@@ -359,9 +359,6 @@ bool JoypadSDL::Joypad::set_joy_light(Color p_color) {
 	return SDL_SetJoystickLED(get_sdl_joystick(), linear.get_r8(), linear.get_g8(), linear.get_b8());
 }
 
-SDL_Joystick *JoypadSDL::Joypad::get_sdl_joystick() const {
-	return SDL_GetJoystickFromID(sdl_instance_idx);
-}
 bool JoypadSDL::Joypad::has_joy_accelerometer() const {
 	return SDL_GamepadHasSensor(get_sdl_gamepad(), SDL_SENSOR_ACCEL);
 }
