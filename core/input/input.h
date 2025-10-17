@@ -84,6 +84,11 @@ public:
 		virtual ~JoypadFeatures() {}
 
 		virtual int get_joy_num_touchpads() const { return 0; }
+		virtual bool has_joy_accelerometer() const { return false; }
+		virtual bool has_joy_gyroscope() const { return false; }
+
+		virtual bool set_joy_accelerometer_enabled(bool p_enable) { return false; }
+		virtual bool set_joy_gyroscope_enabled(bool p_enable) { return false; }
 	};
 
 	static constexpr int32_t JOYPADS_MAX = 16;
@@ -168,6 +173,27 @@ private:
 	};
 
 	HashMap<int, TouchpadInfo> joy_touch;
+	struct MotionInfo {
+		bool has_accelerometer = false;
+		bool has_gyroscope = false;
+		bool accelerometer_enabled = false;
+		bool gyroscope_enabled = false;
+		Vector3 accelerometer;
+		Vector3 gravity;
+		Vector3 gyroscope;
+		struct {
+			bool in_progress = false;
+			bool calibrated = false;
+			Vector<Vector3> accelerometer_steps;
+			Vector<Vector3> gyroscope_steps;
+			Vector3 accelerometer_offset;
+			Vector3 gyroscope_offset;
+			float accelerometer_deadzone = 0.0f;
+			float gyroscope_deadzone = 0.0f;
+		} calibration;
+	};
+
+	HashMap<int, MotionInfo> joy_motion;
 
 	struct VelocityTrack {
 		uint64_t last_tick = 0;
@@ -357,6 +383,23 @@ public:
 	TypedArray<int> get_joy_touchpad_fingers(int p_device, int p_touchpad) const;
 
 	int get_joy_num_touchpads(int p_device) const;
+	bool is_joy_accelerometer_enabled(int p_device) const;
+	bool is_joy_gyroscope_enabled(int p_device) const;
+
+	Vector3 get_joy_accelerometer(int p_device) const;
+	Vector3 get_joy_gravity(int p_device) const;
+	Vector3 get_joy_gyroscope(int p_device) const;
+
+	void start_joy_motion_calibration(int p_device);
+	void step_joy_motion_calibration(int p_device);
+	void stop_joy_motion_calibration(int p_device);
+	void clear_joy_motion_calibration(int p_device);
+
+	Dictionary get_joy_motion_calibration(int p_device) const;
+	void set_joy_motion_calibration(int p_device, Dictionary p_calibration_info);
+
+	bool is_joy_motion_calibrated(int p_device) const;
+	bool is_joy_motion_calibrating(int p_device) const;
 
 	Point2 get_mouse_position() const;
 	Vector2 get_last_mouse_velocity();
@@ -377,6 +420,15 @@ public:
 	void set_joy_features(int p_device, JoypadFeatures *p_features);
 
 	void set_joy_touchpad_finger(int p_device, int p_touchpad, int p_finger, float p_pressure, Vector2 p_value);
+	bool set_joy_accelerometer_enabled(int p_device, bool p_enable);
+	bool set_joy_gyroscope_enabled(int p_device, bool p_enable);
+
+	void set_joy_accelerometer(int p_device, const Vector3 &p_value);
+	void set_joy_gravity(int p_device, const Vector3 &p_value);
+	void set_joy_gyroscope(int p_device, const Vector3 &p_value);
+
+	bool has_joy_accelerometer(int p_device) const;
+	bool has_joy_gyroscope(int p_device) const;
 
 	void start_joy_vibration(int p_device, float p_weak_magnitude, float p_strong_magnitude, float p_duration = 0);
 	void stop_joy_vibration(int p_device);

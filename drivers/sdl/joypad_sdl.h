@@ -65,6 +65,14 @@ private:
 		int get_joy_num_touchpads() const override;
 
 		SDL_Joystick *get_sdl_joystick() const;
+		Vector3 accelerometer_gravity = Vector3();
+
+		bool has_joy_accelerometer() const override;
+		bool has_joy_gyroscope() const override;
+
+		bool set_joy_accelerometer_enabled(bool p_enable) override;
+		bool set_joy_gyroscope_enabled(bool p_enable) override;
+
 		SDL_Gamepad *get_sdl_gamepad() const;
 	};
 
