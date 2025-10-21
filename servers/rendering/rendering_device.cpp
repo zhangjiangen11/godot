@@ -4674,11 +4674,11 @@ void RenderingDevice::draw_list_set_push_constant(DrawListID p_list, const void 
 	ERR_FAIL_COND(!draw_list.active);
 
 #ifdef DEBUG_ENABLED
-	ERR_FAIL_COND_MSG(p_data_size != draw_list.validation.pipeline_push_constant_size,
+	ERR_FAIL_COND_MSG(p_data_size < draw_list.validation.pipeline_push_constant_size,
 			"This render pipeline requires (" + itos(draw_list.validation.pipeline_push_constant_size) + ") bytes of push constant data, supplied: (" + itos(p_data_size) + ")");
 #endif
 
-	draw_graph.add_draw_list_set_push_constant(draw_list.state.pipeline_shader_driver_id, p_data, p_data_size);
+	draw_graph.add_draw_list_set_push_constant(draw_list.state.pipeline_shader_driver_id, p_data, MIN(p_data_size, draw_list.validation.pipeline_push_constant_size));
 
 #ifdef DEBUG_ENABLED
 	draw_list.validation.pipeline_push_constant_supplied = true;
@@ -5196,11 +5196,11 @@ void RenderingDevice::compute_list_set_push_constant(ComputeListID p_list, const
 	ERR_FAIL_COND_MSG(p_data_size > MAX_PUSH_CONSTANT_SIZE, "Push constants can't be bigger than 128 bytes to maintain compatibility.");
 
 #ifdef DEBUG_ENABLED
-	ERR_FAIL_COND_MSG(p_data_size != compute_list.validation.pipeline_push_constant_size,
+	ERR_FAIL_COND_MSG(p_data_size < compute_list.validation.pipeline_push_constant_size,
 			"This compute pipeline requires (" + itos(compute_list.validation.pipeline_push_constant_size) + ") bytes of push constant data, supplied: (" + itos(p_data_size) + ")");
 #endif
 
-	draw_graph.add_compute_list_set_push_constant(compute_list.state.pipeline_shader_driver_id, p_data, p_data_size);
+	draw_graph.add_compute_list_set_push_constant(compute_list.state.pipeline_shader_driver_id, p_data, MIN(p_data_size, compute_list.validation.pipeline_push_constant_size));
 
 	// Store it in the state in case we need to restart the compute list.
 	memcpy(compute_list.state.push_constant_data, p_data, p_data_size);
