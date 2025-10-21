@@ -103,7 +103,7 @@ class EditorResourcePicker : public HBoxContainer {
 	void _button_input(const Ref<InputEvent> &p_event);
 
 	String _get_owner_path() const;
-	String _get_resource_type(const Ref<Resource> &p_resource) const;
+	String _get_resource_type(const Ref<RefCounted> &p_resource) const;
 	void _ensure_allowed_types() const;
 	bool _is_drop_valid(const Dictionary &p_drag_data) const;
 	bool _is_type_valid(const String &p_type_name, const HashSet<StringName> &p_allowed_types) const;

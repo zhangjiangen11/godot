@@ -694,7 +694,7 @@ String EditorResourcePicker::_get_owner_path() const {
 	return String();
 }
 
-String EditorResourcePicker::_get_resource_type(const Ref<Resource> &p_resource) const {
+String EditorResourcePicker::_get_resource_type(const Ref<RefCounted> &p_resource) const {
 	if (p_resource.is_null()) {
 		return String();
 	}
