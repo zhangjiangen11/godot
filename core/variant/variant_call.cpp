@@ -914,6 +914,48 @@ struct _VariantCall {
 		const uint8_t *r = p_instance->ptr();
 		return decode_float(&r[p_offset]);
 	}
+	static Vector2 func_PackedByteArray_decode_vector2(PackedByteArray *p_instance, int64_t p_offset) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 8), Vector2(0, 0));
+		const uint8_t *r = p_instance->ptr();
+		return Vector2(decode_float(&r[p_offset]), decode_float(&r[p_offset + 4]));
+	}
+	static Vector3 func_PackedByteArray_decode_vector3(PackedByteArray *p_instance, int64_t p_offset) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 12), Vector3(0, 0, 0));
+		const uint8_t *r = p_instance->ptr();
+		return Vector3(decode_float(&r[p_offset]), decode_float(&r[p_offset + 4]), decode_float(&r[p_offset + 8]));
+	}
+	static Vector4 func_PackedByteArray_decode_vector4(PackedByteArray *p_instance, int64_t p_offset) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 16), Vector4(0, 0, 0, 0));
+		const uint8_t *r = p_instance->ptr();
+		return Vector4(decode_float(&r[p_offset]), decode_float(&r[p_offset + 4]), decode_float(&r[p_offset + 8]), decode_float(&r[p_offset + 12]));
+	}
+	static Vector2i func_PackedByteArray_decode_vector2i(PackedByteArray *p_instance, int64_t p_offset) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 8), Vector2i(0, 0));
+		const uint8_t *r = p_instance->ptr();
+		return Vector2i((int32_t)decode_uint32(&r[p_offset]), (int32_t)decode_uint32(&r[p_offset + 4]));
+	}
+	static Vector3i func_PackedByteArray_decode_vector3i(PackedByteArray *p_instance, int64_t p_offset) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 4), Vector3i(0, 0, 0));
+		const uint8_t *r = p_instance->ptr();
+		return Vector3i((int32_t)decode_uint32(&r[p_offset]), (int32_t)decode_uint32(&r[p_offset + 4]), (int32_t)decode_uint32(&r[p_offset + 8]));
+	}
+	static Vector4i func_PackedByteArray_decode_vector4i(PackedByteArray *p_instance, int64_t p_offset) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 16), Vector4i(0, 0, 0, 0));
+		const uint8_t *r = p_instance->ptr();
+		return Vector4i((int32_t)decode_uint32(&r[p_offset]), (int32_t)decode_uint32(&r[p_offset + 4]), (int32_t)decode_uint32(&r[p_offset + 8]), (int32_t)decode_uint32(&r[p_offset + 12]));
+	}
+	static Color func_PackedByteArray_decode_color(PackedByteArray *p_instance, int64_t p_offset) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND_V(p_offset < 0 || p_offset > (int64_t(size) - 16), Color(0, 0, 0, 0));
+		const uint8_t *r = p_instance->ptr();
+		return Color(decode_float(&r[p_offset]), decode_float(&r[p_offset + 4]), decode_float(&r[p_offset + 8]), decode_float(&r[p_offset + 12]));
+	}
 
 	static double func_PackedByteArray_decode_double(PackedByteArray *p_instance, int64_t p_offset) {
 		uint64_t size = p_instance->size();
@@ -1131,6 +1173,63 @@ struct _VariantCall {
 		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 4);
 		uint8_t *w = p_instance->ptrw();
 		encode_float(p_value, &w[p_offset]);
+	}
+	static void func_PackedByteArray_encode_vector2(PackedByteArray *p_instance, int64_t p_offset, const Vector2 &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 8);
+		uint8_t *w = p_instance->ptrw();
+		encode_float(p_value.x, &w[p_offset]);
+		encode_float(p_value.y, &w[p_offset + 4]);
+	}
+	static void func_PackedByteArray_encode_vector3(PackedByteArray *p_instance, int64_t p_offset, const Vector3 &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 12);
+		uint8_t *w = p_instance->ptrw();
+		encode_float(p_value.x, &w[p_offset]);
+		encode_float(p_value.y, &w[p_offset + 4]);
+		encode_float(p_value.z, &w[p_offset + 8]);
+	}
+	static void func_PackedByteArray_encode_vector4(PackedByteArray *p_instance, int64_t p_offset, const Vector4 &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 16);
+		uint8_t *w = p_instance->ptrw();
+		encode_float(p_value.x, &w[p_offset]);
+		encode_float(p_value.y, &w[p_offset + 4]);
+		encode_float(p_value.z, &w[p_offset + 8]);
+		encode_float(p_value.w, &w[p_offset + 12]);
+	}
+	static void func_PackedByteArray_encode_vector2i(PackedByteArray *p_instance, int64_t p_offset, const Vector2i &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 8);
+		uint8_t *w = p_instance->ptrw();
+		encode_int32(p_value.x, &w[p_offset]);
+		encode_int32(p_value.y, &w[p_offset + 4]);
+	}
+	static void func_PackedByteArray_encode_vector3i(PackedByteArray *p_instance, int64_t p_offset, const Vector3i &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 12);
+		uint8_t *w = p_instance->ptrw();
+		encode_int32(p_value.x, &w[p_offset]);
+		encode_int32(p_value.y, &w[p_offset + 4]);
+		encode_int32(p_value.z, &w[p_offset + 8]);
+	}
+	static void func_PackedByteArray_encode_vector4i(PackedByteArray *p_instance, int64_t p_offset, const Vector4i &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 16);
+		uint8_t *w = p_instance->ptrw();
+		encode_int32(p_value.x, &w[p_offset]);
+		encode_int32(p_value.y, &w[p_offset + 4]);
+		encode_int32(p_value.z, &w[p_offset + 8]);
+		encode_int32(p_value.w, &w[p_offset + 12]);
+	}
+	static void func_PackedByteArray_encode_color(PackedByteArray *p_instance, int64_t p_offset, const Color &p_value) {
+		uint64_t size = p_instance->size();
+		ERR_FAIL_COND(p_offset < 0 || p_offset > int64_t(size) - 16);
+		uint8_t *w = p_instance->ptrw();
+		encode_float(p_value.r, &w[p_offset]);
+		encode_float(p_value.g, &w[p_offset + 4]);
+		encode_float(p_value.b, &w[p_offset + 8]);
+		encode_float(p_value.a, &w[p_offset + 12]);
 	}
 	static void func_PackedByteArray_encode_transform(PackedByteArray *p_instance, int64_t p_offset, const Transform3D &p_value) {
 		uint64_t size = p_instance->size();
@@ -2618,6 +2717,13 @@ static void _register_variant_builtin_methods_array() {
 	bind_function(PackedByteArray, decode_half, _VariantCall::func_PackedByteArray_decode_half, sarray("byte_offset"), varray());
 	bind_function(PackedByteArray, decode_float, _VariantCall::func_PackedByteArray_decode_float, sarray("byte_offset"), varray());
 	bind_function(PackedByteArray, decode_double, _VariantCall::func_PackedByteArray_decode_double, sarray("byte_offset"), varray());
+	bind_function(PackedByteArray, decode_vector2, _VariantCall::func_PackedByteArray_decode_vector2, sarray("byte_offset"), varray());
+	bind_function(PackedByteArray, decode_vector3, _VariantCall::func_PackedByteArray_decode_vector3, sarray("byte_offset"), varray());
+	bind_function(PackedByteArray, decode_vector4, _VariantCall::func_PackedByteArray_decode_vector4, sarray("byte_offset"), varray());
+	bind_function(PackedByteArray, decode_vector2i, _VariantCall::func_PackedByteArray_decode_vector2i, sarray("byte_offset"), varray());
+	bind_function(PackedByteArray, decode_vector3i, _VariantCall::func_PackedByteArray_decode_vector3i, sarray("byte_offset"), varray());
+	bind_function(PackedByteArray, decode_vector4i, _VariantCall::func_PackedByteArray_decode_vector4i, sarray("byte_offset"), varray());
+	bind_function(PackedByteArray, decode_color, _VariantCall::func_PackedByteArray_decode_color, sarray("byte_offset"), varray());
 	bind_function(PackedByteArray, has_encoded_var, _VariantCall::func_PackedByteArray_has_encoded_var, sarray("byte_offset", "allow_objects"), varray(false));
 	bind_function(PackedByteArray, decode_var, _VariantCall::func_PackedByteArray_decode_var, sarray("byte_offset", "allow_objects"), varray(false));
 	bind_function(PackedByteArray, decode_var_size, _VariantCall::func_PackedByteArray_decode_var_size, sarray("byte_offset", "allow_objects"), varray(false));
@@ -2645,6 +2751,13 @@ static void _register_variant_builtin_methods_array() {
 	bind_functionnc(PackedByteArray, encode_s64, _VariantCall::func_PackedByteArray_encode_s64, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_half, _VariantCall::func_PackedByteArray_encode_half, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_float, _VariantCall::func_PackedByteArray_encode_float, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_vector2, _VariantCall::func_PackedByteArray_encode_vector2, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_vector3, _VariantCall::func_PackedByteArray_encode_vector3, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_vector4, _VariantCall::func_PackedByteArray_encode_vector4, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_vector2i, _VariantCall::func_PackedByteArray_encode_vector2i, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_vector3i, _VariantCall::func_PackedByteArray_encode_vector3i, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_vector4i, _VariantCall::func_PackedByteArray_encode_vector4i, sarray("byte_offset", "value"), varray());
+	bind_functionnc(PackedByteArray, encode_color, _VariantCall::func_PackedByteArray_encode_color, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_transform, _VariantCall::func_PackedByteArray_encode_transform, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_double, _VariantCall::func_PackedByteArray_encode_double, sarray("byte_offset", "value"), varray());
 	bind_functionnc(PackedByteArray, encode_var, _VariantCall::func_PackedByteArray_encode_var, sarray("byte_offset", "value", "allow_objects"), varray(false));

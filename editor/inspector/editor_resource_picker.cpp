@@ -164,7 +164,6 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 			}
 
 			preview_rect->set_texture(ResourceLoader::load(p_preview));
-			assign_button->set_text("");
 		}
 	}
 }
