@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  gltf_buffer_view.h                                                    */
+/*  file_dialog.compat.inc                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,69 +28,14 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
-
-#include "../gltf_defines.h"
-
-#include "core/io/resource.h"
-
-class GLTFBufferView : public Resource {
-	GDCLASS(GLTFBufferView, Resource);
-	friend class GLTFDocument;
-
-public:
-	// When a buffer view is used by vertex indices or attribute accessors it SHOULD specify
-	// "target" with a value of ELEMENT_ARRAY_BUFFER (34963) or ARRAY_BUFFER (34962) respectively.
-	// This is only used for mesh data. For non-mesh buffer views, the target should be left blank.
-	// https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html#buffers-and-buffer-views-overview
-	enum ArrayBufferTarget {
-		TARGET_NONE = 0,
-		TARGET_ARRAY_BUFFER = 34962,
-		TARGET_ELEMENT_ARRAY_BUFFER = 34963,
-	};
-
-private:
-	GLTFBufferIndex buffer = -1;
-	int64_t byte_offset = 0;
-	int64_t byte_length = 0;
-	int64_t byte_stride = -1;
-	bool indices = false; // True for TARGET_ELEMENT_ARRAY_BUFFER.
-	bool vertex_attributes = false; // True for TARGET_ARRAY_BUFFER.
-
-protected:
-	static void _bind_methods();
-
 #ifndef DISABLE_DEPRECATED
-	// Non-const versions for compatibility.
-	GLTFBufferIndex _get_buffer_bind_compat_86907();
-	int _get_byte_offset_bind_compat_86907();
-	int _get_byte_length_bind_compat_86907();
-	int _get_byte_stride_bind_compat_86907();
-	bool _get_indices_bind_compat_86907();
-	static void _bind_compatibility_methods();
-#endif // DISABLE_DEPRECATED
 
-public:
-	GLTFBufferIndex get_buffer() const;
-	void set_buffer(GLTFBufferIndex p_buffer);
+void FileDialog::_add_filter_bind_compat_111439(const String &p_filter, const String &p_description) {
+	add_filter(p_filter, p_description, "");
+}
 
-	int64_t get_byte_offset() const;
-	void set_byte_offset(int64_t p_byte_offset);
+void FileDialog::_bind_compatibility_methods() {
+	ClassDB::bind_compatibility_method(D_METHOD("add_filter", "filter", "description"), &FileDialog::_add_filter_bind_compat_111439, DEFVAL(""));
+}
 
-	int64_t get_byte_length() const;
-	void set_byte_length(int64_t p_byte_length);
-
-	int64_t get_byte_stride() const;
-	void set_byte_stride(int64_t p_byte_stride);
-
-	bool get_indices() const;
-	void set_indices(bool p_indices);
-
-	bool get_vertex_attributes() const;
-	void set_vertex_attributes(bool p_attributes);
-
-	Vector<uint8_t> load_buffer_view_data(const Ref<GLTFState> p_gltf_state) const;
-
-	static Ref<GLTFBufferView> from_dictionary(const Dictionary &p_dict);
-	Dictionary to_dictionary() const;
-};
+#endif

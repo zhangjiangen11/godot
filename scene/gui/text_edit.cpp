@@ -1978,6 +1978,9 @@ void TextEdit::_notification(int p_what) {
 				if (ime_text == new_ime_text && ime_selection == new_ime_selection) {
 					break;
 				}
+				if (!window_has_focus && !new_ime_text.is_empty()) {
+					break;
+				}
 
 				bool had_ime_text = has_ime_text();
 				ime_text = new_ime_text;
@@ -7644,6 +7647,7 @@ void TextEdit::_bind_methods() {
 	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_COLOR, TextEdit, outline_color, "font_outline_color");
 
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, TextEdit, line_spacing);
+	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, TextEdit, wrap_offset);
 
 	BIND_THEME_ITEM(Theme::DATA_TYPE_COLOR, TextEdit, background_color);
 	BIND_THEME_ITEM(Theme::DATA_TYPE_COLOR, TextEdit, current_line_color);
@@ -8528,7 +8532,7 @@ void TextEdit::_update_wrap_at_column(bool p_force) {
 		new_wrap_at -= v_scroll->get_combined_minimum_size().width;
 	}
 	/* Give it a little more space. */
-	new_wrap_at -= wrap_right_offset;
+	new_wrap_at -= theme_cache.wrap_offset;
 
 	if ((wrap_at_column != new_wrap_at) || p_force) {
 		wrap_at_column = new_wrap_at;
