@@ -31,6 +31,7 @@
 #include "line_edit.h"
 #include "line_edit.compat.inc"
 
+#include "core/config/project_settings.h"
 #include "core/input/input_map.h"
 #include "core/os/keyboard.h"
 #include "core/os/os.h"
@@ -1357,12 +1358,8 @@ void LineEdit::_notification(int p_what) {
 				}
 			}
 
-			if (has_focus(true) && is_editable()) {
-				if (user_data.focus.is_valid()) {
-					user_data.focus->draw_rect(ci, Rect2(Point2(), size));
-				} else {
-					theme_cache.focus->draw(ci, Rect2(Point2(), size));
-				}
+			if (has_focus(Engine::get_singleton()->is_editor_hint() || GLOBAL_GET_CACHED(int, "gui/common/show_focus_state_on_pointer_event") != 1)) {
+				theme_cache.focus->draw(ci, Rect2(Point2(), size));
 			}
 
 			int x_ofs = 0;
