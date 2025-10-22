@@ -1352,10 +1352,6 @@ RID TextureStorage::texture_create_from_native_handle(RS::TextureType p_type, Im
 			format = RD::DATA_FORMAT_ASTC_8x8_SFLOAT_BLOCK;
 			break;
 
-		case Image::FORMAT_RGB10A2:
-			format = RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32;
-			break;
-
 		default:
 			// Arbitrary fallback.
 			format = RD::DATA_FORMAT_R8G8B8A8_UNORM;
@@ -1538,7 +1534,6 @@ Ref<Image> TextureStorage::texture_2d_get(RID p_texture) const {
 		image = Image::create_from_data(tex->width, tex->height, tex->mipmaps > 1, tex->validated_format, data);
 	}
 
-	Ref<Image> image = Image::create_from_data(tex->width, tex->height, tex->mipmaps > 1, tex->validated_format, data);
 	if (image->is_empty()) {
 		const String &path_str = tex->path.is_empty() ? "with no path" : vformat("with path '%s'", tex->path);
 		ERR_FAIL_V_MSG(Ref<Image>(), vformat("Texture %s has no data.", path_str));
@@ -2332,10 +2327,6 @@ Ref<Image> TextureStorage::_validate_texture_format(const Ref<Image> &p_image, T
 			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_A;
 
 		} break; // astc 8x8 HDR
-		case Image::FORMAT_RGB10A2: {
-			r_format.format = RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32;
-			break;
-		}
 		case Image::FORMAT_R16: {
 			if (RD::get_singleton()->texture_is_format_supported_for_usage(RD::DATA_FORMAT_R16_UNORM, RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_UPDATE_BIT)) {
 				r_format.format = RD::DATA_FORMAT_R16_UNORM;
@@ -2834,10 +2825,6 @@ void TextureStorage::_texture_format_from_rd(RD::DataFormat p_rd_format, Texture
 			r_format.swizzle_g = RD::TEXTURE_SWIZZLE_ZERO;
 			r_format.swizzle_b = RD::TEXTURE_SWIZZLE_ZERO;
 			r_format.swizzle_a = RD::TEXTURE_SWIZZLE_ONE;
-		} break;
-		case RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32: {
-			r_format.image_format = Image::FORMAT_RGB10A2;
-			r_format.rd_format = RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32;
 		} break;
 		case RD::DATA_FORMAT_R16_UNORM: {
 			r_format.image_format = Image::FORMAT_R16;

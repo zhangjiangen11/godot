@@ -29,7 +29,6 @@
 /**************************************************************************/
 
 #include "image.h"
-#include "image.compat.inc"
 
 #include "core/config/project_settings.h"
 #include "core/error/error_macros.h"
@@ -79,7 +78,6 @@ const char *Image::format_names[Image::FORMAT_MAX] = {
 	"ASTC_4x4_HDR",
 	"ASTC_8x8",
 	"ASTC_8x8_HDR",
-	"RGB10A2",
 	"R16",
 	"RG16",
 	"RGB16",
@@ -211,8 +209,6 @@ int Image::get_format_pixel_size(Format p_format) {
 			return 1;
 		case FORMAT_ASTC_8x8_HDR:
 			return 1;
-		case FORMAT_RGB10A2:
-			return 4;
 		case FORMAT_R16:
 			return 2;
 		case FORMAT_RG16:
@@ -1013,7 +1009,7 @@ static void _scale_bilinear(const uint8_t *__restrict p_src, uint8_t *__restrict
 			src_xofs_right *= CC;
 
 			for (uint32_t l = 0; l < CC; l++) {
-				if constexpr (sizeof(T) == 1) { //uint8_t
+				if constexpr (sizeof(T) == 1) { //uint8
 					uint32_t p00 = p_src[y_ofs_up + src_xofs_left + l] << FRAC_BITS;
 					uint32_t p10 = p_src[y_ofs_up + src_xofs_right + l] << FRAC_BITS;
 					uint32_t p01 = p_src[y_ofs_down + src_xofs_left + l] << FRAC_BITS;
@@ -2068,9 +2064,6 @@ void Image::_generate_mipmap_from_format(Image::Format p_format, const uint8_t *
 		case Image::FORMAT_RGBE9995:
 			_generate_po2_mipmap<uint32_t, 1, false, Image::average_4_rgbe9995, nullptr>(src_u32, dst_u32, p_width, p_height);
 			break;
-		case Image::FORMAT_RGB10A2:
-			_generate_po2_mipmap<uint32_t, 1, false, Image::average_4_rgb10a2, nullptr>(src_u32, dst_u32, p_width, p_height);
-			break;
 		case Image::FORMAT_R16:
 		case Image::FORMAT_R16I:
 			_generate_po2_mipmap<uint16_t, 1, false, Image::average_4_uint16, Image::renormalize_uint16>(src_u16, dst_u16, p_width, p_height);
@@ -2905,7 +2898,7 @@ bool Image::is_compressed() const {
 }
 
 bool Image::is_format_compressed(Format p_format) {
-	return p_format > FORMAT_RGBE9995 && p_format < FORMAT_RGB10A2;
+	return p_format > FORMAT_RGBE9995 && p_format < FORMAT_R16;
 }
 
 Error Image::decompress() {
@@ -3642,9 +3635,6 @@ Color Image::_get_color_at_ofs(const uint8_t *ptr, uint32_t ofs) const {
 		case FORMAT_RGBE9995: {
 			return Color::from_rgbe9995(((uint32_t *)ptr)[ofs]);
 		}
-		case FORMAT_RGB10A2: {
-			return Color::from_rgb10a2(((uint32_t *)ptr)[ofs]);
-		} break;
 		case FORMAT_R16: {
 			float r = ((uint16_t *)ptr)[ofs] / 65535.0f;
 			return Color(r, 0, 0, 1);
@@ -3767,9 +3757,6 @@ void Image::_set_color_at_ofs(uint8_t *ptr, uint32_t ofs, const Color &p_color) 
 		} break;
 		case FORMAT_RGBE9995: {
 			((uint32_t *)ptr)[ofs] = p_color.to_rgbe9995();
-		} break;
-		case FORMAT_RGB10A2: {
-			((uint32_t *)ptr)[ofs] = p_color.to_rgb10a2();
 		} break;
 		case FORMAT_R16: {
 			((uint16_t *)ptr)[ofs] = uint16_t(CLAMP(p_color.r * 65535.0, 0, 65535));
@@ -4093,7 +4080,7 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("adjust_bcs", "brightness", "contrast", "saturation"), &Image::adjust_bcs);
 
 	ClassDB::bind_method(D_METHOD("load_png_from_buffer", "buffer"), &Image::load_png_from_buffer);
-	ClassDB::bind_method(D_METHOD("load_jpg_from_buffer", "buffer", "fix_orientation"), &Image::load_jpg_from_buffer, DEFVAL(false));
+	ClassDB::bind_method(D_METHOD("load_jpg_from_buffer", "buffer"), &Image::load_jpg_from_buffer);
 	ClassDB::bind_method(D_METHOD("load_webp_from_buffer", "buffer"), &Image::load_webp_from_buffer);
 	ClassDB::bind_method(D_METHOD("load_tga_from_buffer", "buffer"), &Image::load_tga_from_buffer);
 	ClassDB::bind_method(D_METHOD("load_bmp_from_buffer", "buffer"), &Image::load_bmp_from_buffer);
@@ -4148,7 +4135,6 @@ void Image::_bind_methods() {
 	BIND_ENUM_CONSTANT(FORMAT_ASTC_4x4_HDR);
 	BIND_ENUM_CONSTANT(FORMAT_ASTC_8x8);
 	BIND_ENUM_CONSTANT(FORMAT_ASTC_8x8_HDR);
-	BIND_ENUM_CONSTANT(FORMAT_RGB10A2);
 	BIND_ENUM_CONSTANT(FORMAT_R16);
 	BIND_ENUM_CONSTANT(FORMAT_RG16);
 	BIND_ENUM_CONSTANT(FORMAT_RGB16);
@@ -4570,8 +4556,6 @@ uint32_t Image::get_format_component_mask(Format p_format) {
 			return rgba;
 		case FORMAT_ASTC_8x8_HDR:
 			return rgba;
-		case FORMAT_RGB10A2:
-			return rgba;
 		case FORMAT_R16:
 			return r;
 		case FORMAT_RG16:
@@ -4598,22 +4582,8 @@ Error Image::load_png_from_buffer(const Vector<uint8_t> &p_array) {
 	return _load_from_buffer(p_array, _png_mem_loader_func);
 }
 
-Error Image::load_jpg_from_buffer(const Vector<uint8_t> &p_array, bool p_fix_orientation) {
-	ERR_FAIL_NULL_V_MSG(
-			_jpg_mem_loader_func,
-			ERR_UNAVAILABLE,
-			"The JPG module isn't enabled. Recompile the Godot editor or export template binary with the `module_jpg_enabled=yes` SCons option.");
-
-	int buffer_size = p_array.size();
-
-	ERR_FAIL_COND_V(buffer_size == 0, ERR_INVALID_PARAMETER);
-
-	Ref<Image> image = _jpg_mem_loader_func(p_array.ptr(), buffer_size, p_fix_orientation);
-	ERR_FAIL_COND_V(image.is_null(), ERR_PARSE_ERROR);
-
-	copy_internals_from(image);
-
-	return OK;
+Error Image::load_jpg_from_buffer(const Vector<uint8_t> &p_array) {
+	return _load_from_buffer(p_array, _jpg_mem_loader_func);
 }
 
 Error Image::load_webp_from_buffer(const Vector<uint8_t> &p_array) {
@@ -4781,9 +4751,6 @@ void Image::average_4_rgbe9995(uint32_t &p_out, const uint32_t &p_a, const uint3
 	p_out = ((Color::from_rgbe9995(p_a) + Color::from_rgbe9995(p_b) + Color::from_rgbe9995(p_c) + Color::from_rgbe9995(p_d)) * 0.25f).to_rgbe9995();
 }
 
-void Image::average_4_rgb10a2(uint32_t &p_out, const uint32_t &p_a, const uint32_t &p_b, const uint32_t &p_c, const uint32_t &p_d) {
-	p_out = ((Color::from_rgb10a2(p_a) + Color::from_rgb10a2(p_b) + Color::from_rgb10a2(p_c) + Color::from_rgb10a2(p_d)) * 0.25f).to_rgb10a2();
-}
 void Image::average_4_uint16(uint16_t &p_out, const uint16_t &p_a, const uint16_t &p_b, const uint16_t &p_c, const uint16_t &p_d) {
 	p_out = static_cast<uint16_t>((p_a + p_b + p_c + p_d + 2) >> 2);
 }
@@ -4849,7 +4816,7 @@ Image::Image(const uint8_t *p_mem_png_jpg, int p_len) {
 	}
 
 	if (is_empty() && _jpg_mem_loader_func) {
-		copy_internals_from(_jpg_mem_loader_func(p_mem_png_jpg, p_len, false));
+		copy_internals_from(_jpg_mem_loader_func(p_mem_png_jpg, p_len));
 	}
 
 	if (is_empty() && _webp_mem_loader_func) {

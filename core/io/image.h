@@ -50,7 +50,6 @@ typedef Error (*SaveJPGFunc)(const String &p_path, const Ref<Image> &p_img, floa
 typedef Vector<uint8_t> (*SaveJPGBufferFunc)(const Ref<Image> &p_img, float p_quality);
 
 typedef Ref<Image> (*ImageMemLoadFunc)(const uint8_t *p_data, int p_size);
-typedef Ref<Image> (*JPGImageMemLoadFunc)(const uint8_t *p_data, int p_size, bool p_fix_orientation);
 typedef Ref<Image> (*ScalableImageMemLoadFunc)(const uint8_t *p_data, int p_size, float p_scale);
 
 typedef Error (*SaveWebPFunc)(const String &p_path, const Ref<Image> &p_img, const bool p_lossy, const float p_quality);
@@ -112,7 +111,6 @@ public:
 		FORMAT_ASTC_4x4_HDR,
 		FORMAT_ASTC_8x8,
 		FORMAT_ASTC_8x8_HDR,
-		FORMAT_RGB10A2,
 		FORMAT_R16,
 		FORMAT_RG16,
 		FORMAT_RGB16,
@@ -214,7 +212,7 @@ public:
 
 	static inline ImageMemLoadFunc _png_mem_loader_func = nullptr;
 	static inline ImageMemLoadFunc _png_mem_unpacker_func = nullptr;
-	static inline JPGImageMemLoadFunc _jpg_mem_loader_func = nullptr;
+	static inline ImageMemLoadFunc _jpg_mem_loader_func = nullptr;
 	static inline ImageMemLoadFunc _webp_mem_loader_func = nullptr;
 	static inline ImageMemLoadFunc _tga_mem_loader_func = nullptr;
 	static inline ImageMemLoadFunc _bmp_mem_loader_func = nullptr;
@@ -259,11 +257,6 @@ protected:
 
 	static void _bind_methods();
 
-#ifndef DISABLE_DEPRECATED
-	Error _load_jpg_from_buffer_compat_111851(const Vector<uint8_t> &p_array);
-	static void _bind_compatibility_methods();
-#endif
-
 private:
 	Format format = FORMAT_L8;
 	Vector<uint8_t> data;
@@ -298,7 +291,6 @@ private:
 	static void average_4_float(float &p_out, const float &p_a, const float &p_b, const float &p_c, const float &p_d);
 	static void average_4_half(uint16_t &p_out, const uint16_t &p_a, const uint16_t &p_b, const uint16_t &p_c, const uint16_t &p_d);
 	static void average_4_rgbe9995(uint32_t &p_out, const uint32_t &p_a, const uint32_t &p_b, const uint32_t &p_c, const uint32_t &p_d);
-	static void average_4_rgb10a2(uint32_t &p_out, const uint32_t &p_a, const uint32_t &p_b, const uint32_t &p_c, const uint32_t &p_d);
 	static void average_4_uint16(uint16_t &p_out, const uint16_t &p_a, const uint16_t &p_b, const uint16_t &p_c, const uint16_t &p_d);
 	static void average_4_rgba4444(uint16_t &p_out, const uint16_t &p_a, const uint16_t &p_b, const uint16_t &p_c, const uint16_t &p_d);
 	static void average_4_rgb565(uint16_t &p_out, const uint16_t &p_a, const uint16_t &p_b, const uint16_t &p_c, const uint16_t &p_d);
@@ -430,7 +422,7 @@ public:
 	float get_terrain_height(const Vector2i &p_tile_pos, const Vector2 &height_range) const;
 	// 构建平整信息
 	// 0代表未激活，1代表激活,2 代表lod0(64*64)是平的，3代表lod1(32*32)是平的，4代表lod2(16*16)是平的,5代表lod3(8*8)是平的,6代表lod5(4*4)是平的
-	Vector<uint8_t> build_terrain_flatness(const Vector2& height_range,const Vector2i &p_tile_size = Vector2i(64, 64)) const;
+	Vector<uint8_t> build_terrain_flatness(const Vector2 &height_range, const Vector2i &p_tile_size = Vector2i(64, 64)) const;
 
 	Rect2i get_used_rect() const;
 	Ref<Image> get_region(const Rect2i &p_area) const;
@@ -439,7 +431,7 @@ public:
 	static uint32_t get_format_component_mask(Format p_format);
 
 	Error load_png_from_buffer(const Vector<uint8_t> &p_array);
-	Error load_jpg_from_buffer(const Vector<uint8_t> &p_array, bool p_fix_orientation = false);
+	Error load_jpg_from_buffer(const Vector<uint8_t> &p_array);
 	Error load_webp_from_buffer(const Vector<uint8_t> &p_array);
 	Error load_tga_from_buffer(const Vector<uint8_t> &p_array);
 	Error load_bmp_from_buffer(const Vector<uint8_t> &p_array);
@@ -447,9 +439,8 @@ public:
 	Error load_dds_from_buffer(const Vector<uint8_t> &p_array);
 	Error load_gif_from_buffer(const Vector<uint8_t> &p_array);
 
-
 	Error load_svg_from_buffer(const Vector<uint8_t> &p_array, float scale = 1.0);
-	Error load_file_form_extension(const String& path);
+	Error load_file_form_extension(const String &path);
 	Error load_svg_from_string(const String &p_svg_str, float scale = 1.0);
 
 	void convert_rg_to_ra_rgba8();

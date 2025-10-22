@@ -75,7 +75,6 @@ DDSFormatType _dds_format_get_type(DDSFormat p_format) {
 		case DDS_BC7:
 		case DDS_RGB9E5:
 		case DDS_RGB32F:
-		case DDS_BGR10A2:
 		case DDS_R16I:
 		case DDS_RG16I:
 		case DDS_RGBA16I:
@@ -128,9 +127,6 @@ DDSFormat _image_format_to_dds_format(Image::Format p_image_format) {
 		}
 		case Image::FORMAT_RGBE9995: {
 			return DDS_RGB9E5;
-		}
-		case Image::FORMAT_RGB10A2: {
-			return DDS_BGR10A2;
 		}
 		case Image::FORMAT_DXT1: {
 			return DDS_DXT1;
@@ -249,8 +245,6 @@ uint32_t _image_format_to_dxgi_format(Image::Format p_format) {
 			return DXGI_R16G16B16A16_FLOAT;
 		case Image::FORMAT_RGBE9995:
 			return DXGI_R9G9B9E5;
-		case Image::FORMAT_RGB10A2:
-			return DXGI_R10G10B10A2_UNORM;
 		case Image::FORMAT_R16:
 			return DXGI_R16_UNORM;
 		case Image::FORMAT_RG16:

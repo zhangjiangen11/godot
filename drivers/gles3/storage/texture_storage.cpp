@@ -503,12 +503,6 @@ static inline Error _get_gl_uncompressed_format(const Ref<Image> &p_image, Image
 			r_gl_format = GL_RGB;
 			r_gl_type = GL_UNSIGNED_INT_5_9_9_9_REV;
 		} break;
-		case Image::FORMAT_RGB10A2: {
-			r_gl_internal_format = GL_RGB10_A2;
-			r_gl_format = GL_RGBA;
-			r_gl_type = GL_UNSIGNED_INT_2_10_10_10_REV;
-			break;
-		}
 		case Image::FORMAT_R16: {
 			if (config->unorm16_texture_supported) {
 				r_gl_internal_format = _EXT_R16;
