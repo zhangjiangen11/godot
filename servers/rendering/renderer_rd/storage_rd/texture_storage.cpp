@@ -1510,6 +1510,33 @@ Ref<Image> TextureStorage::texture_2d_get(RID p_texture) const {
 #endif
 	Vector<uint8_t> data = RD::get_singleton()->texture_get_data(tex->rd_texture, 0);
 	ERR_FAIL_COND_V(data.is_empty(), Ref<Image>());
+	Ref<Image> image;
+
+	// Expand RGB10_A2 into RGBAH.
+	if (tex->rd_format == RD::DATA_FORMAT_A2B10G10R10_UNORM_PACK32) {
+		Vector<uint8_t> new_data;
+		new_data.resize(data.size() * 2);
+		uint16_t *ndp = (uint16_t *)new_data.ptr();
+
+		uint32_t *ptr = (uint32_t *)data.ptr();
+		uint32_t num_pixels = data.size() / 4;
+
+		for (uint32_t ofs = 0; ofs < num_pixels; ofs++) {
+			uint32_t px = ptr[ofs];
+			uint32_t r = (px & 0x3FF);
+			uint32_t g = ((px >> 10) & 0x3FF);
+			uint32_t b = ((px >> 20) & 0x3FF);
+			uint32_t a = ((px >> 30) & 0x3);
+
+			ndp[ofs * 4 + 0] = Math::make_half_float(float(r) / 1023.0);
+			ndp[ofs * 4 + 1] = Math::make_half_float(float(g) / 1023.0);
+			ndp[ofs * 4 + 2] = Math::make_half_float(float(b) / 1023.0);
+			ndp[ofs * 4 + 3] = Math::make_half_float(float(a) / 3.0);
+		}
+		image = Image::create_from_data(tex->width, tex->height, tex->mipmaps > 1, tex->validated_format, new_data);
+	} else {
+		image = Image::create_from_data(tex->width, tex->height, tex->mipmaps > 1, tex->validated_format, data);
+	}
 
 	Ref<Image> image = Image::create_from_data(tex->width, tex->height, tex->mipmaps > 1, tex->validated_format, data);
 	if (image->is_empty()) {
@@ -4527,7 +4554,7 @@ RID TextureStorage::render_target_get_vrs_texture(RID p_render_target) const {
 
 RD::DataFormat TextureStorage::render_target_get_color_format(bool p_use_hdr, bool p_srgb) {
 	if (p_use_hdr) {
-		return RendererSceneRenderRD::get_singleton()->_render_buffers_get_color_format();
+		return RD::DATA_FORMAT_R16G16B16A16_SFLOAT;
 	} else {
 		return p_srgb ? RD::DATA_FORMAT_R8G8B8A8_SRGB : RD::DATA_FORMAT_R8G8B8A8_UNORM;
 	}
