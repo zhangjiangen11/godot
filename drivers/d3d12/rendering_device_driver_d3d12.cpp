@@ -1866,14 +1866,16 @@ void RenderingDeviceDriverD3D12::texture_get_copyable_layout(TextureID p_texture
 
 	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint = {};
 	UINT64 subresource_total_size = 0;
+	UINT64 rowSize = 0;
+	UINT numRows = 0;
 	device->GetCopyableFootprints(
 			&tex_info->desc,
 			subresource,
 			1,
 			0,
 			&footprint,
-			nullptr,
-			nullptr,
+			&numRows,
+			&rowSize,
 			&subresource_total_size);
 
 	*r_layout = {};

@@ -112,7 +112,6 @@ public:
 private:
 	HashMap<RID, HashSet<RID>> dependency_map; // IDs to IDs that depend on it.
 	HashMap<RID, HashSet<RID>> reverse_dependency_map; // Same as above, but in reverse.
-	SafeStack<RID> free_id_stack;
 
 	void _add_dependency(RID p_id, RID p_depends_on);
 	void _free_dependencies(RID p_id);
@@ -375,6 +374,7 @@ public:
 	uint32_t texture_upload_region_size_px = 0;
 	uint32_t texture_download_region_size_px = 0;
 
+	Vector<uint8_t> _texture_get_data(Texture *tex, uint32_t p_layer, bool p_2d = false);
 	uint32_t _texture_layer_count(Texture *p_texture) const;
 	uint32_t _texture_alignment(Texture *p_texture) const;
 	Error _texture_initialize(RID p_texture, uint32_t p_layer, const Vector<uint8_t> &p_data, RDD::TextureLayout p_dst_layout, bool p_immediate_flush);
@@ -818,13 +818,7 @@ public:
 		BUFFER_CREATION_DEVICE_ADDRESS_BIT = (1 << 0),
 		BUFFER_CREATION_AS_STORAGE_BIT = (1 << 1),
 	};
-	//typedef  struct {
-	//	uint  count; // 三角形数量
-	//	uint  instanceCount; // 渲染的Instance数量
-	//	uint  firstIndex; // 索引缓冲起始位置,默认填充0就可以
-	//	int  baseVertex; // 顶点缓冲起始位置,默认填充0就可以
-	//	uint  baseInstance; // 渲染实例起始位置,默认填充0就可以
-	//} DrawElementsIndirectCommand;
+
 	enum StorageBufferUsage {
 		STORAGE_BUFFER_USAGE_DISPATCH_INDIRECT = (1 << 0),
 	};
@@ -1622,7 +1616,7 @@ public:
 	void _execute_frame(bool p_present);
 	void _stall_for_frame(uint32_t p_frame);
 	void _stall_for_previous_frames();
-	void _flush_and_stall_for_all_frames(bool p_begin_frame = true);
+	void _flush_and_stall_for_all_frames();
 
 	template <typename T>
 	void _free_rids(T &p_owner, const char *p_type);
