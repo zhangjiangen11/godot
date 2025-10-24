@@ -32,6 +32,7 @@
 
 #include "core/os/condition_variable.h"
 #include "core/os/memory.h"
+#include "core/os/mutex.h"
 #include "core/os/os.h"
 #include "core/os/semaphore.h"
 #include "core/os/thread.h"
