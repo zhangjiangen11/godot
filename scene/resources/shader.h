@@ -85,7 +85,7 @@ public:
 	void set_include_path(const String &p_path);
 
 	void set_code(const String &p_code);
-	String get_code() const;
+	const String &get_code() const;
 
 	void inspect_native_shader_code();
 

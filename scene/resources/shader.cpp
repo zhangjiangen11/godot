@@ -106,14 +106,12 @@ void Shader::set_code(const String &p_code) {
 		if (result == OK) {
 			// This ensures previous include resources are not freed and then re-loaded during parse (which would make compiling slower)
 			include_dependencies = new_include_dependencies;
-		}
-		else {
+		} else {
 			int err_line = err_positions.front()->get().line;
 			if (err_positions.size() == 1) {
 				// Error in main file
 				error_str = "error(" + itos(err_line) + "):" + error_str;
-			}
-			else {
+			} else {
 				error_str = "error(" + itos(err_line) + ") in include " + err_positions.back()->get().file.get_file() + ":" + itos(err_positions.back()->get().line) + ": " + error_str;
 			}
 			ERR_FAIL_MSG(error_str);
@@ -147,7 +145,7 @@ void Shader::set_code(const String &p_code) {
 	emit_changed();
 }
 
-String Shader::get_code() const {
+const String &Shader::get_code() const {
 	_update_shader();
 	return code;
 }
