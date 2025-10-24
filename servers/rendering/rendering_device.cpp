@@ -6673,7 +6673,12 @@ void RenderingDevice::_flush_and_stall_for_all_frames() {
 	_stall_for_previous_frames();
 	_end_frame();
 	_execute_frame(false);
-	_begin_frame();
+
+	if (p_begin_frame) {
+		_begin_frame();
+	} else {
+		_stall_for_frame(frame);
+	}
 }
 
 Error RenderingDevice::initialize(RenderingContextDriver *p_context, DisplayServer::WindowID p_main_window) {

@@ -31,18 +31,22 @@
 #include "register_types.h"
 
 #include "core/config/engine.h"
+<<<<<<< HEAD
 #include "servers/rendering/rendering_device.h"
+		=======
+#include "core/os/os.h"
+		>>>>>>> 084d5d407e62efcd5be9de44148c5dedce3b9386
 #include "shader_compile.h"
 
-GODOT_GCC_WARNING_PUSH_AND_IGNORE("-Wshadow")
+		GODOT_GCC_WARNING_PUSH_AND_IGNORE("-Wshadow")
 
 #include <glslang/Public/ResourceLimits.h>
 #include <glslang/Public/ShaderLang.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
 
-GODOT_GCC_WARNING_POP
+				GODOT_GCC_WARNING_POP
 
-Vector<uint8_t> compile_glslang_shader(RenderingDeviceCommons::ShaderStage p_stage, const String &p_source_code, RenderingDeviceCommons::ShaderLanguageVersion p_language_version, RenderingDeviceCommons::ShaderSpirvVersion p_spirv_version, String *r_error) {
+		Vector<uint8_t> compile_glslang_shader(RenderingDeviceCommons::ShaderStage p_stage, const String &p_source_code, RenderingDeviceCommons::ShaderLanguageVersion p_language_version, RenderingDeviceCommons::ShaderSpirvVersion p_spirv_version, String *r_error) {
 	Vector<uint8_t> ret;
 	EShLanguage stages[RenderingDeviceCommons::SHADER_STAGE_MAX] = {
 		EShLangVertex,
@@ -76,8 +80,16 @@ Vector<uint8_t> compile_glslang_shader(RenderingDeviceCommons::ShaderStage p_sta
 		shader.setPreamble(preamble.c_str());
 	}
 
+	bool generate_spirv_debug_info = Engine::get_singleton()->is_generate_spirv_debug_info_enabled();
+#ifdef D3D12_ENABLED
+	if (OS::get_singleton()->get_current_rendering_driver_name() == "d3d12") {
+		// SPIRV to DXIL conversion does not support debug info.
+		generate_spirv_debug_info = false;
+	}
+#endif
+
 	EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
-	if (Engine::get_singleton()->is_generate_spirv_debug_info_enabled()) {
+	if (generate_spirv_debug_info) {
 		messages = (EShMessages)(messages | EShMsgDebugInfo);
 	}
 	const int DefaultVersion = 100;
@@ -112,8 +124,7 @@ Vector<uint8_t> compile_glslang_shader(RenderingDeviceCommons::ShaderStage p_sta
 	spv::SpvBuildLogger logger;
 	glslang::SpvOptions spvOptions;
 
-	if (Engine::get_singleton()->is_generate_spirv_debug_info_enabled()) {
-		spvOptions.disableOptimizer = true;
+	if (generate_spirv_debug_info) {
 		spvOptions.generateDebugInfo = true;
 		spvOptions.emitNonSemanticShaderDebugInfo = true;
 		spvOptions.emitNonSemanticShaderDebugSource = true;
