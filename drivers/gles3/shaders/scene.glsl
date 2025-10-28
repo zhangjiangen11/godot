@@ -1518,6 +1518,7 @@ void light_compute(vec3 N, vec3 L, vec3 V, float A, vec3 light_color, bool is_di
 	vec3 normal = N;
 	vec3 light = L;
 	vec3 view = V;
+	vec3 vertex = vertex_interp;
 
 	/* clang-format off */
 

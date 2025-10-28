@@ -118,6 +118,7 @@ void light_compute(hvec3 N, hvec3 L, hvec3 V, half A, hvec3 light_color, bool is
 	vec3 normal_highp = vec3(N);
 	vec3 light_highp = vec3(L);
 	vec3 view_highp = vec3(V);
+	vec3 vertex = vertex_interp;
 	float specular_amount_highp = float(specular_amount);
 	vec3 light_color_highp = vec3(light_color);
 	float attenuation_highp = float(attenuation);

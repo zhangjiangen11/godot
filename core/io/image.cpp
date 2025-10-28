@@ -3365,7 +3365,7 @@ float Image::get_terrain_height(const Vector2i &p_tile_pos, const Vector2 &heigh
 	Color c = get_pixel(p_tile_pos.x, p_tile_pos.y);
 	return Math::lerp(height_range.x, height_range.y, c.r);
 }
-static bool check_terrain_flatness(const Image &p_image, const Vector2i &p_tile_pos, const Vector2i &p_tile_size, int lod) {
+static bool check_terrain_flatness(const Image &p_image, const Vector2i &p_tile_pos, const Vector2i &p_tile_size, int lod, const Vector2 &height_range) {
 	int step[] = { 1, 2, 4, 8, 16 };
 	float range[] = { 0.0001, 0.1, 0.5, 1, 2 };
 	float min_height = 1000000000;
@@ -3377,31 +3377,78 @@ static bool check_terrain_flatness(const Image &p_image, const Vector2i &p_tile_
 	bool is_center_flatness = true;
 	for (int j = 0; j <= 64; j += step[lod]) {
 		for (int i = 0; i <= 64; i += step[lod]) {
-			float height = p_image.get_terrain_height(Vector2i(p_tile_pos.x + i, p_tile_pos.y + j), Vector2(0, 1));
+			float height = p_image.get_terrain_height(Vector2i(p_tile_pos.x + i, p_tile_pos.y + j), height_range);
 			min_height = MIN(min_height, height);
 			max_height = MAX(max_height, height);
 		}
 	}
 	return (max_height - min_height) < range[lod];
 }
+
+static bool check_terrain_render_flatness(const Image &p_image, const Vector2i &p_tile_pos, const Vector2i &p_tile_size, const Vector2 &height_range, float &min_height, float &max_height, float render_flat_diff) {
+	int step[] = { 1, 2, 4, 8, 16 };
+	float range[] = { 0.0001, 0.1, 0.5, 1, 2 };
+
+	min_height = 1000000000;
+	max_height = -1000000000;
+
+	for (int j = 0; j <= 64; j += 1) {
+		for (int i = 0; i <= 64; i += 1) {
+			float height = p_image.get_terrain_height(Vector2i(p_tile_pos.x + i, p_tile_pos.y + j), height_range);
+			min_height = MIN(min_height, height);
+			max_height = MAX(max_height, height);
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i - 1, p_tile_pos.y - 1), height_range)) > render_flat_diff) {
+				return false;
+			}
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i, p_tile_pos.y + j + 1), height_range)) > render_flat_diff) {
+				return false;
+			}
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i + 1, p_tile_pos.y + j + 1), height_range)) > render_flat_diff) {
+				return false;
+			}
+			//
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i - 1, p_tile_pos.y + j), height_range)) > render_flat_diff) {
+				return false;
+			}
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i + 1, p_tile_pos.y + j), height_range)) > render_flat_diff) {
+				return false;
+			}
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i + 1, p_tile_pos.y + j - 1), height_range)) > render_flat_diff) {
+				return false;
+			}
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i, p_tile_pos.y + j - 1), height_range)) > render_flat_diff) {
+				return false;
+			}
+			if (Math::abs(height - p_image.get_terrain_height(Vector2i(p_tile_pos.x + i - 1, p_tile_pos.y + j - 1), height_range)) > render_flat_diff) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
 // 0代表未激活，1代表激活,2 代表lod1(64*64)是平的，3代表lod2(32*32)是平的，4代表lod3(16*16)是平的,5代表lod4(8*8)是平的,7代表lod5(4*4)是平的
-Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const Vector2i &p_tile_size) const {
-	Vector<uint8_t> flatness;
+void Image::build_terrain_flatness(const Vector2 &height_range, Vector<uint8_t> &flatness, Vector<uint8_t> &render_flatness, Vector<float> &minmax_height, float render_flat_diff, const Vector2i &p_tile_size) const {
 	if (width == 0 || height == 0 || p_tile_size.x <= 0 || p_tile_size.y <= 0) {
-		return flatness;
+		return;
 	}
 	if (p_tile_size.x > width || p_tile_size.y > height) {
-		return flatness;
+		return;
 	}
-	int x_count = (width - 1) / p_tile_size.x;
-	int y_count = (height - 1) / p_tile_size.y;
+	int64_t x_count = (width - 1) / p_tile_size.x;
+	int64_t y_count = (height - 1) / p_tile_size.y;
 	if (x_count * p_tile_size.x + 1 != width || y_count * p_tile_size.y + 1 != height) {
-		return flatness;
+		return;
 	}
-	flatness.resize(x_count * y_count);
+	int64_t count = x_count * y_count;
+	flatness.resize(count);
+	flatness.fill(0);
+	render_flatness.resize(count);
+	render_flatness.fill(0);
+	minmax_height.resize(count * 2L);
+	minmax_height.fill(0);
 	int chunk_index = 0;
-	for (int y = 0; y < height - 1; y += p_tile_size.y, chunk_index++) {
-		for (int x = 0; x < width - 1; x += p_tile_size.x) {
+	for (int y = 0; y < height - 1; y += p_tile_size.y) {
+		for (int x = 0; x < width - 1; x += p_tile_size.x, chunk_index++) {
 			bool is_skip = true;
 			for (int cy = 0; cy <= p_tile_size.y; cy++) {
 				for (int cx = 0; cx <= p_tile_size.x; cx++) {
@@ -3414,6 +3461,14 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 					}
 				}
 			}
+			float min_height = 0, max_height = 0;
+			if (check_terrain_render_flatness(*this, Vector2i(x, y), p_tile_size, height_range, min_height, max_height, render_flat_diff)) {
+				render_flatness.write[chunk_index] = 1;
+			} else {
+				render_flatness.write[chunk_index] = 0;
+			}
+			minmax_height.write[chunk_index * 2L] = min_height;
+			minmax_height.write[chunk_index * 2L + 1L] = max_height;
 			// 都在地底下，就直接跳过吧
 			if (is_skip) {
 				continue;
@@ -3421,7 +3476,7 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 			flatness.write[chunk_index] = 1;
 			// lod4
 			{
-				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 4)) {
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 4, height_range)) {
 					flatness.write[chunk_index] = 6;
 				} else {
 					continue;
@@ -3429,7 +3484,7 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 			}
 			// lod3
 			{
-				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 3)) {
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 3, height_range)) {
 					flatness.write[chunk_index] = 5;
 				} else {
 					continue;
@@ -3437,7 +3492,7 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 			}
 			// lod2
 			{
-				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 2)) {
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 2, height_range)) {
 					flatness.write[chunk_index] = 4;
 				} else {
 					continue;
@@ -3445,7 +3500,7 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 			}
 			// lod1
 			{
-				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 1)) {
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 1, height_range)) {
 					flatness.write[chunk_index] = 3;
 				} else {
 					continue;
@@ -3453,7 +3508,7 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 			}
 			// lod0
 			{
-				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 0)) {
+				if (check_terrain_flatness(*this, Vector2i(x, y), p_tile_size, 0, height_range)) {
 					flatness.write[chunk_index] = 2;
 				} else {
 					continue;
@@ -3461,7 +3516,6 @@ Vector<uint8_t> Image::build_terrain_flatness(const Vector2 &height_range, const
 			}
 		}
 	}
-	return flatness;
 }
 
 void Image::_set_data(const Dictionary &p_data) {
@@ -3800,10 +3854,12 @@ void Image::_set_color_at_ofs(uint8_t *ptr, uint32_t ofs, const Color &p_color) 
 }
 
 Color Image::get_pixel(int p_x, int p_y) const {
-#ifdef DEBUG_ENABLED
-	ERR_FAIL_INDEX_V(p_x, width, Color());
-	ERR_FAIL_INDEX_V(p_y, height, Color());
-#endif
+	//#ifdef DEBUG_ENABLED
+	//	ERR_FAIL_INDEX_V(p_x, width, Color());
+	//	ERR_FAIL_INDEX_V(p_y, height, Color());
+	//#endif
+	p_x = CLAMP(p_x, 0, width);
+	p_y = CLAMP(p_y, 0, height);
 
 	uint32_t ofs = p_y * width + p_x;
 	return _get_color_at_ofs(data.ptr(), ofs);
@@ -4060,7 +4116,7 @@ void Image::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("fill_rect", "rect", "color"), &Image::fill_rect);
 	ClassDB::bind_method(D_METHOD("split_terrain_image", "terrain_size"), &Image::split_terrain_image);
 	ClassDB::bind_method(D_METHOD("get_terrain_height", "p_tile_pos", "height_range"), &Image::get_terrain_height);
-	ClassDB::bind_method(D_METHOD("build_terrain_flatness"), &Image::build_terrain_flatness);
+	//ClassDB::bind_method(D_METHOD("build_terrain_flatness"), &Image::build_terrain_flatness);
 
 	ClassDB::bind_method(D_METHOD("get_used_rect"), &Image::get_used_rect);
 	ClassDB::bind_method(D_METHOD("get_region", "region"), &Image::get_region);

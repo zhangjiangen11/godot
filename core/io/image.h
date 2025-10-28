@@ -421,8 +421,9 @@ public:
 	Array split_terrain_image(const Vector2i &p_tile_size) const;
 	float get_terrain_height(const Vector2i &p_tile_pos, const Vector2 &height_range) const;
 	// 构建平整信息
-	// 0代表未激活，1代表激活,2 代表lod0(64*64)是平的，3代表lod1(32*32)是平的，4代表lod2(16*16)是平的,5代表lod3(8*8)是平的,6代表lod5(4*4)是平的
-	Vector<uint8_t> build_terrain_flatness(const Vector2 &height_range, const Vector2i &p_tile_size = Vector2i(64, 64)) const;
+	// flatness:0代表未激活，1代表激活,2 代表lod0(64*64)是平的，3代表lod1(32*32)是平的，4代表lod2(16*16)是平的,5代表lod3(8*8)是平的,6代表lod5(4*4)是平的
+	// render_flatness:0不是平的，1是平的
+	void build_terrain_flatness(const Vector2 &height_range, Vector<uint8_t> &flatness, Vector<uint8_t> &render_flatness, Vector<float> &minmax_height, float render_flat_diff = 1.0, const Vector2i &p_tile_size = Vector2i(64, 64)) const;
 
 	Rect2i get_used_rect() const;
 	Ref<Image> get_region(const Rect2i &p_area) const;

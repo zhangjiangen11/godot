@@ -83,6 +83,7 @@ public:
 
 	virtual void set_path(const String &p_path, bool p_take_over = false) override;
 	void set_include_path(const String &p_path);
+	const String &get_include_path() const { return include_path; }
 
 	void set_code(const String &p_code);
 	const String &get_code() const;

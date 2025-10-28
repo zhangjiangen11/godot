@@ -1864,9 +1864,11 @@ void RenderingDevice::_texture_copy_shared(RID p_src_texture_rid, Texture *p_src
 		thread_local LocalVector<RDG::RecordedBufferToTextureCopy> update_vector;
 		get_data_vector.clear();
 		update_vector.clear();
+		int offset = 0;
 		for (uint32_t i = 0; i < p_dst_texture->mipmaps; i++) {
 			driver->texture_get_copyable_layout(p_dst_texture->shared_fallback->texture, texture_subresource, &copyable_layout);
-
+			copyable_layout.offset = offset;
+			offset += copyable_layout.size;
 			uint32_t mipmap = p_dst_texture->base_mipmap + i;
 			get_data_region.buffer_offset = copyable_layout.offset - first_copyable_layout.offset;
 			get_data_region.texture_subresources.aspect = RDD::TEXTURE_ASPECT_COLOR_BIT;

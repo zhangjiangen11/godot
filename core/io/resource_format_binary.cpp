@@ -400,6 +400,7 @@ Error ResourceLoaderBinary::parse_variant(Variant &r_v) {
 				case OBJECT_REFCOUNDED_OBJECT: {
 					String class_name = get_unicode_string();
 					Object *obj = ClassDB::instantiate(class_name);
+					r_v = obj;
 
 					uint32_t len = f->get_32();
 
@@ -416,7 +417,6 @@ Error ResourceLoaderBinary::parse_variant(Variant &r_v) {
 						obj->set(key, value);
 					}
 
-					r_v = obj;
 				} break;
 				case OBJECT_INTERNAL_RESOURCE: {
 					uint32_t index = f->get_32();

@@ -402,6 +402,7 @@ vec4 light_compute(
 		vec4 color, bool is_directional) {
 	vec4 light = vec4(0.0);
 	vec3 light_direction = vec3(0.0);
+	vec3 vertex = vertex_interp;
 
 	if (is_directional) {
 		light_direction = normalize(mix(vec3(light_position.xy, 0.0), vec3(0, 0, 1), light_position.z));
