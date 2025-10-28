@@ -212,7 +212,7 @@ public:
 Variant _EDITOR_DEF(const StringName &p_setting, const Variant &p_default, bool p_restart_if_changed = false, bool p_basic = false);
 
 #define EDITOR_GET(m_var) _EDITOR_GET(m_var)
-Variant _EDITOR_GET(const StringName&p_setting);
+Variant _EDITOR_GET(const String &p_setting);
 
 #define ED_IS_SHORTCUT(p_name, p_ev) (EditorSettings::get_singleton()->is_shortcut(p_name, p_ev))
 Ref<Shortcut> ED_SHORTCUT(const String &p_path, const String &p_name, Key p_keycode = Key::NONE, bool p_physical = false);
