@@ -2389,11 +2389,9 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 				if (r_current_batch->tex_info != tex_info) {
 					r_current_batch = _new_batch(r_batch_broken);
 					r_current_batch->tex_info = tex_info;
-					template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-					template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
 				}
 
-				InstanceData *instance_data = new_instance_data(template_instance);
+				InstanceData *instance_data = new_instance_data(*r_current_batch, template_instance);
 				Rect2 src_rect;
 				Rect2 dst_rect;
 
@@ -2492,11 +2490,9 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 				if (r_current_batch->tex_info != tex_info) {
 					r_current_batch = _new_batch(r_batch_broken);
 					r_current_batch->tex_info = tex_info;
-					template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-					template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
 				}
 
-				InstanceData *instance_data = new_instance_data(template_instance);
+				InstanceData *instance_data = new_instance_data(*r_current_batch, template_instance);
 
 				Rect2 src_rect;
 				Rect2 dst_rect(np->rect.position.x, np->rect.position.y, np->rect.size.x, np->rect.size.y);
@@ -2569,8 +2565,6 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 				if (r_current_batch->tex_info != tex_info) {
 					r_current_batch = _new_batch(r_batch_broken);
 					r_current_batch->tex_info = tex_info;
-					template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-					template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
 				}
 
 				// pipeline variant
@@ -2580,7 +2574,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 					r_current_batch->render_primitive = _primitive_type_to_render_primitive(polygon->primitive);
 				}
 
-				InstanceData *instance_data = new_instance_data(template_instance);
+				InstanceData *instance_data = new_instance_data(*r_current_batch, template_instance);
 
 				Color color = base_color;
 				if (use_linear_colors) {
@@ -2638,11 +2632,9 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 				if (r_current_batch->tex_info != tex_info) {
 					r_current_batch = _new_batch(r_batch_broken);
 					r_current_batch->tex_info = tex_info;
-					template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-					template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
 				}
 
-				InstanceData *instance_data = new_instance_data(template_instance);
+				InstanceData *instance_data = new_instance_data(*r_current_batch, template_instance);
 
 				for (uint32_t j = 0; j < MIN(3u, primitive->point_count); j++) {
 					instance_data->points[j * 2 + 0] = primitive->points[j].x;
@@ -2660,7 +2652,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 				_add_to_batch(r_batch_broken, r_current_batch);
 
 				if (primitive->point_count == 4) {
-					instance_data = new_instance_data(template_instance);
+					instance_data = new_instance_data(*r_current_batch, template_instance);
 
 					for (uint32_t j = 0; j < 3; j++) {
 						int offset = j == 0 ? 0 : 1;
@@ -2703,9 +2695,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 						_prepare_batch_texture_info(m->texture, tex_state, tex_info);
 					}
 					r_current_batch->tex_info = tex_info;
-					template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-					template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
-					instance_data = new_instance_data(template_instance);
+					instance_data = new_instance_data(*r_current_batch, template_instance);
 
 					r_current_batch->mesh_instance_count = 1;
 					_update_transform_2d_to_mat2x3(base_transform * draw_transform * m->transform, instance_data->world);
@@ -2732,9 +2722,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 						_prepare_batch_texture_info(mm->texture, tex_state, tex_info);
 					}
 					r_current_batch->tex_info = tex_info;
-					template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-					template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
-					instance_data = new_instance_data(template_instance);
+					instance_data = new_instance_data(*r_current_batch, template_instance);
 
 					r_current_batch->flags |= 1; // multimesh, trails disabled
 
@@ -2756,9 +2744,7 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 						_prepare_batch_texture_info(pt->texture, tex_state, tex_info);
 					}
 					r_current_batch->tex_info = tex_info;
-					template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-					template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
-					instance_data = new_instance_data(template_instance);
+					instance_data = new_instance_data(*r_current_batch, template_instance);
 
 					uint32_t divisor = 1;
 					r_current_batch->mesh_instance_count = particles_storage->particles_get_amount(pt->particles, divisor);
@@ -2879,12 +2865,10 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 		if (r_current_batch->tex_info != tex_info) {
 			r_current_batch = _new_batch(r_batch_broken);
 			r_current_batch->tex_info = tex_info;
-			template_instance.color_texture_pixel_size[0] = tex_info->texpixel_size.width;
-			template_instance.color_texture_pixel_size[1] = tex_info->texpixel_size.height;
 		}
 
 		_update_transform_2d_to_mat2x3(base_transform, template_instance.world);
-		InstanceData *instance_data = new_instance_data(template_instance);
+		InstanceData *instance_data = new_instance_data(*r_current_batch, template_instance);
 
 		Rect2 src_rect;
 		Rect2 dst_rect;
@@ -3167,11 +3151,13 @@ void RendererCanvasRenderRD::_render_batch(RD::DrawListID p_draw_list, CanvasSha
 	}
 }
 
-RendererCanvasRenderRD::InstanceData *RendererCanvasRenderRD::new_instance_data(const InstanceData &template_instance) {
+RendererCanvasRenderRD::InstanceData *RendererCanvasRenderRD::new_instance_data(Batch &p_current_batch, const InstanceData &template_instance) {
 	DEV_ASSERT(state.instance_data != nullptr);
 
 	InstanceData *instance_data = &state.instance_data[state.instance_data_index];
 	memcpy(instance_data, &template_instance, sizeof(InstanceData));
+	instance_data->color_texture_pixel_size[0] = p_current_batch.tex_info->texpixel_size.width;
+	instance_data->color_texture_pixel_size[1] = p_current_batch.tex_info->texpixel_size.height;
 	return instance_data;
 }
 
