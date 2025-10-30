@@ -103,6 +103,8 @@ protected:
 		EditorProperty *prop = nullptr;
 		Button *reorder_button = nullptr;
 		CheckButton *state_button = nullptr;
+		Button *edit_button = nullptr;
+		Button *remove_button = nullptr;
 
 		void set_index(int p_idx) {
 			String prop_name = "indices/" + itos(p_idx);
@@ -141,9 +143,7 @@ protected:
 	void _reorder_button_down(int p_index);
 	void _reorder_button_up();
 	virtual void _create_new_property_slot();
-	virtual void _on_clear_slots()
-	{
-
+	virtual void _on_clear_slots() {
 	}
 
 	Node *get_base_node();
@@ -195,6 +195,8 @@ protected:
 		bool key_as_id = false;
 		EditorProperty *prop = nullptr;
 		EditorProperty *prop_key = nullptr;
+		Button *edit_button = nullptr;
+		Button *remove_button = nullptr;
 		String prop_name;
 		String key_name;
 
