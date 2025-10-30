@@ -34,6 +34,8 @@
 #include "core/error/error_macros.h"
 #include "core/io/image_loader.h"
 #include "core/io/resource_loader.h"
+#include "core/io/file_access.h"
+#include "core/io/dir_access.h"
 #include "core/math/math_funcs.h"
 #include "core/templates/hash_map.h"
 #include "core/variant/dictionary.h"
@@ -2779,6 +2781,9 @@ Error Image::save_png(const String &p_path) const {
 	if (save_png_func == nullptr) {
 		return ERR_UNAVAILABLE;
 	}
+	if (FileAccess::exists(p_path)) {
+		DirAccess::remove_absolute(p_path);
+	}
 
 	return save_png_func(p_path, Ref<Image>((Image *)this));
 }
@@ -3858,8 +3863,8 @@ Color Image::get_pixel(int p_x, int p_y) const {
 	//	ERR_FAIL_INDEX_V(p_x, width, Color());
 	//	ERR_FAIL_INDEX_V(p_y, height, Color());
 	//#endif
-	p_x = CLAMP(p_x, 0, width);
-	p_y = CLAMP(p_y, 0, height);
+	p_x = CLAMP(p_x, 0, width - 1);
+	p_y = CLAMP(p_y, 0, height - 1);
 
 	uint32_t ofs = p_y * width + p_x;
 	return _get_color_at_ofs(data.ptr(), ofs);
