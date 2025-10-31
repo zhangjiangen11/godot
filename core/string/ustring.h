@@ -521,6 +521,8 @@ public:
 	char32_t unicode_at(int p_idx) const;
 	// 刪除注釋
 	String remove_annotate() const;
+	bool has_extension(const char *p_ext) const { return get_extension().to_lower() == p_ext; }
+	bool has_extension(const String &p_ext) const { return get_extension().to_lower() == p_ext; }
 
 	CharString ascii(bool p_allow_extended = false) const;
 	// Parse an ascii string.

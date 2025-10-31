@@ -1491,7 +1491,7 @@ void ResourceFormatLoaderText::get_classes_used(const String &p_path, HashSet<St
 }
 
 String ResourceFormatLoaderText::get_resource_type(const String &p_path) const {
-	String ext = p_path.get_extension().to_lower();
+	const String ext = p_path.get_extension().to_lower();
 	if (ext == "tscn") {
 		return "PackedScene";
 	} else if (ext != "tres") {
@@ -1513,8 +1513,7 @@ String ResourceFormatLoaderText::get_resource_type(const String &p_path) const {
 }
 
 String ResourceFormatLoaderText::get_resource_script_class(const String &p_path) const {
-	String ext = p_path.get_extension().to_lower();
-	if (ext != "tres") {
+	if (!p_path.has_extension("tres")) {
 		return String();
 	}
 
@@ -1532,8 +1531,7 @@ String ResourceFormatLoaderText::get_resource_script_class(const String &p_path)
 }
 
 ResourceUID::ID ResourceFormatLoaderText::get_resource_uid(const String &p_path) const {
-	String ext = p_path.get_extension().to_lower();
-
+	const String ext = p_path.get_extension().to_lower();
 	if (ext != "tscn" && ext != "tres") {
 		return ResourceUID::INVALID_ID;
 	}

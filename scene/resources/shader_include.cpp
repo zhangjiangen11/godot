@@ -85,11 +85,10 @@ void ShaderInclude::_bind_methods() {
 // ShaderTemplate
 
 void ShaderTemplate::set_code(const String &p_code) {
-	
-	if(p_code.begins_with("//NAME:")) {
+	if (p_code.begins_with("//NAME:")) {
 		int ret = p_code.find_char('\n');
-		if(ret > 1) {
-			preview_name = p_code.substr(0,ret).substr(7).strip_edges(true, true);
+		if (ret > 1) {
+			preview_name = p_code.substr(0, ret).substr(7).strip_edges(true, true);
 		}
 	}
 	code = p_code;
@@ -99,7 +98,6 @@ void ShaderTemplate::set_code(const String &p_code) {
 String ShaderTemplate::get_code() const {
 	return code;
 }
-
 
 void ShaderTemplate::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_code", "code"), &ShaderTemplate::set_code);
@@ -193,8 +191,6 @@ bool ResourceFormatSaverShaderInclude::recognize(const Ref<Resource> &p_resource
 	return p_resource->get_class_name() == "ShaderInclude"; //only shader, not inherited
 }
 
-
-
 // ResourceFormatLoaderShaderTemplate
 
 Ref<Resource> ResourceFormatLoaderShaderTemplate::load(const String &p_path, const String &p_original_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode) {
@@ -271,4 +267,3 @@ void ResourceFormatSaverShaderTemplate::get_recognized_extensions(const Ref<Reso
 bool ResourceFormatSaverShaderTemplate::recognize(const Ref<Resource> &p_resource) const {
 	return p_resource->get_class_name() == "ShaderTemplate"; //only shader, not inherited
 }
-
