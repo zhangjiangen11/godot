@@ -98,7 +98,6 @@ void EditorResourcePicker::_update_resource() {
 			assign_button->set_tooltip_text("");
 			assign_button->set_modulate(Color(1, 0.5, 0.5));
 		} else {
-			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->(), SNAME("Object")));
 			if (resource.is_valid()) {
 				if (!resource->get_name().is_empty()) {
 					assign_button->set_text(resource->get_name());
@@ -115,6 +114,7 @@ void EditorResourcePicker::_update_resource() {
 
 				// Preview will override the above, so called at the end.
 				EditorResourcePreview::get_singleton()->queue_edited_resource_preview(resource, callable_mp(this, &EditorResourcePicker::_update_resource_preview).bind(edited_resource->get_instance_id()));
+				assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
 
 			} else {
 				String name = class_name;
@@ -124,7 +124,7 @@ void EditorResourcePicker::_update_resource() {
 						name = nm;
 					}
 				}
-				assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->(), SNAME("Object")));
+				assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
 				assign_button->set_text(name);
 				assign_button->set_tooltip_text(TTR("Type:") + " " + class_name);
 			}
@@ -618,7 +618,7 @@ void EditorResourcePicker::set_create_options(Object *p_menu_node) {
 
 			inheritors_array.push_back(t);
 
-			Ref<Texture2D> icon = EditorNode::get_singleton()->get_class_icon(t, "Object");
+			Ref<Texture2D> icon = EditorNode::get_singleton()->get_class_icon(t);
 			int id = TYPE_BASE_ID + idx;
 			edit_menu->add_icon_item(icon, t, id);
 			edit_menu->set_item_auto_translate_mode(-1, AUTO_TRANSLATE_MODE_DISABLED);
@@ -1600,7 +1600,7 @@ void EditorAudioStreamPicker::_preview_draw() {
 			icon_modulate = Color(1, 0.5, 0.5, 1); // get_theme_color(SNAME("accent_color"), EditorStringName(Editor));
 		}
 	} else {
-		icon = EditorNode::get_singleton()->get_object_icon(audio_stream.operator->(), "Object");
+		icon = EditorNode::get_singleton()->get_object_icon(audio_stream.operator->());
 	}
 	String text;
 	if (!audio_stream->get_name().is_empty()) {
