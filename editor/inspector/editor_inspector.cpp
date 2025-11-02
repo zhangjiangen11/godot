@@ -2188,7 +2188,7 @@ void EditorInspectorSection::_notification(int p_what) {
 				bool folded = (foldable || !checkbox_only) && !object->editor_is_section_unfolded(section);
 
 				String draw_label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(label);
-				bool folded = (foldable || !checkbox_only) && !vbox->is_visible();
+				//bool folded = (foldable || !checkbox_only) && !vbox->is_visible();
 				if (folded && revertable_properties.size()) {
 					int label_width = theme_cache.bold_font->get_string_size(draw_label, HORIZONTAL_ALIGNMENT_LEFT, available, theme_cache.bold_font_size, TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_CONSTRAIN_ELLIPSIS).x;
 

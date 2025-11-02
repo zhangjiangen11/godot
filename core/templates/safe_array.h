@@ -33,7 +33,7 @@ public:
 	}
 	void init(int64_t memSize = 0) {
 		data = nullptr;
-		listCount.set(0);
+		listCount.store(0, std::memory_order_release);
 		memorySize = 0;
 		isSafeAlocal = false;
 		if (memSize > 0) {
@@ -86,10 +86,10 @@ public:
 		}
 		if (start + count > size()) {
 			//Debug.LogError($"移除的数据太多了，当前长度：{Length} start:{start} count:{count}！");
-			listCount.set(start);
+			listCount.store(start, std::memory_order_release);
 			return;
 		} else if (start + count == size()) {
-			listCount.set(start);
+			listCount.store(start, std::memory_order_release);
 			return;
 		}
 		//int bs = start + count;
@@ -114,17 +114,17 @@ public:
 	void zero_memory_value() {
 		auto ptr = get_unsafe_ptr();
 		if (ptr != nullptr) {
-			memset(ptr, 0, sizeof(T) * listCount.get());
+			memset(ptr, 0, sizeof(T) * listCount.load(std::memory_order_acquire));
 		}
 	}
 	void memset_value(uint8_t value) {
 		auto ptr = get_unsafe_ptr();
 		if (ptr != nullptr) {
-			memset(ptr, 0, sizeof(T) * listCount.get());
+			memset(ptr, 0, sizeof(T) * listCount.load(std::memory_order_acquire));
 		}
 	}
 	void add_ref(T &_data) {
-		int64_t last_count = listCount.get();
+		int64_t last_count = listCount.load(std::memory_order_acquire);
 		auto_resize(last_count + 1, last_count + 1 + 200);
 
 		memcpy(&data[last_count], &_data, sizeof(T));
@@ -154,14 +154,14 @@ public:
 	}
 
 	void add(T _data) {
-		int last_count = listCount.get();
+		int last_count = listCount.load(std::memory_order_acquire);
 		auto_resize(last_count + 1, last_count + 1 + 200);
 
 		memcpy(&data[last_count], &_data, sizeof(T));
 		listCount.fetch_add(1, std::memory_order_release);
 	}
 	void add_range(T *_data, int64_t count) {
-		int last_count = listCount.get();
+		int last_count = listCount.load(std::memory_order_acquire);
 		auto_resize(last_count + count, last_count + count + 200);
 
 		memcpy(&data[last_count], _data, sizeof(T) * count);

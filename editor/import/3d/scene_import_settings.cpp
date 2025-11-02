@@ -744,10 +744,10 @@ void SceneImportSettingsDialog::open_settings(const String &p_path, const String
 
 	// Only show the save data options for PackedScene imports of scenes, not resource imports.
 	const bool disable_save_mesh_mat = p_scene_import_type != "PackedScene";
-	action_menu->get_popup()->set_item_disabled(action_menu->get_popup()->get_item_id(ACTION_EXTRACT_MATERIALS), disable_save_mesh_mat);
-	action_menu->get_popup()->set_item_disabled(action_menu->get_popup()->get_item_id(ACTION_CHOOSE_MESH_SAVE_PATHS), disable_save_mesh_mat);
+	batch_menu->get_popup()->set_item_disabled(batch_menu->get_popup()->get_item_id(ACTION_EXTRACT_MATERIALS), disable_save_mesh_mat);
+	batch_menu->get_popup()->set_item_disabled(batch_menu->get_popup()->get_item_id(ACTION_CHOOSE_MESH_SAVE_PATHS), disable_save_mesh_mat);
 	const bool disable_save_anim = disable_save_mesh_mat && p_scene_import_type != "AnimationLibrary";
-	action_menu->get_popup()->set_item_disabled(action_menu->get_popup()->get_item_id(ACTION_CHOOSE_ANIMATION_SAVE_PATHS), disable_save_anim);
+	batch_menu->get_popup()->set_item_disabled(batch_menu->get_popup()->get_item_id(ACTION_CHOOSE_ANIMATION_SAVE_PATHS), disable_save_anim);
 
 	base_path = p_path;
 
