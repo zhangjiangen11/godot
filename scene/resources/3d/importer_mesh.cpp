@@ -304,6 +304,42 @@ void ImporterMesh::optimize_indices() {
 		shadow_mesh->optimize_indices();
 	}
 }
+void ImporterMesh::generate_normals(bool p_flip) {
+	for (int i = 0; i < surfaces.size(); i++) {
+		if (surfaces[i].primitive != Mesh::PRIMITIVE_TRIANGLES) {
+			continue;
+		}
+		Vector<Vector3> vertices = surfaces[i].arrays[RS::ARRAY_VERTEX];
+		Vector<Vector3> normals;
+		normals.resize(vertices.size());
+		PackedInt32Array indices = surfaces[i].arrays[RS::ARRAY_INDEX];
+		for (int j = 0; j < vertices.size(); j += 3) {
+			normals.write[j] = Vector3(0, 0, 0);
+		}
+		for (int j = 0; j < indices.size(); j += 3) {
+			Vector3 normal;
+			int32_t index = indices[j];
+			int32_t index2 = indices[j + 1];
+			int32_t index3 = indices[j + 2];
+			if (!p_flip) {
+				normal = Plane(vertices[index], vertices[index2], vertices[index3]).normal;
+			} else {
+				normal = Plane(vertices[index3], vertices[index2], vertices[index]).normal;
+			}
+			normals.write[index] += normal;
+			normals.write[index2] += normal;
+			normals.write[index3] += normal;
+		}
+		for (int j = 0; j < normals.size(); j++) {
+			if (normals[j].length() == 0) {
+				normals.write[j] = Vector3(0, 1, 0);
+			} else {
+				normals.write[j] = normals[j].normalized();
+			}
+		}
+		surfaces.write[i].arrays[RS::ARRAY_NORMAL] = normals;
+	}
+}
 
 #define VERTEX_SKIN_FUNC(bone_count, vert_idx, read_array, write_array, transform_array, bone_array, weight_array) \
 	Vector3 transformed_vert;                                                                                      \

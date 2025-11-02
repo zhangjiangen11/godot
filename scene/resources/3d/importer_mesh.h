@@ -113,6 +113,7 @@ public:
 	void set_surface_material(int p_surface, const Ref<Material> &p_material);
 
 	void optimize_indices();
+	void generate_normals(bool p_flip = false);
 
 	void generate_lods(float p_normal_merge_angle, Array p_skin_pose_transform_array);
 

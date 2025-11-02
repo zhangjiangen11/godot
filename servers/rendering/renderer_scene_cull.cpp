@@ -1353,7 +1353,9 @@ void RendererSceneCull::instance_geometry_set_cast_shadows_setting(RID p_instanc
 void RendererSceneCull::instance_geometry_set_material_override(RID p_instance, RID p_material) {
 	Instance *instance = instance_owner.get_or_null(p_instance);
 	ERR_FAIL_NULL(instance);
-
+	if (instance->material_override == p_material) {
+		return;
+	}
 	instance->material_override = p_material;
 	_instance_queue_update(instance, false, true);
 
