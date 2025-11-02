@@ -235,6 +235,7 @@ class SceneImportSettingsDialog : public ConfirmationDialog {
 	HashMap<StringName, Variant> defaults;
 
 	SceneImportSettingsData *scene_import_settings_data = nullptr;
+	ResourceImporterScene *_resource_importer_scene = nullptr;
 
 	void _re_import();
 
@@ -280,7 +281,6 @@ class SceneImportSettingsDialog : public ConfirmationDialog {
 	void _load_default_subresource_settings(HashMap<StringName, Variant> &settings, const String &p_type, const String &p_import_id, ResourceImporterScene::InternalImportCategory p_category);
 	void _popup_menu_pressed(int p_id);
 
-	bool editing_animation = false;
 	bool generate_collider = false;
 
 	Timer *update_view_timer = nullptr;
@@ -292,7 +292,7 @@ protected:
 	void _notification(int p_what);
 
 public:
-	bool is_editing_animation() const { return editing_animation; }
+	ResourceImporterScene *get_resource_importer_scene() const { return _resource_importer_scene; }
 	void request_generate_collider();
 	void update_view();
 	void open_settings(const String &p_path, const String &p_scene_import_type = "PackedScene");
