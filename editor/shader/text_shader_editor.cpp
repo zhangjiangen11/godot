@@ -474,6 +474,9 @@ void ShaderTextEditor::_validate_script() {
 		_check_shader_mode();
 		code = shader->get_code();
 	} else {
+		if (shader_inc.is_null()) {
+			return;
+		}
 		code = shader_inc->get_code();
 	}
 

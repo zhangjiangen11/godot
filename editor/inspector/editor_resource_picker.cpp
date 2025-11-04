@@ -150,7 +150,16 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 		}
 
 		if (!p_preview.is_empty()) {
-			preview_rect->set_offset(SIDE_LEFT, assign_button->get_button_icon()->get_width() + assign_button->get_theme_stylebox(CoreStringName(normal))->get_content_margin(SIDE_LEFT) + get_theme_constant(SNAME("h_separation"), SNAME("Button")));
+			int offset = 0;
+			if (assign_button->get_button_icon().is_valid()) {
+				offset += assign_button->get_button_icon()->get_width();
+			}
+			Ref<StyleBox> sb = assign_button->get_theme_stylebox(CoreStringName(normal));
+			if (sb.is_valid()) {
+				offset += sb->get_content_margin(SIDE_LEFT);
+			}
+			offset += get_theme_constant(SNAME("h_separation"), SNAME("Button"));
+			preview_rect->set_offset(SIDE_LEFT, offset);
 
 			// Resource-specific stretching.
 			if (Ref<GradientTexture1D>(edited_resource).is_valid() || Ref<Gradient>(edited_resource).is_valid()) {

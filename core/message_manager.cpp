@@ -112,7 +112,7 @@ void MessageManager::register_message(const StringName &p_message, const Callabl
 		return;
 	}
 	List<Callable>::Element *it = callables->find(p_callable);
-	if (it != nullptr) {
+	if (it == nullptr) {
 		callables->push_back(p_callable);
 	}
 }
@@ -135,7 +135,7 @@ void MessageManager::register_enum_message(int64_t p_message, const Callable &p_
 		return;
 	}
 	List<Callable>::Element *it = callables->find(p_callable);
-	if (it != nullptr) {
+	if (it == nullptr) {
 		callables->push_back(p_callable);
 	}
 }
