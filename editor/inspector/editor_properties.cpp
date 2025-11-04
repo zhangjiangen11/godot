@@ -1096,6 +1096,10 @@ void EditorPropertyEnum::set_option_button_clip(bool p_enable) {
 	options->set_clip_text(p_enable);
 }
 
+OptionButton *EditorPropertyEnum::get_option_button() {
+	return options;
+}
+
 EditorPropertyEnum::EditorPropertyEnum() {
 	options = memnew(OptionButton);
 	options->set_clip_text(true);
