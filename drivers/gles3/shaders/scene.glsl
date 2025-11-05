@@ -1499,6 +1499,10 @@ float compute_micro_shadowing(float NoL, float ao, float opacity) {
 	float microshadow = clamp(NoL + aperture - 1.0, 0.0, 1.0);
 	return mix(1.0, microshadow, opacity);
 }
+float V_Kelemen(float LdotH) {
+	// Kelemen 2001, "A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling"
+	return 0.25 / (LdotH * LdotH + 1e-4);
+}
 
 void light_compute(vec3 N, vec3 L, vec3 V, float A, vec3 light_color, bool is_directional, float attenuation, vec3 f0, float roughness, float metallic, float specular_amount, vec3 albedo, inout float alpha, vec2 screen_uv,
 #ifdef LIGHT_BACKLIGHT_USED
