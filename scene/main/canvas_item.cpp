@@ -154,7 +154,9 @@ void CanvasItem::_redraw_callback() {
 		}
 		current_item_drawn = this;
 		notification(NOTIFICATION_DRAW);
+		drawing = true;
 		emit_signal(SceneStringName(draw));
+		drawing = true;
 		_draw();
 		GDVIRTUAL_CALL(_draw);
 		current_item_drawn = nullptr;
