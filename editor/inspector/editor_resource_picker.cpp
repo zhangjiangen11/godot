@@ -97,7 +97,7 @@ void EditorResourcePicker::_update_resource() {
 			assign_button->set_tooltip_text("");
 			make_unique_button->set_disabled(true);
 			make_unique_button->set_visible(false);
-		} else {
+		} else if (resource.is_valid()) {
 			Ref<Resource> parent_res = _has_parent_resource();
 			bool unique_enable = _is_uniqueness_enabled();
 			bool unique_recursive_enabled = _is_uniqueness_enabled(true);
@@ -125,6 +125,23 @@ void EditorResourcePicker::_update_resource() {
 				}
 
 				if (!unique_enable && EditorNode::get_singleton()->get_editor_selection()->get_full_selected_node_list().size() == 1) {
+					tooltip += TTR("In order to duplicate it, make its parent Resource unique.") + "\n";
+				}
+			}
+
+			make_unique_button->set_tooltip_text(tooltip);
+			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
+		} else {
+			Ref<Resource> parent_res = _has_parent_resource();
+			make_unique_button->set_button_icon(get_editor_theme_icon(SNAME("Instance")));
+			make_unique_button->set_visible(false);
+			make_unique_button->set_disabled(true);
+
+			String tooltip;
+			if (!editable) {
+				tooltip += "\n" + TTR("The Resource cannot be edited in the inspector and can't be made unique directly.") + "\n";
+			} else {
+				if (EditorNode::get_singleton()->get_editor_selection()->get_full_selected_node_list().size() == 1) {
 					tooltip += TTR("In order to duplicate it, make its parent Resource unique.") + "\n";
 				}
 			}

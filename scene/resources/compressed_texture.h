@@ -143,7 +143,6 @@ public:
 	};
 
 private:
-	Error _load_data(const String &p_path, Vector<Ref<Image>> &images, int &mipmap_limit, int p_size_limit = 0);
 	String path_to_file;
 	mutable RID texture;
 	Image::Format format = Image::FORMAT_L8;
@@ -152,7 +151,8 @@ private:
 	int layers = 0;
 	bool mipmaps = false;
 	LayeredType layered_type = LayeredType::LAYERED_TYPE_2D_ARRAY;
-
+public:
+	static Error _load_data(const String &p_path, Vector<Ref<Image>> &images, int &mipmap_limit, int p_size_limit = 0);
 	virtual void reload_from_file() override;
 
 protected:
@@ -232,7 +232,6 @@ public:
 	};
 
 private:
-	Error _load_data(const String &p_path, Vector<Ref<Image>> &r_data, Image::Format &r_format, int &r_width, int &r_height, int &r_depth, bool &r_mipmaps);
 	String path_to_file;
 	mutable RID texture;
 	Image::Format format = Image::FORMAT_L8;
@@ -240,7 +239,8 @@ private:
 	int h = 0;
 	int d = 0;
 	bool mipmaps = false;
-
+public:
+	static Error _load_data(const String &p_path, Vector<Ref<Image>> &r_data, Image::Format &r_format, int &r_width, int &r_height, int &r_depth, bool &r_mipmaps);
 	virtual void reload_from_file() override;
 
 protected:

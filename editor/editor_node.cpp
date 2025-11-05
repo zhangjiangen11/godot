@@ -1745,6 +1745,9 @@ void EditorNode::save_resource_as(const Ref<Resource> &p_resource, const String 
 }
 
 bool EditorNode::is_resource_internal_to_scene(Ref<Resource> p_resource) {
+	if (p_resource.is_null()) {
+		return false;
+	}
 	bool inside_scene = !get_edited_scene() || get_edited_scene()->get_scene_file_path() == p_resource->get_path().get_slice("::", 0);
 	return inside_scene || p_resource->get_path().is_empty();
 }
