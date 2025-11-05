@@ -687,6 +687,7 @@ void SceneShaderForwardMobile::init(const String p_defines) {
 		// 高光缩放，用来处理远处或者植被和皮肤的高光
 		actions.renames["SPECULAR_SCALE"] = "specular_scale";
 		actions.renames["AO_LIGHT_AFFECT"] = "ao_light_affect_highp";
+		actions.renames["MICRO_SHADOWS"] = "micro_shadows_highp";
 		actions.renames["EMISSION"] = "emission_highp";
 		actions.renames["POINT_COORD"] = "gl_PointCoord";
 		actions.renames["INSTANCE_CUSTOM"] = "instance_custom";
@@ -735,6 +736,7 @@ void SceneShaderForwardMobile::init(const String p_defines) {
 		actions.usage_defines["ANISOTROPY_FLOW"] = "@ANISOTROPY";
 		actions.usage_defines["AO"] = "#define AO_USED\n";
 		actions.usage_defines["AO_LIGHT_AFFECT"] = "#define AO_USED\n";
+		actions.usage_defines["MICRO_SHADOWS"] = "#define MICRO_SHADOWS_USED\n";
 		actions.usage_defines["UV"] = "#define UV_USED\n";
 		actions.usage_defines["UV2"] = "#define UV2_USED\n";
 		actions.usage_defines["BONE_INDICES"] = "#define BONES_USED\n";
