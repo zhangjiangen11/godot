@@ -98,7 +98,7 @@ void EditorResourcePicker::_update_resource() {
 			make_unique_button->set_disabled(true);
 			make_unique_button->set_visible(false);
 		} else {
-			Ref<resource> parent_res = _has_parent_resource();
+			Ref<Resource> parent_res = _has_parent_resource();
 			bool unique_enable = _is_uniqueness_enabled();
 			bool unique_recursive_enabled = _is_uniqueness_enabled(true);
 			bool is_internal = EditorNode::get_singleton()->is_resource_internal_to_scene(edited_resource);
@@ -132,26 +132,15 @@ void EditorResourcePicker::_update_resource() {
 			make_unique_button->set_tooltip_text(tooltip);
 			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
 		}
-		else {
-			String name = class_name;
-			if (edited_resource.is_valid() && edited_resource->has_method("get_name")) {
-				String nm = edited_resource->call("get_name");
-				if (!nm.is_empty()) {
-					name = nm;
-				}
-			}
-			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
-			assign_button->set_text(name);
-			assign_button->set_tooltip_text(TTR("Type:") + " " + class_name);
-		}
-	}
-}
-else if (edited_resource.is_valid()) {
-	assign_button->set_tooltip_text(resource_path + TTR("Type:") + " " + edited_resource->get_class());
-}
 
-assign_button->set_disabled(!editable && edited_resource.is_null());
-quick_load_button->set_visible(editable &&edited_resource.is_null());
+	}
+
+	else if (edited_resource.is_valid()) {
+		assign_button->set_tooltip_text(resource_path + TTR("Type:") + " " + edited_resource->get_class());
+	}
+
+	assign_button->set_disabled(!editable && edited_resource.is_null());
+	quick_load_button->set_visible(editable && edited_resource.is_null());
 }
 
 void EditorResourcePicker::_update_resource_preview(const String &p_path, const String &p_preview, const String &p_small_preview, ObjectID p_obj) {
@@ -166,7 +155,7 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 			return;
 		}
 
-		if (p_preview.is_valid()) {
+		if (!p_preview.is_empty()) {
 			int thumbnail_size = (int)EDITOR_GET("filesystem/file_dialog/thumbnail_size") * EDSCALE;
 			if (assign_button->get_button_icon().is_valid()) {
 				preview_rect->set_offset(SIDE_LEFT, assign_button->get_button_icon()->get_width() + assign_button->get_theme_stylebox(CoreStringName(normal))->get_content_margin(SIDE_LEFT) + get_theme_constant(SNAME("h_separation"), SNAME("Button")));
@@ -180,7 +169,7 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 				preview_rect->set_stretch_mode(TextureRect::STRETCH_KEEP_ASPECT_CENTERED);
 				assign_button->set_custom_minimum_size(assign_button_min_size.max(Size2(1, thumbnail_size)));
 			}
-			preview_rect->set_texture(p_preview);
+			preview_rect->set_texture(ResourceLoader::load(p_preview));
 			assign_button->set_text("");
 
 			if (preview_rect->get_size().x <= thumbnail_size) {

@@ -516,7 +516,7 @@ String ResourceLoader::get_real_load_path(const String &p_path) {
 	String local_path = _validate_local_path(p_path);
 
 	bool xl_remapped = false;
-	return _path_remap(load_task.local_path, &xl_remapped);
+	return _path_remap(local_path, &xl_remapped);
 }
 
 Error ResourceLoader::load_threaded_request(const String &p_path, const String &p_type_hint, bool p_use_sub_threads, ResourceFormatLoader::CacheMode p_cache_mode) {
