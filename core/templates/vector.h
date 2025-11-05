@@ -309,9 +309,15 @@ public:
 		return span().bisect(p_value, p_before, Comparator{ args... });
 	}
 
-	_FORCE_INLINE_ Vector<T> duplicate() {
+	_FORCE_INLINE_ Vector<T> duplicate() const {
 		return *this;
 	}
+
+#ifndef DISABLE_DEPRECATED
+	Vector<T> _duplicate_bind_compat_112290() {
+		return *this;
+	}
+#endif // DISABLE_DEPRECATED
 
 	void ordered_insert(const T &p_val) {
 		Size i;
@@ -366,7 +372,7 @@ public:
 
 		return result;
 	}
-	_FORCE_INLINE_ void swap(const Size& p_index, const Size& p_new_index) {
+	_FORCE_INLINE_ void swap(const Size &p_index, const Size &p_new_index) {
 		Size s = size();
 		if (p_index >= s || p_new_index >= s) {
 			return;
