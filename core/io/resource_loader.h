@@ -222,7 +222,9 @@ private:
 
 	static bool _ensure_load_progress();
 
+public:
 	static String _validate_local_path(const String &p_path);
+	static String get_real_load_path(const String &p_path);
 
 public:
 	static Error load_threaded_request(const String &p_path, const String &p_type_hint = "", bool p_use_sub_threads = false, ResourceFormatLoader::CacheMode p_cache_mode = ResourceFormatLoader::CACHE_MODE_REUSE);

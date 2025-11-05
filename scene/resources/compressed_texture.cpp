@@ -37,8 +37,6 @@ bool CompressedTexture2D::reference() {
 	return super_type::reference();
 }
 Error CompressedTexture2D::_load_data(const String &p_path, int &r_width, int &r_height, Ref<Image> &image, bool &r_request_3d, bool &r_request_normal, bool &r_request_roughness, int &mipmap_limit, int p_size_limit) {
-	alpha_cache.unref();
-
 	ERR_FAIL_COND_V(image.is_null(), ERR_INVALID_PARAMETER);
 
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::READ);
@@ -138,7 +136,7 @@ Error CompressedTexture2D::load(const String &p_path) {
 	bool request_normal;
 	bool request_roughness;
 	int mipmap_limit;
-
+	alpha_cache.unref();
 	Error err = _load_data(p_path, lw, lh, image, request_3d, request_normal, request_roughness, mipmap_limit);
 	if (err) {
 		return err;
