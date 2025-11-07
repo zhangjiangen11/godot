@@ -466,7 +466,7 @@ void ShaderTextEditor::_code_complete_script(const String &p_code, List<ScriptLa
 }
 
 void ShaderTextEditor::_validate_script() {
-	emit_signal(CoreStringName(script_changed)); // Ensure to notify that it changed, so it is applied
+	//emit_signal(CoreStringName(script_changed)); // Ensure to notify that it changed, so it is applied
 
 	String code;
 
