@@ -956,11 +956,12 @@ Ref<Resource> ResourceLoader::_load_complete_inner(LoadToken &p_load_token, Erro
 							MessageQueue::get_main_singleton()->push_callable(callable_mp(rcc.source, &Resource::connect_changed).bind(rcc.callable, rcc.flags));
 						}
 					}
-					if (!import_thread) { // Main thread is blocked by initial resource reimport, do not wait.
-						CoreBind::Semaphore done;
-						MessageQueue::get_main_singleton()->push_callable(callable_mp(&done, &CoreBind::Semaphore::post).bind(1));
-						done.wait();
-					}
+					// 大傻逼写的代码,真几把恶心
+					//if (!import_thread) { // Main thread is blocked by initial resource reimport, do not wait.
+					//	CoreBind::Semaphore done;
+					//	MessageQueue::get_main_singleton()->push_callable(callable_mp(&done, &CoreBind::Semaphore::post).bind(1));
+					//	done.wait();
+					//}
 				}
 			}
 		}

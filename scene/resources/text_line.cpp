@@ -33,7 +33,7 @@
 
 void TextLine::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("clear"), &TextLine::clear);
-	ClassDB::bind_method(D_METHOD("duplicate"), &TextLine::duplicate);
+	//ClassDB::bind_method(D_METHOD("duplicate"), &TextLine::duplicate);
 
 	ClassDB::bind_method(D_METHOD("set_direction", "direction"), &TextLine::set_direction);
 	ClassDB::bind_method(D_METHOD("get_direction"), &TextLine::get_direction);

@@ -159,6 +159,9 @@ static void getStackTrace(LocalVector<StackFrame> &stackTrace) {
 		}
 		{
 			stackTrace.push_back(StackFrame{ fileName, symbolName, lineNumber });
+			if (stackTrace.size() > 15) {
+				break;
+			}
 		}
 	}
 

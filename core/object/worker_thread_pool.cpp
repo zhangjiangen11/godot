@@ -974,11 +974,11 @@ void TaskJobHandle::wait_depend_completion() {
 	depend_mutex.unlock();
 }
 void TaskJobHandle::wait_completion() {
+	// 等待依赖全部完成
+	wait_depend_completion();
 	if (!is_init) {
 		return;
 	}
-	// 等待依赖全部完成
-	wait_depend_completion();
 	if (completed.is_set()) {
 		// 已经标记完成了
 		return;

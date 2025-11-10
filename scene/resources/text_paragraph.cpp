@@ -33,7 +33,7 @@
 
 void TextParagraph::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("clear"), &TextParagraph::clear);
-	ClassDB::bind_method(D_METHOD("duplicate"), &TextParagraph::duplicate);
+	//ClassDB::bind_method(D_METHOD("duplicate"), &TextParagraph::duplicate);
 
 	ClassDB::bind_method(D_METHOD("set_direction", "direction"), &TextParagraph::set_direction);
 	ClassDB::bind_method(D_METHOD("get_direction"), &TextParagraph::get_direction);
