@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  editor_performance_profiler.h                                         */
+/*  export_if_editor_plugin.cpp                                           */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,62 +28,37 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#pragma once
+#include "export_if_editor_plugin.h"
 
-#include "core/templates/hash_map.h"
-#include "main/performance.h"
-#include "scene/gui/control.h"
-#include "scene/gui/label.h"
-#include "scene/gui/split_container.h"
-#include "scene/gui/tree.h"
+#include "editor_properties.h"
 
-class EditorPerformanceProfiler : public HSplitContainer {
-	GDCLASS(EditorPerformanceProfiler, HSplitContainer);
+bool EditorInspectorExportIfPlugin::can_handle(Object *p_object) {
+	return true;
+}
 
-private:
-	class Monitor {
-	public:
-		String name;
-		String base;
-		List<float> history;
-		float max = 0.0f;
-		TreeItem *item = nullptr;
-		Performance::MonitorType type = Performance::MONITOR_TYPE_QUANTITY;
-		int frame_index = 0;
+bool EditorInspectorExportIfPlugin::parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide) {
+	if (p_hint != PROPERTY_HINT_CONDITION || !p_usage.has_flag(PROPERTY_USAGE_EDITOR)) {
+		return false;
+	}
 
-		Monitor() {}
-		Monitor(const String &p_name, const String &p_base, int p_frame_index, Performance::MonitorType p_type, TreeItem *p_item);
-		void reset();
-	};
+	const Variant value = p_object->get(p_hint_text);
+	ERR_FAIL_COND_V_MSG(value.get_type() == Variant::NIL, false, vformat(R"(Unable to obtain property "%s". Does it exist ? Is it null ?)", p_hint_text));
+	ERR_FAIL_COND_V_MSG(value.get_type() != Variant::BOOL, false, vformat(R"(The value of property "%s" in "@export_custom" is %s, but bool was expected.)", p_hint_text, Variant::get_type_name(value.get_type())));
 
-	HashMap<StringName, Monitor> monitors;
+	const bool condition = value;
 
-	HashMap<StringName, TreeItem *> base_map;
-	Tree *monitor_tree = nullptr;
-	Control *monitor_draw = nullptr;
-	Label *info_message = nullptr;
-	StringName marker_key;
-	int marker_frame = 0;
-	const int MARGIN = 4;
-	const int POINT_SEPARATION = 5;
-	const int MARKER_MARGIN = 2;
+	if (!condition) {
+		EditorProperty *editor = EditorInspectorDefaultPlugin::get_editor_for_property(p_object, p_type, p_path, p_hint, p_hint_text, p_usage, p_wide);
+		editor->hide();
+		add_custom_control(editor);
+		return true;
+	}
 
-	String _format_label(float p_value, Performance::MonitorType p_type) const;
-	void _update_monitor_value(Monitor *p_monitor, float p_value);
-	void _monitor_select();
-	void _monitor_draw();
-	void _build_monitor_tree();
-	TreeItem *_get_monitor_base(const StringName &p_base_name);
-	TreeItem *_create_monitor_item(const StringName &p_monitor_name, TreeItem *p_base);
-	void _marker_input(const Ref<InputEvent> &p_event);
+	return false;
+}
 
-protected:
-	void _notification(int p_what);
-
-public:
-	void reset();
-	void update_monitors(const Vector<StringName> &p_names, const PackedInt32Array &p_types);
-	void add_profile_frame(const Vector<float> &p_values);
-	List<float> *get_monitor_data(const StringName &p_name);
-	EditorPerformanceProfiler();
-};
+ExportIfEditorPlugin::ExportIfEditorPlugin() {
+	Ref<EditorInspectorExportIfPlugin> plugin;
+	plugin.instantiate();
+	add_inspector_plugin(plugin);
+}

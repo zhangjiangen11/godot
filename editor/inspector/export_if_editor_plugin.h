@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  editor_performance_profiler.h                                         */
+/*  export_if_editor_plugin.h                                             */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,60 +30,22 @@
 
 #pragma once
 
-#include "core/templates/hash_map.h"
-#include "main/performance.h"
-#include "scene/gui/control.h"
-#include "scene/gui/label.h"
-#include "scene/gui/split_container.h"
-#include "scene/gui/tree.h"
+#include "editor/plugins/editor_plugin.h"
+#include "editor_inspector.h"
 
-class EditorPerformanceProfiler : public HSplitContainer {
-	GDCLASS(EditorPerformanceProfiler, HSplitContainer);
-
-private:
-	class Monitor {
-	public:
-		String name;
-		String base;
-		List<float> history;
-		float max = 0.0f;
-		TreeItem *item = nullptr;
-		Performance::MonitorType type = Performance::MONITOR_TYPE_QUANTITY;
-		int frame_index = 0;
-
-		Monitor() {}
-		Monitor(const String &p_name, const String &p_base, int p_frame_index, Performance::MonitorType p_type, TreeItem *p_item);
-		void reset();
-	};
-
-	HashMap<StringName, Monitor> monitors;
-
-	HashMap<StringName, TreeItem *> base_map;
-	Tree *monitor_tree = nullptr;
-	Control *monitor_draw = nullptr;
-	Label *info_message = nullptr;
-	StringName marker_key;
-	int marker_frame = 0;
-	const int MARGIN = 4;
-	const int POINT_SEPARATION = 5;
-	const int MARKER_MARGIN = 2;
-
-	String _format_label(float p_value, Performance::MonitorType p_type) const;
-	void _update_monitor_value(Monitor *p_monitor, float p_value);
-	void _monitor_select();
-	void _monitor_draw();
-	void _build_monitor_tree();
-	TreeItem *_get_monitor_base(const StringName &p_base_name);
-	TreeItem *_create_monitor_item(const StringName &p_monitor_name, TreeItem *p_base);
-	void _marker_input(const Ref<InputEvent> &p_event);
-
-protected:
-	void _notification(int p_what);
+class EditorInspectorExportIfPlugin : public EditorInspectorPlugin {
+	GDCLASS(EditorInspectorExportIfPlugin, EditorInspectorPlugin);
 
 public:
-	void reset();
-	void update_monitors(const Vector<StringName> &p_names, const PackedInt32Array &p_types);
-	void add_profile_frame(const Vector<float> &p_values);
-	List<float> *get_monitor_data(const StringName &p_name);
-	EditorPerformanceProfiler();
+	virtual bool can_handle(Object *p_object) override;
+	virtual bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
+};
+
+class ExportIfEditorPlugin : public EditorPlugin {
+	GDCLASS(ExportIfEditorPlugin, EditorPlugin);
+
+public:
+	virtual String get_plugin_name() const override { return "ExportIfEditorPlugin"; }
+
+	ExportIfEditorPlugin();
 };
