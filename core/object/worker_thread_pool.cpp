@@ -1082,8 +1082,52 @@ void WorkerTaskPool::_thread_task_function(void *p_user) {
 		}
 	}
 }
+void WorkerTaskPool::_thread_scheduler_function(void *p_user) {
+	Ref<TaskJobHandle> hand;
+	while (true) {
+		singleton->scheduler_semaphore.wait();
+		if (singleton->exit_threads) {
+			break;
+		}
+		singleton->scheduler_mutex.lock();
+		bool rs = singleton->scheduler_task.pop(hand);
+		singleton->scheduler_mutex.unlock();
+		if (rs) {
+			hand->wait_depend_completion();
+			if (singleton->exit_threads) {
+				return;
+			}
+			for (int i = 0; i < hand->taskMax; i += hand->batch_count) {
+				ThreadTaskGroup *task = singleton->allocal_task_data();
+				task->handle = hand;
+				task->callable = hand->callable;
+				task->labada = hand->labada;
+				task->is_labada = hand->is_labada;
+				task->native_group_func = hand->native_group_func;
+				task->native_func_userdata = hand->native_func_userdata;
+				task->start = i;
+				task->end = i + hand->batch_count;
+				if (task->end > hand->taskMax) {
+					task->end = hand->taskMax;
+				}
+				task->is_labada = false;
+				// 增加一个任务
+				singleton->add_task(task);
+			}
+			if (singleton->exit_threads) {
+				break;
+			}
+			// 等待任务完成,保证任务顺序完成
+			hand->wait_completion();
+			if (singleton->exit_threads) {
+				break;
+			}
+			hand.unref();
+		}
+	}
+}
 
-class ThreadTaskGroup *WorkerTaskPool::allocal_task() {
+class ThreadTaskGroup *WorkerTaskPool::allocal_task_data() {
 	ThreadTaskGroup *ret = nullptr;
 	free_mutex.lock();
 	if (free_queue != nullptr) {
@@ -1096,7 +1140,7 @@ class ThreadTaskGroup *WorkerTaskPool::allocal_task() {
 	}
 	return ret;
 }
-void WorkerTaskPool::free_task(class ThreadTaskGroup *task) {
+void WorkerTaskPool::free_task_data(class ThreadTaskGroup *task) {
 	task->callable = Callable();
 	task->native_func_userdata = nullptr;
 	task->native_group_func = nullptr;
@@ -1137,7 +1181,7 @@ void WorkerTaskPool::_process_task_queue(int thread_id) {
 			push_task_stack(thread_id, task->handle->task_name, task->start, task->end, start_time / 1000.0, end_time / 1000.0);
 		}
 		// 放到释放列队里面
-		free_task(task);
+		free_task_data(task);
 
 	} else {
 		task_mutex.unlock();
@@ -1163,8 +1207,18 @@ Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_
 		_batch_count = 1;
 	}
 	hand->taskMax = p_elements;
+	hand->batch_count = _batch_count;
+	if (depend_task != nullptr) {
+		hand->native_func_userdata = p_userdata;
+		hand->native_group_func = p_func;
+		scheduler_mutex.lock();
+		scheduler_task.push(hand);
+		scheduler_mutex.unlock();
+		scheduler_semaphore.post();
+		return hand;
+	}
 	for (int i = 0; i < p_elements; i += _batch_count) {
-		ThreadTaskGroup *task = allocal_task();
+		ThreadTaskGroup *task = allocal_task_data();
 		task->handle = hand;
 		task->native_func_userdata = p_userdata;
 		task->native_group_func = p_func;
@@ -1199,8 +1253,17 @@ Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, c
 		_batch_count = 1;
 	}
 	hand->taskMax = p_elements;
+	hand->batch_count = _batch_count;
+	if (depend_task != nullptr) {
+		hand->callable = p_action;
+		scheduler_mutex.lock();
+		scheduler_task.push(hand);
+		scheduler_mutex.unlock();
+		scheduler_semaphore.post();
+		return hand;
+	}
 	for (int i = 0; i < p_elements; i += _batch_count) {
-		ThreadTaskGroup *task = allocal_task();
+		ThreadTaskGroup *task = allocal_task_data();
 		task->handle = hand;
 		task->callable = p_action;
 		task->start = i;
@@ -1234,16 +1297,26 @@ Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName &_task
 		_batch_count = 1;
 	}
 	hand->taskMax = p_elements;
+	hand->batch_count = _batch_count;
+	if (depend_task != nullptr) {
+		hand->labada = p_action;
+		hand->is_labada = true;
+		scheduler_mutex.lock();
+		scheduler_task.push(hand);
+		scheduler_mutex.unlock();
+		scheduler_semaphore.post();
+		return hand;
+	}
 	for (int i = 0; i < p_elements; i += _batch_count) {
-		ThreadTaskGroup *task = allocal_task();
+		ThreadTaskGroup *task = allocal_task_data();
 		task->handle = hand;
 		task->labada = p_action;
+		task->is_labada = true;
 		task->start = i;
 		task->end = i + _batch_count;
 		if (task->end > p_elements) {
 			task->end = p_elements;
 		}
-		task->is_labada = true;
 		// 增加一个任务
 		add_task(task);
 	}
@@ -1284,6 +1357,10 @@ void WorkerTaskPool::init() {
 		threads[i].thread.start(&WorkerTaskPool::_thread_task_function, &threads[i], settings);
 		threads[i].thread.set_thread_name(String("Worker Job Pool Thread:") + String::num_int64(i));
 	}
+	Thread::Settings settings;
+	settings.priority = Thread::PRIORITY_NORMAL;
+	thread_scheduler.start(&WorkerTaskPool::_thread_scheduler_function, this, settings);
+	thread_scheduler.set_thread_name(String("Worker Job Scheduler Thread"));
 }
 
 void WorkerTaskPool::push_task_stack(int thread_index, const StringName &task_name, uint32_t task_start, uint32_t task_end, double task_start_time, double task_end_time) {
@@ -1355,6 +1432,14 @@ void WorkerTaskPool::get_task_stack_data(LocalVector<ThreadRunStack> &stack) {
 void WorkerTaskPool::finish() {
 	exit_threads = true;
 
+	scheduler_semaphore.post();
+	scheduler_semaphore.post();
+	// 等待调度线程结束
+	if (thread_scheduler.is_started()) {
+		thread_scheduler.wait_to_finish();
+	}
+
+	// 结束所有任务线程结束
 	for (uint32_t i = 0; i < threads.size(); i++) {
 		task_available_semaphore.post();
 		task_available_semaphore.post();

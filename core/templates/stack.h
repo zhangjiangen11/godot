@@ -73,9 +73,9 @@ public:
 	}
 	Stack() {
 	}
-	Stack(const SafeStack &) = delete;
-	bool operator==((const Stack &) const = delete;
-	bool operator!=((const Stack &) const = delete;
+	Stack(const Stack &) = delete;
+	bool operator==(const Stack &) const = delete;
+	bool operator!=(const Stack &) const = delete;
 
 	~Stack() {
 		clear();

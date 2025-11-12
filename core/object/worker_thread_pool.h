@@ -41,6 +41,7 @@
 #include "core/templates/rid.h"
 #include "core/templates/safe_refcount.h"
 #include "core/templates/self_list.h"
+#include "core/templates/stack.h"
 #include <functional>
 
 class WorkerThreadPool : public Object {
@@ -339,6 +340,16 @@ protected:
 	};
 	TightLocalVector<ThreadData> threads;
 
+	// 调度器
+	// 主要处理需要顺序执行的多线程,需要用专门的线程保证执行顺序,
+	// 防止出现后续任务抢先执行,占满所有的资源出现,前序任务抢不到资源,出现死锁现象
+	Thread thread_scheduler;
+	// 调度器的信号
+	Semaphore scheduler_semaphore;
+	// 阻塞执行的人物列表
+	Stack<Ref<TaskJobHandle>> scheduler_task;
+	Mutex scheduler_mutex;
+
 	Mutex stack_mutex;
 	LocalVector<ThreadRunStack> task_run_stack_pool;
 	ThreadRunStack *first_stack = nullptr;
@@ -379,9 +390,10 @@ public:
 
 protected:
 	static void _thread_task_function(void *p_user);
+	static void _thread_scheduler_function(void *p_user);
 	void _process_task_queue(int thread_id);
-	class ThreadTaskGroup *allocal_task();
-	void free_task(class ThreadTaskGroup *task);
+	class ThreadTaskGroup *allocal_task_data();
+	void free_task_data(class ThreadTaskGroup *task);
 	void add_task(class ThreadTaskGroup *task);
 	friend class ThreadTaskGroup;
 
@@ -452,10 +464,19 @@ protected:
 	SafeFlag completed;
 	// 完成数量
 	SafeNumeric<uint32_t> completed_index;
+	// 批次数量
+	uint32_t batch_count = 0;
 	// 最大任务数量
 	uint32_t taskMax = 0;
 	bool is_init = false;
 	bool is_error = false;
 	bool is_job = false;
 	String error_string;
+
+private:
+	Callable callable;
+	std::function<void(int)> labada;
+	bool is_labada = false;
+	void (*native_group_func)(void *, uint32_t) = nullptr;
+	void *native_func_userdata = nullptr;
 };
