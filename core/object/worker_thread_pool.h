@@ -424,6 +424,9 @@ public:
 		ERR_FAIL_COND(is_init);
 		dependJob.push_back(depend_task);
 	}
+	uint32_t depend_count() {
+		return dependJob.size();
+	}
 	bool is_completed();
 	// 等待信号完成
 	void wait_completion();
