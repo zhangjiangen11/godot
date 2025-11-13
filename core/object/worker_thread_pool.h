@@ -314,6 +314,7 @@ class WorkerTaskPool : public Object {
 	static WorkerTaskPool *singleton;
 
 public:
+	typedef int64_t TaskID;
 	struct ThreadRunStack {
 		uint32_t thread_index;
 		StringName task_name;
@@ -339,6 +340,12 @@ protected:
 		Thread thread;
 	};
 	TightLocalVector<ThreadData> threads;
+	Mutex tick_mutex;
+	// 需要持久化的任务
+	Ref<TaskJobHandle> tick_task_combined;
+	HashMap<TaskID, Ref<TaskJobHandle>> tick_tasks;
+	//
+	float tick_time_seconds = 0.5f;
 
 	// 调度器
 	// 主要处理需要顺序执行的多线程,需要用专门的线程保证执行顺序,
