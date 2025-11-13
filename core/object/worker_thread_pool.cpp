@@ -1144,6 +1144,7 @@ void WorkerTaskPool::free_task_data(class ThreadTaskGroup *task) {
 	task->callable = Callable();
 	task->native_func_userdata = nullptr;
 	task->native_group_func = nullptr;
+	task->is_labada = false;
 
 	free_mutex.lock();
 	task->next = free_queue;
