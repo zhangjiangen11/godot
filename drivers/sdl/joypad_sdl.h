@@ -65,7 +65,6 @@ private:
 
 		int get_joy_num_touchpads() const override;
 
-
 		bool has_joy_accelerometer() const override;
 		bool has_joy_gyroscope() const override;
 
