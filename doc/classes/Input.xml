@@ -317,27 +317,12 @@
 				By default, the deadzone is automatically calculated from the average of the action deadzones. However, you can override the deadzone to be whatever you want (on the range of 0 to 1).
 			</description>
 		</method>
-		<method name="has_joy_accelerometer" qualifiers="const">
-			<return type="bool" />
-			<param index="0" name="device" type="int" />
-			<description>
-				Returns true if the joypad has an accelerometer sensor.
-				[b]Note:[/b] Joypad motion sensors reading is only supported on Windows, Linux and macOS.
-			</description>
-		</method>
-		<method name="has_joy_gyroscope" qualifiers="const">
-			<return type="bool" />
-			<param index="0" name="device" type="int" />
-			<description>
-				Returns true if the joypad has a gyroscope sensor.
-				[b]Note:[/b] Joypad motion sensors reading is only supported on Windows, Linux and macOS.
-			</description>
 		<method name="has_joy_light" qualifiers="const">
 			<return type="bool" />
 			<param index="0" name="device" type="int" />
 			<description>
-				Returns [code]true[/code] if the joypad has an LED light that can change colors and/or brightness, otherwise returns [code]false[/code].
-				[b]Note:[/b] This feature is only supported on Windows, Linux and macOS.
+				Returns [code]true[/code] if the joypad has an LED light that can change colors and/or brightness. See also [method set_joy_light].
+				[b]Note:[/b] This feature is only supported on Windows, Linux, and macOS.
 			</description>
 		</method>
 		<method name="is_action_just_pressed" qualifiers="const">
@@ -676,43 +661,14 @@
 				[b]Note:[/b] This value can be immediately overwritten by the hardware sensor value on Android and iOS.
 			</description>
 		</method>
-		<method name="set_joy_accelerometer_enabled">
-			<return type="bool" />
-			<param index="0" name="device" type="int" />
-			<param index="1" name="enable" type="bool" />
-			<description>
-				Enables or disables the accelerometer sensor, if available, on the specified joypad. If the operation was successful, returns [code]true[/code], otherwise returns [code]false[/code].
-				See [method start_joy_motion_calibration] for an example on how to use joypad motion sensors and calibration in your games.
-				[b]Note:[/b] Joypad motion sensors reading is only supported on Windows, Linux and macOS.
-			</description>
-		</method>
-		<method name="set_joy_gyroscope_enabled">
-			<return type="bool" />
-			<param index="0" name="device" type="int" />
-			<param index="1" name="enable" type="bool" />
-			<description>
-				Enables or disables the gyroscope sensor, if available, on the specified joypad. If the operation was successful, returns [code]true[/code], otherwise returns [code]false[/code].
-				See [method start_joy_motion_calibration] for an example on how to use joypad motion sensors and calibration in your games.
-				[b]Note:[/b] Joypad motion sensors reading is only supported on Windows, Linux and macOS.
-			</description>
-		</method>
-		<method name="set_joy_motion_calibration">
-			<return type="void" />
-			<param index="0" name="device" type="int" />
-			<param index="1" name="calibration_info" type="Dictionary" />
-			<description>
-				Sets the specified joypad's calibration information. See also [method get_joy_motion_calibration].
-				See [method start_joy_motion_calibration] for an example on how to use joypad motion sensors and calibration in your games.
-				[b]Note:[/b] Joypad motion sensors reading is only supported on Windows, Linux and macOS.
-			</description>
 		<method name="set_joy_light">
 			<return type="bool" />
 			<param index="0" name="device" type="int" />
 			<param index="1" name="color" type="Color" />
 			<description>
-				Sets the joypad's LED light, if available, to the specified color. If the operation was successful, returns [code]true[/code], otherwise returns [code]false[/code].
-				[b]Note:[/b] There is no way to get the color of the light from a joypad. If you need to use the color for something else, store it in a separate variable.
-				[b]Note:[/b] This feature is only supported on Windows, Linux and macOS.
+				Sets the joypad's LED light, if available, to the specified color. Returns [code]true[/code] if the operation was successful. See also [method has_joy_light].
+				[b]Note:[/b] There is no way to get the color of the light from a joypad. If you need to know the assigned color, store it separately.
+				[b]Note:[/b] This feature is only supported on Windows, Linux, and macOS.
 			</description>
 		</method>
 		<method name="set_magnetometer">
