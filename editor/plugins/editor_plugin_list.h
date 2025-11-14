@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  editor_script.cpp                                                     */
+/*  editor_plugin_list.h                                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,49 +28,24 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "editor_script.h"
+#pragma once
 
-#include "editor/editor_interface.h"
-#include "editor/editor_node.h"
-#include "editor/editor_undo_redo_manager.h"
-#include "editor/scene/editor_scene_tabs.h"
-#include "scene/main/node.h"
-#include "scene/resources/packed_scene.h"
+#include "editor/plugins/editor_plugin.h"
 
-#ifndef DISABLE_DEPRECATED
-void EditorScript::add_root_node(Node *p_node) {
-	WARN_DEPRECATED_MSG("EditorScript::add_root_node is deprecated. Use EditorInterface::add_root_node instead.");
-	EditorInterface::get_singleton()->add_root_node(p_node);
-}
+class Control;
+class InputEvent;
 
-Node *EditorScript::get_scene() const {
-	WARN_DEPRECATED_MSG("EditorScript::get_scene is deprecated. Use EditorInterface::get_edited_scene_root instead.");
-	if (!EditorNode::get_singleton()) {
-		EditorNode::add_io_error("EditorScript::get_scene: " + TTR("Write your logic in the _run() method."));
-		return nullptr;
-	}
+class EditorPluginList {
+	LocalVector<EditorPlugin *> plugins_list;
 
-	return EditorNode::get_singleton()->get_edited_scene();
-}
+public:
+	bool forward_gui_input(const Ref<InputEvent> &p_event) const;
+	void forward_canvas_draw_over_viewport(Control *p_overlay) const;
+	void forward_canvas_force_draw_over_viewport(Control *p_overlay) const;
+	EditorPlugin::AfterGUIInput forward_3d_gui_input(Camera3D *p_camera, const Ref<InputEvent> &p_event, bool p_serve_when_force_input_enabled) const;
+	void forward_3d_draw_over_viewport(Control *p_overlay) const;
+	void forward_3d_force_draw_over_viewport(Control *p_overlay) const;
 
-EditorInterface *EditorScript::get_editor_interface() const {
-	WARN_DEPRECATED_MSG("EditorInterface is a global singleton and can be accessed directly by its name.");
-	return EditorInterface::get_singleton();
-}
-#endif // DISABLE_DEPRECATED
-
-void EditorScript::run() {
-	GDVIRTUAL_CALL(_run);
-}
-
-void EditorScript::_bind_methods() {
-#ifndef DISABLE_DEPRECATED
-	ClassDB::bind_method(D_METHOD("add_root_node", "node"), &EditorScript::add_root_node);
-
-	ClassDB::bind_method(D_METHOD("get_scene"), &EditorScript::get_scene);
-
-	ClassDB::bind_method(D_METHOD("get_editor_interface"), &EditorScript::get_editor_interface);
-#endif // DISABLE_DEPRECATED
-
-	GDVIRTUAL_BIND(_run);
-}
+	void add_plugin(EditorPlugin *p_plugin);
+	void remove_plugin(EditorPlugin *p_plugin);
+};

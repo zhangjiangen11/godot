@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  editor_script.cpp                                                     */
+/*  editor_plugin_list.cpp                                                */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,49 +28,69 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#include "editor_script.h"
+#include "editor_plugin_list.h"
 
-#include "editor/editor_interface.h"
-#include "editor/editor_node.h"
-#include "editor/editor_undo_redo_manager.h"
-#include "editor/scene/editor_scene_tabs.h"
-#include "scene/main/node.h"
-#include "scene/resources/packed_scene.h"
+bool EditorPluginList::forward_gui_input(const Ref<InputEvent> &p_event) const {
+	bool discard = false;
 
-#ifndef DISABLE_DEPRECATED
-void EditorScript::add_root_node(Node *p_node) {
-	WARN_DEPRECATED_MSG("EditorScript::add_root_node is deprecated. Use EditorInterface::add_root_node instead.");
-	EditorInterface::get_singleton()->add_root_node(p_node);
-}
-
-Node *EditorScript::get_scene() const {
-	WARN_DEPRECATED_MSG("EditorScript::get_scene is deprecated. Use EditorInterface::get_edited_scene_root instead.");
-	if (!EditorNode::get_singleton()) {
-		EditorNode::add_io_error("EditorScript::get_scene: " + TTR("Write your logic in the _run() method."));
-		return nullptr;
+	for (EditorPlugin *plugin : plugins_list) {
+		if (plugin->forward_canvas_gui_input(p_event)) {
+			discard = true;
+		}
 	}
 
-	return EditorNode::get_singleton()->get_edited_scene();
+	return discard;
 }
 
-EditorInterface *EditorScript::get_editor_interface() const {
-	WARN_DEPRECATED_MSG("EditorInterface is a global singleton and can be accessed directly by its name.");
-	return EditorInterface::get_singleton();
+EditorPlugin::AfterGUIInput EditorPluginList::forward_3d_gui_input(Camera3D *p_camera, const Ref<InputEvent> &p_event, bool p_serve_when_force_input_enabled) const {
+	EditorPlugin::AfterGUIInput after = EditorPlugin::AFTER_GUI_INPUT_PASS;
+
+	for (EditorPlugin *plugin : plugins_list) {
+		if (!p_serve_when_force_input_enabled && plugin->is_input_event_forwarding_always_enabled()) {
+			continue;
+		}
+
+		EditorPlugin::AfterGUIInput current_after = plugin->forward_3d_gui_input(p_camera, p_event);
+		if (current_after == EditorPlugin::AFTER_GUI_INPUT_STOP) {
+			after = EditorPlugin::AFTER_GUI_INPUT_STOP;
+		}
+		if (after != EditorPlugin::AFTER_GUI_INPUT_STOP && current_after == EditorPlugin::AFTER_GUI_INPUT_CUSTOM) {
+			after = EditorPlugin::AFTER_GUI_INPUT_CUSTOM;
+		}
+	}
+
+	return after;
 }
-#endif // DISABLE_DEPRECATED
 
-void EditorScript::run() {
-	GDVIRTUAL_CALL(_run);
+void EditorPluginList::forward_canvas_draw_over_viewport(Control *p_overlay) const {
+	for (EditorPlugin *plugin : plugins_list) {
+		plugin->forward_canvas_draw_over_viewport(p_overlay);
+	}
 }
 
-void EditorScript::_bind_methods() {
-#ifndef DISABLE_DEPRECATED
-	ClassDB::bind_method(D_METHOD("add_root_node", "node"), &EditorScript::add_root_node);
+void EditorPluginList::forward_canvas_force_draw_over_viewport(Control *p_overlay) const {
+	for (EditorPlugin *plugin : plugins_list) {
+		plugin->forward_canvas_force_draw_over_viewport(p_overlay);
+	}
+}
 
-	ClassDB::bind_method(D_METHOD("get_scene"), &EditorScript::get_scene);
+void EditorPluginList::forward_3d_draw_over_viewport(Control *p_overlay) const {
+	for (EditorPlugin *plugin : plugins_list) {
+		plugin->forward_3d_draw_over_viewport(p_overlay);
+	}
+}
 
-	ClassDB::bind_method(D_METHOD("get_editor_interface"), &EditorScript::get_editor_interface);
-#endif // DISABLE_DEPRECATED
+void EditorPluginList::forward_3d_force_draw_over_viewport(Control *p_overlay) const {
+	for (EditorPlugin *plugin : plugins_list) {
+		plugin->forward_3d_force_draw_over_viewport(p_overlay);
+	}
+}
 
-	GDVIRTUAL_BIND(_run);
+void EditorPluginList::add_plugin(EditorPlugin *p_plugin) {
+	ERR_FAIL_COND(plugins_list.has(p_plugin));
+	plugins_list.push_back(p_plugin);
+}
+
+void EditorPluginList::remove_plugin(EditorPlugin *p_plugin) {
+	plugins_list.erase(p_plugin);
 }

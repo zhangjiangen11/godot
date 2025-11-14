@@ -84,6 +84,12 @@ class ScrollBar : public Range {
 	double target_scroll = 0.0;
 	bool smooth_scroll_enabled = false;
 
+	void _drag_node_exit();
+	void _drag_node_input(const Ref<InputEvent> &p_input);
+
+	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+
+protected:
 	struct ThemeCache {
 		Ref<StyleBox> scroll_style;
 		Ref<StyleBox> scroll_focus_style;
@@ -98,6 +104,11 @@ class ScrollBar : public Range {
 		Ref<Texture2D> decrement_icon;
 		Ref<Texture2D> decrement_hl_icon;
 		Ref<Texture2D> decrement_pressed_icon;
+
+		int padding_left = 0;
+		int padding_top = 0;
+		int padding_right = 0;
+		int padding_bottom = 0;
 	} theme_cache;
 
 	struct UserData {
@@ -151,37 +162,37 @@ public:
 	}
 	Ref<Texture2D> get_background() const { return user_data.background; }
 
-	void set_background_focus(const Ref<Texture2D> &p_background_focus){
+	void set_background_focus(const Ref<Texture2D> &p_background_focus) {
 		user_data.background_focus = p_background_focus;
 	}
 	Ref<Texture2D> get_background_focus() const { return user_data.background_focus; }
 
-	void set_increment(const Ref<Texture2D> &p_increment){
+	void set_increment(const Ref<Texture2D> &p_increment) {
 		user_data.increment = p_increment;
 	}
 	Ref<Texture2D> get_increment() const { return user_data.increment; }
 
-	void set_increment_hl(const Ref<Texture2D> &p_increment_hl){
+	void set_increment_hl(const Ref<Texture2D> &p_increment_hl) {
 		user_data.increment_hl = p_increment_hl;
 	}
 	Ref<Texture2D> get_increment_hl() const { return user_data.increment_hl; }
 
-	void set_increment_pressed(const Ref<Texture2D> &p_increment_pressed){
+	void set_increment_pressed(const Ref<Texture2D> &p_increment_pressed) {
 		user_data.increment_pressed = p_increment_pressed;
 	}
 	Ref<Texture2D> get_increment_pressed() const { return user_data.increment_pressed; }
 
-	void set_decrement(const Ref<Texture2D> &p_decrement){
+	void set_decrement(const Ref<Texture2D> &p_decrement) {
 		user_data.decrement = p_decrement;
 	}
 	Ref<Texture2D> get_decrement() const { return user_data.decrement; }
 
-	void set_decrement_hl(const Ref<Texture2D> &p_decrement_hl){
+	void set_decrement_hl(const Ref<Texture2D> &p_decrement_hl) {
 		user_data.decrement_hl = p_decrement_hl;
 	}
 	Ref<Texture2D> get_decrement_hl() const { return user_data.decrement_hl; }
 
-	void set_decrement_pressed(const Ref<Texture2D> &p_decrement_pressed){
+	void set_decrement_pressed(const Ref<Texture2D> &p_decrement_pressed) {
 		user_data.decrement_pressed = p_decrement_pressed;
 	}
 	Ref<Texture2D> get_decrement_pressed() const { return user_data.decrement_pressed; }
@@ -191,12 +202,12 @@ public:
 	}
 	Ref<Texture2D> get_grabber() const { return user_data.grabber; }
 
-	void set_grabber_hl(const Ref<Texture2D> &p_grabber_hl){
+	void set_grabber_hl(const Ref<Texture2D> &p_grabber_hl) {
 		user_data.grabber_hl = p_grabber_hl;
 	}
 	Ref<Texture2D> get_grabber_hl() const { return user_data.grabber_hl; }
 
-	void set_grabber_pressed(const Ref<Texture2D> &p_grabber_pressed){
+	void set_grabber_pressed(const Ref<Texture2D> &p_grabber_pressed) {
 		user_data.grabber_pressed = p_grabber_pressed;
 	}
 	Ref<Texture2D> get_grabber_pressed() const { return user_data.grabber_pressed; }
@@ -209,6 +220,9 @@ public:
 class HScrollBar : public ScrollBar {
 	GDCLASS(HScrollBar, ScrollBar);
 
+protected:
+	static void _bind_methods();
+
 public:
 	HScrollBar() :
 			ScrollBar(HORIZONTAL) { set_v_size_flags(0); }
@@ -216,6 +230,9 @@ public:
 
 class VScrollBar : public ScrollBar {
 	GDCLASS(VScrollBar, ScrollBar);
+
+protected:
+	static void _bind_methods();
 
 public:
 	VScrollBar() :
