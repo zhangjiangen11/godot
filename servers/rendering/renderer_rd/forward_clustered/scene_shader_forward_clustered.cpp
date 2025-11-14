@@ -750,6 +750,7 @@ void SceneShaderForwardClustered::init(const String p_defines) {
 		actions.renames["BACKLIGHT"] = "backlight";
 		actions.renames["AO"] = "ao";
 		actions.renames["SPECULAR_SCALE"] = "specular_scale";
+		actions.renames["VERTEX_NORMAL"] = "vertex_normal";
 		actions.renames["AO_LIGHT_AFFECT"] = "ao_light_affect";
 		actions.renames["MICRO_SHADOWS"] = "micro_shadows";
 		actions.renames["EMISSION"] = "emission";

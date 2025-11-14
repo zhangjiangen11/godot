@@ -686,6 +686,7 @@ void SceneShaderForwardMobile::init(const String p_defines) {
 		actions.renames["AO"] = "ao_highp";
 		// 高光缩放，用来处理远处或者植被和皮肤的高光
 		actions.renames["SPECULAR_SCALE"] = "specular_scale";
+		actions.renames["VERTEX_NORMAL"] = "vertex_normal";
 		actions.renames["AO_LIGHT_AFFECT"] = "ao_light_affect_highp";
 		actions.renames["MICRO_SHADOWS"] = "micro_shadows_highp";
 		actions.renames["EMISSION"] = "emission_highp";

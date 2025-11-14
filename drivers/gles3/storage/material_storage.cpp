@@ -1309,7 +1309,9 @@ MaterialStorage::MaterialStorage() {
 		actions.renames["SSS_TRANSMITTANCE_BOOST"] = "transmittance_boost";
 		actions.renames["BACKLIGHT"] = "backlight";
 		actions.renames["AO"] = "ao";
+		actions.renames["SPECULAR_SCALE"] = "specular_scale";
 		actions.renames["AO_LIGHT_AFFECT"] = "ao_light_affect";
+		actions.renames["VERTEX_NORMAL"] = "vertex_normal";
 		actions.renames["MICRO_SHADOWS"] = "micro_shadows";
 		actions.renames["EMISSION"] = "emission";
 		actions.renames["POINT_COORD"] = "gl_PointCoord";
