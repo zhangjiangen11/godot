@@ -84,11 +84,6 @@ class ScrollBar : public Range {
 	double target_scroll = 0.0;
 	bool smooth_scroll_enabled = false;
 
-	void _drag_node_exit();
-	void _drag_node_input(const Ref<InputEvent> &p_input);
-
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-
 protected:
 	struct ThemeCache {
 		Ref<StyleBox> scroll_style;

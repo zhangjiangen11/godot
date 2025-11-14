@@ -75,9 +75,6 @@ private:
 		bool has_joy_light() const override;
 		bool set_joy_light(Color p_color) override;
 
-		virtual bool has_joy_light() const override;
-		virtual bool set_joy_light(const Color &p_color) override;
-
 		SDL_Joystick *get_sdl_joystick() const;
 		SDL_Gamepad *get_sdl_gamepad() const;
 	};
