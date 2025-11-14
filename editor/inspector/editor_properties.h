@@ -35,6 +35,7 @@
 
 class CheckBox;
 class ColorPickerButton;
+class ConfirmationDialog;
 class CreateDialog;
 class EditorFileDialog;
 class EditorLocaleDialog;
@@ -42,7 +43,6 @@ class EditorResourcePicker;
 class EditorSpinSlider;
 class EditorVariantTypePopupMenu;
 class MenuButton;
-class PropertySelector;
 class SceneTreeDialog;
 class TextEdit;
 class TextureButton;

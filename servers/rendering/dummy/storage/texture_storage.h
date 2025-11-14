@@ -36,7 +36,7 @@ namespace RendererDummy {
 
 class TextureStorage : public RendererTextureStorage {
 private:
-	static TextureStorage *singleton;
+	static inline TextureStorage *singleton = nullptr;
 
 	struct DummyTexture {
 		Ref<Image> image;
@@ -46,8 +46,8 @@ private:
 public:
 	static TextureStorage *get_singleton() { return singleton; }
 
-	TextureStorage();
-	~TextureStorage();
+	TextureStorage() { singleton = this; }
+	~TextureStorage() { singleton = nullptr; }
 
 	virtual RID texture_rd_get_default(uint32_t p_default_type) override { return RID(); }
 	/* Canvas Texture API */
