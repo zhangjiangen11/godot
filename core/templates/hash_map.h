@@ -71,6 +71,7 @@ public:
 	static constexpr uint32_t MIN_CAPACITY_INDEX = 2; // Use a prime.
 	static constexpr float MAX_OCCUPANCY = 0.75;
 	static constexpr uint32_t EMPTY_HASH = 0;
+	using KV = KeyValue<TKey, TValue>; // Type alias for easier access to KeyValue.
 
 private:
 	HashMapElement<TKey, TValue> **_elements = nullptr;
@@ -616,6 +617,22 @@ public:
 		}
 	}
 
+	HashMap(HashMap &&p_other) {
+		_elements = p_other._elements;
+		_hashes = p_other._hashes;
+		_head_element = p_other._head_element;
+		_tail_element = p_other._tail_element;
+		_capacity_idx = p_other._capacity_idx;
+		_size = p_other._size;
+
+		p_other._elements = nullptr;
+		p_other._hashes = nullptr;
+		p_other._head_element = nullptr;
+		p_other._tail_element = nullptr;
+		p_other._capacity_idx = MIN_CAPACITY_INDEX;
+		p_other._size = 0;
+	}
+
 	void operator=(const HashMap &p_other) {
 		if (this == &p_other) {
 			return; // Ignore self assignment.
@@ -635,7 +652,37 @@ public:
 		}
 	}
 
-	_FORCE_INLINE_ HashMap(uint32_t p_initial_capacity) {
+	HashMap &operator=(HashMap &&p_other) {
+		if (this == &p_other) {
+			return *this;
+		}
+
+		if (_size != 0) {
+			clear();
+		}
+		if (_elements != nullptr) {
+			Memory::free_static(_elements);
+			Memory::free_static(_hashes);
+		}
+
+		_elements = p_other._elements;
+		_hashes = p_other._hashes;
+		_head_element = p_other._head_element;
+		_tail_element = p_other._tail_element;
+		_capacity_idx = p_other._capacity_idx;
+		_size = p_other._size;
+
+		p_other._elements = nullptr;
+		p_other._hashes = nullptr;
+		p_other._head_element = nullptr;
+		p_other._tail_element = nullptr;
+		p_other._capacity_idx = MIN_CAPACITY_INDEX;
+		p_other._size = 0;
+
+		return *this;
+	}
+
+	HashMap(uint32_t p_initial_capacity) {
 		// Capacity can't be 0.
 		_capacity_idx = 0;
 		reserve(p_initial_capacity);
