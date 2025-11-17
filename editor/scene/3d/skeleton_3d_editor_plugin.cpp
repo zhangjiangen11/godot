@@ -449,6 +449,7 @@ void Skeleton3DEditor::insert_keys(const bool p_all_bones) {
 		te->popup_read_only_dialog();
 		return;
 	}
+	Skeleton3D* skeleton = get_skeleton();
 	if (!skeleton) {
 		return;
 	}
