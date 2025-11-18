@@ -53,7 +53,6 @@ public:
 
 	virtual Ref<RefCounted> duplicate(bool p_subresources = false) const;
 	RefCounted();
-	~RefCounted() {}
 };
 
 template <typename T>
@@ -239,8 +238,6 @@ public:
 	Variant get_ref() const;
 	void set_obj(Object *p_object);
 	void set_ref(const Ref<RefCounted> &p_ref);
-
-	WeakRef() {}
 };
 
 template <typename T>

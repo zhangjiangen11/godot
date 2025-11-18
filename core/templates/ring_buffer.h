@@ -128,13 +128,13 @@ public:
 		return -1;
 	}
 
-	_FORCE_INLINE_  int advance_read(int p_n) {
+	_FORCE_INLINE_ int advance_read(int p_n) {
 		p_n = MIN(p_n, data_left());
 		inc(read_pos, p_n);
 		return p_n;
 	}
 
-	_FORCE_INLINE_  int decrease_write(int p_n) {
+	_FORCE_INLINE_ int decrease_write(int p_n) {
 		p_n = MIN(p_n, data_left());
 		inc(write_pos, size_mask + 1 - p_n);
 		return p_n;
@@ -169,7 +169,7 @@ public:
 		return p_size;
 	}
 
-	_FORCE_INLINE_  int space_left() const {
+	_FORCE_INLINE_ int space_left() const {
 		int left = read_pos - write_pos;
 		if (left < 0) {
 			return size() + left - 1;
@@ -179,15 +179,15 @@ public:
 		}
 		return left - 1;
 	}
-	_FORCE_INLINE_  int data_left() const {
+	_FORCE_INLINE_ int data_left() const {
 		return size() - space_left() - 1;
 	}
 
-	_FORCE_INLINE_  int size() const {
+	_FORCE_INLINE_ int size() const {
 		return data.size();
 	}
 
-	_FORCE_INLINE_  void clear() {
+	_FORCE_INLINE_ void clear() {
 		read_pos = 0;
 		write_pos = 0;
 	}
@@ -213,5 +213,4 @@ public:
 	_FORCE_INLINE_ RingBuffer(int p_power = 0) {
 		resize(p_power);
 	}
-	_FORCE_INLINE_ ~RingBuffer() {}
 };

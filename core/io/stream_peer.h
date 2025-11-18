@@ -97,8 +97,6 @@ public:
 	String get_string(int p_bytes = -1);
 	String get_utf8_string(int p_bytes = -1);
 	Variant get_var(bool p_allow_objects = false);
-
-	StreamPeer() {}
 };
 
 class StreamPeerExtension : public StreamPeer {
@@ -152,8 +150,6 @@ public:
 	void clear();
 
 	Ref<RefCounted> duplicate(bool p_subresources = false) const override;
-
-	StreamPeerBuffer() {}
 };
 
 class StreamPeerConstBuffer : public StreamPeer {
