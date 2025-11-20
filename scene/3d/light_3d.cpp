@@ -600,9 +600,9 @@ void DirectionalLight3D::_bind_methods() {
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_2", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_param", "get_param", PARAM_SHADOW_SPLIT_2_OFFSET);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_3", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_param", "get_param", PARAM_SHADOW_SPLIT_3_OFFSET);
 
-	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_distance_1"), "set_param", "get_param", PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET);
-	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_distance_2"), "set_param", "get_param", PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET);
-	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_distance_3"), "set_param", "get_param", PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET);
+	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_distance_1", PROPERTY_HINT_RANGE, "0,8192,0.1,or_greater,exp", PROPERTY_USAGE_EDITOR), "set_param", "get_param", PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET);
+	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_distance_2", PROPERTY_HINT_RANGE, "0,8192,0.1,or_greater,exp", PROPERTY_USAGE_EDITOR), "set_param", "get_param", PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET);
+	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_split_distance_3", PROPERTY_HINT_RANGE, "0,8192,0.1,or_greater,exp", PROPERTY_USAGE_EDITOR), "set_param", "get_param", PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "directional_shadow_blend_splits"), "set_blend_splits", "is_blend_splits_enabled");
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_fade_start", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_param", "get_param", PARAM_SHADOW_FADE_START);
 	ADD_PROPERTYI(PropertyInfo(Variant::FLOAT, "directional_shadow_max_distance", PROPERTY_HINT_RANGE, "0,8192,0.1,or_greater,exp"), "set_param", "get_param", PARAM_SHADOW_MAX_DISTANCE);
