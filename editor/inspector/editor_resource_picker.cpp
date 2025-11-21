@@ -91,7 +91,7 @@ void EditorResourcePicker::_update_resource() {
 		preview_rect->set_texture(Ref<Texture2D>());
 
 		assign_button->set_custom_minimum_size(assign_button_min_size);
-		if (edited_resource == Ref<Resource>()) {
+		if (edited_resource == Ref<RefCounted>()) {
 			assign_button->set_button_icon(Ref<Texture2D>());
 			assign_button->set_text(String("(") + base_type + "):" + TTR("<empty>"));
 			assign_button->set_tooltip_text("");
@@ -130,9 +130,24 @@ void EditorResourcePicker::_update_resource() {
 			}
 
 			make_unique_button->set_tooltip_text(tooltip);
-			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
+			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(resource.operator->()));
+
+			if (!resource->get_name().is_empty()) {
+				assign_button->set_text(resource->get_name());
+			} else if (resource->get_path().is_resource_file()) {
+				assign_button->set_text(resource->get_path().get_file());
+			} else {
+				assign_button->set_text(class_name);
+			}
+
+			if (resource->get_path().is_resource_file()) {
+				resource_path = resource->get_path() + "\n";
+			}
+			assign_button->set_tooltip_text(resource_path + TTR("Type:") + " " + class_name);
+
+			// Preview will override the above, so called at the end.
+			EditorResourcePreview::get_singleton()->queue_edited_resource_preview(resource, callable_mp(this, &EditorResourcePicker::_update_resource_preview).bind(resource->get_instance_id()));
 		} else {
-			Ref<Resource> parent_res = _has_parent_resource();
 			make_unique_button->set_button_icon(get_editor_theme_icon(SNAME("Instance")));
 			make_unique_button->set_visible(false);
 			make_unique_button->set_disabled(true);
@@ -148,6 +163,11 @@ void EditorResourcePicker::_update_resource() {
 
 			make_unique_button->set_tooltip_text(tooltip);
 			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
+			if (edited_resource->has_method("get_name")) {
+				assign_button->set_text(edited_resource->call("get_name"));
+			} else {
+				assign_button->set_text(edited_resource->get_class());
+			}
 		}
 
 	}
@@ -169,6 +189,7 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 		Ref<Script> scr = edited_resource;
 		if (scr.is_valid()) {
 			assign_button->set_text(scr->get_path().get_file());
+			assign_button->set_tooltip_text(scr->get_path());
 			return;
 		}
 
