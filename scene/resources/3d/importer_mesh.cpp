@@ -312,11 +312,12 @@ void ImporterMesh::generate_normals(bool p_flip) {
 		Vector<Vector3> vertices = surfaces[i].arrays[RS::ARRAY_VERTEX];
 		Vector<Vector3> normals;
 		normals.resize(vertices.size());
+		Vector3* normals_ptr = normals.ptrw();
 		PackedInt32Array indices = surfaces[i].arrays[RS::ARRAY_INDEX];
-		for (int j = 0; j < vertices.size(); j += 3) {
-			normals.write[j] = Vector3(0, 0, 0);
+		for (int64_t j = 0; j < vertices.size(); j += 3) {
+			normals_ptr[j] = Vector3(0, 0, 0);
 		}
-		for (int j = 0; j < indices.size(); j += 3) {
+		for (int64_t j = 0; j < indices.size(); j += 3) {
 			Vector3 normal;
 			int32_t index = indices[j];
 			int32_t index2 = indices[j + 1];
@@ -326,19 +327,69 @@ void ImporterMesh::generate_normals(bool p_flip) {
 			} else {
 				normal = Plane(vertices[index3], vertices[index2], vertices[index]).normal;
 			}
-			normals.write[index] += normal;
-			normals.write[index2] += normal;
-			normals.write[index3] += normal;
+			normals_ptr[index] += normal;
+			normals_ptr[index2] += normal;
+			normals_ptr[index3] += normal;
 		}
 		for (int j = 0; j < normals.size(); j++) {
 			if (normals[j].length() == 0) {
-				normals.write[j] = Vector3(0, 1, 0);
+				normals_ptr[j] = Vector3(0, 1, 0);
 			} else {
-				normals.write[j] = normals[j].normalized();
+				normals_ptr[j] = normals[j].normalized();
 			}
 		}
 		surfaces.write[i].arrays[RS::ARRAY_NORMAL] = normals;
 	}
+}void ImporterMesh::get_edage_terrain_vertex_normal(HashMap<Vector2, Vector3>& normal_img, HashMap<Vector2, int64_t>& normal_index, float xz_scale) {
+	for (int s = 0; s < surfaces.size(); s++) {
+		if (surfaces[s].primitive != Mesh::PRIMITIVE_TRIANGLES) {
+			continue;
+		}
+		Vector<Vector3> vertex = surfaces[s].arrays[Mesh::ARRAY_VERTEX];
+		Vector<Vector3> normals = surfaces[s].arrays[Mesh::ARRAY_NORMAL];
+		if (normals.size() != vertex.size()) {
+			continue;
+		}
+
+		const Vector3* vertex_ptr = vertex.ptr();
+		const Vector3* normals_ptr = normals.ptr();
+		real_t x_index, z_index;
+		for (int64_t i = 0; i < vertex.size(); ++i) {
+			bool in_correct = false;
+			x_index = vertex_ptr[i].x / xz_scale;
+			z_index = vertex_ptr[i].z / xz_scale;
+			int x_pos = int(x_index + 0.01);
+			int z_pos = int(z_index + 0.01);
+			if (vertex_ptr[i].x == 0 || vertex_ptr[i].z == 0) {
+				in_correct = true;
+			}
+			else if (x_pos == 512 || z_pos == 512) {
+				in_correct = true;
+			}
+			if (in_correct) {
+				normal_img[Vector2(x_pos, z_pos)] = normals_ptr[i];
+				normal_index[Vector2(x_pos, z_pos)] = i;
+			}
+		}
+	}
+
+}
+void ImporterMesh::correct_terrain_vertex_normal(const HashMap<Vector2, Vector3>& normal_img, const HashMap<Vector2, int64_t>& normal_index) {
+	for (int i = 0; i < surfaces.size(); i++) {
+		if (surfaces[i].primitive != Mesh::PRIMITIVE_TRIANGLES) {
+			continue;
+		}
+		Vector<Vector3> normals = surfaces[i].arrays[Mesh::ARRAY_NORMAL];
+		Vector3* normals_ptr = normals.ptrw();
+		for (auto& it : normal_index) {
+			if (!normal_img.has(it.key)) {
+				continue;
+			}
+			normals_ptr[it.value] = normal_img[it.key];
+		}
+		surfaces.write[i].arrays[RS::ARRAY_NORMAL] = normals;
+	}
+
 }
 
 #define VERTEX_SKIN_FUNC(bone_count, vert_idx, read_array, write_array, transform_array, bone_array, weight_array) \
@@ -504,9 +555,13 @@ void ImporterMesh::generate_lods(float p_normal_merge_angle, Array p_bone_transf
 			for (unsigned int j = 0; j < merged_vertex_count; j++) {
 				merged_normals_ptr[j] /= counts_ptr[j];
 			}
+			merged_normals_counts.clear();
 		}
 
 		Vector<float> merged_vertices_f32 = vector3_to_float32_array(merged_vertices_ptr, merged_vertex_count);
+		merged_vertices_ptr = nullptr;
+		merged_vertices = LocalVector<Vector3>();
+		vertex_remap = LocalVector<int>();
 		float scale = SurfaceTool::simplify_scale_func(merged_vertices_f32.ptr(), merged_vertex_count, sizeof(float) * 3);
 
 		const size_t attrib_count = 6; // 3 for normal + 3 for color (if present)
@@ -540,6 +595,8 @@ void ImporterMesh::generate_lods(float p_normal_merge_angle, Array p_bone_transf
 				merged_attribs_ptr[j * attrib_count + 5] = colors_ptr[rj].b;
 			}
 		}
+		merged_normals_ptr = nullptr;
+		merged_normals = LocalVector<Vector3>();
 
 		print_verbose("LOD Generation: Triangles " + itos(index_count / 3) + ", vertices " + itos(vertex_count) + " (merged " + itos(merged_vertex_count) + ")" + (deformable ? ", deformable" : ""));
 
@@ -547,6 +604,7 @@ void ImporterMesh::generate_lods(float p_normal_merge_angle, Array p_bone_transf
 		const unsigned min_target_indices = 12;
 
 		LocalVector<int> current_indices = merged_indices;
+		merged_indices.clear();
 		float current_error = 0.0f;
 		bool allow_prune = true;
 

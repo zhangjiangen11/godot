@@ -33,10 +33,20 @@
 #include "core/config/project_settings.h"
 
 void Light3D::set_param(Param p_param, real_t p_value) {
-	ERR_FAIL_INDEX(p_param, PARAM_MAX);
-	param[p_param] = p_value;
-
-	RS::get_singleton()->light_set_param(light, RS::LightParam(p_param), p_value);
+	if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET) {
+		param[PARAM_SHADOW_SPLIT_1_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
+		RS::get_singleton()->light_set_param(light, RS::LightParam(PARAM_SHADOW_SPLIT_1_OFFSET), param[PARAM_SHADOW_SPLIT_1_OFFSET]);
+	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET) {
+		param[PARAM_SHADOW_SPLIT_2_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
+		RS::get_singleton()->light_set_param(light, RS::LightParam(PARAM_SHADOW_SPLIT_2_OFFSET), param[PARAM_SHADOW_SPLIT_2_OFFSET]);
+	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET) {
+		param[PARAM_SHADOW_SPLIT_3_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
+		RS::get_singleton()->light_set_param(light, RS::LightParam(PARAM_SHADOW_SPLIT_3_OFFSET), param[PARAM_SHADOW_SPLIT_3_OFFSET]);
+	} else {
+		ERR_FAIL_INDEX(p_param, PARAM_MAX);
+		param[p_param] = p_value;
+		RS::get_singleton()->light_set_param(light, RS::LightParam(p_param), p_value);
+	}
 
 	if (p_param == PARAM_SPOT_ANGLE || p_param == PARAM_RANGE) {
 		update_gizmos();
@@ -45,27 +55,16 @@ void Light3D::set_param(Param p_param, real_t p_value) {
 			update_configuration_warnings();
 		}
 	}
-
-	if (p_param == PARAM_SHADOW_SPLIT_1_OFFSET) {
-		param[PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * p_value;
-	} else if (p_param == PARAM_SHADOW_SPLIT_2_OFFSET) {
-		param[PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * p_value;
-	} else if (p_param == PARAM_SHADOW_SPLIT_3_OFFSET) {
-		param[PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * p_value;
-	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET) {
-		param[PARAM_SHADOW_SPLIT_1_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
-	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET) {
-		param[PARAM_SHADOW_SPLIT_2_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
-	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET) {
-		param[PARAM_SHADOW_SPLIT_3_OFFSET] = p_value / param[PARAM_SHADOW_MAX_DISTANCE];
-	} else if (p_param == PARAM_SHADOW_MAX_DISTANCE) {
-		param[PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * param[PARAM_SHADOW_SPLIT_1_OFFSET];
-		param[PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * param[PARAM_SHADOW_SPLIT_2_OFFSET];
-		param[PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET] = param[PARAM_SHADOW_MAX_DISTANCE] * param[PARAM_SHADOW_SPLIT_3_OFFSET];
-	}
 }
 
 real_t Light3D::get_param(Param p_param) const {
+	if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_1_OFFSET) {
+		return param[PARAM_SHADOW_SPLIT_1_OFFSET] * param[PARAM_SHADOW_MAX_DISTANCE];
+	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_2_OFFSET) {
+		return param[PARAM_SHADOW_SPLIT_2_OFFSET] * param[PARAM_SHADOW_MAX_DISTANCE];
+	} else if (p_param == PARAM_SHADOW_SPLIT_DISTANCE_3_OFFSET) {
+		return param[PARAM_SHADOW_SPLIT_3_OFFSET] * param[PARAM_SHADOW_MAX_DISTANCE];
+	}
 	ERR_FAIL_INDEX_V(p_param, PARAM_MAX, 0);
 	return param[p_param];
 }

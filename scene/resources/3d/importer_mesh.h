@@ -114,6 +114,8 @@ public:
 
 	void optimize_indices();
 	void generate_normals(bool p_flip = false);
+	void get_edage_terrain_vertex_normal(HashMap<Vector2, Vector3>& normal_img, HashMap<Vector2, int64_t>& normal_index, float xz_scale);
+	void correct_terrain_vertex_normal(const HashMap<Vector2, Vector3>& normal_img, const HashMap<Vector2, int64_t>& normal_index);
 
 	void generate_lods(float p_normal_merge_angle, Array p_skin_pose_transform_array);
 
