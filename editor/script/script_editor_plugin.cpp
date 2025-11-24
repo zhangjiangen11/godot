@@ -46,7 +46,7 @@
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/docks/filesystem_dock.h"
 #include "editor/docks/inspector_dock.h"
-#include "editor/docks/node_dock.h"
+#include "editor/docks/signals_dock.h"
 #include "editor/editor_interface.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
@@ -3023,7 +3023,7 @@ void ScriptEditor::_add_callback(Object *p_obj, const String &p_function, const 
 		break;
 	}
 
-	// Move back to the previously edited node to reselect it in the Inspector and the NodeDock.
+	// Move back to the previously edited node to reselect it in the Inspector and the SignalsDock.
 	// We assume that the previous item is the node on which the callbacks were added.
 	EditorNode::get_singleton()->edit_previous_item();
 }
@@ -4010,7 +4010,7 @@ void ScriptEditor::register_create_script_editor_function(CreateScriptEditorFunc
 }
 
 void ScriptEditor::_script_changed() {
-	NodeDock::get_singleton()->update_lists();
+	SignalsDock::get_singleton()->update_lists();
 }
 
 void ScriptEditor::_on_replace_in_files_requested(const String &text) {
