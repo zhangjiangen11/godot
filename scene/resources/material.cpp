@@ -1202,6 +1202,9 @@ void BaseMaterial3D::_update_shader() {
 	code += vformat(R"(
 uniform vec4 albedo : source_color;
 uniform sampler2D texture_albedo : source_color, %s;
+uniform vec4 render_instance_data = vec4(0.0,0.0,0.0,0.0);
+uniform sampler2D render_instance_texture : hint_default_white, filter_nearest;
+uniform sampler2D render_instance_index_texture : hint_default_white, filter_nearest;
 )",
 			texfilter_str);
 
@@ -1449,7 +1452,24 @@ uniform vec3 uv2_offset;
 
 	// Generate vertex shader.
 	code += R"(
+// 获取实例矩阵索引
+int get_instance_matrix_index(){
+	return floatBitsToInt(texelFetch(render_instance_texture,ivec2(INSTANCE_ID,render_instance_data.z + 1.1)).r);
+}
+
+mat4 get_instance_matrix_custom(out vec4 cuntom){
+	int index = get_instance_matrix_index();
+	int x = (index % 512) * 4;
+	int y = index / 512;
+	vec4 v0 = imageLoad(render_instance_texture,ivec2(x    ,y));
+	vec4 v1 = imageLoad(render_instance_texture,ivec2(x + 1,y));
+	vec4 v2 = imageLoad(render_instance_texture,ivec2(x + 2,y));
+	vec4 v3 = imageLoad(render_instance_texture,ivec2(x + 4,y));
+	mat4 mat = mat4(v0,v1,v2,vec4(0.0, 0.0, 0.0, 1.0));
+	cuntom = v3;
+}
 void vertex() {)";
+	// 构建Instance 信息
 
 	if (flags[FLAG_SRGB_VERTEX_COLOR]) {
 		code += R"(

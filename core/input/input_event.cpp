@@ -1904,12 +1904,12 @@ void InputEventMIDI::_bind_methods() {
 
 ///////////////////////////////////
 
-void InputEventShortcut::set_shortcut(Ref<Shortcut> p_shortcut) {
+void InputEventShortcut::set_shortcut(const Ref<Shortcut>& p_shortcut) {
 	shortcut = p_shortcut;
 	emit_changed();
 }
 
-Ref<Shortcut> InputEventShortcut::get_shortcut() {
+const Ref<Shortcut>& InputEventShortcut::get_shortcut() {
 	return shortcut;
 }
 
@@ -1934,4 +1934,6 @@ String InputEventShortcut::_to_string() {
 
 InputEventShortcut::InputEventShortcut() {
 	pressed = true;
+}
+InputEventShortcut::~InputEventShortcut() {
 }

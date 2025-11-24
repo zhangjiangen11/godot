@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "shortcut.h"
+#include "core/input/input_event.h"
 
 void Shortcut::set_events(const Array &p_events) {
 	for (int i = 0; i < p_events.size(); i++) {

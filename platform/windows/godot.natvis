@@ -94,7 +94,7 @@
 			<Item Name="[size]">_size</Item>
 			<ArrayItems>
 				<Size>_size</Size>
-				<ValuePointer>($T1 *) _keys._cowdata._ptr</ValuePointer>
+				<ValuePointer>($T1 *) _keys</ValuePointer>
 			</ArrayItems>
 		</Expand>
 	</Type>

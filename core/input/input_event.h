@@ -31,6 +31,7 @@
 #pragma once
 
 #include "core/input/input_enums.h"
+#include "core/input/shortcut.h"
 #include "core/io/resource.h"
 #include "core/math/transform_2d.h"
 #include "core/os/keyboard.h"
@@ -582,8 +583,8 @@ protected:
 	static void _bind_methods();
 
 public:
-	void set_shortcut(Ref<Shortcut> p_shortcut);
-	Ref<Shortcut> get_shortcut();
+	void set_shortcut(const Ref<Shortcut> &p_shortcut);
+	const Ref<Shortcut> &get_shortcut();
 
 	virtual String as_text() const override;
 	virtual String _to_string() override;
@@ -591,4 +592,5 @@ public:
 	InputEventType get_type() const final override { return InputEventType::SHORTCUT; }
 
 	InputEventShortcut();
+	~InputEventShortcut();
 };
