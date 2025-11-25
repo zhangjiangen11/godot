@@ -128,7 +128,9 @@ void Material::inspect_native_shader_code() {
 
 RID Material::get_shader_rid() const {
 	RID ret;
-	GDVIRTUAL_CALL(_get_shader_rid, ret);
+	if (GDVIRTUAL_IS_OVERRIDDEN(_get_shader_rid)) {
+		GDVIRTUAL_CALL(_get_shader_rid, ret);
+	}
 	return ret;
 }
 Shader::Mode Material::get_shader_mode() const {
@@ -1453,22 +1455,30 @@ uniform vec3 uv2_offset;
 	// Generate vertex shader.
 	code += R"(
 // 获取实例矩阵索引
-int get_instance_matrix_index(){
-	return floatBitsToInt(texelFetch(render_instance_texture,ivec2(INSTANCE_ID,render_instance_data.z + 1.1)).r);
+int get_instance_matrix_index(int gpu_instance_id){
+	ivec2 pos = ivec2(gpu_instance_id,int(render_instance_data.z + 1.1));
+	return floatBitsToInt(texelFetch(render_instance_texture,pos,0).r);
 }
 
-mat4 get_instance_matrix_custom(out vec4 cuntom){
-	int index = get_instance_matrix_index();
+mat4 get_instance_matrix(int gpu_instance_id){
+	int index = get_instance_matrix_index(gpu_instance_id);
 	int x = (index % 512) * 4;
-	int y = index / 512;
-	vec4 v0 = imageLoad(render_instance_texture,ivec2(x    ,y));
-	vec4 v1 = imageLoad(render_instance_texture,ivec2(x + 1,y));
-	vec4 v2 = imageLoad(render_instance_texture,ivec2(x + 2,y));
-	vec4 v3 = imageLoad(render_instance_texture,ivec2(x + 4,y));
-	mat4 mat = mat4(v0,v1,v2,vec4(0.0, 0.0, 0.0, 1.0));
-	cuntom = v3;
+	int y = index / 512 + 1;
+	vec4 v0 = texelFetch(render_instance_texture,ivec2(x    ,y),0);
+	vec4 v1 = texelFetch(render_instance_texture,ivec2(x + 1,y),0);
+	vec4 v2 = texelFetch(render_instance_texture,ivec2(x + 2,y),0);
+	vec4 v3 = texelFetch(render_instance_texture,ivec2(x + 4,y),0);
+	return mat4(v0,v1,v2,vec4(0.0, 0.0, 0.0, 1.0));
 }
-void vertex() {)";
+void vertex() {
+	if(render_instance_data.y >= 1.0){
+		MODEL_MATRIX = get_instance_matrix(INSTANCE_ID);
+		MODEL_NORMAL_MATRIX = mat3(MODEL_MATRIX);
+		// 
+		MODELVIEW_MATRIX = VIEW_MATRIX * MODEL_MATRIX;
+		MODELVIEW_NORMAL_MATRIX = mat3(VIEW_MATRIX) * MODEL_NORMAL_MATRIX;
+	}
+)";
 	// 构建Instance 信息
 
 	if (flags[FLAG_SRGB_VERTEX_COLOR]) {

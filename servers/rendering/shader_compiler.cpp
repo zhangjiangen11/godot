@@ -1761,10 +1761,10 @@ Error ShaderCompiler::compile(RS::ShaderMode p_mode, const String &p_code, Ident
 				if (i == err_line - 1) {
 					// Mark the error line to be visible without having to look at
 					// the trace at the end.
-					print_line(vformat("E%4d-> %s", i + 1, V[i]));
+					error_msg += (vformat("E%4d-> %s", i + 1, V[i]));
 				} else if ((i == err_line - 3) || (i == err_line - 2) || (i == err_line) || (i == err_line + 1)) {
 					// Print 4 lines around the error line.
-					print_line(vformat("%5d | %s", i + 1, V[i]));
+					error_msg += (vformat("%5d | %s", i + 1, V[i]));
 				}
 			}
 		}

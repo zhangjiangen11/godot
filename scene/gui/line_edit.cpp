@@ -3489,7 +3489,6 @@ void LineEdit::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "background_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_background_texture", "get_background_texture");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "background_read_only_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_background_read_only_texture", "get_background_read_only_texture");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "focus_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_focus_texture", "get_focus_texture");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "right_icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_right_icon", "get_right_icon");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flat"), "set_flat", "is_flat");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "draw_control_chars"), "set_draw_control_chars", "get_draw_control_chars");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "select_all_on_focus"), "set_select_all_on_focus", "is_select_all_on_focus");
