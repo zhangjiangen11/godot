@@ -271,7 +271,7 @@ void register_server_types() {
 
 	GLOBAL_DEF(PropertyInfo(Variant::STRING, NavigationServer2DManager::setting_property_name, PROPERTY_HINT_ENUM, "DEFAULT"), "DEFAULT");
 
-	NavigationServer2DManager::get_singleton()->register_server("Dummy", callable_mp_static(NavigationServer2DManager::create_dummy_server_callback));
+	NavigationServer2DManager::get_singleton()->register_server("Dummy", callable_mp_static(&NavigationServer2DManager::create_dummy_server_callback));
 #endif // NAVIGATION_2D_DISABLED
 
 #ifndef PHYSICS_2D_DISABLED
@@ -299,7 +299,7 @@ void register_server_types() {
 
 	GLOBAL_DEF(PropertyInfo(Variant::STRING, PhysicsServer2DManager::setting_property_name, PROPERTY_HINT_ENUM, "DEFAULT"), "DEFAULT");
 
-	PhysicsServer2DManager::get_singleton()->register_server("Dummy", callable_mp_static(_create_dummy_physics_server_2d));
+	PhysicsServer2DManager::get_singleton()->register_server("Dummy", callable_mp_static(&_create_dummy_physics_server_2d));
 #endif // PHYSICS_2D_DISABLED
 
 #ifndef NAVIGATION_3D_DISABLED
@@ -312,7 +312,7 @@ void register_server_types() {
 
 	GLOBAL_DEF(PropertyInfo(Variant::STRING, NavigationServer3DManager::setting_property_name, PROPERTY_HINT_ENUM, "DEFAULT"), "DEFAULT");
 
-	NavigationServer3DManager::get_singleton()->register_server("Dummy", callable_mp_static(NavigationServer3DManager::create_dummy_server_callback));
+	NavigationServer3DManager::get_singleton()->register_server("Dummy", callable_mp_static(&NavigationServer3DManager::create_dummy_server_callback));
 #endif // NAVIGATION_3D_DISABLED
 
 #ifndef PHYSICS_3D_DISABLED
@@ -342,7 +342,7 @@ void register_server_types() {
 
 	GLOBAL_DEF(PropertyInfo(Variant::STRING, PhysicsServer3DManager::setting_property_name, PROPERTY_HINT_ENUM, "DEFAULT"), "DEFAULT");
 
-	PhysicsServer3DManager::get_singleton()->register_server("Dummy", callable_mp_static(_create_dummy_physics_server_3d));
+	PhysicsServer3DManager::get_singleton()->register_server("Dummy", callable_mp_static(&_create_dummy_physics_server_3d));
 #endif // PHYSICS_3D_DISABLED
 
 #ifndef XR_DISABLED

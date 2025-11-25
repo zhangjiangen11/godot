@@ -60,7 +60,7 @@ TEST_CASE("[WorkerThreadPool] Process threads using individual tasks") {
 		counter.resize(count);
 		for (int i = 0; i < count; i++) {
 			tasks1[i] = WorkerThreadPool::get_singleton()->add_native_task(static_test, (void *)(uintptr_t)i, low_priority);
-			tasks2[i] = WorkerThreadPool::get_singleton()->add_task(callable_mp_static(static_callable_test), !low_priority);
+			tasks2[i] = WorkerThreadPool::get_singleton()->add_task(callable_mp_static(&static_callable_test), !low_priority);
 		}
 		for (int i = 0; i < count; i++) {
 			WorkerThreadPool::get_singleton()->wait_for_task_completion(tasks1[i]);

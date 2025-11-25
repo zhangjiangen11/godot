@@ -74,7 +74,7 @@ void JoltProjectSettings::register_settings() {
 
 	read_settings();
 
-	ProjectSettings::get_singleton()->connect("settings_changed", callable_mp_static(JoltProjectSettings::read_settings));
+	ProjectSettings::get_singleton()->connect("settings_changed", callable_mp_static(&JoltProjectSettings::read_settings));
 }
 
 void JoltProjectSettings::read_settings() {

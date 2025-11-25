@@ -51,7 +51,7 @@ void initialize_godot_physics_2d_module(ModuleInitializationLevel p_level) {
 	if (p_level != MODULE_INITIALIZATION_LEVEL_SERVERS) {
 		return;
 	}
-	PhysicsServer2DManager::get_singleton()->register_server("GodotPhysics2D", callable_mp_static(_createGodotPhysics2DCallback));
+	PhysicsServer2DManager::get_singleton()->register_server("GodotPhysics2D", callable_mp_static(&_createGodotPhysics2DCallback));
 	PhysicsServer2DManager::get_singleton()->set_default_server("GodotPhysics2D");
 }
 

@@ -47,7 +47,7 @@ static NavigationServer2D *_createGodotNavigation2DCallback() {
 
 void initialize_navigation_2d_module(ModuleInitializationLevel p_level) {
 	if (p_level == MODULE_INITIALIZATION_LEVEL_SERVERS) {
-		NavigationServer2DManager::get_singleton()->register_server("GodotNavigation2D", callable_mp_static(_createGodotNavigation2DCallback));
+		NavigationServer2DManager::get_singleton()->register_server("GodotNavigation2D", callable_mp_static(&_createGodotNavigation2DCallback));
 		NavigationServer2DManager::get_singleton()->set_default_server("GodotNavigation2D");
 	}
 

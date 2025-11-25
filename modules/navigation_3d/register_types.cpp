@@ -55,7 +55,7 @@ static NavigationServer3D *_createGodotNavigation3DCallback() {
 
 void initialize_navigation_3d_module(ModuleInitializationLevel p_level) {
 	if (p_level == MODULE_INITIALIZATION_LEVEL_SERVERS) {
-		NavigationServer3DManager::get_singleton()->register_server("GodotNavigation3D", callable_mp_static(_createGodotNavigation3DCallback));
+		NavigationServer3DManager::get_singleton()->register_server("GodotNavigation3D", callable_mp_static(&_createGodotNavigation3DCallback));
 		NavigationServer3DManager::get_singleton()->set_default_server("GodotNavigation3D");
 
 #ifndef DISABLE_DEPRECATED

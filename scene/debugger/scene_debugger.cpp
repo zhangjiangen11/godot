@@ -142,7 +142,7 @@ void SceneDebugger::_handle_embed_input(const Ref<InputEvent> &p_event, const Di
 }
 
 Error SceneDebugger::_msg_setup_scene(const Array &p_args) {
-	SceneTree::get_singleton()->get_root()->connect(SceneStringName(window_input), callable_mp_static(SceneDebugger::_handle_input).bind(DebuggerMarshalls::deserialize_key_shortcut(p_args)));
+	SceneTree::get_singleton()->get_root()->connect(SceneStringName(window_input), callable_mp_static(&SceneDebugger::_handle_input).bind(DebuggerMarshalls::deserialize_key_shortcut(p_args)));
 	return OK;
 }
 
@@ -264,7 +264,7 @@ Error SceneDebugger::_msg_setup_embedded_shortcuts(const Array &p_args) {
 		dict[key] = DebuggerMarshalls::deserialize_key_shortcut(dict[key]);
 	}
 
-	SceneTree::get_singleton()->get_root()->connect(SceneStringName(window_input), callable_mp_static(SceneDebugger::_handle_embed_input).bind(dict));
+	SceneTree::get_singleton()->get_root()->connect(SceneStringName(window_input), callable_mp_static(&SceneDebugger::_handle_embed_input).bind(dict));
 	return OK;
 }
 

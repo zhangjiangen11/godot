@@ -155,7 +155,7 @@ TEST_CASE("[Multiplayer][SceneMultiplayer][SceneTree] Send Authentication") {
 	Ref<SceneMultiplayer> scene_multiplayer;
 	scene_multiplayer.instantiate();
 	SceneTree::get_singleton()->set_multiplayer(scene_multiplayer);
-	scene_multiplayer->set_auth_callback(callable_mp_static(auth_callback));
+	scene_multiplayer->set_auth_callback(callable_mp_static(&auth_callback));
 
 	SUBCASE("Is properly sent") {
 		SIGNAL_WATCH(scene_multiplayer.ptr(), "peer_authenticating");
@@ -228,7 +228,7 @@ TEST_CASE("[Multiplayer][SceneMultiplayer][SceneTree] Complete Authentication") 
 	Ref<SceneMultiplayer> scene_multiplayer;
 	scene_multiplayer.instantiate();
 	SceneTree::get_singleton()->set_multiplayer(scene_multiplayer);
-	scene_multiplayer->set_auth_callback(callable_mp_static(auth_callback));
+	scene_multiplayer->set_auth_callback(callable_mp_static(&auth_callback));
 
 	SUBCASE("Is properly completed") {
 		Ref<MultiplayerPeer> multiplayer_peer = scene_multiplayer->get_multiplayer_peer();
