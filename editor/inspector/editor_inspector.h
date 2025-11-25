@@ -731,10 +731,12 @@ class EditorInspector : public ScrollContainer {
 	void _clear(bool p_hide_plugins = true);
 	Object *object = nullptr;
 	Object *next_object = nullptr;
+	ObjectID pinned_object;
 
 	//
 
 	LineEdit *search_box = nullptr;
+	bool pinned = false;
 	bool show_standard_categories = false;
 	bool show_custom_categories = false;
 	bool hide_script = true;
@@ -850,6 +852,14 @@ public:
 
 	bool is_main_editor_inspector() const;
 	String get_selected_path() const;
+
+	void set_pinned(bool p_pinned) { pinned = p_pinned; }
+	bool is_pinned() const { return pinned; }
+
+	void set_pinned_object(Object *p_object);
+	Object *get_pinned_object();
+
+	bool has_valid_pin();
 
 	void update_tree();
 	void update_property(const String &p_prop);
