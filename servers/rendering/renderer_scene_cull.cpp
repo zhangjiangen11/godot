@@ -31,6 +31,7 @@
 #include "renderer_scene_cull.h"
 
 #include "core/config/project_settings.h"
+#include "core/message_manager.h"
 #include "core/object/worker_thread_pool.h"
 #include "rendering_light_culler.h"
 #include "rendering_server_default.h"
@@ -2708,6 +2709,8 @@ void RendererSceneCull::render_camera(const Ref<RenderSceneBuffers> &p_render_bu
 		}
 #endif // XR_DISABLED
 	}
+	// 处理开始渲染器摄像机，这个时候摄像机准备完毕了，可以做一些gpu裁剪之类的
+	MessageManager::get_singleton()->emit(SNAME("pre_render_camera"), { p_viewport, p_scenario, camera_data.main_transform, camera_data.main_projection, camera_data.is_orthogonal });
 
 	RID environment = _render_get_environment(p_camera, p_scenario);
 	RID compositor = _render_get_compositor(p_camera, p_scenario);
