@@ -52,6 +52,7 @@ enum Metadata {
 	METADATA_REAL_IS_DOUBLE,
 	METADATA_INT_IS_CHAR16,
 	METADATA_INT_IS_CHAR32,
+	METADATA_OBJECT_IS_REQUIRED,
 };
 }
 
@@ -185,6 +186,44 @@ struct GetTypeInfo<T *, std::enable_if_t<std::is_base_of_v<Object, T>>> {
 	static inline const PropertyInfo &get_class_info() {
 		static PropertyInfo info = PropertyInfo(StringName(T::get_class_static()));
 		return info;
+	}
+};
+
+template <class T>
+class RequiredParam;
+
+template <class T>
+class RequiredResult;
+
+template <typename T>
+struct GetTypeInfo<RequiredParam<T>, std::enable_if_t<std::is_base_of_v<Object, T>>> {
+	static const Variant::Type VARIANT_TYPE = Variant::OBJECT;
+	static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_OBJECT_IS_REQUIRED;
+
+	template <typename U = T, std::enable_if_t<std::is_base_of_v<RefCounted, U>, int> = 0>
+	static inline PropertyInfo get_class_info() {
+		return PropertyInfo(Variant::OBJECT, String(), PROPERTY_HINT_RESOURCE_TYPE, T::get_class_static());
+	}
+
+	template <typename U = T, std::enable_if_t<!std::is_base_of_v<RefCounted, U>, int> = 0>
+	static inline PropertyInfo get_class_info() {
+		return PropertyInfo(StringName(T::get_class_static()));
+	}
+};
+
+template <typename T>
+struct GetTypeInfo<RequiredResult<T>, std::enable_if_t<std::is_base_of_v<Object, T>>> {
+	static const Variant::Type VARIANT_TYPE = Variant::OBJECT;
+	static const GodotTypeInfo::Metadata METADATA = GodotTypeInfo::METADATA_OBJECT_IS_REQUIRED;
+
+	template <typename U = T, std::enable_if_t<std::is_base_of_v<RefCounted, U>, int> = 0>
+	static inline PropertyInfo get_class_info() {
+		return PropertyInfo(Variant::OBJECT, String(), PROPERTY_HINT_RESOURCE_TYPE, T::get_class_static());
+	}
+
+	template <typename U = T, std::enable_if_t<!std::is_base_of_v<RefCounted, U>, int> = 0>
+	static inline PropertyInfo get_class_info() {
+		return PropertyInfo(StringName(T::get_class_static()));
 	}
 };
 
