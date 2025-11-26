@@ -700,7 +700,7 @@ void EditorAssetLibrary::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_VISIBILITY_CHANGED: {
-			if (is_visible()) {
+			if (is_visible() && is_inside_tree() && filter->is_inside_tree()) {
 #ifndef ANDROID_ENABLED
 				// Focus the search box automatically when switching to the Templates tab (in the Project Manager)
 				// or switching to the AssetLib tab (in the editor).
