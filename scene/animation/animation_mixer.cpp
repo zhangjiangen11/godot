@@ -420,7 +420,6 @@ Ref<Animation> AnimationMixer::get_animation(const StringName &p_name) const {
 
 	cb_get_animation.call(this, p_name);
 
-
 	const AnimationData &anim_data = animation_set[p_name];
 	return anim_data.animation;
 }
@@ -438,20 +437,19 @@ StringName AnimationMixer::find_animation(const Ref<Animation> &p_animation) con
 	return StringName();
 }
 
-void AnimationMixer::reset_all_animation(const Ref<Animation>& anim) {
+void AnimationMixer::reset_all_animation(const Ref<Animation> &anim) {
 	for (KeyValue<StringName, AnimationData> &E : animation_set) {
 		E.value.animation = anim;
 	}
 }
-
 
 void AnimationMixer::clear_all_animation() {
 	_animation_set_cache_update();
 	animation_set.clear();
 }
 
-void AnimationMixer::change_animation(const StringName &p_name,const Ref<Animation>& anim) {
-	if(!animation_set.has(p_name)) {
+void AnimationMixer::change_animation(const StringName &p_name, const Ref<Animation> &anim) {
+	if (!animation_set.has(p_name)) {
 		ERR_FAIL_MSG(vformat("Animation not found: \"%s\".", p_name));
 	}
 	AnimationData &anim_data = animation_set[p_name];
@@ -687,6 +685,7 @@ bool AnimationMixer::_update_caches() {
 
 	Node *parent = get_node_or_null(root_node);
 	if (!parent) {
+		WARN_PRINT_ONCE(vformat("'%s' is an invalid root_node path, caches will not be built, please check the root_node assignment on: %s", root_node, get_path()));
 		cache_valid = false;
 		return false;
 	}
@@ -713,15 +712,14 @@ bool AnimationMixer::_update_caches() {
 	}
 	for (const StringName &E : sname_list) {
 		Ref<Animation> anim = get_animation(E);
-		if(anim.is_valid())
-		{
-			anima.insert(anim,Dictionary());
+		if (anim.is_valid()) {
+			anima.insert(anim, Dictionary());
 		}
 	}
-	for(uint32_t i = 0; i < animation_instances.size(); ++i) {
-		Ref<Animation> anim = animation_instances[i].animation_data.animation;		
-		if(anim.is_valid()) {
-			anima.insert(anim,animation_instances[i].animation_data.bone_map);
+	for (uint32_t i = 0; i < animation_instances.size(); ++i) {
+		Ref<Animation> anim = animation_instances[i].animation_data.animation;
+		if (anim.is_valid()) {
+			anima.insert(anim, animation_instances[i].animation_data.bone_map);
 		}
 	}
 
@@ -1042,19 +1040,14 @@ bool AnimationMixer::_update_caches() {
 	return true;
 }
 
-
 /* -------------------------------------------- */
 /* -- Blending processor ---------------------- */
 /* -------------------------------------------- */
 
 void AnimationMixer::_process_animation(double p_delta, bool p_update_only) {
-	
 	_blend_init();
-
-
 	cb_begin_animation.call(this, p_delta, p_update_only);
-
-	if (_blend_pre_process(p_delta, track_count, track_map)) {
+	if (cache_valid && _blend_pre_process(p_delta, track_count, track_map)) {
 		_blend_capture(p_delta);
 		_blend_calc_total_weight();
 		_blend_process(p_delta, p_update_only);
@@ -1064,8 +1057,6 @@ void AnimationMixer::_process_animation(double p_delta, bool p_update_only) {
 		cb_end_animation.call(this, p_delta, p_update_only);
 		emit_signal(SNAME("mixer_applied"));
 	};
-
-
 
 	clear_animation_instances();
 }
@@ -1208,8 +1199,7 @@ void AnimationMixer::blend_capture(double p_delta) {
 void AnimationMixer::_blend_calc_total_weight() {
 	for (const AnimationInstance &ai : animation_instances) {
 		Ref<Animation> a = ai.animation_data.animation;
-		if (a.is_null())
-		{
+		if (a.is_null()) {
 			continue;
 		}
 		real_t weight = ai.playback_info.weight;
@@ -1714,13 +1704,12 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 					}
 				} break;
 				case Animation::TYPE_METHOD: {
-					if(!is_thread)
-					{
-	#ifdef TOOLS_ENABLED
+					if (!is_thread) {
+#ifdef TOOLS_ENABLED
 						if (!can_call) {
 							continue;
 						}
-	#endif // TOOLS_ENABLED
+#endif // TOOLS_ENABLED
 						if (p_update_only || Math::is_zero_approx(blend)) {
 							continue;
 						}
@@ -1742,9 +1731,9 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 								_call_object(t->object_id, method, params, callback_mode_method == ANIMATION_CALLBACK_MODE_METHOD_DEFERRED);
 							}
 						}
-					} break;
-
 					}
+					break;
+				}
 				case Animation::TYPE_AUDIO: {
 					// The end of audio should be observed even if the blend value is 0, build up the information and store to the cache for that.
 					TrackCacheAudio *t = static_cast<TrackCacheAudio *>(track);
@@ -1851,10 +1840,8 @@ void AnimationMixer::_blend_process(double p_delta, bool p_update_only) {
 							}
 							map[idx] = pasi;
 						}
-					
-
 					}
-					} break;
+				} break;
 				case Animation::TYPE_ANIMATION: {
 					if (Math::is_zero_approx(blend)) {
 						continue;
@@ -2134,8 +2121,7 @@ void AnimationMixer::make_animation_instance(const StringName &p_name, const Pla
 
 	animation_instances.push_back(ai);
 }
-void AnimationMixer::make_animation_instance_anim(const Ref<Animation> &p_anim, const PlaybackInfo& p_playback_info,const Dictionary &bone_map)
-{
+void AnimationMixer::make_animation_instance_anim(const Ref<Animation> &p_anim, const PlaybackInfo &p_playback_info, const Dictionary &bone_map) {
 	ERR_FAIL_COND(p_anim.is_null());
 	AnimationData ad;
 	ad.name = p_anim->get_name();
