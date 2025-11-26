@@ -1225,6 +1225,7 @@ void fragment_shader(in SceneData scene_data) {
 
 #ifdef NORMAL_USED
 	vec3 normal_highp = normal_interp;
+	vec3 vertex_normal = normal_interp;
 #if defined(DO_SIDE_CHECK) && !defined(AVOID_SIDE_CHECK)
 	if (!gl_FrontFacing) {
 		normal_highp = -normal_highp;
