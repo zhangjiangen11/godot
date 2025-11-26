@@ -31,8 +31,10 @@
 #include "editor_object_selector.h"
 
 #include "editor/editor_data.h"
+#include "editor/editor_interface.h"
 #include "editor/editor_node.h"
 #include "editor/editor_string_names.h"
+#include "editor/inspector/editor_inspector.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/margin_container.h"
 
@@ -88,12 +90,14 @@ void EditorObjectSelector::_add_children_to_popup(Object *p_obj, int p_depth) {
 }
 
 void EditorObjectSelector::_show_popup() {
-	if (sub_objects_menu->is_visible()) {
-		sub_objects_menu->hide();
-		return;
-	}
+	if (!EditorInterface::get_singleton()->get_inspector()->has_valid_pin()) {
+		if (sub_objects_menu->is_visible()) {
+			sub_objects_menu->hide();
+			return;
+		}
 
-	sub_objects_menu->clear();
+		sub_objects_menu->clear();
+	}
 
 	Size2 size = get_size();
 	Point2 gp = get_screen_position();
@@ -103,6 +107,10 @@ void EditorObjectSelector::_show_popup() {
 }
 
 void EditorObjectSelector::_about_to_show() {
+	if (EditorInterface::get_singleton()->get_inspector()->has_valid_pin()) {
+		return;
+	}
+
 	Object *obj = ObjectDB::get_instance(history->get_path_object(history->get_path_size() - 1));
 	if (!obj) {
 		return;
@@ -118,6 +126,10 @@ void EditorObjectSelector::_about_to_show() {
 }
 
 void EditorObjectSelector::update_path() {
+	if (EditorInterface::get_singleton()->get_inspector()->has_valid_pin()) {
+		return;
+	}
+
 	for (int i = 0; i < history->get_path_size(); i++) {
 		Object *obj = ObjectDB::get_instance(history->get_path_object(i));
 		if (!obj) {
@@ -161,6 +173,10 @@ void EditorObjectSelector::update_path() {
 }
 
 void EditorObjectSelector::clear_path() {
+	if (EditorInterface::get_singleton()->get_inspector()->has_valid_pin()) {
+		return;
+	}
+
 	set_disabled(true);
 	set_tooltip_text("");
 

@@ -3874,6 +3874,31 @@ void EditorInspector::_add_section_in_tree(EditorInspectorSection *p_section, VB
 	container->add_child(p_section);
 }
 
+void EditorInspector::set_pinned_object(Object *p_object) {
+	if (p_object) {
+		pinned_object = p_object->get_instance_id();
+	} else {
+		pinned_object = ObjectID();
+	}
+}
+
+Object *EditorInspector::get_pinned_object() {
+	if (pinned_object.is_valid()) {
+		Object *obj = ObjectDB::get_instance(pinned_object);
+		// Clear invalid pin
+		if (obj == nullptr) {
+			pinned = false;
+			pinned_object = ObjectID();
+		}
+		return obj;
+	}
+	return nullptr;
+}
+
+bool EditorInspector::has_valid_pin() {
+	return is_pinned() && get_pinned_object() != nullptr;
+}
+
 void EditorInspector::update_tree() {
 	if (!object) {
 		return;
@@ -4951,7 +4976,7 @@ Object *EditorInspector::get_next_edited_object() {
 }
 
 void EditorInspector::edit(Object *p_object) {
-	if (object == p_object) {
+	if (!is_pinned() && object == p_object) {
 		return;
 	}
 
@@ -4966,6 +4991,12 @@ void EditorInspector::edit(Object *p_object) {
 
 	object = p_object;
 
+	if (has_valid_pin()) {
+		object = get_pinned_object();
+	} else if (is_pinned() && object) {
+		set_pinned_object(object);
+	}
+
 	if (object) {
 		update_scroll_request = 0; //reset
 		if (scroll_cache.has(object->get_instance_id())) { //if exists, set something else
@@ -4976,7 +5007,7 @@ void EditorInspector::edit(Object *p_object) {
 		can_favorite = Object::cast_to<Node>(object) || Object::cast_to<Resource>(object);
 		_update_current_favorites();
 
-		update_tree();
+		callable_mp(this, &EditorInspector::update_tree).call_deferred();
 	}
 
 	// Keep it available until the end so it works with both main and sub inspectors.
