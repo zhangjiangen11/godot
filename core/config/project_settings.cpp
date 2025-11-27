@@ -1001,6 +1001,11 @@ Error ProjectSettings::_load_settings_text_or_binary(const String &p_text_path, 
 				int minor_version = feat.get_slicec('.', 1).to_int();
 				// Major version is irrelevant, but the extra check ensures that the feature is in fact a version string.
 				if (major_version == 4 && minor_version < 6) {
+					// Keep vulkan as rendering driver on Windows if that's what was used (default changed to d3d12 in 4.6).
+					// Godot doesn't save default values, so using Vulkan on Windows < 4.6 means having no setting saved (null).
+					if (get_setting("rendering/rendering_device/driver.windows") == Variant()) {
+						set_setting("rendering/rendering_device/driver.windows", "vulkan");
+					}
 					// Enable MeshInstance3D compat for projects created before 4.6.
 					set_setting("animation/compatibility/default_parent_skeleton_in_mesh_instance_3d", true);
 				}
