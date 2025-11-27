@@ -88,6 +88,7 @@ public:
 	EditorDock();
 
 	void open();
+	void make_visible();
 	void close();
 
 	void set_title(const String &p_title);
