@@ -42,7 +42,7 @@ void _global_unlock() {
 
 #ifdef THREADS_ENABLED
 
-#if defined(__WIN32__) && !defined(PTHREADS_WIN32)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(PTHREADS_WIN32)
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -105,5 +105,16 @@ template class MutexImpl<THREADING_NAMESPACE::recursive_mutex>;
 template class MutexImpl<THREADING_NAMESPACE::mutex>;
 template class MutexLock<MutexImpl<THREADING_NAMESPACE::recursive_mutex>>;
 template class MutexLock<MutexImpl<THREADING_NAMESPACE::mutex>>;
+#else
 
+SystemMutex::SystemMutex() {
+}
+SystemMutex::~SystemMutex() {
+}
+void SystemMutex::lock() {
+}
+bool SystemMutex::try_lock() {
+}
+void SystemMutex::unlock() {
+}
 #endif

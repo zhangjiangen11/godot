@@ -89,14 +89,14 @@ struct SmallMemory {
 		b->size_or_next = p_count;
 		return b->data;
 	}
-	_FORCE_INLINE_ void free_mem(void *p_ptr) {
+	_FORCE_INLINE_ void free_mem(void *p_ptr, int max_cache_count) {
 		if (p_ptr == nullptr) {
 			return;
 		}
 
 		uint8_t *mem = (uint8_t *)p_ptr;
 		mem -= sizeof(uint64_t);
-		if (free_count.get() > 500) {
+		if (free_count.get() > max_cache_count) {
 			free(mem);
 			return;
 		}
@@ -118,21 +118,49 @@ struct SmallMemoryManager {
 	if (value <= count) {                             \
 		return small_memory_##count.alloc_mem(count); \
 	}
-#define SAMLL_MEMORY_MEMBER_BREAH_FREE(ptr, value, count) \
-	if (value <= count) {                                 \
-		small_memory_##count.free_mem(ptr);               \
+#define SAMLL_MEMORY_MEMBER_BREAH_FREE(ptr, value, count, max_cache_count) \
+	if (value <= count) {                                                  \
+		small_memory_##count.free_mem(ptr, max_cache_count);               \
 	}
+
+#define SAMLL_MEMORY_MEMBER_BREAH_ELSE(value, count) \
+	else SAMLL_MEMORY_MEMBER_BREAH(value, count)
+#define SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(ptr, value, count, max_cache_count) \
+	else SAMLL_MEMORY_MEMBER_BREAH_FREE(ptr, value, count, max_cache_count)
 #define SAMLL_MEMORY_MEMBER_BREAH_INDEX(value, count, index) \
 	if (value <= count) {                                    \
 		return index;                                        \
 	}
 
+#define SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(value, count, index) \
+	else SAMLL_MEMORY_MEMBER_BREAH_INDEX(value, count, index)
 	void *alloc_mem(int p_count) {
 		if (p_count <= 0) {
 			return nullptr;
 		}
 		SAMLL_MEMORY_MEMBER_BREAH(p_count, 20)
-		else SAMLL_MEMORY_MEMBER_BREAH(p_count, 40) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 80) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 120) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 160) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 180) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 256) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 320) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 480) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 512) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 800) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1024) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1500) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 1800) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 2048) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 3000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 5000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 7000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 8000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 12000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 15000) else SAMLL_MEMORY_MEMBER_BREAH(p_count, 20000) else {
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 40)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 80)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 120)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 160)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 180)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 256)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 320)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 480)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 512)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 800)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 1024)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 1500)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 1800)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 2048)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 3000)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 5000)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 7000)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 8000)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 12000)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 15000)
+		SAMLL_MEMORY_MEMBER_BREAH_ELSE(p_count, 20000)
+		else {
 			uint8_t *mem = (uint8_t *)malloc(p_count + sizeof(uint64_t));
 			if (mem == nullptr) {
 				return nullptr;
@@ -146,8 +174,29 @@ struct SmallMemoryManager {
 			return;
 		}
 		uint64_t p_count = get_buffer_count(p_ptr);
-		SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 20)
-		else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 40) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 80) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 120) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 160) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 180) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 256) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 320) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 480) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 512) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 800) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 1024) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 1500) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 1800) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 2048) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 3000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 5000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 7000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 8000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 12000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 15000) else SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 20000) else {
+		SAMLL_MEMORY_MEMBER_BREAH_FREE(p_ptr, p_count, 20, 2048)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 40, 2048)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 80, 2048)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 120, 1500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 160, 1500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 180, 1500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 256, 1500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 320, 1500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 480, 1200)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 512, 1200)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 800, 1200)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 1024, 800)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 1500, 800)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 1800, 800)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 2048, 600)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 3000, 600)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 5000, 500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 7000, 500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 8000, 500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 12000, 500)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 15000, 300)
+		SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(p_ptr, p_count, 20000, 300)
+		else {
 			uint8_t *mem = (uint8_t *)p_ptr - sizeof(uint64_t);
 			free(mem);
 		}
@@ -185,9 +234,29 @@ struct SmallMemoryManager {
 
 	int get_buffer_type_index(int p_count) {
 		SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 20, 0)
-		else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 40, 1) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 80, 2) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 120, 3) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 160, 4) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 180, 5) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 256, 6) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 320, 7) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 480, 8) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 512, 9) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 800, 10) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1024, 11) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1500, 12) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 1800, 13) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 2048, 14) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 3000, 15) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 5000, 16) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 7000, 17) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 8000, 18) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 12000, 19) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 15000, 20) else SAMLL_MEMORY_MEMBER_BREAH_INDEX(p_count, 20000, 21)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 40, 1)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 80, 2)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 120, 3)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 160, 4)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 180, 5)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 256, 6)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 320, 7)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 480, 8)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 512, 9)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 800, 10)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 1024, 11)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 1500, 12)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 1800, 13)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 2048, 14)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 3000, 15)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 5000, 16)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 7000, 17)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 8000, 18)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 12000, 19)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 15000, 20)
+		SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(p_count, 20000, 21)
 
-				return -1;
+		return -1;
 	}
 
 	SAMLL_MEMORY_MEMBER(20);
