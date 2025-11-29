@@ -1868,13 +1868,13 @@ Error AudioServer::set_input_device_active(bool p_is_active) {
 int AudioServer::get_input_frames_available() {
 	AudioDriver *ad = AudioDriver::get_singleton();
 	ad->lock();
-	int input_position = ad->get_input_position();
+	int64_t input_position = ad->get_input_position();
 	if (input_position < input_buffer_ofs) {
-		int buffsize = ad->get_input_buffer().size();
+		int64_t buffsize = ad->get_input_buffer().size();
 		input_position += buffsize;
 	}
 	ad->unlock();
-	return (input_position - input_buffer_ofs) / 2;  // Buffer is stereo.
+	return (int)((input_position - input_buffer_ofs) / 2);  // Buffer is stereo.
 }
 
 int AudioServer::get_input_buffer_length_frames() {
