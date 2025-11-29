@@ -1859,9 +1859,10 @@ Error AudioServer::set_input_device_active(bool p_is_active) {
 		input_buffer_ofs = 0;
 		input_device_active = true;
 		return AudioDriver::get_singleton()->input_start();
+	} else {
+		input_device_active = false;
+		return AudioDriver::get_singleton()->input_stop();
 	}
-	input_device_active = false;
-	return AudioDriver::get_singleton()->input_stop();
 }
 
 int AudioServer::get_input_frames_available() {
@@ -1873,7 +1874,7 @@ int AudioServer::get_input_frames_available() {
 		input_position += buffsize;
 	}
 	ad->unlock();
-	return (input_position - input_buffer_ofs) / 2;
+	return (input_position - input_buffer_ofs) / 2;  // Buffer is stereo.
 }
 
 int AudioServer::get_input_buffer_length_frames() {
@@ -1889,7 +1890,7 @@ PackedVector2Array AudioServer::get_input_frames(int p_frames) {
 	AudioDriver *ad = AudioDriver::get_singleton();
 	ad->lock();
 	int input_position = ad->get_input_position();
-	Vector<int32_t> buf = ad->get_input_buffer(); // should this be returning Vector<int32_t>& ??
+	Vector<int32_t> buf = ad->get_input_buffer();
 	if (input_position < input_buffer_ofs) {
 		input_position += buf.size();
 	}
