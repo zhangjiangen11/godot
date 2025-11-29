@@ -1874,7 +1874,7 @@ int AudioServer::get_input_frames_available() {
 		input_position += buffsize;
 	}
 	ad->unlock();
-	return (int)((input_position - input_buffer_ofs) / 2);  // Buffer is stereo.
+	return (int)((input_position - input_buffer_ofs) / 2); // Buffer is stereo.
 }
 
 int AudioServer::get_input_buffer_length_frames() {
