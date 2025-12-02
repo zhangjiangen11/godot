@@ -324,7 +324,6 @@ void ImageTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("update", "image"), &ImageTexture::update);
 	ClassDB::bind_method(D_METHOD("set_size_override", "size"), &ImageTexture::set_size_override);
 
-<<<<<<< HEAD
 	ClassDB::bind_method(D_METHOD("set_nine_draw", "nine_draw"), &ImageTexture::set_nine_draw);
 	ClassDB::bind_method(D_METHOD("get_nine_draw"), &ImageTexture::get_nine_draw);
 
@@ -348,6 +347,7 @@ void ImageTexture::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_nine_vertical_fill", "nine_vertical_fill"), &ImageTexture::set_nine_vertical_fill);
 	ClassDB::bind_method(D_METHOD("get_nine_vertical_fill"), &ImageTexture::get_nine_vertical_fill);
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "_set_image", "get_image");
 
 	ADD_GROUP("Nine Patch", "nine_");
 
@@ -360,11 +360,6 @@ void ImageTexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_top"), "set_nine_top", "get_nine_top");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_right"), "set_nine_right", "get_nine_right");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_bottom"), "set_nine_bottom", "get_nine_bottom");
-=======
-	ClassDB::bind_method(D_METHOD("_set_image", "image"), &ImageTexture::set_image);
-
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "_set_image", "get_image");
->>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075
 }
 
 ImageTexture::~ImageTexture() {

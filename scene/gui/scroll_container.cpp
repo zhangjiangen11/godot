@@ -608,9 +608,6 @@ void ScrollContainer::_update_scrollbars() {
 	callable_mp(this, &ScrollContainer::_update_scrollbar_position).call_deferred();
 }
 
-<<<<<<< HEAD
-void ScrollContainer::_scroll_moved(float v) {
-=======
 void ScrollContainer::_update_scroll_hints() {
 	Size2 size = get_size();
 	Rect2 margins = _get_margins();
@@ -661,7 +658,6 @@ void ScrollContainer::_update_scroll_hints() {
 }
 
 void ScrollContainer::_scroll_moved(float) {
->>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075
 	queue_sort();
 }
 

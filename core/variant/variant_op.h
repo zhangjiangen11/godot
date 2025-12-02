@@ -357,22 +357,8 @@ public:
 };
 
 template <typename R, typename A, typename B>
-class OperatorEvaluatorShiftLeft {
+class OperatorEvaluatorShiftLeft : public CommonEvaluate<OperatorEvaluatorShiftLeft<R, A, B>> {
 public:
-	static void evaluate(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid) {
-		const A &a = VariantInternalAccessor<A>::get(&p_left);
-		const B &b = VariantInternalAccessor<B>::get(&p_right);
-
-#if defined(DEBUG_ENABLED)
-		if (b < 0) {
-			*r_ret = "Invalid operands for bit shifting. Only positive operands are supported.";
-			r_valid = false;
-			return;
-		}
-#endif
-		*r_ret = a << b;
-		r_valid = true;
-	}
 	static inline void validated_evaluate(const Variant *left, const Variant *right, Variant *r_ret) {
 		VariantInternalAccessor<R>::get(r_ret) = VariantInternalAccessor<A>::get(left) << VariantInternalAccessor<B>::get(right);
 	}
@@ -380,25 +366,12 @@ public:
 		PtrToArg<R>::encode(PtrToArg<A>::convert(left) << PtrToArg<B>::convert(right), r_ret);
 	}
 	static Variant::Type get_return_type() { return GetTypeInfo<R>::VARIANT_TYPE; }
+	using ReturnType = R;
 };
 
 template <typename R, typename A, typename B>
-class OperatorEvaluatorShiftRight {
+class OperatorEvaluatorShiftRight : public CommonEvaluate<OperatorEvaluatorShiftRight<R, A, B>> {
 public:
-	static void evaluate(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid) {
-		const A &a = VariantInternalAccessor<A>::get(&p_left);
-		const B &b = VariantInternalAccessor<B>::get(&p_right);
-
-#if defined(DEBUG_ENABLED)
-		if (b < 0) {
-			*r_ret = "Invalid operands for bit shifting. Only positive operands are supported.";
-			r_valid = false;
-			return;
-		}
-#endif
-		*r_ret = a >> b;
-		r_valid = true;
-	}
 	static inline void validated_evaluate(const Variant *left, const Variant *right, Variant *r_ret) {
 		VariantInternalAccessor<R>::get(r_ret) = VariantInternalAccessor<A>::get(left) >> VariantInternalAccessor<B>::get(right);
 	}
@@ -406,19 +379,12 @@ public:
 		PtrToArg<R>::encode(PtrToArg<A>::convert(left) >> PtrToArg<B>::convert(right), r_ret);
 	}
 	static Variant::Type get_return_type() { return GetTypeInfo<R>::VARIANT_TYPE; }
+	using ReturnType = R;
 };
 
 template <typename R, typename A, typename B>
-<<<<<<< HEAD
-class OperatorEvaluatorShiftRightVector {
+class OperatorEvaluatorShiftRightVector : public CommonEvaluate<OperatorEvaluatorShiftRightVector<R, A, B>> {
 public:
-	static void evaluate(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid) {
-		const A &a = VariantInternalAccessor<A>::get(&p_left);
-		const B &b = VariantInternalAccessor<B>::get(&p_right);
-
-		*r_ret = a >> b;
-		r_valid = true;
-	}
 	static inline void validated_evaluate(const Variant *left, const Variant *right, Variant *r_ret) {
 		VariantInternalAccessor<R>::get(r_ret) = VariantInternalAccessor<A>::get(left) >> VariantInternalAccessor<B>::get(right);
 	}
@@ -426,18 +392,12 @@ public:
 		PtrToArg<R>::encode(PtrToArg<A>::convert(left) >> PtrToArg<B>::convert(right), r_ret);
 	}
 	static Variant::Type get_return_type() { return GetTypeInfo<R>::VARIANT_TYPE; }
+	using ReturnType = R;
 };
 
 template <typename R, typename A, typename B>
-class OperatorEvaluatorShiftLeftVector {
+class OperatorEvaluatorShiftLeftVector : public CommonEvaluate<OperatorEvaluatorShiftLeftVector<R, A, B>> {
 public:
-	static void evaluate(const Variant &p_left, const Variant &p_right, Variant *r_ret, bool &r_valid) {
-		const A &a = VariantInternalAccessor<A>::get(&p_left);
-		const B &b = VariantInternalAccessor<B>::get(&p_right);
-
-		*r_ret = a << b;
-		r_valid = true;
-	}
 	static inline void validated_evaluate(const Variant *left, const Variant *right, Variant *r_ret) {
 		VariantInternalAccessor<R>::get(r_ret) = VariantInternalAccessor<A>::get(left) << VariantInternalAccessor<B>::get(right);
 	}
@@ -445,13 +405,11 @@ public:
 		PtrToArg<R>::encode(PtrToArg<A>::convert(left) << PtrToArg<B>::convert(right), r_ret);
 	}
 	static Variant::Type get_return_type() { return GetTypeInfo<R>::VARIANT_TYPE; }
+	using ReturnType = R;
 };
 
 template <typename R, typename A, typename B>
-class OperatorEvaluatorBitOr {
-=======
 class OperatorEvaluatorBitOr : public CommonEvaluate<OperatorEvaluatorBitOr<R, A, B>> {
->>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075
 public:
 	static inline void validated_evaluate(const Variant *left, const Variant *right, Variant *r_ret) {
 		VariantInternalAccessor<R>::get(r_ret) = VariantInternalAccessor<A>::get(left) | VariantInternalAccessor<B>::get(right);
