@@ -30,25 +30,14 @@
 
 #pragma once
 
-#include "core/io/dir_access.h"
-#include "editor/file_system/file_info.h"
-#include "scene/gui/dialogs.h"
-#include "scene/property_list_helper.h"
+#include "scene/gui/file_dialog.h"
 
 class DependencyRemoveDialog;
-class GridContainer;
-class HSplitContainer;
-class HFlowContainer;
-class ItemList;
-class MenuButton;
-class OptionButton;
-class PopupMenu;
-class TextureRect;
-class VSeparator;
 
-class EditorFileDialog : public ConfirmationDialog {
-	GDCLASS(EditorFileDialog, ConfirmationDialog);
+class EditorFileDialog : public FileDialog {
+	GDCLASS(EditorFileDialog, FileDialog);
 
+<<<<<<< HEAD
 public:
 	enum DisplayMode {
 		DISPLAY_THUMBNAILS,
@@ -286,92 +275,25 @@ private:
 	void _update_option_controls();
 	void _option_changed_checkbox_toggled(bool p_pressed, const String &p_name);
 	void _option_changed_item_selected(int p_idx, const String &p_name);
+=======
+	DependencyRemoveDialog *dependency_remove_dialog = nullptr;
+>>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075
 
 protected:
-	virtual void _update_theme_item_cache() override;
+	virtual void _item_menu_id_pressed(int p_option) override;
 
-	virtual void _popup_base(const Rect2i &p_rect = Rect2i()) override;
-	void _notification(int p_what);
-	bool _set(const StringName &p_name, const Variant &p_value) { return property_helper.property_set_value(p_name, p_value); }
-	bool _get(const StringName &p_name, Variant &r_ret) const { return property_helper.property_get_value(p_name, r_ret); }
-	void _get_property_list(List<PropertyInfo> *p_list) const { property_helper.get_property_list(p_list); }
-	bool _property_can_revert(const StringName &p_name) const { return property_helper.property_can_revert(p_name); }
-	bool _property_get_revert(const StringName &p_name, Variant &r_property) const { return property_helper.property_get_revert(p_name, r_property); }
+	virtual bool _should_use_native_popup() const override;
+	virtual bool _should_hide_file(const String &p_file) const override;
+	virtual Color _get_folder_color(const String &p_path) const override;
+
 	static void _bind_methods();
+	void _validate_property(PropertyInfo &p_property) const;
+	void _notification(int p_what);
 
 public:
-	virtual void set_visible(bool p_visible) override;
-
-	// Public for use with callable_mp.
-	void _file_submitted(const String &p_file);
-
-	void popup_file_dialog();
-	void clear_filters();
-	void add_filter(const String &p_filter, const String &p_description = "");
-	void set_filters(const Vector<String> &p_filters);
-	Vector<String> get_filters() const;
-	void clear_search_filter();
-	void set_search_filter(const String &p_search_filter);
-	String get_search_filter() const;
-
-	void set_enable_multiple_selection(bool p_enable);
-	Vector<String> get_selected_files() const;
-
-	String get_current_dir() const;
-	String get_current_file() const;
-	String get_current_path() const;
-	void set_current_dir(const String &p_dir);
-	void set_current_file(const String &p_file);
-	void set_current_path(const String &p_path);
-
-	String get_option_name(int p_option) const;
-	Vector<String> get_option_values(int p_option) const;
-	int get_option_default(int p_option) const;
-	void set_option_name(int p_option, const String &p_name);
-	void set_option_values(int p_option, const Vector<String> &p_values);
-	void set_option_default(int p_option, int p_index);
-
-	void add_option(const String &p_name, const Vector<String> &p_values, int p_index);
-
-	void set_option_count(int p_count);
-	int get_option_count() const;
-
-	Dictionary get_selected_options() const;
-
-	void set_display_mode(DisplayMode p_mode);
-	DisplayMode get_display_mode() const;
-
-	void set_file_mode(FileMode p_mode);
-	FileMode get_file_mode() const;
-
-	VBoxContainer *get_vbox();
-	LineEdit *get_line_edit() { return file; }
-
-	void set_access(Access p_access);
-	Access get_access() const;
-
-	static void set_default_show_hidden_files(bool p_show);
-	static void set_default_display_mode(DisplayMode p_mode);
-	void set_show_hidden_files(bool p_show);
-	void set_show_search_filter(bool p_show);
-	bool is_showing_hidden_files() const;
-
-	void invalidate();
-
-	void set_disable_overwrite_warning(bool p_disable);
-	bool is_overwrite_warning_disabled() const;
-
-	void set_previews_enabled(bool p_enabled);
-	bool are_previews_enabled();
-
 #ifndef DISABLE_DEPRECATED
 	void add_side_menu(Control *p_menu, const String &p_title = "") { ERR_FAIL_MSG("add_side_menu() is kept for compatibility and does nothing. For similar functionality, you can show another dialog after file dialog."); }
+	void set_disable_overwrite_warning(bool p_disable) { set_customization_flag_enabled(CUSTOMIZATION_OVERWRITE_WARNING, !p_disable); }
+	bool is_overwrite_warning_disabled() const { return !is_customization_flag_enabled(CUSTOMIZATION_OVERWRITE_WARNING); }
 #endif
-
-	EditorFileDialog();
-	~EditorFileDialog();
 };
-
-VARIANT_ENUM_CAST(EditorFileDialog::FileMode);
-VARIANT_ENUM_CAST(EditorFileDialog::Access);
-VARIANT_ENUM_CAST(EditorFileDialog::DisplayMode);

@@ -30,256 +30,75 @@
 
 #include "editor_file_dialog.h"
 
-#include "core/config/project_settings.h"
-#include "core/os/keyboard.h"
-#include "core/os/os.h"
 #include "editor/docks/filesystem_dock.h"
-#include "editor/editor_node.h"
 #include "editor/file_system/dependency_editor.h"
-#include "editor/file_system/editor_file_system.h"
-#include "editor/inspector/editor_resource_preview.h"
 #include "editor/settings/editor_settings.h"
-#include "editor/themes/editor_scale.h"
-#include "scene/gui/center_container.h"
-#include "scene/gui/check_box.h"
-#include "scene/gui/flow_container.h"
-#include "scene/gui/grid_container.h"
-#include "scene/gui/label.h"
-#include "scene/gui/line_edit.h"
-#include "scene/gui/option_button.h"
-#include "scene/gui/separator.h"
-#include "scene/gui/split_container.h"
-#include "scene/gui/texture_rect.h"
-#include "servers/display/display_server.h"
 
-void EditorFileDialog::_native_popup() {
-	// Show native dialog directly.
-	String root;
-	if (access == ACCESS_RESOURCES) {
-		root = ProjectSettings::get_singleton()->get_resource_path();
-	} else if (access == ACCESS_USERDATA) {
-		root = OS::get_singleton()->get_user_data_dir();
-	}
+void EditorFileDialog::_item_menu_id_pressed(int p_option) {
+	// Use dependency dialog to delete the entry in the editor, but only for project files.
+	if (p_option == ITEM_MENU_DELETE && get_access() == ACCESS_RESOURCES) {
+		const PackedInt32Array selected = get_file_item_list()->get_selected_items();
+		if (selected.is_empty()) {
+			return;
+		}
 
-	// Attach native file dialog to first persistent parent window.
-	Window *w = (is_transient() || is_transient_to_focused()) ? get_parent_visible_window() : nullptr;
-	while (w && w->get_flag(FLAG_POPUP) && w->get_parent_visible_window()) {
-		w = w->get_parent_visible_window();
-	}
-	DisplayServer::WindowID wid = w ? w->get_window_id() : DisplayServer::INVALID_WINDOW_ID;
+		if (!dependency_remove_dialog) {
+			dependency_remove_dialog = memnew(DependencyRemoveDialog);
+			add_child(dependency_remove_dialog);
+		}
 
-	DisplayServer::get_singleton()->file_dialog_with_options_show(get_displayed_title(), ProjectSettings::get_singleton()->globalize_path(dir->get_text()), root, file->get_text().get_file(), show_hidden_files, DisplayServer::FileDialogMode(mode), processed_filters, _get_options(), callable_mp(this, &EditorFileDialog::_native_dialog_cb), wid);
-}
+		const Dictionary meta = get_file_item_list()->get_item_metadata(selected[0]);
+		const String delete_path = dir_access->get_current_dir().path_join(meta["name"]);
 
-void EditorFileDialog::_popup_base(const Rect2i &p_rect) {
-	_update_option_controls();
-
-	bool use_native = DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_NATIVE_DIALOG_FILE) && (bool(EDITOR_GET("interface/editor/use_native_file_dialogs")) || OS::get_singleton()->is_sandboxed());
-	if (use_native) {
-		_native_popup();
-	} else {
-		// Show custom file dialog.
-		ConfirmationDialog::_popup_base(p_rect);
-	}
-}
-
-void EditorFileDialog::set_visible(bool p_visible) {
-	if (p_visible) {
-		bool use_native = DisplayServer::get_singleton()->has_feature(DisplayServer::FEATURE_NATIVE_DIALOG_FILE) && (bool(EDITOR_GET("interface/editor/use_native_file_dialogs")) || OS::get_singleton()->is_sandboxed());
-		_update_option_controls();
-		if (use_native) {
-			_native_popup();
+		if (meta["dir"]) {
+			dependency_remove_dialog->show(Vector<String>{ delete_path }, Vector<String>());
 		} else {
-			// Show custom file dialog.
-			ConfirmationDialog::set_visible(p_visible);
+			dependency_remove_dialog->show(Vector<String>(), Vector<String>{ delete_path });
 		}
-	} else {
-		ConfirmationDialog::set_visible(p_visible);
-	}
-}
-
-void EditorFileDialog::_native_dialog_cb(bool p_ok, const Vector<String> &p_files, int p_filter, const Dictionary &p_selected_options) {
-	if (!p_ok) {
-		file->set_text("");
-		emit_signal(SNAME("canceled"));
 		return;
 	}
-
-	if (p_files.is_empty()) {
-		return;
-	}
-
-	Vector<String> files = p_files;
-	if (access != ACCESS_FILESYSTEM) {
-		for (String &file_name : files) {
-			file_name = ProjectSettings::get_singleton()->localize_path(file_name);
-		}
-	}
-	selected_options = p_selected_options;
-
-	String f = files[0];
-
-	filter->select(p_filter);
-	dir->set_text(f.get_base_dir());
-	file->set_text(f.get_file());
-	_dir_submitted(f.get_base_dir());
-
-	if (mode == FILE_MODE_OPEN_FILES) {
-		emit_signal(SNAME("files_selected"), files);
-	} else {
-		if (mode == FILE_MODE_SAVE_FILE) {
-			bool valid = false;
-
-			if (p_filter == filter->get_item_count() - 1) {
-				valid = true; // Match none.
-			} else if (filters.size() > 1 && p_filter == 0) {
-				// Match all filters.
-				for (int i = 0; i < filters.size(); i++) {
-					String flt = filters[i].get_slicec(';', 0);
-					for (int j = 0; j < flt.get_slice_count(","); j++) {
-						String str = flt.get_slicec(',', j).strip_edges();
-						if (f.matchn(str)) {
-							valid = true;
-							break;
-						}
-					}
-					if (valid) {
-						break;
-					}
-				}
-			} else {
-				int idx = p_filter;
-				if (filters.size() > 1) {
-					idx--;
-				}
-				if (idx >= 0 && idx < filters.size()) {
-					String flt = filters[idx].get_slicec(';', 0);
-					int filter_slice_count = flt.get_slice_count(",");
-					for (int j = 0; j < filter_slice_count; j++) {
-						String str = flt.get_slicec(',', j).strip_edges();
-						if (f.matchn(str)) {
-							valid = true;
-							break;
-						}
-					}
-
-					if (!valid && filter_slice_count > 0) {
-						String str = flt.get_slicec(',', 0).strip_edges();
-						f += str.substr(1);
-						file->set_text(f.get_file());
-						valid = true;
-					}
-				} else {
-					valid = true;
-				}
-			}
-
-			// Add first extension of filter if no valid extension is found.
-			if (!valid) {
-				int idx = p_filter;
-				String flt = filters[idx].get_slicec(';', 0);
-				String ext = flt.get_slicec(',', 0).strip_edges().get_extension();
-				f += "." + ext;
-			}
-			emit_signal(SNAME("file_selected"), f);
-		} else if ((mode == FILE_MODE_OPEN_ANY || mode == FILE_MODE_OPEN_FILE) && dir_access->file_exists(f)) {
-			emit_signal(SNAME("file_selected"), f);
-		} else if (mode == FILE_MODE_OPEN_ANY || mode == FILE_MODE_OPEN_DIR) {
-			emit_signal(SNAME("dir_selected"), f);
-		}
-	}
+	FileDialog::_item_menu_id_pressed(p_option);
 }
 
-void EditorFileDialog::popup_file_dialog() {
-	popup_centered_clamped(Size2(1050, 700) * EDSCALE, 0.8);
-	_focus_file_text();
+bool EditorFileDialog::_should_use_native_popup() const {
+	return _can_use_native_popup() && (OS::get_singleton()->is_sandboxed() || EDITOR_GET("interface/editor/use_native_file_dialogs").operator bool());
 }
 
-void EditorFileDialog::_focus_file_text() {
-	int lp = file->get_text().rfind_char('.');
-	if (lp != -1) {
-		file->select(0, lp);
-		file->grab_focus();
+bool EditorFileDialog::_should_hide_file(const String &p_file) const {
+	if (Engine::get_singleton()->is_project_manager_hint()) {
+		return false;
 	}
+	const String full_path = dir_access->get_current_dir().path_join(p_file);
+	return EditorFileSystem::_should_skip_directory(full_path);
 }
 
-VBoxContainer *EditorFileDialog::get_vbox() {
-	return vbox;
+Color EditorFileDialog::_get_folder_color(const String &p_path) const {
+	return FileSystemDock::get_dir_icon_color(p_path, FileDialog::_get_folder_color(p_path));
 }
 
-void EditorFileDialog::_update_theme_item_cache() {
-	ConfirmationDialog::_update_theme_item_cache();
+void EditorFileDialog::_bind_methods() {
+#ifndef DISABLE_DEPRECATED
+	ClassDB::bind_method(D_METHOD("add_side_menu", "menu", "title"), &EditorFileDialog::add_side_menu, DEFVAL(""));
+	ClassDB::bind_method(D_METHOD("set_disable_overwrite_warning", "disable"), &EditorFileDialog::set_disable_overwrite_warning);
+	ClassDB::bind_method(D_METHOD("is_overwrite_warning_disabled"), &EditorFileDialog::is_overwrite_warning_disabled);
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "disable_overwrite_warning", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR), "set_disable_overwrite_warning", "is_overwrite_warning_disabled");
+#endif
+}
 
-	theme_cache.parent_folder = get_editor_theme_icon(SNAME("ArrowUp"));
-	theme_cache.forward_folder = get_editor_theme_icon(SNAME("Forward"));
-	theme_cache.back_folder = get_editor_theme_icon(SNAME("Back"));
-	theme_cache.reload = get_editor_theme_icon(SNAME("Reload"));
-	theme_cache.toggle_hidden = get_editor_theme_icon(SNAME("GuiVisibilityVisible"));
-	theme_cache.toggle_filename_filter = get_editor_theme_icon(SNAME("FilenameFilter"));
-	theme_cache.favorite = get_editor_theme_icon(SNAME("Favorites"));
-	theme_cache.mode_thumbnails = get_editor_theme_icon(SNAME("FileThumbnail"));
-	theme_cache.mode_list = get_editor_theme_icon(SNAME("FileList"));
-	theme_cache.favorites_up = get_editor_theme_icon(SNAME("MoveUp"));
-	theme_cache.favorites_down = get_editor_theme_icon(SNAME("MoveDown"));
-	theme_cache.create_folder = get_editor_theme_icon(SNAME("FolderCreate"));
-	theme_cache.open_folder = get_editor_theme_icon(SNAME("FolderBrowse"));
-
-	theme_cache.filter_box = get_editor_theme_icon(SNAME("Search"));
-	theme_cache.file_sort_button = get_editor_theme_icon(SNAME("Sort"));
-
-	theme_cache.file = get_editor_theme_icon(SNAME("File"));
-	theme_cache.folder = get_editor_theme_icon(SNAME("Folder"));
-	theme_cache.folder_icon_color = get_theme_color(SNAME("folder_icon_color"), SNAME("FileDialog"));
-
-	theme_cache.action_copy = get_editor_theme_icon(SNAME("ActionCopy"));
-	theme_cache.action_delete = get_editor_theme_icon(SNAME("Remove"));
-	theme_cache.filesystem = get_editor_theme_icon(SNAME("Filesystem"));
-
-	theme_cache.folder_medium_thumbnail = get_editor_theme_icon(SNAME("FolderMediumThumb"));
-	theme_cache.file_medium_thumbnail = get_editor_theme_icon(SNAME("FileMediumThumb"));
-	theme_cache.folder_big_thumbnail = get_editor_theme_icon(SNAME("FolderBigThumb"));
-	theme_cache.file_big_thumbnail = get_editor_theme_icon(SNAME("FileBigThumb"));
-
-	theme_cache.progress[0] = get_editor_theme_icon("Progress1");
-	theme_cache.progress[1] = get_editor_theme_icon("Progress2");
-	theme_cache.progress[2] = get_editor_theme_icon("Progress3");
-	theme_cache.progress[3] = get_editor_theme_icon("Progress4");
-	theme_cache.progress[4] = get_editor_theme_icon("Progress5");
-	theme_cache.progress[5] = get_editor_theme_icon("Progress6");
-	theme_cache.progress[6] = get_editor_theme_icon("Progress7");
-	theme_cache.progress[7] = get_editor_theme_icon("Progress8");
+void EditorFileDialog::_validate_property(PropertyInfo &p_property) const {
+	// Hide properties controlled by editor settings.
+	if (p_property.name == "use_native_dialog" || p_property.name == "show_hidden_files" || p_property.name == "display_mode") {
+		p_property.usage = PROPERTY_USAGE_NONE;
+	}
 }
 
 void EditorFileDialog::_notification(int p_what) {
 	switch (p_what) {
-		case NOTIFICATION_POSTINITIALIZE: {
-			set_translation_domain(SNAME("godot.editor"));
-		} break;
-
-		case NOTIFICATION_TRANSLATION_CHANGED: {
-			update_filters();
-			[[fallthrough]];
-		}
-
-		case NOTIFICATION_THEME_CHANGED:
-		case Control::NOTIFICATION_LAYOUT_DIRECTION_CHANGED: {
-			_update_icons();
-			invalidate();
-		} break;
-
-		case NOTIFICATION_PROCESS: {
-			if (preview_waiting) {
-				preview_wheel_timeout -= get_process_delta_time();
-				if (preview_wheel_timeout <= 0) {
-					preview_wheel_index++;
-					if (preview_wheel_index >= 8) {
-						preview_wheel_index = 0;
-					}
-
-					Ref<Texture2D> frame = theme_cache.progress[preview_wheel_index];
-					preview->set_texture(frame);
-					preview_wheel_timeout = 0.1;
-				}
+		case NOTIFICATION_VISIBILITY_CHANGED: {
+			if (!is_visible()) {
+				// Synchronize back favorites and recent directories, in case they have changed.
+				EditorSettings::get_singleton()->set_favorites(get_favorite_list(), false);
+				EditorSettings::get_singleton()->set_recent_dirs(get_recent_list(), false);
 			}
 		} break;
 
@@ -287,39 +106,12 @@ void EditorFileDialog::_notification(int p_what) {
 			if (!EditorSettings::get_singleton()->check_changed_settings_in_group("filesystem/file_dialog")) {
 				break;
 			}
-			bool is_showing_hidden = EDITOR_GET("filesystem/file_dialog/show_hidden_files");
-			if (show_hidden_files != is_showing_hidden) {
-				set_show_hidden_files(is_showing_hidden);
-			}
+			set_show_hidden_files(EDITOR_GET("filesystem/file_dialog/show_hidden_files"));
 			set_display_mode((DisplayMode)EDITOR_GET("filesystem/file_dialog/display_mode").operator int());
-
-			// DO NOT CALL UPDATE FILE LIST HERE, ALL HUNDREDS OF HIDDEN DIALOGS WILL RESPOND, CALL INVALIDATE INSTEAD
-			invalidate();
-		} break;
-
-		case NOTIFICATION_VISIBILITY_CHANGED: {
-			if (!is_visible()) {
-				set_process_shortcut_input(false);
-			}
-
-			invalidate(); // For consistency with the standard FileDialog.
-		} break;
-
-		case NOTIFICATION_WM_WINDOW_FOCUS_IN: {
-			// Check if the current directory was removed externally (much less likely to happen while editor window is focused).
-			String previous_dir = get_current_dir();
-			while (!dir_access->dir_exists(get_current_dir())) {
-				_go_up();
-
-				// In case we can't go further up, use some fallback and break.
-				if (get_current_dir() == previous_dir) {
-					_dir_submitted(OS::get_singleton()->get_user_data_dir());
-					break;
-				}
-			}
 		} break;
 	}
 }
+<<<<<<< HEAD
 
 void EditorFileDialog::shortcut_input(const Ref<InputEvent> &p_event) {
 	ERR_FAIL_COND(p_event.is_null());
@@ -2647,3 +2439,5 @@ EditorFileDialog::~EditorFileDialog() {
 		unregister_func(this);
 	}
 }
+=======
+>>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075

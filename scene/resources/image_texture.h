@@ -104,12 +104,15 @@ public:
 
 protected:
 	virtual void reload_from_file() override;
+<<<<<<< HEAD
 	void _update_piece_rects(Rect2 *_piece_rects, const Rect2 &p_rect) const;
 
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 
+=======
+>>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075
 	static void _bind_methods();
 
 public:

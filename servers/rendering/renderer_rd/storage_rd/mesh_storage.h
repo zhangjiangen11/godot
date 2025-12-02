@@ -260,6 +260,7 @@ public:
 		int custom_command_buffer_offset = 0;
 
 		bool dirty = false;
+		bool using_custom_cammad_buffer = false;
 		MultiMesh *dirty_list = nullptr;
 
 		RendererMeshStorage::MultiMeshInterpolator interpolator;

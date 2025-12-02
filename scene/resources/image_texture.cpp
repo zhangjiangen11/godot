@@ -60,26 +60,6 @@ void ImageTexture::reload_from_file() {
 	}
 }
 
-bool ImageTexture::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "image") {
-		set_image(p_value);
-		return true;
-	}
-	return false;
-}
-
-bool ImageTexture::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "image") {
-		r_ret = get_image();
-		return true;
-	}
-	return false;
-}
-
-void ImageTexture::_get_property_list(List<PropertyInfo> *p_list) const {
-	p_list->push_back(PropertyInfo(Variant::OBJECT, PNAME("image"), PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT));
-}
-
 Ref<ImageTexture> ImageTexture::create_from_image(const Ref<Image> &p_image) {
 	ERR_FAIL_COND_V_MSG(p_image.is_null(), Ref<ImageTexture>(), "Invalid image: null");
 	ERR_FAIL_COND_V_MSG(p_image->is_empty(), Ref<ImageTexture>(), "Invalid image: image is empty");
@@ -344,6 +324,7 @@ void ImageTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("update", "image"), &ImageTexture::update);
 	ClassDB::bind_method(D_METHOD("set_size_override", "size"), &ImageTexture::set_size_override);
 
+<<<<<<< HEAD
 	ClassDB::bind_method(D_METHOD("set_nine_draw", "nine_draw"), &ImageTexture::set_nine_draw);
 	ClassDB::bind_method(D_METHOD("get_nine_draw"), &ImageTexture::get_nine_draw);
 
@@ -379,6 +360,11 @@ void ImageTexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_top"), "set_nine_top", "get_nine_top");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_right"), "set_nine_right", "get_nine_right");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_bottom"), "set_nine_bottom", "get_nine_bottom");
+=======
+	ClassDB::bind_method(D_METHOD("_set_image", "image"), &ImageTexture::set_image);
+
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "_set_image", "get_image");
+>>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075
 }
 
 ImageTexture::~ImageTexture() {
