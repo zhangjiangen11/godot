@@ -84,7 +84,7 @@ public:
 		FLAG_CHANGE_CACHE = 1024,
 	};
 
-	static Error save(RequiredParam<Resource> p_resource, const String &p_path = "", uint32_t p_flags = (uint32_t)FLAG_NONE, bool notify = true);
+	static Error save(RequiredParam<Resource> rp_resource, const String &p_path = "", uint32_t p_flags = (uint32_t)FLAG_NONE, bool notify = true);
 	static void get_recognized_extensions(const Ref<Resource> &p_resource, List<String> *p_extensions);
 	static void add_resource_format_saver(Ref<ResourceFormatSaver> p_format_saver, bool p_at_front = false);
 	static void remove_resource_format_saver(Ref<ResourceFormatSaver> p_format_saver);
