@@ -368,12 +368,6 @@ static String hresult_to_string(HRESULT hr) {
 	return ret;
 }
 
-Error RenderingDeviceDriverD3D12::CPUDescriptorsHeapPools::allocate(ID3D12Device *p_device, const D3D12_DESCRIPTOR_HEAP_DESC &p_desc, CPUDescriptorsHeapHandle &r_result) {
-	ERR_FAIL_COND_V(p_desc.NodeMask != 0 || p_desc.Flags != 0 || p_desc.Type >= D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES, ERR_INVALID_PARAMETER);
-
-	CPUDescriptorsHeapPool &pool = pools[p_desc.Type];
-	return pool.allocate(p_device, p_desc, r_result);
-}
 static D3D12_CPU_DESCRIPTOR_HANDLE get_cpu_handle(D3D12_CPU_DESCRIPTOR_HANDLE p_handle, uint64_t p_index, uint32_t p_increment_size) {
 	p_handle.ptr += p_index * p_increment_size;
 	return p_handle;
