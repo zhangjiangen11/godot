@@ -347,7 +347,7 @@ void ImageTexture::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_nine_vertical_fill", "nine_vertical_fill"), &ImageTexture::set_nine_vertical_fill);
 	ClassDB::bind_method(D_METHOD("get_nine_vertical_fill"), &ImageTexture::get_nine_vertical_fill);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "_set_image", "get_image");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "set_image", "get_image");
 
 	ADD_GROUP("Nine Patch", "nine_");
 

@@ -1460,7 +1460,7 @@ uniform vec3 uv2_offset;
 // 获取实例矩阵索引
 int get_instance_matrix_index(int gpu_instance_id){
 	ivec2 pos = ivec2(gpu_instance_id,int(render_instance_data.z + 1.1));
-	return floatBitsToInt(texelFetch(render_instance_texture,pos,0).r);
+	return floatBitsToInt(texelFetch(render_instance_index_texture,pos,0).r);
 }
 
 mat4 get_instance_matrix(int gpu_instance_id){

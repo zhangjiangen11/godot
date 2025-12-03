@@ -104,32 +104,8 @@
 		<member name="scroll_vertical_custom_step" type="float" setter="set_vertical_custom_step" getter="get_vertical_custom_step" default="-1.0">
 			Overrides the [member ScrollBar.custom_step] used when clicking the internal scroll bar's vertical increment and decrement buttons or when using arrow keys when the [ScrollBar] is focused.
 		</member>
-<<<<<<< HEAD
-		<member name="v_sb_background" type="Texture2D" setter="set_v_sb_background" getter="get_v_sb_background">
-		</member>
-		<member name="v_sb_background_focus" type="Texture2D" setter="set_v_sb_background_focus" getter="get_v_sb_background_focus">
-		</member>
-		<member name="v_sb_decrement" type="Texture2D" setter="set_v_sb_decrement" getter="get_v_sb_decrement">
-		</member>
-		<member name="v_sb_decrement_hl" type="Texture2D" setter="set_v_sb_decrement_hl" getter="get_v_sb_decrement_hl">
-		</member>
-		<member name="v_sb_decrement_pressed" type="Texture2D" setter="set_v_sb_decrement_pressed" getter="get_v_sb_decrement_pressed">
-		</member>
-		<member name="v_sb_grabber" type="Texture2D" setter="set_v_sb_grabber" getter="get_v_sb_grabber">
-		</member>
-		<member name="v_sb_grabber_hl" type="Texture2D" setter="set_v_sb_grabber_hl" getter="get_v_sb_grabber_hl">
-		</member>
-		<member name="v_sb_grabber_pressed" type="Texture2D" setter="set_v_sb_grabber_pressed" getter="get_v_sb_grabber_pressed">
-		</member>
-		<member name="v_sb_increment" type="Texture2D" setter="set_v_sb_increment" getter="get_v_sb_increment">
-		</member>
-		<member name="v_sb_increment_hl" type="Texture2D" setter="set_v_sb_increment_hl" getter="get_v_sb_increment_hl">
-		</member>
-		<member name="v_sb_increment_pressed" type="Texture2D" setter="set_v_sb_increment_pressed" getter="get_v_sb_increment_pressed">
-=======
 		<member name="tile_scroll_hint" type="bool" setter="set_tile_scroll_hint" getter="is_scroll_hint_tiled" default="false">
 			If [code]true[/code], the scroll hint texture will be tiled instead of stretched. See [member scroll_hint_mode].
->>>>>>> 5f12ada7a4ae9c440e2b22be168c78dba0244075
 		</member>
 		<member name="vertical_scroll_mode" type="int" setter="set_vertical_scroll_mode" getter="get_vertical_scroll_mode" enum="ScrollContainer.ScrollMode" default="1">
 			Controls whether vertical scrollbar can be used and when it should be visible.
