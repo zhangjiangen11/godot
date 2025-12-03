@@ -1060,11 +1060,13 @@ public:
 	RID _uniform_buffer_create(uint32_t p_size_bytes, const Vector<uint8_t> &p_data, BitField<BufferCreationBits> p_creation_bits = 0) {
 		return uniform_buffer_create(p_size_bytes, p_data, p_creation_bits);
 	}
+	bool uniform_buffer_valid(RID p_buffer) const;
 
 	RID storage_buffer_create(uint32_t p_size_bytes, Span<uint8_t> p_data = {}, BitField<StorageBufferUsage> p_usage = 0, BitField<BufferCreationBits> p_creation_bits = 0);
 	RID _storage_buffer_create(uint32_t p_size_bytes, const Vector<uint8_t> &p_data, BitField<StorageBufferUsage> p_usage = 0, BitField<BufferCreationBits> p_creation_bits = 0) {
 		return storage_buffer_create(p_size_bytes, p_data, p_usage, p_creation_bits);
 	}
+	bool storage_buffer_valid(RID p_buffer) const;
 
 	RID texture_buffer_create(uint32_t p_size_elements, DataFormat p_format, Span<uint8_t> p_data = {});
 	RID _texture_buffer_create(uint32_t p_size_elements, DataFormat p_format, const Vector<uint8_t> &p_data) {

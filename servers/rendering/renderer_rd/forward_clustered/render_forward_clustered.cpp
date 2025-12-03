@@ -1705,6 +1705,8 @@ void RenderForwardClustered::_render_scene(RenderDataRD *p_render_data, const Co
 	//fill up ubo
 
 	RENDER_TIMESTAMP("Prepare 3D Scene");
+	// 处理开始绘制场景
+	_process_compositor_effects(RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE, p_render_data);
 
 	// get info about our rendering effects
 	bool ce_needs_motion_vectors = _compositor_effects_has_flag(p_render_data, RS::COMPOSITOR_EFFECT_FLAG_NEEDS_MOTION_VECTORS);

@@ -41,6 +41,9 @@ class CompositorEffect : public Resource {
 
 public:
 	enum EffectCallbackType {
+		// // 开始绘制场景，这个时候很多东西还没有准备好，这个时候可以处理一下自定义的一些东西，比如设置环境颜色
+		// 场景自定义剔除，隐藏，显示等等，刷新一下自定义渲染的一些数据
+		EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE,
 		EFFECT_CALLBACK_TYPE_PRE_OPAQUE,
 		EFFECT_CALLBACK_TYPE_POST_OPAQUE,
 		EFFECT_CALLBACK_TYPE_POST_SKY,

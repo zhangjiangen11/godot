@@ -815,11 +815,12 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 	RENDER_TIMESTAMP("Prepare 3D Scene");
 
 	_update_vrs(rb);
+	// 处理开始绘制场景
+	_process_compositor_effects(RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE, p_render_data);
 
 	if (rb->has_texture(RB_SCOPE_VRS, RB_TEXTURE)) {
 		global_pipeline_data_required.use_vrs = true;
 	}
-
 	RENDER_TIMESTAMP("Setup 3D Scene");
 
 	bool has_depth_texture_override = false;

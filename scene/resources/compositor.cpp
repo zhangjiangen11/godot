@@ -63,6 +63,7 @@ void CompositorEffect::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_needs_separate_specular"), &CompositorEffect::get_needs_separate_specular);
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "needs_separate_specular"), "set_needs_separate_specular", "get_needs_separate_specular");
 
+	BIND_ENUM_CONSTANT(EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE)
 	BIND_ENUM_CONSTANT(EFFECT_CALLBACK_TYPE_PRE_OPAQUE)
 	BIND_ENUM_CONSTANT(EFFECT_CALLBACK_TYPE_POST_OPAQUE)
 	BIND_ENUM_CONSTANT(EFFECT_CALLBACK_TYPE_POST_SKY)
@@ -127,6 +128,9 @@ void CompositorEffect::set_access_resolved_color(bool p_enabled) {
 }
 
 bool CompositorEffect::get_access_resolved_color() const {
+	if (effect_callback_type == EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE) {
+		return false;
+	}
 	return access_resolved_color;
 }
 
@@ -140,6 +144,9 @@ void CompositorEffect::set_access_resolved_depth(bool p_enabled) {
 }
 
 bool CompositorEffect::get_access_resolved_depth() const {
+	if (effect_callback_type == EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE) {
+		return false;
+	}
 	return access_resolved_depth;
 }
 
@@ -153,6 +160,9 @@ void CompositorEffect::set_needs_motion_vectors(bool p_enabled) {
 }
 
 bool CompositorEffect::get_needs_motion_vectors() const {
+	if (effect_callback_type == EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE) {
+		return false;
+	}
 	return needs_motion_vectors;
 }
 
@@ -166,6 +176,9 @@ void CompositorEffect::set_needs_normal_roughness(bool p_enabled) {
 }
 
 bool CompositorEffect::get_needs_normal_roughness() const {
+	if (effect_callback_type == EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE) {
+		return false;
+	}
 	return needs_normal_roughness;
 }
 
@@ -179,6 +192,9 @@ void CompositorEffect::set_needs_separate_specular(bool p_enabled) {
 }
 
 bool CompositorEffect::get_needs_separate_specular() const {
+	if (effect_callback_type == EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE) {
+		return false;
+	}
 	return needs_separate_specular;
 }
 

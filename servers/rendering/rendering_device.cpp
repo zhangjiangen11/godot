@@ -867,6 +867,11 @@ RID RenderingDevice::storage_buffer_create(uint32_t p_size_bytes, Span<uint8_t> 
 	return id;
 }
 
+bool RenderingDevice::storage_buffer_is_valid(RID p_storage_buffer) {
+	_THREAD_SAFE_METHOD_
+	return storage_buffer_owner.owns(p_storage_buffer);
+}
+
 RID RenderingDevice::texture_buffer_create(uint32_t p_size_elements, DataFormat p_format, Span<uint8_t> p_data) {
 	uint32_t element_size = get_format_vertex_size(p_format);
 	ERR_FAIL_COND_V_MSG(element_size == 0, RID(), "Format requested is not supported for texture buffers");
@@ -3772,6 +3777,10 @@ RID RenderingDevice::uniform_buffer_create(uint32_t p_size_bytes, Span<uint8_t> 
 	set_resource_name(id, "RID:" + itos(id.get_id()));
 #endif
 	return id;
+}
+bool RenderingDevice::uniform_buffer_is_valid(RID p_uniform_buffer) {
+	_THREAD_SAFE_METHOD_
+	return uniform_buffer_owner.owns(p_uniform_buffer);
 }
 
 void RenderingDevice::_uniform_set_update_shared(UniformSet *p_uniform_set) {
@@ -7828,7 +7837,9 @@ void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("shader_get_vertex_input_attribute_mask", "shader"), &RenderingDevice::shader_get_vertex_input_attribute_mask);
 
 	ClassDB::bind_method(D_METHOD("uniform_buffer_create", "size_bytes", "data", "creation_bits"), &RenderingDevice::_uniform_buffer_create, DEFVAL(Vector<uint8_t>()), DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("uniform_buffer_valid", "uniform_buffer"), &RenderingDevice::uniform_buffer_valid);
 	ClassDB::bind_method(D_METHOD("storage_buffer_create", "size_bytes", "data", "usage", "creation_bits"), &RenderingDevice::_storage_buffer_create, DEFVAL(Vector<uint8_t>()), DEFVAL(0), DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("storage_buffer_valid", "storage_buffer"), &RenderingDevice::storage_buffer_valid);
 	ClassDB::bind_method(D_METHOD("texture_buffer_create", "size_bytes", "format", "data"), &RenderingDevice::_texture_buffer_create, DEFVAL(Vector<uint8_t>()));
 	ClassDB::bind_method(D_METHOD("texture_rd_get_default", "texture_name"), &RenderingDevice::texture_rd_get_default);
 
