@@ -92,8 +92,9 @@ public:
 	String get_blend_shape_name(int p_blend_shape) const;
 
 	static String validate_blend_shape_name(const String &p_name);
+
 	void init_form_mesh(Ref<Mesh> p_mesh);
-	void add_surface(Mesh::PrimitiveType p_primitive, const Array &p_arrays, const TypedArray<Array> &p_blend_shapes = Array(), const Dictionary &p_lods = Dictionary(), const Ref<Material> &p_material = Ref<Material>(), const String &p_name = String(), const uint64_t p_flags = 0);
+	void add_surface(Mesh::PrimitiveType p_primitive, const Array &p_arrays, const TypedArray<Array> &p_blend_shapes = Array(), const Dictionary &p_lods = Dictionary(), const Ref<Material> &p_material = Ref<Material>(), const String &p_surface_name = String(), const uint64_t p_flags = 0);
 	int get_surface_count() const;
 
 	void set_blend_shape_mode(Mesh::BlendShapeMode p_blend_shape_mode);
@@ -114,8 +115,8 @@ public:
 
 	void optimize_indices();
 	void generate_normals(bool p_flip = false);
-	void get_edage_terrain_vertex_normal(HashMap<Vector2, Vector3>& normal_img, HashMap<Vector2, int64_t>& normal_index, float xz_scale);
-	void correct_terrain_vertex_normal(const HashMap<Vector2, Vector3>& normal_img, const HashMap<Vector2, int64_t>& normal_index);
+	void get_edage_terrain_vertex_normal(HashMap<Vector2, Vector3> &normal_img, HashMap<Vector2, int64_t> &normal_index, float xz_scale);
+	void correct_terrain_vertex_normal(const HashMap<Vector2, Vector3> &normal_img, const HashMap<Vector2, int64_t> &normal_index);
 
 	void generate_lods(float p_normal_merge_angle, Array p_skin_pose_transform_array);
 
@@ -137,5 +138,6 @@ public:
 	bool has_mesh() const;
 	Ref<ArrayMesh> get_mesh(const Ref<ArrayMesh> &p_base = Ref<ArrayMesh>());
 	Array get_lod_meshes();
+	static Ref<ImporterMesh> from_mesh(const Ref<Mesh> &p_mesh);
 	void clear();
 };
