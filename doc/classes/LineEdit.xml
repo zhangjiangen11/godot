@@ -261,7 +261,7 @@
 	</methods>
 	<members>
 		<member name="alignment" type="int" setter="set_horizontal_alignment" getter="get_horizontal_alignment" enum="HorizontalAlignment" default="0">
-			Text alignment as defined in the [enum HorizontalAlignment] enum.
+			The text's horizontal alignment.
 		</member>
 		<member name="background_read_only_texture" type="Texture2D" setter="set_background_read_only_texture" getter="get_background_read_only_texture">
 		</member>
