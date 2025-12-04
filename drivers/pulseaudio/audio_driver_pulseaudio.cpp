@@ -555,7 +555,7 @@ void AudioDriverPulseAudio::thread_func(void *p_udata) {
 			}
 
 			// User selected a new input device, finish the current one so we'll init the new input device
-			// (If AudioServer.set_input_device() did not set the value when the microphone was running,
+			// (If `AudioServer.set_input_device()` did not set the value when the microphone was running,
 			//  this section with its problematic error handling could be deleted.)
 			if (ad->input_device_name != ad->new_input_device) {
 				ad->input_device_name = ad->new_input_device;

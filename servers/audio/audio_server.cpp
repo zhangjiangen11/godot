@@ -111,7 +111,7 @@ void AudioDriver::input_buffer_write(int32_t sample) {
 	} else {
 		// This protection was added in GH-26505 due to a "possible crash".
 		// This cannot have happened unless two non-locked threads entered function simultaneously, which was possible when multiple calls to
-		// AudioDriver::input_start() did not raise an error condition.
+		// `AudioDriver::input_start()` did not raise an error condition.
 		WARN_PRINT("input_buffer_write: Invalid input_position=" + itos(input_position) + " input_buffer.size()=" + itos(input_buffer.size()));
 	}
 }
@@ -1870,8 +1870,7 @@ int AudioServer::get_input_frames_available() {
 	ad->lock();
 	int64_t input_position = ad->get_input_position();
 	if (input_position < input_buffer_ofs) {
-		int64_t buffsize = ad->get_input_buffer().size();
-		input_position += buffsize;
+		input_position += ad->get_input_buffer().size();
 	}
 	ad->unlock();
 	return (int)((input_position - input_buffer_ofs) / 2); // Buffer is stereo.
