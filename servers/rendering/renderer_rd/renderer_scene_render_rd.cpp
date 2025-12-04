@@ -303,6 +303,42 @@ void RendererSceneRenderRD::_process_compositor_effects(RS::CompositorEffectCall
 	if (p_render_data->reflection_probe.is_valid()) {
 		return;
 	}
+	switch (p_callback_type) {
+		case RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE:
+			RD::get_singleton()->draw_command_begin_label("Compositor: Pre Render Scene");
+
+			/* code */
+			break;
+
+		case RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_PRE_OPAQUE:
+			RD::get_singleton()->draw_command_begin_label("Compositor: Pre Opaque");
+			/* code */
+			break;
+
+		case RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_POST_OPAQUE:
+			RD::get_singleton()->draw_command_begin_label("Compositor: Post Opaque");
+			/* code */
+			break;
+
+		case RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_POST_SKY:
+			RD::get_singleton()->draw_command_begin_label("Compositor: Post Sky");
+			/* code */
+			break;
+
+		case RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_PRE_TRANSPARENT:
+			RD::get_singleton()->draw_command_begin_label("Compositor: Pre Transparent");
+			/* code */
+			break;
+
+		case RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_POST_TRANSPARENT:
+			RD::get_singleton()->draw_command_begin_label("Compositor: Post Transparent");
+			/* code */
+			break;
+
+		default:
+			break;
+	}
+	RENDER_TIMESTAMP("Process Compositor :" + itos(p_callback_type));
 
 	ERR_FAIL_COND(!comp_storage->is_compositor(p_render_data->compositor));
 
@@ -313,6 +349,7 @@ void RendererSceneRenderRD::_process_compositor_effects(RS::CompositorEffectCall
 		Array arr = { p_callback_type, p_render_data };
 		callback.callv(arr);
 	}
+	RD::get_singleton()->draw_command_end_label();
 }
 
 void RendererSceneRenderRD::_render_buffers_ensure_screen_texture(const RenderDataRD *p_render_data) {

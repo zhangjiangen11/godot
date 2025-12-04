@@ -467,6 +467,26 @@ Error RenderingDevice::buffer_copy(RID p_src_buffer, RID p_dst_buffer, uint32_t 
 
 	return OK;
 }
+void RenderingDevice::make_synchronization(RID p_dst_buffer) {
+	ERR_RENDER_THREAD_GUARD(ERR_UNAVAILABLE);
+
+	ERR_FAIL_COND_MSG(draw_list.active, ERR_INVALID_PARAMETER,
+			"Copying buffers is forbidden during creation of a draw list");
+	ERR_FAIL_COND_MSG(compute_list.active, ERR_INVALID_PARAMETER,
+			"Copying buffers is forbidden during creation of a compute list");
+
+	Buffer *dst_buffer = _get_buffer_from_owner(p_dst_buffer);
+	if (!dst_buffer) {
+		ERR_FAIL_MSG(ERR_INVALID_PARAMETER, "Destination buffer argument is not a valid buffer of any type.");
+	}
+
+	_check_transfer_worker_buffer(dst_buffer);
+
+	if (_buffer_make_mutable(dst_buffer, p_dst_buffer)) {
+		// The destination buffer must be mutable to be used as a copy destination.
+		draw_graph.add_synchronization();
+	}
+}
 
 Error RenderingDevice::buffer_update(RID p_buffer, uint32_t p_offset, uint32_t p_size, const void *p_data, bool p_skip_check) {
 	ERR_RENDER_THREAD_GUARD_V(ERR_UNAVAILABLE);
@@ -867,7 +887,7 @@ RID RenderingDevice::storage_buffer_create(uint32_t p_size_bytes, Span<uint8_t> 
 	return id;
 }
 
-bool RenderingDevice::storage_buffer_is_valid(RID p_storage_buffer) {
+bool RenderingDevice::storage_buffer_valid(RID p_storage_buffer) const {
 	_THREAD_SAFE_METHOD_
 	return storage_buffer_owner.owns(p_storage_buffer);
 }
@@ -3778,7 +3798,7 @@ RID RenderingDevice::uniform_buffer_create(uint32_t p_size_bytes, Span<uint8_t> 
 #endif
 	return id;
 }
-bool RenderingDevice::uniform_buffer_is_valid(RID p_uniform_buffer) {
+bool RenderingDevice::uniform_buffer_valid(RID p_uniform_buffer) const {
 	_THREAD_SAFE_METHOD_
 	return uniform_buffer_owner.owns(p_uniform_buffer);
 }
@@ -7852,6 +7872,7 @@ void RenderingDevice::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("buffer_get_data", "buffer", "offset_bytes", "size_bytes"), &RenderingDevice::buffer_get_data, DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("buffer_get_data_async", "buffer", "callback", "offset_bytes", "size_bytes"), &RenderingDevice::buffer_get_data_async, DEFVAL(0), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("buffer_get_device_address", "buffer"), &RenderingDevice::buffer_get_device_address);
+	ClassDB::bind_method(D_METHOD("make_synchronization", "buffer"), &RenderingDevice::make_synchronization);
 
 	ClassDB::bind_method(D_METHOD("render_pipeline_create", "shader", "framebuffer_format", "vertex_format", "primitive", "rasterization_state", "multisample_state", "stencil_state", "color_blend_state", "dynamic_state_flags", "for_render_pass", "specialization_constants"), &RenderingDevice::_render_pipeline_create, DEFVAL(0), DEFVAL(0), DEFVAL(TypedArray<RDPipelineSpecializationConstant>()));
 	ClassDB::bind_method(D_METHOD("render_pipeline_is_valid", "render_pipeline"), &RenderingDevice::render_pipeline_is_valid);

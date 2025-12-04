@@ -285,6 +285,8 @@ public:
 	uint8_t *buffer_persistent_map_advance(RID p_buffer);
 	void buffer_flush(RID p_buffer);
 
+	void make_synchronization(RID p_buffer);
+
 private:
 	/******************/
 	/**** CALLBACK ****/
@@ -1060,7 +1062,7 @@ public:
 	RID _uniform_buffer_create(uint32_t p_size_bytes, const Vector<uint8_t> &p_data, BitField<BufferCreationBits> p_creation_bits = 0) {
 		return uniform_buffer_create(p_size_bytes, p_data, p_creation_bits);
 	}
-	bool uniform_buffer_valid(RID p_buffer) const;
+	bool uniform_buffer_valid(RID p_uniform_buffer) const;
 
 	RID storage_buffer_create(uint32_t p_size_bytes, Span<uint8_t> p_data = {}, BitField<StorageBufferUsage> p_usage = 0, BitField<BufferCreationBits> p_creation_bits = 0);
 	RID _storage_buffer_create(uint32_t p_size_bytes, const Vector<uint8_t> &p_data, BitField<StorageBufferUsage> p_usage = 0, BitField<BufferCreationBits> p_creation_bits = 0) {
