@@ -534,7 +534,7 @@ bool FileDialog::_is_open_should_be_disabled() {
 }
 
 void FileDialog::_go_up() {
-	_change_dir("..");
+	_change_dir(get_current_dir().trim_suffix("/").get_base_dir());
 	_push_history();
 }
 
@@ -998,7 +998,7 @@ void FileDialog::update_file_list() {
 				thumbnail = vicon;
 			}
 			if (thumbnail.is_null()) {
-				thumbnail = theme_cache.file;
+				thumbnail = theme_cache.file_thumbnail;
 			}
 			file_list->set_item_icon(-1, thumbnail);
 			if (icon.is_valid()) {
