@@ -250,10 +250,7 @@ Size2 EditorProperty::get_minimum_size() const {
 		return Vector2();
 	}
 
-	Size2 ms;
-	int separation = 4 * EDSCALE;
-	ms.height = label.is_empty() ? 0 : theme_cache.font->get_height(theme_cache.font_size) + separation;
-
+	Size2 ms = Size2(0, theme_cache.inspector_property_height);
 	for (int i = 0; i < get_child_count(); i++) {
 		Control *c = as_sortable_control(get_child(i));
 		if (!c) {
@@ -353,7 +350,7 @@ void EditorProperty::_notification(int p_what) {
 			{
 				int child_room = size.width * (1.0 - split_ratio);
 				int separation = 4 * EDSCALE;
-				int height = label.is_empty() ? 0 : theme_cache.font->get_height(theme_cache.font_size) + separation;
+				int height = theme_cache.inspector_property_height;
 				int half_padding = theme_cache.padding / 2;
 				bool no_children = true;
 
@@ -2032,8 +2029,6 @@ void EditorInspectorSection::_notification(int p_what) {
 
 			bg_color = theme_cache.prop_subsection;
 			bg_color.a /= level;
-
-			vbox->add_theme_constant_override("separation", theme_cache.vertical_separation);
 		} break;
 
 		case NOTIFICATION_SORT_CHILDREN: {
@@ -2599,6 +2594,7 @@ EditorInspectorSection::EditorInspectorSection() {
 	set_focus_mode(FOCUS_ACCESSIBILITY);
 
 	vbox = memnew(VBoxContainer);
+	vbox->set_theme_type_variation(SNAME("EditorPropertyContainer"));
 
 	dropping_unfold_timer = memnew(Timer);
 	dropping_unfold_timer->set_wait_time(EDITOR_GET("interface/editor/dragging_hover_wait_seconds"));
@@ -3610,7 +3606,7 @@ void EditorInspector::initialize_section_theme(EditorInspectorSection::ThemeCach
 	}
 
 	p_cache.horizontal_separation = p_control->get_theme_constant(SNAME("h_separation"), SNAME("EditorInspectorSection"));
-	p_cache.vertical_separation = p_control->get_theme_constant(SNAME("v_separation"), SNAME("EditorInspector"));
+	p_cache.vertical_separation = p_control->get_theme_constant(SNAME("separation"), SNAME("EditorPropertyContainer"));
 	p_cache.inspector_margin = p_control->get_theme_constant(SNAME("inspector_margin"), EditorStringName(Editor));
 	p_cache.indent_size = p_control->get_theme_constant(SNAME("indent_size"), SNAME("EditorInspectorSection"));
 	p_cache.key_padding_size = int(EDITOR_GET("interface/theme/base_spacing")) * 2;
@@ -3649,7 +3645,7 @@ void EditorInspector::initialize_category_theme(EditorInspectorCategory::ThemeCa
 	}
 
 	p_cache.horizontal_separation = p_control->get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
-	p_cache.vertical_separation = p_control->get_theme_constant(SNAME("v_separation"), SNAME("EditorInspector"));
+	p_cache.vertical_separation = p_control->get_theme_constant(SNAME("separation"), SNAME("EditorPropertyContainer"));
 	p_cache.class_icon_size = p_control->get_theme_constant(SNAME("class_icon_size"), EditorStringName(Editor));
 
 	p_cache.font_color = p_control->get_theme_color(SceneStringName(font_color), SNAME("Tree"));
@@ -3697,8 +3693,9 @@ void EditorInspector::initialize_property_theme(EditorProperty::ThemeCache &p_ca
 	p_cache.font_size = p_control->get_theme_font_size(SceneStringName(font_size), SNAME("Tree"));
 	p_cache.font_offset = p_control->get_theme_constant(SNAME("font_offset"), SNAME("EditorProperty"));
 	p_cache.horizontal_separation = p_control->get_theme_constant(SNAME("h_separation"), SNAME("Tree"));
-	p_cache.vertical_separation = p_control->get_theme_constant(SNAME("v_separation"), SNAME("EditorProperty"));
+	p_cache.vertical_separation = p_control->get_theme_constant(SNAME("separation"), SNAME("EditorPropertyContainer"));
 	p_cache.padding = int(EDITOR_GET("interface/theme/base_spacing")) * 2;
+	p_cache.inspector_property_height = p_control->get_theme_constant(SNAME("inspector_property_height"), EditorStringName(Editor));
 
 	p_cache.property_color = p_control->get_theme_color(SNAME("property_color"), SNAME("EditorProperty"));
 	p_cache.readonly_property_color = p_control->get_theme_color(SNAME("readonly_color"), SNAME("EditorProperty"));
@@ -3860,7 +3857,7 @@ bool EditorInspector::_is_property_disabled_by_feature_profile(const StringName 
 }
 
 void EditorInspector::_add_section_in_tree(EditorInspectorSection *p_section, VBoxContainer *p_current_vbox) {
-	// Place adjacent sections in their own vbox with 0 separation
+	// Place adjacent sections in their own vbox with a theme-specific separation.
 	VBoxContainer *container = nullptr;
 	if (p_current_vbox->get_child_count() > 0) {
 		Node *last_child = p_current_vbox->get_child(-1);
@@ -3868,7 +3865,7 @@ void EditorInspector::_add_section_in_tree(EditorInspectorSection *p_section, VB
 	}
 	if (!container) {
 		container = memnew(VBoxContainer);
-		container->add_theme_constant_override("separation", theme_cache.vertical_separation);
+		container->set_theme_type_variation(SNAME("EditorInspectorContainer"));
 		p_current_vbox->add_child(container);
 	}
 	container->add_child(p_section);
@@ -3997,12 +3994,14 @@ void EditorInspector::update_tree() {
 	bool sub_inspectors_enabled = EDITOR_GET("interface/inspector/open_resources_in_current_inspector");
 
 	if (!valid_plugins.is_empty()) {
-		begin_vbox->show();
-
-		// Get the lists of editors to add the beginning.
 		for (Ref<EditorInspectorPlugin> &ped : valid_plugins) {
 			ped->parse_begin(object);
 			_parse_added_editors(begin_vbox, nullptr, ped);
+		}
+
+		// Show if any of the editors were added to the beginning.
+		if (begin_vbox->get_child_count() > 0) {
+			begin_vbox->show();
 		}
 	}
 
@@ -4295,7 +4294,7 @@ void EditorInspector::update_tree() {
 		// Recreate the category vbox if it was reset.
 		if (category_vbox == nullptr) {
 			category_vbox = memnew(VBoxContainer);
-			category_vbox->add_theme_constant_override("separation", theme_cache.vertical_separation);
+			category_vbox->set_theme_type_variation(SNAME("EditorPropertyContainer"));
 			category_vbox->hide();
 			main_vbox->add_child(category_vbox);
 		}
@@ -4765,6 +4764,8 @@ void EditorInspector::update_tree() {
 			String tooltip;
 			VBoxContainer *parent_vbox = favorites_vbox;
 			if (!section_name.is_empty()) {
+				favorites_groups_vbox->show();
+
 				if (is_localized) {
 					label = EditorPropertyNameProcessor::get_singleton()->translate_group_name(section_name);
 					tooltip = section_name;
@@ -4866,6 +4867,10 @@ void EditorInspector::update_tree() {
 					}
 				}
 			}
+
+			if (favorites_vbox->get_child_count() > 0) {
+				favorites_vbox->show();
+			}
 		}
 
 		// Show a separator if there's no category to clearly divide the properties.
@@ -4944,9 +4949,11 @@ void EditorInspector::_clear(bool p_hide_plugins) {
 	}
 
 	favorites_section->hide();
+	favorites_vbox->hide();
 	while (favorites_vbox->get_child_count()) {
 		memdelete(favorites_vbox->get_child(0));
 	}
+	favorites_groups_vbox->hide();
 	while (favorites_groups_vbox->get_child_count()) {
 		memdelete(favorites_groups_vbox->get_child(0));
 	}
@@ -5735,19 +5742,11 @@ void EditorInspector::_notification(int p_what) {
 				break;
 			}
 
-			theme_cache.vertical_separation = get_theme_constant(SNAME("v_separation"), SNAME("EditorInspector"));
 			theme_cache.prop_subsection = get_theme_color(SNAME("prop_subsection"), EditorStringName(Editor));
-			theme_cache.icon_add = get_editor_theme_icon(SNAME("Add"));
 
 			initialize_section_theme(section_theme_cache, this);
 			initialize_category_theme(category_theme_cache, this);
 			initialize_property_theme(property_theme_cache, this);
-
-			base_vbox->add_theme_constant_override("separation", theme_cache.vertical_separation);
-			begin_vbox->add_theme_constant_override("separation", theme_cache.vertical_separation);
-			favorites_section->add_theme_constant_override("separation", theme_cache.vertical_separation);
-			favorites_groups_vbox->add_theme_constant_override("separation", theme_cache.vertical_separation);
-			main_vbox->add_theme_constant_override("separation", theme_cache.vertical_separation);
 		} break;
 
 		case NOTIFICATION_READY: {
@@ -5985,14 +5984,17 @@ EditorInspector::EditorInspector() {
 	object = nullptr;
 
 	base_vbox = memnew(VBoxContainer);
+	base_vbox->set_theme_type_variation(SNAME("EditorInspectorContainer"));
 	base_vbox->set_h_size_flags(SIZE_EXPAND_FILL);
 	add_child(base_vbox);
 
 	begin_vbox = memnew(VBoxContainer);
+	begin_vbox->set_theme_type_variation(SNAME("EditorInspectorContainer"));
 	base_vbox->add_child(begin_vbox);
 	begin_vbox->hide();
 
 	favorites_section = memnew(VBoxContainer);
+	favorites_section->set_theme_type_variation(SNAME("EditorInspectorContainer"));
 	base_vbox->add_child(favorites_section);
 	favorites_section->hide();
 
@@ -6002,15 +6004,20 @@ EditorInspector::EditorInspector() {
 	favorites_section->add_child(favorites_category);
 
 	favorites_vbox = memnew(VBoxContainer);
+	favorites_vbox->set_theme_type_variation(SNAME("EditorPropertyContainer"));
 	favorites_section->add_child(favorites_vbox);
+	favorites_vbox->hide();
 	favorites_groups_vbox = memnew(VBoxContainer);
+	favorites_groups_vbox->set_theme_type_variation(SNAME("EditorInspectorContainer"));
 	favorites_section->add_child(favorites_groups_vbox);
+	favorites_groups_vbox->hide();
 
 	favorites_separator = memnew(HSeparator);
 	favorites_section->add_child(favorites_separator);
 	favorites_separator->hide();
 
 	main_vbox = memnew(VBoxContainer);
+	main_vbox->set_theme_type_variation(SNAME("EditorInspectorContainer"));
 	base_vbox->add_child(main_vbox);
 
 	set_horizontal_scroll_mode(SCROLL_MODE_DISABLED);
