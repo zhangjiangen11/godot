@@ -1466,7 +1466,7 @@ int get_instance_matrix_index(int gpu_instance_id){
 mat4 get_instance_matrix(int gpu_instance_id){
 	int index = get_instance_matrix_index(gpu_instance_id);
 	int x = (index % 512) * 4;
-	int y = index / 512 + 1;
+	int y = index / 512;
 	vec4 v0 = texelFetch(render_instance_texture,ivec2(x    ,y),0);
 	vec4 v1 = texelFetch(render_instance_texture,ivec2(x + 1,y),0);
 	vec4 v2 = texelFetch(render_instance_texture,ivec2(x + 2,y),0);

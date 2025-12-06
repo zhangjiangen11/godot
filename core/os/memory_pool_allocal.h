@@ -244,6 +244,13 @@ public:
 		Block *block = (Block *)p_block;
 		free_block(block);
 	}
+	int find_block_size(uint64_t p_block) {
+		auto it = m_block_map.find(p_block);
+		if (it != m_block_map.end()) {
+			return it->value->size;
+		}
+		return 0;
+	}
 
 public:
 	static int get_block_size(uint64_t p_block) {

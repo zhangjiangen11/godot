@@ -476,6 +476,7 @@ public:
 	RID texture_create_from_extension(TextureType p_type, DataFormat p_format, TextureSamples p_samples, BitField<RenderingDevice::TextureUsageBits> p_usage, uint64_t p_image, uint64_t p_width, uint64_t p_height, uint64_t p_depth, uint64_t p_layers, uint64_t p_mipmaps = 1);
 	RID texture_create_shared_from_slice(const TextureView &p_view, RID p_with_texture, uint32_t p_layer, uint32_t p_mipmap, uint32_t p_mipmaps = 1, TextureSliceType p_slice_type = TEXTURE_SLICE_2D, uint32_t p_layers = 0);
 	Error texture_update(RID p_texture, uint32_t p_layer, const Vector<uint8_t> &p_data);
+	Error texture_update_ptr(RID p_texture, uint32_t p_layer, uint32_t size, const uint8_t *p_data);
 	Error texture_update_line(RID p_texture, uint32_t p_layer, uint32_t p_depth, uint32_t p_mipmap, uint32_t line, const uint8_t *p_data);
 	Vector<uint8_t> texture_get_data(RID p_texture, uint32_t p_layer); // CPU textures will return immediately, while GPU textures will most likely force a flush
 	Error texture_get_data_async(RID p_texture, uint32_t p_layer, const Callable &p_callback);
@@ -1085,6 +1086,7 @@ public:
 		// In most cases only one ID is provided per binding, so avoid allocating memory unnecessarily for performance.
 		RID id; // If only one is provided, this is used.
 		Vector<RID> ids; // If multiple ones are provided, this is used instead.
+		bool is_synchronization = true;
 
 	public:
 		_FORCE_INLINE_ uint32_t get_id_count() const {
@@ -1106,6 +1108,13 @@ public:
 			} else {
 				ids.write[p_idx] = p_id;
 			}
+		}
+
+		_FORCE_INLINE_ void set_using_synchronization(bool p_using_synchronization) {
+			is_synchronization = p_using_synchronization;
+		}
+		_FORCE_INLINE_ bool is_using_synchronization() const {
+			return is_synchronization;
 		}
 
 		_FORCE_INLINE_ void append_id(RID p_id) {

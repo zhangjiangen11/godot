@@ -306,7 +306,6 @@ void RendererSceneRenderRD::_process_compositor_effects(RS::CompositorEffectCall
 	switch (p_callback_type) {
 		case RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE:
 			RD::get_singleton()->draw_command_begin_label("Compositor: Pre Render Scene");
-
 			/* code */
 			break;
 

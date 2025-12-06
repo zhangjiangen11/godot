@@ -1642,6 +1642,9 @@ Error RenderingDevice::_texture_initialize(RID p_texture, uint32_t p_layer, cons
 }
 
 Error RenderingDevice::texture_update(RID p_texture, uint32_t p_layer, const Vector<uint8_t> &p_data) {
+	return texture_update_ptr(p_texture, p_layer, p_data.size(), p_data.ptr());
+}
+Error RenderingDevice::texture_update_ptr(RID p_texture, uint32_t p_layer, uint32_t size, const uint8_t *p_data) {
 	ERR_RENDER_THREAD_GUARD_V(ERR_UNAVAILABLE);
 
 	ERR_FAIL_COND_V_MSG(draw_list.active || compute_list.active, ERR_INVALID_PARAMETER, "Updating textures is forbidden during creation of a draw or compute list");
@@ -1668,8 +1671,8 @@ Error RenderingDevice::texture_update(RID p_texture, uint32_t p_layer, const Vec
 	uint32_t required_size = tight_mip_size;
 	uint32_t required_align = _texture_alignment(texture);
 
-	ERR_FAIL_COND_V_MSG(required_size != (uint32_t)p_data.size(), ERR_INVALID_PARAMETER,
-			"Required size for texture update (" + itos(required_size) + ") does not match data supplied size (" + itos(p_data.size()) + ").");
+	ERR_FAIL_COND_V_MSG(required_size != size, ERR_INVALID_PARAMETER,
+			"Required size for texture update (" + itos(required_size) + ") does not match data supplied size (" + itos(size) + ").");
 
 	// Clear the texture if the driver requires it during its first use.
 	_texture_check_pending_clear(p_texture, texture);
@@ -1685,7 +1688,7 @@ Error RenderingDevice::texture_update(RID p_texture, uint32_t p_layer, const Vec
 
 	uint32_t region_size = texture_upload_region_size_px;
 
-	const uint8_t *read_ptr = p_data.ptr();
+	const uint8_t *read_ptr = p_data;
 
 	thread_local LocalVector<RDG::RecordedBufferToTextureCopy> command_buffer_to_texture_copies_vector;
 	command_buffer_to_texture_copies_vector.clear();
@@ -1852,7 +1855,7 @@ Error RenderingDevice::texture_update_line(RID p_texture, uint32_t p_layer, uint
 			uint32_t region_h = 1;
 
 			uint32_t region_logic_w = MIN(region_size, logic_width - x);
-			uint32_t region_logic_h = MIN(region_size, logic_height - y);
+			uint32_t region_logic_h = 1;
 
 			uint32_t region_pitch = (region_w * pixel_size * block_w) >> pixel_rshift;
 			uint32_t pitch_step = driver->api_trait_get(RDD::API_TRAIT_TEXTURE_DATA_ROW_PITCH_STEP);
@@ -3936,18 +3939,21 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 					}
 
 					RDD::TextureID driver_id = texture->driver_id;
-					RDG::ResourceTracker *tracker = texture->draw_tracker;
-					if (texture->shared_fallback != nullptr && texture->shared_fallback->texture.id != 0) {
-						driver_id = texture->shared_fallback->texture;
-						tracker = texture->shared_fallback->texture_tracker;
-						shared_textures_to_update.push_back({ false, texture_id });
-					}
+					// 使用synchronization检查
+					if (uniform.is_using_synchronization()) {
+						RDG::ResourceTracker *tracker = texture->draw_tracker;
+						if (texture->shared_fallback != nullptr && texture->shared_fallback->texture.id != 0) {
+							driver_id = texture->shared_fallback->texture;
+							tracker = texture->shared_fallback->texture_tracker;
+							shared_textures_to_update.push_back({ false, texture_id });
+						}
 
-					if (tracker != nullptr) {
-						draw_trackers.push_back(tracker);
-						draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_SAMPLE);
-					} else {
-						untracked_usage[texture_id] = RDG::RESOURCE_USAGE_TEXTURE_SAMPLE;
+						if (tracker != nullptr) {
+							draw_trackers.push_back(tracker);
+							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_SAMPLE);
+						} else {
+							untracked_usage[texture_id] = RDG::RESOURCE_USAGE_TEXTURE_SAMPLE;
+						}
 					}
 
 					DEV_ASSERT(!texture->owner.is_valid() || texture_owner.get_or_null(texture->owner));
@@ -3986,18 +3992,21 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 					}
 
 					RDD::TextureID driver_id = texture->driver_id;
-					RDG::ResourceTracker *tracker = texture->draw_tracker;
-					if (texture->shared_fallback != nullptr && texture->shared_fallback->texture.id != 0) {
-						driver_id = texture->shared_fallback->texture;
-						tracker = texture->shared_fallback->texture_tracker;
-						shared_textures_to_update.push_back({ false, texture_id });
-					}
+					// 使用synchronization检查
+					if (uniform.is_using_synchronization()) {
+						RDG::ResourceTracker *tracker = texture->draw_tracker;
+						if (texture->shared_fallback != nullptr && texture->shared_fallback->texture.id != 0) {
+							driver_id = texture->shared_fallback->texture;
+							tracker = texture->shared_fallback->texture_tracker;
+							shared_textures_to_update.push_back({ false, texture_id });
+						}
 
-					if (tracker != nullptr) {
-						draw_trackers.push_back(tracker);
-						draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_SAMPLE);
-					} else {
-						untracked_usage[texture_id] = RDG::RESOURCE_USAGE_TEXTURE_SAMPLE;
+						if (tracker != nullptr) {
+							draw_trackers.push_back(tracker);
+							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_SAMPLE);
+						} else {
+							untracked_usage[texture_id] = RDG::RESOURCE_USAGE_TEXTURE_SAMPLE;
+						}
 					}
 
 					DEV_ASSERT(!texture->owner.is_valid() || texture_owner.get_or_null(texture->owner));
@@ -4033,18 +4042,21 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 						pending_clear_textures.push_back(texture_id);
 					}
 
-					if (_texture_make_mutable(texture, texture_id)) {
-						// The texture must be mutable as a layout transition will be required.
-						draw_graph.add_synchronization();
-					}
+					// 使用synchronization检查
+					if (uniform.is_using_synchronization()) {
+						if (_texture_make_mutable(texture, texture_id)) {
+							// The texture must be mutable as a layout transition will be required.
+							draw_graph.add_synchronization();
+						}
 
-					if (texture->draw_tracker != nullptr) {
-						draw_trackers.push_back(texture->draw_tracker);
+						if (texture->draw_tracker != nullptr) {
+							draw_trackers.push_back(texture->draw_tracker);
 
-						if (set_uniform.writable) {
-							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_IMAGE_READ_WRITE);
-						} else {
-							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_IMAGE_READ);
+							if (set_uniform.writable) {
+								draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_IMAGE_READ_WRITE);
+							} else {
+								draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_IMAGE_READ);
+							}
 						}
 					}
 
@@ -4067,22 +4079,24 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 					RID buffer_id = uniform.get_id(j);
 					Buffer *buffer = texture_buffer_owner.get_or_null(buffer_id);
 					ERR_FAIL_NULL_V_MSG(buffer, RID(), "Texture Buffer (binding: " + itos(uniform.binding) + ", index " + itos(j) + ") is not a valid texture buffer.");
-
-					if (set_uniform.writable && _buffer_make_mutable(buffer, buffer_id)) {
-						// The buffer must be mutable if it's used for writing.
-						draw_graph.add_synchronization();
-					}
-
-					if (buffer->draw_tracker != nullptr) {
-						draw_trackers.push_back(buffer->draw_tracker);
-
-						if (set_uniform.writable) {
-							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ_WRITE);
-						} else {
-							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ);
+					// 使用synchronization检查
+					if (uniform.is_using_synchronization()) {
+						if (set_uniform.writable && _buffer_make_mutable(buffer, buffer_id)) {
+							// The buffer must be mutable if it's used for writing.
+							draw_graph.add_synchronization();
 						}
-					} else {
-						untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ;
+
+						if (buffer->draw_tracker != nullptr) {
+							draw_trackers.push_back(buffer->draw_tracker);
+
+							if (set_uniform.writable) {
+								draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ_WRITE);
+							} else {
+								draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ);
+							}
+						} else {
+							untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ;
+						}
 					}
 
 					driver_uniform.ids.push_back(buffer->driver_id);
@@ -4106,11 +4120,14 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 					Buffer *buffer = texture_buffer_owner.get_or_null(buffer_id);
 					ERR_FAIL_NULL_V_MSG(buffer, RID(), "SamplerBuffer (binding: " + itos(uniform.binding) + ", index " + itos(j + 1) + ") is not a valid texture buffer.");
 
-					if (buffer->draw_tracker != nullptr) {
-						draw_trackers.push_back(buffer->draw_tracker);
-						draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ);
-					} else {
-						untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ;
+					// 使用synchronization检查
+					if (uniform.is_using_synchronization()) {
+						if (buffer->draw_tracker != nullptr) {
+							draw_trackers.push_back(buffer->draw_tracker);
+							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ);
+						} else {
+							untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_TEXTURE_BUFFER_READ;
+						}
 					}
 
 					driver_uniform.ids.push_back(*sampler_driver_id);
@@ -4133,11 +4150,14 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 				ERR_FAIL_COND_V_MSG(buffer->size < (uint32_t)set_uniform.length, RID(),
 						"Uniform buffer supplied (binding: " + itos(uniform.binding) + ") size (" + itos(buffer->size) + ") is smaller than size of shader uniform: (" + itos(set_uniform.length) + ").");
 
-				if (buffer->draw_tracker != nullptr) {
-					draw_trackers.push_back(buffer->draw_tracker);
-					draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_UNIFORM_BUFFER_READ);
-				} else {
-					untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_UNIFORM_BUFFER_READ;
+				// 使用synchronization检查
+				if (uniform.is_using_synchronization()) {
+					if (buffer->draw_tracker != nullptr) {
+						draw_trackers.push_back(buffer->draw_tracker);
+						draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_UNIFORM_BUFFER_READ);
+					} else {
+						untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_UNIFORM_BUFFER_READ;
+					}
 				}
 
 				driver_uniform.ids.push_back(buffer->driver_id);
@@ -4164,21 +4184,24 @@ RID RenderingDevice::uniform_set_create(const VectorView<RD::Uniform> &p_uniform
 				ERR_FAIL_COND_V_MSG(set_uniform.length > 0 && buffer->size != (uint32_t)set_uniform.length, RID(),
 						"Storage buffer supplied (binding: " + itos(uniform.binding) + ") size (" + itos(buffer->size) + ") does not match size of shader uniform: (" + itos(set_uniform.length) + ").");
 
-				if (set_uniform.writable && _buffer_make_mutable(buffer, buffer_id)) {
-					// The buffer must be mutable if it's used for writing.
-					draw_graph.add_synchronization();
-				}
-
-				if (buffer->draw_tracker != nullptr) {
-					draw_trackers.push_back(buffer->draw_tracker);
-
-					if (set_uniform.writable) {
-						draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_BUFFER_READ_WRITE);
-					} else {
-						draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_BUFFER_READ);
+				// 使用synchronization检查
+				if (uniform.is_using_synchronization()) {
+					if (set_uniform.writable && _buffer_make_mutable(buffer, buffer_id)) {
+						// The buffer must be mutable if it's used for writing.
+						draw_graph.add_synchronization();
 					}
-				} else {
-					untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_STORAGE_BUFFER_READ;
+
+					if (buffer->draw_tracker != nullptr) {
+						draw_trackers.push_back(buffer->draw_tracker);
+
+						if (set_uniform.writable) {
+							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_BUFFER_READ_WRITE);
+						} else {
+							draw_trackers_usage.push_back(RDG::RESOURCE_USAGE_STORAGE_BUFFER_READ);
+						}
+					} else {
+						untracked_usage[buffer_id] = RDG::RESOURCE_USAGE_STORAGE_BUFFER_READ;
+					}
 				}
 
 				driver_uniform.ids.push_back(buffer->driver_id);
