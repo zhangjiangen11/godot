@@ -382,7 +382,7 @@ void EditorRunBar::_run_editor(bool p_enabled) {
 
 void EditorRunBar::_profiler_autostart_indicator_pressed() {
 	// Switch to the first profiler tab in the bottom panel.
-	EditorNode::get_singleton()->get_bottom_panel()->make_item_visible(EditorDebuggerNode::get_singleton(), true);
+	EditorDebuggerNode::get_singleton()->make_visible();
 
 	if (EditorSettings::get_singleton()->get_project_metadata("debug_options", "autostart_profiler", false)) {
 		EditorDebuggerNode::get_singleton()->get_current_debugger()->switch_to_debugger(3);
