@@ -468,16 +468,16 @@ Error RenderingDevice::buffer_copy(RID p_src_buffer, RID p_dst_buffer, uint32_t 
 	return OK;
 }
 void RenderingDevice::make_synchronization(RID p_dst_buffer) {
-	ERR_RENDER_THREAD_GUARD(ERR_UNAVAILABLE);
+	ERR_RENDER_THREAD_GUARD();
 
-	ERR_FAIL_COND_MSG(draw_list.active, ERR_INVALID_PARAMETER,
+	ERR_FAIL_COND_MSG(draw_list.active,
 			"Copying buffers is forbidden during creation of a draw list");
-	ERR_FAIL_COND_MSG(compute_list.active, ERR_INVALID_PARAMETER,
+	ERR_FAIL_COND_MSG(compute_list.active,
 			"Copying buffers is forbidden during creation of a compute list");
 
 	Buffer *dst_buffer = _get_buffer_from_owner(p_dst_buffer);
 	if (!dst_buffer) {
-		ERR_FAIL_MSG(ERR_INVALID_PARAMETER, "Destination buffer argument is not a valid buffer of any type.");
+		ERR_FAIL_MSG("Destination buffer argument is not a valid buffer of any type.");
 	}
 
 	_check_transfer_worker_buffer(dst_buffer);

@@ -1097,6 +1097,10 @@ void WorkerTaskPool::_thread_scheduler_function(void *p_user) {
 			if (singleton->exit_threads) {
 				return;
 			}
+			// 获取任务数量
+			if (hand->depend_task_counter.is_valid()) {
+				hand->taskMax = hand->depend_task_counter->get_task_count();
+			}
 			for (int i = 0; i < hand->taskMax; i += hand->batch_count) {
 				ThreadTaskGroup *task = singleton->allocal_task_data();
 				task->handle = hand;
@@ -1188,7 +1192,7 @@ void WorkerTaskPool::_process_task_queue(int thread_id) {
 		task_mutex.unlock();
 	}
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
+Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements, int _batch_count, TaskJobHandle *depend_task, const Ref<TaskJobDependCounter> &depend_task_counter) {
 	if (!Thread::is_main_thread()) {
 		ERR_PRINT("only call man thread");
 		return Ref<TaskJobHandle>();
@@ -1210,6 +1214,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_
 	hand->taskMax = p_elements;
 	hand->batch_count = _batch_count;
 	if (depend_task != nullptr) {
+		hand->depend_task_counter = depend_task_counter;
 		hand->native_func_userdata = p_userdata;
 		hand->native_group_func = p_func;
 		scheduler_mutex.lock();
@@ -1234,7 +1239,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_native_group_task(const StringName &task_
 	}
 	return hand;
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
+Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task, const Ref<TaskJobDependCounter> &depend_task_counter) {
 	if (!Thread::is_main_thread()) {
 		ERR_PRINT("only call man thread");
 		return Ref<TaskJobHandle>();
@@ -1257,6 +1262,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, c
 	hand->batch_count = _batch_count;
 	if (depend_task != nullptr) {
 		hand->callable = p_action;
+		hand->depend_task_counter = depend_task_counter;
 		scheduler_mutex.lock();
 		scheduler_task.push(hand);
 		scheduler_mutex.unlock();
@@ -1278,7 +1284,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_group_task(const StringName &task_name, c
 	}
 	return hand;
 }
-Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName &_task_name, const std::function<void(int)> &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task) {
+Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName &_task_name, const std::function<void(int)> &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task, const Ref<TaskJobDependCounter> &depend_task_counter) {
 	if (!Thread::is_main_thread()) {
 		ERR_PRINT("only call man thread");
 		return Ref<TaskJobHandle>();
@@ -1300,6 +1306,7 @@ Ref<TaskJobHandle> WorkerTaskPool::add_labada_group_task(const StringName &_task
 	hand->taskMax = p_elements;
 	hand->batch_count = _batch_count;
 	if (depend_task != nullptr) {
+		hand->depend_task_counter = depend_task_counter;
 		hand->labada = p_action;
 		hand->is_labada = true;
 		scheduler_mutex.lock();
@@ -1343,7 +1350,7 @@ Ref<TaskJobHandle> WorkerTaskPool::combined_job_handle(TypedArray<TaskJobHandle>
 }
 void WorkerTaskPool::_bind_methods() {
 	//ClassDB::bind_method(D_METHOD("add_native_group_task", "func", "userdata", "elements","batch_count","depend_task"), &WorkerTaskPool::add_native_group_task);
-	ClassDB::bind_method(D_METHOD("add_group_task", "task_name", "action", "elements", "batch_count", "depend_task"), &WorkerTaskPool::add_group_task);
+	ClassDB::bind_method(D_METHOD("add_group_task", "task_name", "action", "elements", "batch_count", "depend_task", "depend_task_counter"), &WorkerTaskPool::add_group_task, DEFVAL(Ref<TaskJobDependCounter>()));
 	ClassDB::bind_method(D_METHOD("combined_job_handle", "handles"), &WorkerTaskPool::combined_job_handle);
 }
 

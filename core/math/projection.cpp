@@ -468,6 +468,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 
 	Vector<Plane> planes;
 	planes.resize(6);
+	Plane* planes_ptr = planes.ptrw();
 
 	const real_t *matrix = (const real_t *)columns;
 
@@ -482,7 +483,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[0] = p_transform.xform(new_plane);
+	planes_ptr[0] = p_transform.xform(new_plane);
 
 	///////--- Far Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[2],
@@ -493,7 +494,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[1] = p_transform.xform(new_plane);
+	planes_ptr[1] = p_transform.xform(new_plane);
 
 	///////--- Left Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[0],
@@ -504,7 +505,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[2] = p_transform.xform(new_plane);
+	planes_ptr[2] = p_transform.xform(new_plane);
 
 	///////--- Top Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[1],
@@ -515,7 +516,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[3] = p_transform.xform(new_plane);
+	planes_ptr[3] = p_transform.xform(new_plane);
 
 	///////--- Right Plane ---///////
 	new_plane = Plane(matrix[3] - matrix[0],
@@ -526,7 +527,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[4] = p_transform.xform(new_plane);
+	planes_ptr[4] = p_transform.xform(new_plane);
 
 	///////--- Bottom Plane ---///////
 	new_plane = Plane(matrix[3] + matrix[1],
@@ -537,7 +538,7 @@ Vector<Plane> Projection::get_projection_planes(const Transform3D &p_transform) 
 	new_plane.normal = -new_plane.normal;
 	new_plane.normalize();
 
-	planes.write[5] = p_transform.xform(new_plane);
+	planes_ptr[5] = p_transform.xform(new_plane);
 
 	return planes;
 }

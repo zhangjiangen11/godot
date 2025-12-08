@@ -549,6 +549,7 @@ void ParticlesStorage::_particles_allocate_emission_buffer(Particles *particles)
 	particles->emission_buffer->particle_max = particles->amount;
 
 	particles->emission_storage_buffer = RD::get_singleton()->storage_buffer_create(particles->emission_buffer_data.size(), particles->emission_buffer_data);
+	RD::get_singleton()->set_resource_name(particles->emission_storage_buffer, "emission_storage_buffer");
 
 	if (RD::get_singleton()->uniform_set_is_valid(particles->particles_material_uniform_set)) {
 		//will need to be re-created
@@ -562,12 +563,14 @@ void ParticlesStorage::_particles_ensure_unused_emission_buffer(Particles *parti
 		// For rendering devices that do not support empty arrays (like C++),
 		// we need to size the buffer with at least 1 element.
 		particles->unused_emission_storage_buffer = RD::get_singleton()->storage_buffer_create(sizeof(ParticleEmissionBuffer));
+		RD::get_singleton()->set_resource_name(particles->unused_emission_storage_buffer, "unused_emission_storage_buffer");
 	}
 }
 
 void ParticlesStorage::_particles_ensure_unused_trail_buffer(Particles *particles) {
 	if (particles->unused_trail_storage_buffer.is_null()) {
 		particles->unused_trail_storage_buffer = RD::get_singleton()->storage_buffer_create(16 * sizeof(float)); // Size of mat4.
+		RD::get_singleton()->set_resource_name(particles->unused_trail_storage_buffer, "unused_trail_storage_buffer");
 	}
 }
 
@@ -1238,6 +1241,7 @@ void ParticlesStorage::particles_set_view_axis(RID p_particles, const Vector3 &p
 		}
 		size *= sizeof(float) * 2;
 		particles->particles_sort_buffer = RD::get_singleton()->storage_buffer_create(size);
+		RD::get_singleton()->set_resource_name(particles->particles_sort_buffer, "ParticlesSortBuffer");
 
 		{
 			Vector<RD::Uniform> uniforms;
@@ -1373,6 +1377,7 @@ void ParticlesStorage::_particles_update_buffers(Particles *particles) {
 		uint32_t xform_size = particles->mode == RS::PARTICLES_MODE_2D ? 2 : 3;
 		if (particles->particle_buffer.is_null()) {
 			particles->particle_buffer = RD::get_singleton()->storage_buffer_create((sizeof(ParticleData) + userdata_count * sizeof(float) * 4) * total_amount);
+			RD::get_singleton()->set_resource_name(particles->particle_buffer, "Particles::particle_buffer");
 			particles->userdata_count = userdata_count;
 		}
 
@@ -1386,6 +1391,7 @@ void ParticlesStorage::_particles_update_buffers(Particles *particles) {
 		data.resize_initialized(particle_instance_buffer_size);
 
 		particles->particle_instance_buffer = RD::get_singleton()->storage_buffer_create(particle_instance_buffer_size, data);
+		RD::get_singleton()->set_resource_name(particles->particle_instance_buffer, "Particles::particle_instance_buffer");
 
 		{
 			Vector<RD::Uniform> uniforms;
@@ -1501,10 +1507,12 @@ void ParticlesStorage::update_particles() {
 					RD::get_singleton()->free_rid(particles->frame_params_buffer);
 				}
 				particles->frame_params_buffer = RD::get_singleton()->storage_buffer_create(sizeof(ParticlesFrameParams) * trail_steps);
+				RD::get_singleton()->set_resource_name(particles->frame_params_buffer, "GPUParticlesTrailParams");
 			}
 
 			if (particles->trail_bind_poses.size() > 1 && particles->trail_bind_pose_buffer.is_null()) {
 				particles->trail_bind_pose_buffer = RD::get_singleton()->storage_buffer_create(sizeof(float) * 16 * particles->trail_bind_poses.size());
+				RD::get_singleton()->set_resource_name(particles->trail_bind_pose_buffer, "GPUParticlesTrailBindPoses");
 				particles->trail_bind_poses_dirty = true;
 			}
 

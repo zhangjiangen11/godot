@@ -191,6 +191,7 @@ void register_core_types() {
 	GDREGISTER_VIRTUAL_CLASS(ScriptLanguageExtension);
 
 	GDREGISTER_CLASS(MissingResource);
+	GDREGISTER_CLASS(TaskJobDependCounter);
 	GDREGISTER_CLASS(TaskJobHandle);
 	GDREGISTER_CLASS(Image);
 	GDREGISTER_CLASS(ImageFrames);

@@ -3315,6 +3315,7 @@ void TextureStorage::set_max_decals(const uint32_t p_max_decals) {
 	decals = memnew_arr(DecalData, max_decals);
 	decal_sort = memnew_arr(DecalInstanceSort, max_decals);
 	decal_buffer = RD::get_singleton()->storage_buffer_create(decal_buffer_size);
+	RD::get_singleton()->set_resource_name(decal_buffer, "decal_buffer");
 }
 
 void TextureStorage::update_decal_buffer(const PagedArray<RID> &p_decals, const Transform3D &p_camera_xform) {

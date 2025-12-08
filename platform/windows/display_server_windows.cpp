@@ -2900,9 +2900,6 @@ String DisplayServerWindows::ime_get_text() const {
 
 	String ret;
 	int32_t length = ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, nullptr, 0);
-	if (length <= 0) {
-		return "";
-	}
 	wchar_t *string = reinterpret_cast<wchar_t *>(memalloc(length));
 	ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, string, length);
 	ret.append_utf16((char16_t *)string, length / sizeof(wchar_t));
@@ -6635,6 +6632,7 @@ Error DisplayServerWindows::_create_rendering_context_window(WindowID p_window_i
 #ifdef D3D12_ENABLED
 	if (rendering_driver == "d3d12") {
 		wpd.d3d12.window = wd.hWnd;
+		wpd.d3d12.instance = hInstance;
 	}
 #endif
 
@@ -7230,7 +7228,8 @@ DisplayServerWindows::DisplayServerWindows(const String &p_rendering_driver, Win
 					}
 					main_window_created = true;
 				}
-
+				String old_rendering_driver = rendering_driver;
+				rendering_driver = tested_rendering_driver;
 				if (_create_rendering_context_window(MAIN_WINDOW_ID) == OK) {
 					rendering_device = memnew(RenderingDevice);
 					if (rendering_device->initialize(rendering_context, MAIN_WINDOW_ID) == OK) {
@@ -7244,7 +7243,6 @@ DisplayServerWindows::DisplayServerWindows(const String &p_rendering_driver, Win
 							WARN_PRINT("Your video card drivers seem not to support Direct3D 12, switching to Vulkan.");
 						}
 #endif
-						rendering_driver = tested_rendering_driver;
 						OS::get_singleton()->set_current_rendering_driver_name(rendering_driver);
 
 						break;
@@ -7254,6 +7252,8 @@ DisplayServerWindows::DisplayServerWindows(const String &p_rendering_driver, Win
 					rendering_device = nullptr;
 
 					_destroy_rendering_context_window(MAIN_WINDOW_ID);
+				} else {
+					rendering_driver = old_rendering_driver;
 				}
 			}
 

@@ -5020,12 +5020,14 @@ RenderForwardClustered::RenderForwardClustered() {
 			defines += "\n#define MAX_LIGHTMAPS " + itos(scene_state.max_lightmaps) + "\n";
 
 			scene_state.lightmap_buffer = RD::get_singleton()->storage_buffer_create(sizeof(LightmapData) * scene_state.max_lightmaps);
+			RD::get_singleton()->set_resource_name(scene_state.lightmap_buffer, "lightmap_buffer");
 		}
 		{
 			//captures
 			scene_state.max_lightmap_captures = 2048;
 			scene_state.lightmap_captures = memnew_arr(LightmapCaptureData, scene_state.max_lightmap_captures);
 			scene_state.lightmap_capture_buffer = RD::get_singleton()->storage_buffer_create(sizeof(LightmapCaptureData) * scene_state.max_lightmap_captures);
+			RD::get_singleton()->set_resource_name(scene_state.lightmap_capture_buffer, "lightmap_capture_buffer");
 		}
 		{
 			defines += "\n#define MATERIAL_UNIFORM_SET " + itos(MATERIAL_UNIFORM_SET) + "\n";

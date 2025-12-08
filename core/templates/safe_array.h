@@ -1,8 +1,8 @@
 #pragma once
-#include <atomic>
 #include "core/object/ref_counted.h"
+#include <atomic>
 template <typename T>
-struct SafeArray : public RefCounted{
+struct SafeArray : public RefCounted {
 	GDSOFTCLASS(SafeArray, RefCounted)
 public:
 	T *data = nullptr;
@@ -71,6 +71,20 @@ public:
 			return nullptr;
 		}
 		return &data[index];
+	}
+	T &operator[](int64_t index) {
+		if (index >= listCount.load(std::memory_order_acquire)) {
+			//Debug.LogError($"参数获取错误，index[{index}] 要小于listCount[{listCount}]");
+			return data[0];
+		}
+		return data[index];
+	}
+	const T &operator[](int64_t index) const {
+		if (index >= listCount.load(std::memory_order_acquire)) {
+			//Debug.LogError($"参数获取错误，index[{index}] 要小于listCount[{listCount}]");
+			return data[0];
+		}
+		return data[index];
 	}
 	void set_value(int64_t index, const T &value) {
 		if (index > listCount.load(std::memory_order_acquire)) {
@@ -142,7 +156,7 @@ public:
 			memcpy(&data[idx], _data, sizeof(T) * count);
 		}
 	}
-	T* thread_add_range_empty(int64_t count, uint64_t* p_old_index = nullptr) {
+	T *thread_add_range_empty(int64_t count, uint64_t *p_old_index = nullptr) {
 		auto idx = listCount.fetch_add(count, std::memory_order_acq_rel) - count;
 		if (p_old_index != nullptr) {
 			*p_old_index = idx;

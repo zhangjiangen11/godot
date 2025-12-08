@@ -530,6 +530,7 @@ void MeshStorage::mesh_add_surface(RID p_mesh, const RS::SurfaceData &p_surface)
 
 	if (mesh->blend_shape_count > 0) {
 		s->blend_shape_buffer = RD::get_singleton()->storage_buffer_create(new_surface.blend_shape_data.size(), new_surface.blend_shape_data);
+		RD::get_singleton()->set_resource_name(s->blend_shape_buffer, "blend_shape_buffer");
 		s->blend_shape_buffer_size = new_surface.blend_shape_data.size();
 	}
 
@@ -1134,6 +1135,7 @@ void MeshStorage::_mesh_instance_add_surface(MeshInstance *mi, Mesh *mesh, uint3
 			weight = 0;
 		}
 		mi->blend_weights_buffer = RD::get_singleton()->storage_buffer_create(sizeof(float) * mi->blend_weights.size(), mi->blend_weights.span().reinterpret<uint8_t>());
+		RD::get_singleton()->set_resource_name(mi->blend_weights_buffer, "mesh_blend_weights");
 		mi->weights_dirty = true;
 	}
 
@@ -1682,6 +1684,7 @@ void MeshStorage::_multimesh_allocate_data(RID p_multimesh, int p_instances, RS:
 	if (multimesh->instances) {
 		uint32_t buffer_size = multimesh->instances * multimesh->stride_cache * sizeof(float);
 		multimesh->buffer = RD::get_singleton()->storage_buffer_create(buffer_size);
+		RD::get_singleton()->set_resource_name(multimesh->buffer, "MultiMesh Buffer");
 	}
 
 	multimesh->dependency.changed_notify(Dependency::DEPENDENCY_CHANGED_MULTIMESH);
@@ -1778,6 +1781,7 @@ void MeshStorage::_multimesh_set_mesh(RID p_multimesh, RID p_mesh) {
 			}
 
 			RID newBuffer = RD::get_singleton()->storage_buffer_create(sizeof(uint32_t) * INDIRECT_MULTIMESH_COMMAND_STRIDE * mesh->surface_count, newVector, RD::STORAGE_BUFFER_USAGE_DISPATCH_INDIRECT);
+			RD::get_singleton()->set_resource_name(newBuffer, "command_buffer");
 			multimesh->command_buffer = newBuffer;
 		}
 	}
@@ -2474,6 +2478,7 @@ void MeshStorage::skeleton_allocate_data(RID p_skeleton, int p_bones, bool p_2d_
 	if (skeleton->size) {
 		skeleton->data.resize(skeleton->size * (skeleton->use_2d ? 8 : 12));
 		skeleton->buffer = RD::get_singleton()->storage_buffer_create(skeleton->data.size() * sizeof(float));
+		RD::get_singleton()->set_resource_name(skeleton->buffer, "Skeleton Buffer");
 		memset(skeleton->data.ptr(), 0, skeleton->data.size() * sizeof(float));
 
 		_skeleton_make_dirty(skeleton);

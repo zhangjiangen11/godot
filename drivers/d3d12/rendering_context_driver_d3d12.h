@@ -103,6 +103,7 @@ public:
 	// Platform-specific data for the Windows embedded in this driver.
 	struct WindowPlatformData {
 		HWND window;
+		HINSTANCE instance;
 	};
 
 	// D3D12-only methods.

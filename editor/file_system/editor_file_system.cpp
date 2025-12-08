@@ -37,6 +37,7 @@
 #include "core/io/resource_saver.h"
 #include "core/object/worker_thread_pool.h"
 #include "core/os/os.h"
+#include "core/profiling/profiling.h"
 #include "core/variant/variant_parser.h"
 #include "editor/doc/editor_help.h"
 #include "editor/editor_node.h"
@@ -571,6 +572,7 @@ bool EditorFileSystem::_is_test_for_reimport_needed(const String &p_path, uint64
 }
 
 bool EditorFileSystem::_test_for_reimport(const String &p_path, const String &p_expected_import_md5) {
+	GodotProfileZone("EditorFileSystem::test_for_reimport");
 	if (p_expected_import_md5.is_empty()) {
 		// Marked as reimportation needed.
 		return true;
@@ -841,6 +843,7 @@ bool EditorFileSystem::_scan_import_support(const Vector<String> &reimports) {
 }
 
 bool EditorFileSystem::_update_scan_actions() {
+	GodotProfileZone("EditorFileSystem::update_scan_actions");
 	sources_changed.clear();
 
 	// We need to update the script global class names before the reimports to be sure that
@@ -1057,10 +1060,10 @@ void EditorFileSystem::scan() {
 	if (false /*&& bool(Globals::get_singleton()->get("debug/disable_scan"))*/) {
 		return;
 	}
-
 	if (scanning || scanning_changes || thread.is_started()) {
 		return;
 	}
+	GodotProfileZone("EditorFileSystem::scan");
 
 	// The first scan must be on the main thread because, after the first scan and update
 	// of global class names, we load the plugins and autoloads. These need to

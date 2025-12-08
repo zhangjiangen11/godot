@@ -308,9 +308,6 @@ void vertex_shader(vec3 vertex_input,
 		uint offset = stride * (INSTANCE_INDEX + multimesh_offset);
 
 		//
-		if (draw_call.custom_data.x > 0) {
-			offset = stride * multimesh_offset;
-		}
 
 		if (sc_multimesh_format_2d()) {
 			matrix = mat4(transforms.data[offset + 0], transforms.data[offset + 1], vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));
@@ -319,7 +316,9 @@ void vertex_shader(vec3 vertex_input,
 			matrix = mat4(transforms.data[offset + 0], transforms.data[offset + 1], transforms.data[offset + 2], vec4(0.0, 0.0, 0.0, 1.0));
 			offset += 3;
 		}
-
+#ifdef COLOR_USED
+		vec4 last_vertex_color = color_interp;
+#endif
 		if (sc_multimesh_has_color()) {
 #ifdef COLOR_USED
 			color_interp *= transforms.data[offset];
@@ -329,6 +328,13 @@ void vertex_shader(vec3 vertex_input,
 
 		if (sc_multimesh_has_custom_data()) {
 			instance_custom = transforms.data[offset];
+		}
+		if (draw_call.custom_data.x > 0) {
+			matrix = mat4(vec4(1.0, 0.0, 0.0, 0.0), vec4(0.0, 1.0, 0.0, 0.0), vec4(0.0, 0.0, 1.0, 0.0), vec4(0.0, 0.0, 0.0, 1.0));
+			instance_custom = vec4(0.0, 0.0, 0.0, 0.0);
+#ifdef COLOR_USED
+			color_interp = last_vertex_color;
+#endif
 		}
 
 #endif

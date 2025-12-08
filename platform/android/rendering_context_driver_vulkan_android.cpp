@@ -51,6 +51,7 @@ RenderingContextDriver::SurfaceID RenderingContextDriverVulkanAndroid::surface_c
 
 	Surface *surface = memnew(Surface);
 	surface->vk_surface = vk_surface;
+	surface->platform_data = p_platform_data;
 	return SurfaceID(surface);
 }
 

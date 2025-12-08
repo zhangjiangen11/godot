@@ -1010,6 +1010,7 @@ void RendererCanvasRenderRD::_update_occluder_buffer(uint32_t p_size) {
 
 	if (needs_update) {
 		state.shadow_occluder_buffer = RD::get_singleton()->storage_buffer_create(state.shadow_occluder_buffer_size);
+		RD::get_singleton()->set_resource_name(state.shadow_occluder_buffer, "CanvasOccluderBuffer");
 
 		Vector<RD::Uniform> uniforms;
 
@@ -1926,6 +1927,7 @@ RendererCanvasRenderRD::RendererCanvasRenderRD() {
 
 		state.canvas_state_buffer = RD::get_singleton()->uniform_buffer_create(sizeof(State::Buffer));
 		state.lights_storage_buffer = RD::get_singleton()->storage_buffer_create(sizeof(LightUniform) * MAX_LIGHTS_PER_RENDER);
+		RD::get_singleton()->set_resource_name(state.lights_storage_buffer, "CanvasLightsBuffer");
 
 		RD::SamplerState shadow_sampler_state;
 		shadow_sampler_state.mag_filter = RD::SAMPLER_FILTER_NEAREST;

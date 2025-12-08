@@ -1471,15 +1471,12 @@ mat4 get_instance_matrix(int gpu_instance_id){
 	vec4 v1 = texelFetch(render_instance_texture,ivec2(x + 1,y),0);
 	vec4 v2 = texelFetch(render_instance_texture,ivec2(x + 2,y),0);
 	vec4 v3 = texelFetch(render_instance_texture,ivec2(x + 4,y),0);
-	return mat4(v0,v1,v2,vec4(0.0, 0.0, 0.0, 1.0));
+	return transpose(mat4(v0,v1,v2,vec4(0.0, 0.0, 0.0, 1.0)));
 }
 void vertex() {
 	if(render_instance_data.y >= 1.0){
-		MODEL_MATRIX = get_instance_matrix(INSTANCE_ID);
-		MODEL_NORMAL_MATRIX = mat3(MODEL_MATRIX);
-		// 
-		MODELVIEW_MATRIX = VIEW_MATRIX * MODEL_MATRIX;
-		MODELVIEW_NORMAL_MATRIX = mat3(VIEW_MATRIX) * MODEL_NORMAL_MATRIX;
+		MODELVIEW_MATRIX = VIEW_MATRIX * get_instance_matrix(INSTANCE_ID);
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
 	}
 )";
 	// 构建Instance 信息

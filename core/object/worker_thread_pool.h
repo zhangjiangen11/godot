@@ -307,6 +307,18 @@ public:
 
 /*=================================================================WorkerTaskPool==================================================================*/
 class TaskJobHandle;
+class TaskJobDependCounter : public RefCounted {
+	GDCLASS(TaskJobDependCounter, RefCounted);
+
+	static void _bind_methods() {
+		ClassDB::bind_method(D_METHOD("get_task_count"), &TaskJobDependCounter::get_task_count);
+	}
+
+public:
+	virtual int get_task_count() const {
+		return 0;
+	}
+};
 // 多任务管理器
 class WorkerTaskPool : public Object {
 	GDCLASS(WorkerTaskPool, Object)
@@ -379,9 +391,9 @@ public:
 	}
 
 public:
-	Ref<TaskJobHandle> add_native_group_task(const StringName &_task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements_count, int _batch_count, TaskJobHandle *depend_task);
-	Ref<TaskJobHandle> add_group_task(const StringName &_task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task);
-	Ref<TaskJobHandle> add_labada_group_task(const StringName &_task_name, const std::function<void(int)> &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task);
+	Ref<TaskJobHandle> add_native_group_task(const StringName &_task_name, void (*p_func)(void *, uint32_t), void *p_userdata, int p_elements_count, int _batch_count, TaskJobHandle *depend_task, const Ref<TaskJobDependCounter> &depend_task_counter = Ref<TaskJobDependCounter>());
+	Ref<TaskJobHandle> add_group_task(const StringName &_task_name, const Callable &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task, const Ref<TaskJobDependCounter> &depend_task_counter = Ref<TaskJobDependCounter>());
+	Ref<TaskJobHandle> add_labada_group_task(const StringName &_task_name, const std::function<void(int)> &p_action, int p_elements, int _batch_count, TaskJobHandle *depend_task, const Ref<TaskJobDependCounter> &depend_task_counter = Ref<TaskJobDependCounter>());
 
 public:
 	Ref<TaskJobHandle> combined_job_handle(TypedArray<TaskJobHandle> _handles);
@@ -481,6 +493,7 @@ protected:
 	String error_string;
 
 private:
+	Ref<TaskJobDependCounter> depend_task_counter;
 	Callable callable;
 	std::function<void(int)> labada;
 	bool is_labada = false;

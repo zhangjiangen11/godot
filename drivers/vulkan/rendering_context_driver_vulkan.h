@@ -135,6 +135,7 @@ public:
 	virtual RenderingDeviceDriver *driver_create() override;
 	virtual void driver_free(RenderingDeviceDriver *p_driver) override;
 	virtual SurfaceID surface_create(const void *p_platform_data) override;
+	virtual void surface_recreate(SurfaceID p_surface) {};
 	virtual void surface_set_size(SurfaceID p_surface, uint32_t p_width, uint32_t p_height) override;
 	virtual void surface_set_vsync_mode(SurfaceID p_surface, DisplayServer::VSyncMode p_vsync_mode) override;
 	virtual DisplayServer::VSyncMode surface_get_vsync_mode(SurfaceID p_surface) const override;
@@ -151,6 +152,7 @@ public:
 		uint32_t width = 0;
 		uint32_t height = 0;
 		DisplayServer::VSyncMode vsync_mode = DisplayServer::VSYNC_ENABLED;
+		const void* platform_data = nullptr;
 		bool needs_resize = false;
 	};
 
