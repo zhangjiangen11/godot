@@ -1101,32 +1101,36 @@ void WorkerTaskPool::_thread_scheduler_function(void *p_user) {
 			if (hand->depend_task_counter.is_valid()) {
 				hand->taskMax = hand->depend_task_counter->get_task_count();
 			}
-			for (int i = 0; i < hand->taskMax; i += hand->batch_count) {
-				ThreadTaskGroup *task = singleton->allocal_task_data();
-				task->handle = hand;
-				task->callable = hand->callable;
-				task->labada = hand->labada;
-				task->is_labada = hand->is_labada;
-				task->native_group_func = hand->native_group_func;
-				task->native_func_userdata = hand->native_func_userdata;
-				task->start = i;
-				task->end = i + hand->batch_count;
-				if (task->end > hand->taskMax) {
-					task->end = hand->taskMax;
+			if (hand->taskMax > 0) {
+				for (int i = 0; i < hand->taskMax; i += hand->batch_count) {
+					ThreadTaskGroup *task = singleton->allocal_task_data();
+					task->handle = hand;
+					task->callable = hand->callable;
+					task->labada = hand->labada;
+					task->is_labada = hand->is_labada;
+					task->native_group_func = hand->native_group_func;
+					task->native_func_userdata = hand->native_func_userdata;
+					task->start = i;
+					task->end = i + hand->batch_count;
+					if (task->end > hand->taskMax) {
+						task->end = hand->taskMax;
+					}
+					task->is_labada = false;
+					// 增加一个任务
+					singleton->add_task(task);
 				}
-				task->is_labada = false;
-				// 增加一个任务
-				singleton->add_task(task);
+				if (singleton->exit_threads) {
+					break;
+				}
+				// 等待任务完成,保证任务顺序完成
+				hand->wait_completion();
+				if (singleton->exit_threads) {
+					break;
+				}
+				hand.unref();
 			}
-			if (singleton->exit_threads) {
-				break;
-			}
-			// 等待任务完成,保证任务顺序完成
-			hand->wait_completion();
-			if (singleton->exit_threads) {
-				break;
-			}
-			hand.unref();
+		} else {
+			hand->set_completed();
 		}
 	}
 }

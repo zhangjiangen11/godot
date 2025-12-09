@@ -243,7 +243,7 @@ public:
 			nt->thash = thash;
 			nt->imported = imported;
 			nt->update_mode = update_mode;
-			nt->update_on_seek = update_on_seek;
+			nt->imported = imported;
 			nt->enabled = enabled;
 			return nt;
 		}

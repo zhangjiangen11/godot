@@ -64,6 +64,16 @@ Projection RenderSceneDataExtension::get_cam_projection(bool p_flip_y, bool p_re
 	GDVIRTUAL_CALL(_get_cam_projection, ret);
 	return ret;
 }
+Transform3D RenderSceneDataExtension::get_prev_cam_transform() const {
+	Transform3D ret;
+	GDVIRTUAL_CALL(_get_prev_cam_transform, ret);
+	return ret;
+}
+Projection RenderSceneDataExtension::get_prev_cam_projection() const {
+	Projection ret;
+	GDVIRTUAL_CALL(_get_prev_cam_projection, ret);
+	return ret;
+}
 
 uint32_t RenderSceneDataExtension::get_view_count() const {
 	uint32_t ret = 0;

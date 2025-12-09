@@ -2985,7 +2985,7 @@ void DisplayServerWindows::cursor_set_shape(CursorShape p_shape) {
 	if (cursors_cache.has(p_shape)) {
 		SetCursor(cursors[p_shape]);
 	} else {
-		SetCursor(LoadCursor(hInstance, win_cursors[p_shape]));
+		SetCursor(LoadCursor(nullptr, win_cursors[p_shape]));
 	}
 
 	cursor_shape = p_shape;
@@ -7233,6 +7233,7 @@ DisplayServerWindows::DisplayServerWindows(const String &p_rendering_driver, Win
 				if (_create_rendering_context_window(MAIN_WINDOW_ID, tested_rendering_driver) == OK) {
 					rendering_device = memnew(RenderingDevice);
 					if (rendering_device->initialize(rendering_context, MAIN_WINDOW_ID) == OK) {
+						rendering_driver = tested_rendering_driver;
 #ifdef VULKAN_ENABLED
 						if (rendering_driver == "vulkan" && tested_rendering_driver == "d3d12") {
 							WARN_PRINT("Your video card drivers seem not to support Vulkan, switching to Direct3D 12.");
