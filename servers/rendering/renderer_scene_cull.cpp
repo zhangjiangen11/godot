@@ -1158,6 +1158,9 @@ void RendererSceneCull::instance_set_extra_visibility_margin(RID p_instance, rea
 void RendererSceneCull::instance_set_ignore_culling(RID p_instance, bool p_enabled) {
 	Instance *instance = instance_owner.get_or_null(p_instance);
 	ERR_FAIL_NULL(instance);
+	if (instance->ignore_all_culling == p_enabled) {
+		return;
+	}
 	instance->ignore_all_culling = p_enabled;
 
 	if (instance->scenario && instance->array_index >= 0) {
@@ -1167,6 +1170,9 @@ void RendererSceneCull::instance_set_ignore_culling(RID p_instance, bool p_enabl
 		} else {
 			idata.flags &= ~InstanceData::FLAG_IGNORE_ALL_CULLING;
 		}
+	}
+	if (instance->scenario) {
+		_instance_queue_update(instance, true, false);
 	}
 }
 
@@ -1688,9 +1694,14 @@ void RendererSceneCull::_update_instance(Instance *p_instance) const {
 	} else if (p_instance->base_type == RS::INSTANCE_NONE) {
 		return;
 	}
-
-	if (!p_instance->aabb.has_surface()) {
-		return;
+	if (p_instance->ignore_all_culling) {
+		if (!p_instance->aabb.has_surface()) {
+			p_instance->aabb = AABB(Vector3(0, 0, 0), Vector3(1, 1, 1));
+		}
+	} else {
+		if (!p_instance->aabb.has_surface()) {
+			return;
+		}
 	}
 
 	if (p_instance->base_type == RS::INSTANCE_LIGHTMAP) {
@@ -2854,12 +2865,13 @@ void RendererSceneCull::_scene_cull(CullData &cull_data, InstanceCullResult &cul
 #define VIS_RANGE_CHECK ((idata.visibility_index == -1) || _visibility_range_check<false>(cull_data.scenario->instance_visibility[idata.visibility_index], cull_data.cam_transform.origin, cull_data.visibility_viewport_mask) == 0)
 #define VIS_PARENT_CHECK (_visibility_parent_check(cull_data, idata))
 #define VIS_CHECK (visibility_check < 0 ? (visibility_check = (visibility_flags != InstanceData::FLAG_VISIBILITY_DEPENDENCY_NEEDS_CHECK || (VIS_RANGE_CHECK && VIS_PARENT_CHECK))) : visibility_check)
-#define OCCLUSION_CULLED (cull_data.occlusion_buffer != nullptr && (cull_data.scenario->instance_data[i].flags & InstanceData::FLAG_IGNORE_OCCLUSION_CULLING) == 0 && cull_data.occlusion_buffer->is_occluded(cull_data.scenario->instance_aabbs[i].bounds, cull_data.cam_transform.origin, inv_cam_transform, *cull_data.camera_matrix, z_near, is_orthogonal, cull_data.scenario->instance_data[i].occlusion_timeout))
+#define OCCLUSION_CULLED (cull_data.occlusion_buffer != nullptr && (idata.flags & InstanceData::FLAG_IGNORE_OCCLUSION_CULLING) == 0 && cull_data.occlusion_buffer->is_occluded(cull_data.scenario->instance_aabbs[i].bounds, cull_data.cam_transform.origin, inv_cam_transform, *cull_data.camera_matrix, z_near, is_orthogonal, idata.occlusion_timeout))
 
 		if (!HIDDEN_BY_VISIBILITY_CHECKS) {
+			uint32_t base_type = idata.flags & InstanceData::FLAG_BASE_TYPE_MASK;
+			bool is_ignore_all_culling = idata.flags & InstanceData::FLAG_IGNORE_ALL_CULLING;
 			//if ((LAYER_CHECK && IN_FRUSTUM(cull_data.cull->frustum) && VIS_CHECK && !OCCLUSION_CULLED) || (cull_data.scenario->instance_data[i].flags & InstanceData::FLAG_IGNORE_ALL_CULLING)) {
-			if (LAYER_CHECK && ((cull_data.scenario->instance_data[i].flags & InstanceData::FLAG_IGNORE_ALL_CULLING) || IN_FRUSTUM(cull_data.cull->frustum) && VIS_CHECK && !OCCLUSION_CULLED)) {
-				uint32_t base_type = idata.flags & InstanceData::FLAG_BASE_TYPE_MASK;
+			if (is_ignore_all_culling || (LAYER_CHECK && IN_FRUSTUM(cull_data.cull->frustum) && VIS_CHECK && !OCCLUSION_CULLED)) {
 				if (base_type == RS::INSTANCE_LIGHT) {
 					cull_result.lights.push_back(idata.instance);
 					cull_result.light_instances.push_back(RID::from_uint64(idata.instance_data_rid));

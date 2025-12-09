@@ -1092,43 +1092,44 @@ void WorkerTaskPool::_thread_scheduler_function(void *p_user) {
 		singleton->scheduler_mutex.lock();
 		bool rs = singleton->scheduler_task.pop(hand);
 		singleton->scheduler_mutex.unlock();
-		if (rs) {
-			hand->wait_depend_completion();
+		if (!rs) {
+			continue;
+		}
+		hand->wait_depend_completion();
+		if (singleton->exit_threads) {
+			return;
+		}
+		// 获取任务数量
+		if (hand->depend_task_counter.is_valid()) {
+			hand->taskMax = hand->depend_task_counter->get_task_count();
+		}
+		if (hand->taskMax > 0) {
+			for (int i = 0; i < hand->taskMax; i += hand->batch_count) {
+				ThreadTaskGroup *task = singleton->allocal_task_data();
+				task->handle = hand;
+				task->callable = hand->callable;
+				task->labada = hand->labada;
+				task->is_labada = hand->is_labada;
+				task->native_group_func = hand->native_group_func;
+				task->native_func_userdata = hand->native_func_userdata;
+				task->start = i;
+				task->end = i + hand->batch_count;
+				if (task->end > hand->taskMax) {
+					task->end = hand->taskMax;
+				}
+				task->is_labada = false;
+				// 增加一个任务
+				singleton->add_task(task);
+			}
 			if (singleton->exit_threads) {
-				return;
+				break;
 			}
-			// 获取任务数量
-			if (hand->depend_task_counter.is_valid()) {
-				hand->taskMax = hand->depend_task_counter->get_task_count();
+			// 等待任务完成,保证任务顺序完成
+			hand->wait_completion();
+			if (singleton->exit_threads) {
+				break;
 			}
-			if (hand->taskMax > 0) {
-				for (int i = 0; i < hand->taskMax; i += hand->batch_count) {
-					ThreadTaskGroup *task = singleton->allocal_task_data();
-					task->handle = hand;
-					task->callable = hand->callable;
-					task->labada = hand->labada;
-					task->is_labada = hand->is_labada;
-					task->native_group_func = hand->native_group_func;
-					task->native_func_userdata = hand->native_func_userdata;
-					task->start = i;
-					task->end = i + hand->batch_count;
-					if (task->end > hand->taskMax) {
-						task->end = hand->taskMax;
-					}
-					task->is_labada = false;
-					// 增加一个任务
-					singleton->add_task(task);
-				}
-				if (singleton->exit_threads) {
-					break;
-				}
-				// 等待任务完成,保证任务顺序完成
-				hand->wait_completion();
-				if (singleton->exit_threads) {
-					break;
-				}
-				hand.unref();
-			}
+			hand.unref();
 		} else {
 			hand->set_completed();
 		}
