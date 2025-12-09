@@ -75,8 +75,6 @@ class ScriptTextEditor : public ScriptEditorBase {
 
 	List<Connection> missing_connections;
 
-	Vector<String> member_keywords;
-
 	HBoxContainer *edit_hb = nullptr;
 
 	MenuButton *edit_menu = nullptr;
