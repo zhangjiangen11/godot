@@ -147,6 +147,8 @@ public:
 	// 获取drawArg buffer,方便传递给computeshader填充,渲染实例数量,存在多少子模型,需要填充几次,因为每个子模型的面熟有可能不同,所以不能复用
 	virtual RID multimesh_get_command_buffer_rd_rid(RID p_multimesh) const;
 	virtual void multimesh_set_command_buffer_custom_id_and_offset(RID p_multimesh, RID p_custom_command_buffer, int p_offset);
+	virtual void multimesh_set_manuam_render_callback(RID p_multimesh, const Callable &p_callback);
+	virtual Callable multimesh_get_manuam_render_callback(RID p_multimesh) const;
 	virtual int multimesh_get_command_buffer_offset(RID p_multimesh) const;
 	// 获取Transform3D buffer,方便ComputeBuffer填充矩阵数据
 	virtual RID multimesh_get_buffer_rd_rid(RID p_multimesh) const;
@@ -196,6 +198,8 @@ public:
 	// 获取Transform3D buffer,方便ComputeBuffer填充矩阵数据
 	virtual RID _multimesh_get_buffer_rd_rid(RID p_multimesh) const = 0;
 	virtual Vector<float> _multimesh_get_buffer(RID p_multimesh) const = 0;
+	virtual void _multimesh_set_manuam_render_callback(RID p_multimesh, const Callable &p_callback) = 0;
+	virtual Callable _multimesh_get_manuam_render_callback(RID p_multimesh) const = 0;
 
 	virtual void _multimesh_set_visible_instances(RID p_multimesh, int p_visible) = 0;
 	virtual int _multimesh_get_visible_instances(RID p_multimesh) const = 0;

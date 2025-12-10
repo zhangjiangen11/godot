@@ -2265,6 +2265,20 @@ RID MeshStorage::_multimesh_get_command_buffer_rd_rid(RID p_multimesh) const {
 	}
 	return multimesh->command_buffer;
 }
+void MeshStorage::_multimesh_set_manuam_render_callback(RID p_multimesh, const Callable &p_callback) {
+	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
+	ERR_FAIL_NULL(multimesh);
+	multimesh->manuam_render_callback = p_callback;
+}
+Callable MeshStorage::_multimesh_get_manuam_render_callback(RID p_multimesh) const {
+	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
+	ERR_FAIL_NULL_V(multimesh, Callable());
+	if (multimesh->using_custom_cammad_buffer) {
+		ERR_FAIL_NULL_V(multimesh, Callable());
+		return multimesh->manuam_render_callback;
+	}
+	return Callable();
+}
 int MeshStorage::_multimesh_get_command_buffer_offset(RID p_multimesh) const {
 	MultiMesh *multimesh = multimesh_owner.get_or_null(p_multimesh);
 	ERR_FAIL_NULL_V(multimesh, 0);

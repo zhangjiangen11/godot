@@ -550,6 +550,8 @@ public:
 	virtual int _multimesh_get_command_buffer_offset(RID p_multimesh) const override;
 	virtual RID _multimesh_get_buffer_rd_rid(RID p_multimesh) const override;
 	virtual Vector<float> _multimesh_get_buffer(RID p_multimesh) const override;
+	virtual void _multimesh_set_manuam_render_callback(RID p_multimesh, const Callable &p_callback) override;
+	virtual Callable _multimesh_get_manuam_render_callback(RID p_multimesh) const override;
 
 	virtual void _multimesh_set_visible_instances(RID p_multimesh, int p_visible) override;
 	virtual int _multimesh_get_visible_instances(RID p_multimesh) const override;

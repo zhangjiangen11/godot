@@ -2167,6 +2167,7 @@ void MeshStorage::_multimesh_set_buffer(RID p_multimesh, const Vector<float> &p_
 
 void MeshStorage::_multimesh_set_command_buffer_custom_id_and_offset(RID p_multimesh, RID p_custom_command_buffer, int p_offset) {
 }
+
 RID MeshStorage::_multimesh_get_command_buffer_rd_rid(RID p_multimesh) const {
 	ERR_FAIL_V_MSG(RID(), "GLES3 does not implement indirect multimeshes.");
 }
@@ -2176,6 +2177,11 @@ int MeshStorage::_multimesh_get_command_buffer_offset(RID p_multimesh) const {
 }
 RID MeshStorage::_multimesh_get_buffer_rd_rid(RID p_multimesh) const {
 	ERR_FAIL_V_MSG(RID(), "GLES3 does not contain a Rid for the multimesh buffer.");
+}
+void MeshStorage::_multimesh_set_manuam_render_callback(RID p_multimesh, const Callable &p_callback) {
+}
+Callable MeshStorage::_multimesh_get_manuam_render_callback(RID p_multimesh) const {
+	return Callable();
 }
 
 Vector<float> MeshStorage::_multimesh_get_buffer(RID p_multimesh) const {

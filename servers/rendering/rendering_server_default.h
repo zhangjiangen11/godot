@@ -433,6 +433,8 @@ public:
 	FUNC1RC(int, multimesh_get_command_buffer_offset, RID)
 	FUNC1RC(RID, multimesh_get_buffer_rd_rid, RID)
 	FUNC1RC(Vector<float>, multimesh_get_buffer, RID)
+	FUNC2(multimesh_set_manuam_render_callback, RID, const Callable &)
+	FUNC1RC(Callable, multimesh_get_manuam_render_callback, RID)
 
 	FUNC3(multimesh_set_buffer_interpolated, RID, const Vector<float> &, const Vector<float> &)
 	FUNC2(multimesh_set_physics_interpolated, RID, bool)

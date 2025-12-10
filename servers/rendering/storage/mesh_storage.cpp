@@ -278,6 +278,12 @@ RID RendererMeshStorage::multimesh_get_buffer_rd_rid(RID p_multimesh) const {
 Vector<float> RendererMeshStorage::multimesh_get_buffer(RID p_multimesh) const {
 	return _multimesh_get_buffer(p_multimesh);
 }
+void RendererMeshStorage::multimesh_set_manuam_render_callback(RID p_multimesh, const Callable &p_callback) {
+	_multimesh_set_manuam_render_callback(p_multimesh, p_callback);
+}
+Callable RendererMeshStorage::multimesh_get_manuam_render_callback(RID p_multimesh) const {
+	return _multimesh_get_manuam_render_callback(p_multimesh);
+}
 
 void RendererMeshStorage::multimesh_set_buffer_interpolated(RID p_multimesh, const Vector<float> &p_buffer, const Vector<float> &p_buffer_prev) {
 	MultiMeshInterpolator *mmi = _multimesh_get_interpolator(p_multimesh);
