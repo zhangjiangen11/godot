@@ -758,7 +758,7 @@ ResourceLoader::ThreadLoadStatus ResourceLoader::load_threaded_get_status(const 
 
 		String local_path = _validate_local_path(p_path);
 		LoadToken *load_token = user_load_tokens[p_path];
-		ThreadLoadTask *load_task_ptr;
+		ThreadLoadTask *load_task_ptr = nullptr;
 
 		if (load_token->task_if_unregistered) {
 			load_task_ptr = load_token->task_if_unregistered;
@@ -781,7 +781,7 @@ ResourceLoader::ThreadLoadStatus ResourceLoader::load_threaded_get_status(const 
 				load_task_ptr->last_progress_check_main_thread_frame = frame;
 			}
 		}
-		r_resource = load_task.resource;
+		r_resource = load_task_ptr->resource;
 	}
 
 	if (ensure_progress) {
