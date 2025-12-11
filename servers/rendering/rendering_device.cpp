@@ -4879,6 +4879,7 @@ void RenderingDevice::draw_list_bind_render_pipeline(DrawListID p_list, RID p_re
 
 		uint32_t pcount = pipeline->set_formats.size(); // Formats count in this pipeline.
 		draw_list.state.set_count = MAX(draw_list.state.set_count, pcount);
+		draw_list.state.popline_set_count = pcount;
 		const uint32_t *pformats = pipeline->set_formats.ptr(); // Pipeline set formats.
 
 		uint32_t first_invalid_set = UINT32_MAX; // All valid by default.
@@ -5187,7 +5188,7 @@ void RenderingDevice::draw_list_draw(DrawListID p_list, bool p_use_indices, uint
 #endif
 
 #ifdef DEBUG_ENABLED
-	for (uint32_t i = 0; i < draw_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < draw_list.state.popline_set_count; i++) {
 		if (draw_list.state.sets[i].pipeline_expected_format == 0) {
 			// Nothing expected by this pipeline.
 			continue;
@@ -5213,7 +5214,7 @@ void RenderingDevice::draw_list_draw(DrawListID p_list, bool p_use_indices, uint
 	uint32_t last_set_index = 0;
 	bool found_first_set = false;
 
-	for (uint32_t i = 0; i < draw_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < draw_list.state.popline_set_count; i++) {
 		if (draw_list.state.sets[i].pipeline_expected_format == 0) {
 			continue; // Nothing expected by this pipeline.
 		}
@@ -5229,7 +5230,7 @@ void RenderingDevice::draw_list_draw(DrawListID p_list, bool p_use_indices, uint
 	}
 
 	// Bind descriptor sets.
-	for (uint32_t i = first_set_index; i < draw_list.state.set_count; i++) {
+	for (uint32_t i = first_set_index; i < draw_list.state.popline_set_count; i++) {
 		if (draw_list.state.sets[i].pipeline_expected_format == 0) {
 			continue; // Nothing expected by this pipeline.
 		}
@@ -5349,7 +5350,7 @@ void RenderingDevice::draw_list_draw_indirect(DrawListID p_list, bool p_use_indi
 #endif
 
 #ifdef DEBUG_ENABLED
-	for (uint32_t i = 0; i < draw_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < draw_list.state.popline_set_count; i++) {
 		if (draw_list.state.sets[i].pipeline_expected_format == 0) {
 			// Nothing expected by this pipeline.
 			continue;
@@ -5370,7 +5371,7 @@ void RenderingDevice::draw_list_draw_indirect(DrawListID p_list, bool p_use_indi
 
 	// Prepare descriptor sets if the API doesn't use pipeline barriers.
 	if (!driver->api_trait_get(RDD::API_TRAIT_HONORS_PIPELINE_BARRIERS)) {
-		for (uint32_t i = 0; i < draw_list.state.set_count; i++) {
+		for (uint32_t i = 0; i < draw_list.state.popline_set_count; i++) {
 			if (draw_list.state.sets[i].pipeline_expected_format == 0) {
 				// Nothing expected by this pipeline.
 				continue;
@@ -5381,7 +5382,7 @@ void RenderingDevice::draw_list_draw_indirect(DrawListID p_list, bool p_use_indi
 	}
 
 	// Bind descriptor sets.
-	for (uint32_t i = 0; i < draw_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < draw_list.state.popline_set_count; i++) {
 		if (draw_list.state.sets[i].pipeline_expected_format == 0) {
 			continue; // Nothing expected by this pipeline.
 		}
@@ -5569,6 +5570,7 @@ void RenderingDevice::compute_list_bind_compute_pipeline(ComputeListID p_list, R
 
 		uint32_t pcount = pipeline->set_formats.size(); // Formats count in this pipeline.
 		compute_list.state.set_count = MAX(compute_list.state.set_count, pcount);
+		compute_list.state.popline_set_count = pcount; // Update set count.
 		const uint32_t *pformats = pipeline->set_formats.ptr(); // Pipeline set formats.
 
 		uint32_t first_invalid_set = UINT32_MAX; // All valid by default.
@@ -5717,7 +5719,7 @@ void RenderingDevice::compute_list_dispatch(ComputeListID p_list, uint32_t p_x_g
 #endif
 
 #ifdef DEBUG_ENABLED
-	for (uint32_t i = 0; i < compute_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < compute_list.state.popline_set_count; i++) {
 		if (compute_list.state.sets[i].pipeline_expected_format == 0) {
 			// Nothing expected by this pipeline.
 			continue;
@@ -5744,7 +5746,7 @@ void RenderingDevice::compute_list_dispatch(ComputeListID p_list, uint32_t p_x_g
 	uint32_t last_set_index = 0;
 	bool found_first_set = false;
 
-	for (uint32_t i = 0; i < compute_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < compute_list.state.popline_set_count; i++) {
 		if (compute_list.state.sets[i].pipeline_expected_format == 0) {
 			// Nothing expected by this pipeline.
 			continue;
@@ -5761,7 +5763,7 @@ void RenderingDevice::compute_list_dispatch(ComputeListID p_list, uint32_t p_x_g
 	}
 
 	// Bind descriptor sets.
-	for (uint32_t i = first_set_index; i < compute_list.state.set_count; i++) {
+	for (uint32_t i = first_set_index; i < compute_list.state.popline_set_count; i++) {
 		if (compute_list.state.sets[i].pipeline_expected_format == 0) {
 			continue; // Nothing expected by this pipeline.
 		}
@@ -5857,7 +5859,7 @@ void RenderingDevice::compute_list_dispatch_indirect(ComputeListID p_list, RID p
 #endif
 
 #ifdef DEBUG_ENABLED
-	for (uint32_t i = 0; i < compute_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < compute_list.state.popline_set_count; i++) {
 		if (compute_list.state.sets[i].pipeline_expected_format == 0) {
 			// Nothing expected by this pipeline.
 			continue;
@@ -5884,7 +5886,7 @@ void RenderingDevice::compute_list_dispatch_indirect(ComputeListID p_list, RID p
 	uint32_t last_set_index = 0;
 	bool found_first_set = false;
 
-	for (uint32_t i = 0; i < compute_list.state.set_count; i++) {
+	for (uint32_t i = 0; i < compute_list.state.popline_set_count; i++) {
 		if (compute_list.state.sets[i].pipeline_expected_format == 0) {
 			// Nothing expected by this pipeline.
 			continue;
@@ -5902,7 +5904,7 @@ void RenderingDevice::compute_list_dispatch_indirect(ComputeListID p_list, RID p
 	}
 
 	// Bind descriptor sets.
-	for (uint32_t i = first_set_index; i < compute_list.state.set_count; i++) {
+	for (uint32_t i = first_set_index; i < compute_list.state.popline_set_count; i++) {
 		if (compute_list.state.sets[i].pipeline_expected_format == 0) {
 			continue; // Nothing expected by this pipeline.
 		}
@@ -5959,7 +5961,7 @@ void RenderingDevice::compute_list_add_barrier(ComputeListID p_list) {
 		compute_list_bind_compute_pipeline(p_list, compute_list_barrier_state.pipeline);
 	}
 
-	for (uint32_t i = 0; i < compute_list_barrier_state.set_count; i++) {
+	for (uint32_t i = 0; i < compute_list_barrier_state.popline_set_count; i++) {
 		if (compute_list_barrier_state.sets[i].uniform_set.is_valid()) {
 			compute_list_bind_uniform_set(p_list, compute_list_barrier_state.sets[i].uniform_set, i);
 		}

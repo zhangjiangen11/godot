@@ -1323,6 +1323,7 @@ private:
 		struct State {
 			SetState sets[MAX_UNIFORM_SETS];
 			uint32_t set_count = 0;
+			uint32_t popline_set_count = 0;
 			RID pipeline;
 			RID pipeline_shader;
 			RDD::ShaderID pipeline_shader_driver_id;
@@ -1457,6 +1458,7 @@ private:
 		struct State {
 			SetState sets[MAX_UNIFORM_SETS];
 			uint32_t set_count = 0;
+			uint32_t popline_set_count = 0;
 			RID pipeline;
 			RID pipeline_shader;
 			RDD::ShaderID pipeline_shader_driver_id;
