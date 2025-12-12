@@ -818,6 +818,7 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 	_update_vrs(rb);
 	// 处理开始绘制场景
 	_process_compositor_effects(RS::COMPOSITOR_EFFECT_CALLBACK_TYPE_PRE_RENDER_SCENE, p_render_data);
+	RSG::utilities->update_dirty_resources();
 
 	if (rb->has_texture(RB_SCOPE_VRS, RB_TEXTURE)) {
 		global_pipeline_data_required.use_vrs = true;

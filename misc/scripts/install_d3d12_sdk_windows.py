@@ -78,7 +78,7 @@ for arch in [
         shutil.rmtree(mesa_folder)
     print(f"Extracting Mesa NIR {mesa_filename} to {mesa_folder} ...")
     shutil.unpack_archive(mesa_archive, mesa_folder)
-    os.remove(mesa_archive)
+    #os.remove(mesa_archive)
 print("Mesa NIR installed successfully.\n")
 
 # WinPixEventRuntime
