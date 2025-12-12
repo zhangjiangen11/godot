@@ -1780,9 +1780,11 @@ void SceneTreeDock::_notification(int p_what) {
 
 			if (show_create_root != create_root_dialog->is_visible_in_tree() && !remote_tree->is_visible()) {
 				if (show_create_root) {
+					main_mc->set_theme_type_variation("");
 					create_root_dialog->show();
 					scene_tree->hide();
 				} else {
+					main_mc->set_theme_type_variation("NoBorderHorizontalBottom");
 					create_root_dialog->hide();
 					scene_tree->show();
 				}
@@ -4472,6 +4474,7 @@ void SceneTreeDock::hide_tab_buttons() {
 }
 
 void SceneTreeDock::_remote_tree_selected() {
+	main_mc->set_theme_type_variation("NoBorderHorizontalBottom");
 	scene_tree->hide();
 	create_root_dialog->hide();
 	if (remote_tree) {
@@ -4894,15 +4897,15 @@ SceneTreeDock::SceneTreeDock(Node *p_scene_root, EditorSelection *p_editor_selec
 	remote_tree = nullptr;
 	button_hb->hide();
 
-	create_root_dialog = memnew(VBoxContainer);
-	main_vbox->add_child(create_root_dialog);
-	create_root_dialog->set_v_size_flags(SIZE_EXPAND_FILL);
-	create_root_dialog->hide();
-
 	main_mc = memnew(MarginContainer);
 	main_vbox->add_child(main_mc);
 	main_mc->set_theme_type_variation("NoBorderHorizontalBottom");
 	main_mc->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+
+	create_root_dialog = memnew(VBoxContainer);
+	main_mc->add_child(create_root_dialog);
+	create_root_dialog->set_v_size_flags(SIZE_EXPAND_FILL);
+	create_root_dialog->hide();
 
 	scene_tree = memnew(SceneTreeEditor(false, true, true));
 	main_mc->add_child(scene_tree);
