@@ -744,6 +744,7 @@ private:
 
 	ClusterBuilderSharedDataRD cluster_builder_shared;
 	ClusterBuilderRD *current_cluster_builder = nullptr;
+	Ref<RenderSceneBuffers> render_buffers;
 
 	/* SDFGI */
 	void _update_sdfgi(RenderDataRD *p_render_data);

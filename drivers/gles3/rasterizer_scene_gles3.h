@@ -834,6 +834,7 @@ protected:
 	// Needed for a single argument calls (material and uv2).
 	PagedArrayPool<RenderGeometryInstance *> cull_argument_pool;
 	PagedArray<RenderGeometryInstance *> cull_argument;
+	Ref<RenderSceneBuffers> render_buffers;
 
 public:
 	static RasterizerSceneGLES3 *get_singleton() { return singleton; }

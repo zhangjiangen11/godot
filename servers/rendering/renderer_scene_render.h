@@ -278,7 +278,7 @@ public:
 
 	struct RenderShadowData {
 		RID light;
-		int pass = 0;
+		int casecade_pass_index = 0;
 		PagedArray<RenderGeometryInstance *> instances;
 	};
 

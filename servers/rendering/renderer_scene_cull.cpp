@@ -2455,7 +2455,7 @@ bool RendererSceneCull::_light_instance_update_shadow(Instance *p_instance, cons
 
 					RSG::light_storage->light_instance_set_shadow_transform(light->instance, Projection(), light_transform, radius, 0, i, 0);
 					shadow_data.light = light->instance;
-					shadow_data.pass = i;
+					shadow_data.casecade_pass_index = i;
 				}
 			} else { //shadow cube
 
@@ -2537,7 +2537,7 @@ bool RendererSceneCull::_light_instance_update_shadow(Instance *p_instance, cons
 					RSG::light_storage->light_instance_set_shadow_transform(light->instance, cm, xform, radius, 0, i, 0);
 
 					shadow_data.light = light->instance;
-					shadow_data.pass = i;
+					shadow_data.casecade_pass_index = i;
 				}
 
 				//restore the regular DP matrix
@@ -2605,7 +2605,7 @@ bool RendererSceneCull::_light_instance_update_shadow(Instance *p_instance, cons
 
 			RSG::light_storage->light_instance_set_shadow_transform(light->instance, cm, light_transform, radius, 0, 0, 0);
 			shadow_data.light = light->instance;
-			shadow_data.pass = 0;
+			shadow_data.casecade_pass_index = 0;
 
 		} break;
 	}
@@ -3319,7 +3319,7 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 					continue;
 				}
 				render_shadow_data[max_shadows_used].light = cull.shadows[i].light_instance;
-				render_shadow_data[max_shadows_used].pass = j;
+				render_shadow_data[max_shadows_used].casecade_pass_index = j;
 				render_shadow_data[max_shadows_used].instances.merge_unordered(scene_cull_result.directional_shadows[i].cascade_geometry_instances[j]);
 				max_shadows_used++;
 			}
@@ -3512,6 +3512,24 @@ void RendererSceneCull::_render_scene(const RendererSceneRender::CameraData *p_c
 	}
 
 	RENDER_TIMESTAMP("Render 3D Scene");
+	// 设置阴影相关信息
+	p_render_buffers->shadow_count = cull.shadow_count;
+	for (uint32_t i = 0; i < cull.shadow_count; i++) {
+		p_render_buffers->shadows[i].light_instance = cull.shadows[i].light_instance;
+		p_render_buffers->shadows[i].caster_mask = cull.shadows[i].caster_mask;
+		p_render_buffers->shadows[i].cascade_count = cull.shadows[i].cascade_count;
+		for (uint32_t j = 0; j < cull.shadows[i].cascade_count; j++) {
+			p_render_buffers->shadows[i].cascades[j].planes = cull.shadows[i].cascades[j].frustum.planes;
+			p_render_buffers->shadows[i].cascades[j].projection = cull.shadows[i].cascades[j].projection;
+			p_render_buffers->shadows[i].cascades[j].transform = cull.shadows[i].cascades[j].transform;
+			p_render_buffers->shadows[i].cascades[j].zfar = cull.shadows[i].cascades[j].zfar;
+			p_render_buffers->shadows[i].cascades[j].split = cull.shadows[i].cascades[j].split;
+			p_render_buffers->shadows[i].cascades[j].shadow_texel_size = cull.shadows[i].cascades[j].shadow_texel_size;
+			p_render_buffers->shadows[i].cascades[j].bias_scale = cull.shadows[i].cascades[j].bias_scale;
+			p_render_buffers->shadows[i].cascades[j].range_begin = cull.shadows[i].cascades[j].range_begin;
+			p_render_buffers->shadows[i].cascades[j].uv_scale = cull.shadows[i].cascades[j].uv_scale;
+		}
+	}
 	scene_render->render_scene(p_render_buffers, p_camera_data, prev_camera_data, scene_cull_result.geometry_instances, scene_cull_result.light_instances, scene_cull_result.reflections, scene_cull_result.voxel_gi_instances, scene_cull_result.decals, scene_cull_result.lightmaps, scene_cull_result.fog_volumes, p_environment, camera_attributes, p_compositor, p_shadow_atlas, occluders_tex, p_reflection_probe.is_valid() ? RID() : scenario->reflection_atlas, p_reflection_probe, p_reflection_probe_pass, p_screen_mesh_lod_threshold, render_shadow_data, max_shadows_used, render_sdfgi_data, cull.sdfgi.region_count, &sdfgi_update_data, r_render_info);
 
 	if (p_viewport.is_valid()) {

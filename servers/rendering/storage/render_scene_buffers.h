@@ -30,6 +30,10 @@
 
 #pragma once
 
+#include "core/math/plane.h"
+#include "core/math/projection.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector2.h"
 #include "core/object/ref_counted.h"
 #include "servers/rendering/rendering_server.h"
 
@@ -115,6 +119,56 @@ public:
 	virtual void set_anisotropic_filtering_level(RS::ViewportAnisotropicFiltering p_anisotropic_filtering_level) = 0;
 	virtual void set_use_debanding(bool p_use_debanding) = 0;
 	virtual RID get_depth_layer(const uint32_t p_layer, bool p_msaa = false) { return RID(); }
+
+	// 阴影相关信息
+public:
+	enum {
+		MAX_DIRECTIONAL_LIGHTS = 8,
+		MAX_DIRECTIONAL_LIGHT_CASCADES = 4,
+	};
+	struct Shadow {
+		RID light_instance;
+		uint32_t caster_mask;
+		struct Cascade {
+			Vector<Plane> planes;
+
+			Projection projection;
+			Transform3D transform;
+			real_t zfar;
+			real_t split;
+			real_t shadow_texel_size;
+			real_t bias_scale;
+			real_t range_begin;
+			Vector2 uv_scale;
+
+		} cascades[MAX_DIRECTIONAL_LIGHT_CASCADES]; //max 4 cascades
+		uint32_t cascade_count = 0;
+
+	} shadows[MAX_DIRECTIONAL_LIGHTS];
+
+	uint32_t shadow_count = 0;
+
+public:
+	int curr_render_pass_mode = 0;
+	int curr_light_shadow_cascade_index = 0;
+	int curr_shadow_light_type = 0;
+	RID curr_shadow_light_instance;
+
+public:
+	uint32_t get_shadow_count() const { return shadow_count; }
+	RID get_light_instance(const uint32_t p_index) const { return shadows[p_index].light_instance; }
+	uint32_t get_cascade_count(const uint32_t p_index) const { return shadows[p_index].cascade_count; }
+	uint32_t get_caster_mask(const uint32_t p_index) const { return shadows[p_index].caster_mask; }
+
+	const Vector<Plane> &get_cascade_planes(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].planes; }
+	Projection get_cascade_projection(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].projection; }
+	Transform3D get_cascade_transform(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].transform; }
+	real_t get_cascade_zfar(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].zfar; }
+	real_t get_cascade_split(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].split; }
+	real_t get_cascade_shadow_texel_size(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].shadow_texel_size; }
+	real_t get_cascade_bias_scale(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].bias_scale; }
+	real_t get_cascade_range_begin(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].range_begin; }
+	Vector2 get_cascade_uv_scale(const uint32_t p_index, const uint32_t p_cascade) const { return shadows[p_index].cascades[p_cascade].uv_scale; }
 };
 
 class RenderSceneBuffersExtension : public RenderSceneBuffers {

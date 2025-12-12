@@ -705,6 +705,7 @@ public:
 		bool screen_texture_used = false;
 		bool depth_texture_used = false;
 	} global_surface_data;
+	Ref<RenderSceneBuffers> render_buffers;
 
 	virtual RenderGeometryInstance *geometry_instance_create(RID p_base) override;
 	virtual void geometry_instance_free(RenderGeometryInstance *p_geometry_instance) override;

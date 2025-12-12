@@ -761,7 +761,7 @@ void RenderForwardMobile::_pre_opaque_render(RenderDataRD *p_render_data) {
 
 		//cube shadows are rendered in their own way
 		for (const int &index : p_render_data->cube_shadows) {
-			_render_shadow_pass(p_render_data->render_shadows[index].light, p_render_data->shadow_atlas, p_render_data->render_shadows[index].pass, p_render_data->render_shadows[index].instances, lod_distance_multiplier, p_render_data->scene_data->screen_mesh_lod_threshold, true, true, true, p_render_data->render_info, p_render_data->scene_data->cam_transform);
+			_render_shadow_pass(p_render_data->render_shadows[index].light, p_render_data->shadow_atlas, p_render_data->render_shadows[index].casecade_pass_index, p_render_data->render_shadows[index].instances, lod_distance_multiplier, p_render_data->scene_data->screen_mesh_lod_threshold, true, true, true, p_render_data->render_info, p_render_data->scene_data->cam_transform);
 		}
 
 		if (p_render_data->directional_shadows.size()) {
@@ -782,11 +782,11 @@ void RenderForwardMobile::_pre_opaque_render(RenderDataRD *p_render_data) {
 
 		//render directional shadows
 		for (uint32_t i = 0; i < p_render_data->directional_shadows.size(); i++) {
-			_render_shadow_pass(p_render_data->render_shadows[p_render_data->directional_shadows[i]].light, p_render_data->shadow_atlas, p_render_data->render_shadows[p_render_data->directional_shadows[i]].pass, p_render_data->render_shadows[p_render_data->directional_shadows[i]].instances, lod_distance_multiplier, p_render_data->scene_data->screen_mesh_lod_threshold, false, i == p_render_data->directional_shadows.size() - 1, false, p_render_data->render_info, p_render_data->scene_data->cam_transform);
+			_render_shadow_pass(p_render_data->render_shadows[p_render_data->directional_shadows[i]].light, p_render_data->shadow_atlas, p_render_data->render_shadows[p_render_data->directional_shadows[i]].casecade_pass_index, p_render_data->render_shadows[p_render_data->directional_shadows[i]].instances, lod_distance_multiplier, p_render_data->scene_data->screen_mesh_lod_threshold, false, i == p_render_data->directional_shadows.size() - 1, false, p_render_data->render_info, p_render_data->scene_data->cam_transform);
 		}
 		//render positional shadows
 		for (uint32_t i = 0; i < p_render_data->shadows.size(); i++) {
-			_render_shadow_pass(p_render_data->render_shadows[p_render_data->shadows[i]].light, p_render_data->shadow_atlas, p_render_data->render_shadows[p_render_data->shadows[i]].pass, p_render_data->render_shadows[p_render_data->shadows[i]].instances, lod_distance_multiplier, p_render_data->scene_data->screen_mesh_lod_threshold, i == 0, i == p_render_data->shadows.size() - 1, true, p_render_data->render_info, p_render_data->scene_data->cam_transform);
+			_render_shadow_pass(p_render_data->render_shadows[p_render_data->shadows[i]].light, p_render_data->shadow_atlas, p_render_data->render_shadows[p_render_data->shadows[i]].casecade_pass_index, p_render_data->render_shadows[p_render_data->shadows[i]].instances, lod_distance_multiplier, p_render_data->scene_data->screen_mesh_lod_threshold, i == 0, i == p_render_data->shadows.size() - 1, true, p_render_data->render_info, p_render_data->scene_data->cam_transform);
 		}
 
 		_render_shadow_process();
@@ -802,6 +802,7 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 	ERR_FAIL_NULL(p_render_data);
 
 	Ref<RenderSceneBuffersRD> rb = p_render_data->render_buffers;
+	render_buffers = rb;
 	ERR_FAIL_COND(rb.is_null());
 
 	Ref<RenderBufferDataForwardMobile> rb_data;
@@ -1361,6 +1362,7 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 	}
 
 	_render_buffers_debug_draw(p_render_data);
+	render_buffers.unref();
 }
 
 /* these are being called from RendererSceneRenderRD::_pre_opaque_render */
@@ -1369,8 +1371,12 @@ void RenderForwardMobile::_render_shadow_pass(RID p_light, RID p_shadow_atlas, i
 	RendererRD::LightStorage *light_storage = RendererRD::LightStorage::get_singleton();
 
 	ERR_FAIL_COND(!light_storage->owns_light_instance(p_light));
-
 	RID base = light_storage->light_instance_get_base_light(p_light);
+	if (render_buffers.is_valid()) {
+		render_buffers->curr_shadow_light_instance = p_light;
+		render_buffers->curr_shadow_light_type = light_storage->light_get_type(base);
+		render_buffers->curr_light_shadow_cascade_index = p_pass;
+	}
 
 	Rect2i atlas_rect;
 	uint32_t atlas_size = 1;
@@ -2254,7 +2260,9 @@ void RenderForwardMobile::_setup_environment(const RenderDataRD *p_render_data, 
 
 void RenderForwardMobile::_render_list(RenderingDevice::DrawListID p_draw_list, RenderingDevice::FramebufferFormatID p_framebuffer_Format, RenderListParameters *p_params, uint32_t p_from_element, uint32_t p_to_element) {
 	//use template for faster performance (pass mode comparisons are inlined)
-
+	if (render_buffers.is_valid()) {
+		render_buffers->curr_render_pass_mode = p_params->pass_mode;
+	}
 	switch (p_params->pass_mode) {
 		case PASS_MODE_COLOR: {
 			_render_list_template<PASS_MODE_COLOR>(p_draw_list, p_framebuffer_Format, p_params, p_from_element, p_to_element);

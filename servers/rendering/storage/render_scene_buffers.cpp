@@ -74,6 +74,21 @@ void RenderSceneBuffersConfiguration::_bind_methods() {
 
 void RenderSceneBuffers::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("configure", "config"), &RenderSceneBuffers::configure);
+
+	ClassDB::bind_method(D_METHOD("get_shadow_count", "index"), &RenderSceneBuffers::get_shadow_count);
+	ClassDB::bind_method(D_METHOD("get_light_instance", "index"), &RenderSceneBuffers::get_light_instance);
+	ClassDB::bind_method(D_METHOD("get_cascade_count", "index"), &RenderSceneBuffers::get_cascade_count);
+	ClassDB::bind_method(D_METHOD("get_caster_mask", "index"), &RenderSceneBuffers::get_caster_mask);
+
+	//ClassDB::bind_method(D_METHOD("get_cascade_planes", "index", "cascade"), &RenderSceneBuffers::get_cascade_planes);
+	ClassDB::bind_method(D_METHOD("get_cascade_projection", "index", "cascade"), &RenderSceneBuffers::get_cascade_projection);
+	ClassDB::bind_method(D_METHOD("get_cascade_transform", "index", "cascade"), &RenderSceneBuffers::get_cascade_transform);
+	ClassDB::bind_method(D_METHOD("get_cascade_zfar", "index", "cascade"), &RenderSceneBuffers::get_cascade_zfar);
+	ClassDB::bind_method(D_METHOD("get_cascade_split", "index", "cascade"), &RenderSceneBuffers::get_cascade_split);
+	ClassDB::bind_method(D_METHOD("get_cascade_shadow_texel_size", "index", "cascade"), &RenderSceneBuffers::get_cascade_shadow_texel_size);
+	ClassDB::bind_method(D_METHOD("get_cascade_bias_scale", "index", "cascade"), &RenderSceneBuffers::get_cascade_bias_scale);
+	ClassDB::bind_method(D_METHOD("get_cascade_range_begin", "index", "cascade"), &RenderSceneBuffers::get_cascade_range_begin);
+	ClassDB::bind_method(D_METHOD("get_cascade_uv_scale", "index", "cascade"), &RenderSceneBuffers::get_cascade_uv_scale);
 }
 
 void RenderSceneBuffersExtension::_bind_methods() {
