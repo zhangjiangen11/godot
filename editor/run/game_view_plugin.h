@@ -56,6 +56,9 @@ private:
 	bool mute_audio = false;
 	EditorDebuggerNode::CameraOverride camera_override_mode = EditorDebuggerNode::OVERRIDE_INGAME;
 
+	bool selection_avoid_locked = false;
+	bool selection_prefer_group = false;
+
 	void _session_started(Ref<EditorDebuggerSession> p_session);
 	void _session_stopped();
 
@@ -91,6 +94,9 @@ public:
 
 	void set_selection_visible(bool p_visible);
 
+	void set_selection_avoid_locked(bool p_enabled);
+	void set_selection_prefer_group(bool p_enabled);
+
 	void set_debug_mute_audio(bool p_enabled);
 
 	void set_camera_override(bool p_enabled);
@@ -114,6 +120,8 @@ class GameView : public EditorDock {
 		CAMERA_MODE_EDITORS,
 		EMBED_RUN_GAME_EMBEDDED,
 		EMBED_MAKE_FLOATING_ON_PLAY,
+		SELECTION_AVOID_LOCKED,
+		SELECTION_PREFER_GROUP,
 	};
 
 	enum EmbedSizeMode {
@@ -154,6 +162,9 @@ class GameView : public EditorDock {
 
 	bool debug_mute_audio = false;
 
+	bool selection_avoid_locked = false;
+	bool selection_prefer_group = false;
+
 	Button *suspend_button = nullptr;
 	Button *next_frame_button = nullptr;
 
@@ -161,6 +172,7 @@ class GameView : public EditorDock {
 	Button *select_mode_button[RuntimeNodeSelect::SELECT_MODE_MAX];
 
 	Button *hide_selection = nullptr;
+	MenuButton *selection_options_menu = nullptr;
 
 	Button *debug_mute_audio_button = nullptr;
 
@@ -192,6 +204,7 @@ class GameView : public EditorDock {
 
 	void _node_type_pressed(int p_option);
 	void _select_mode_pressed(int p_option);
+	void _selection_options_menu_id_pressed(int p_id);
 	void _embed_options_menu_menu_id_pressed(int p_id);
 
 	void _reset_time_scales();
