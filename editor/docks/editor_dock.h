@@ -78,6 +78,8 @@ private:
 	void _set_default_slot_bind(EditorPlugin::DockSlot p_slot);
 	EditorPlugin::DockSlot _get_default_slot_bind() const { return (EditorPlugin::DockSlot)default_slot; }
 
+	void _emit_changed();
+
 protected:
 	static void _bind_methods();
 
@@ -86,8 +88,6 @@ protected:
 	GDVIRTUAL2(_load_layout_from_config, Ref<ConfigFile>, const String &)
 
 public:
-	EditorDock();
-
 	void open();
 	void make_visible();
 	void close();
