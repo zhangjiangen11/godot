@@ -359,11 +359,7 @@ void Viewport::_sub_window_update(Window *p_window) {
 		TextServer::set_current_drawn_item_oversampling(get_oversampling());
 
 		Ref<StyleBox> panel = gui.subwindow_focused == p_window ? p_window->theme_cache.embedded_border : p_window->theme_cache.embedded_unfocused_border;
-		if (p_window->user_data.background.is_valid()) {
-			p_window->user_data.background->draw_rect(sw.canvas_item, r);
-		} else {
-			panel->draw(sw.canvas_item, r);
-		}
+		panel->draw(sw.canvas_item, r);
 
 		// Draw the title bar text.
 		Ref<Font> title_font = p_window->theme_cache.title_font;
@@ -391,16 +387,6 @@ void Viewport::_sub_window_update(Window *p_window) {
 
 		bool pressed = gui.subwindow_focused == sw.window && gui.subwindow_drag == SUB_WINDOW_DRAG_CLOSE && gui.subwindow_drag_close_inside;
 		Ref<Texture2D> close_icon = pressed ? p_window->theme_cache.close_pressed : p_window->theme_cache.close;
-		if (pressed) {
-			if (p_window->user_data.close_pressed.is_valid()) {
-				close_icon = p_window->user_data.close_pressed;
-			}
-		} else {
-			if (p_window->user_data.close.is_valid()) {
-				close_icon = p_window->user_data.close;
-			}
-		}
-
 		close_icon->draw(sw.canvas_item, r.position + Vector2(r.size.width - close_h_ofs, -close_v_ofs));
 
 		TextServer::set_current_drawn_item_oversampling(0.0);
@@ -5635,7 +5621,7 @@ void Viewport::CameraOverride<T>::enable(Viewport *p_viewport, const T *p_curren
 	}
 
 	T *override_camera = memnew(T);
-	override_camera->set_name(vformat("Override%s", T ::get_class_static()));
+	override_camera->set_name(vformat("Override%s", T::get_class_static()));
 	p_viewport->add_child(override_camera, false, Node::INTERNAL_MODE_BACK);
 
 	override_camera->make_current();

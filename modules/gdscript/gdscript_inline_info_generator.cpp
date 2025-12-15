@@ -82,7 +82,7 @@ void GDScriptInlineInfoGenerator::visit_variable(GDScriptParser::VariableNode *p
 	if (p_variable->initializer) {
 		visit_expression(p_variable->initializer);
 	}
-	if (p_variable->property == GDScriptParser::VariableNode::PROP_SETGET) {
+	if (p_variable->property == GDScriptParser::VariableNode::PROP_INLINE) {
 		if (p_variable->setter) {
 			visit_function(p_variable->setter);
 		}

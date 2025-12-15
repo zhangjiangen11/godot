@@ -1,0 +1,54 @@
+# SCsub
+
+import os
+import shutil
+Import('env')
+
+module_path = Dir('.').srcnode().abspath
+bin_dir = env.Dir("#bin").abspath
+
+env.Append(CPPPATH=["%s/sdk/public/" % module_path])
+# If compiling Linux
+if env["platform"]== "linuxbsd" or env["platform"] == "server":
+	env.Append(LIBS=["steam_api"])
+	env.Append(RPATH=env.Literal('\\$$ORIGIN'))
+	if env['arch'] == "x86_32":
+		env.Append(LIBPATH=["%s/sdk/redistributable_bin/linux32" % module_path])
+		shutil.copy(os.path.join("%s/sdk/redistributable_bin/linux32" % module_path, "libsteam_api.so"), bin_dir)
+	else: # 64 bit
+		env.Append(LIBPATH=["%s/sdk/redistributable_bin/linux64" % module_path])
+		shutil.copy(os.path.join("%s/sdk/redistributable_bin/linux64" % module_path, "libsteam_api.so"), bin_dir)
+
+# If compiling Windows
+elif env["platform"] == "windows":
+	# Mostly VisualStudio
+	if env["CC"] == "cl":
+		if env['arch'] == "x86_32":
+			env.Append(LINKFLAGS=["steam_api.lib"])
+			env.Append(LIBPATH=["%s/sdk/redistributable_bin" % module_path])
+			shutil.copy(os.path.join("%s/sdk/redistributable_bin" % module_path, "steam_api.dll"), bin_dir)
+		else: # 64 bit
+			env.Append(LINKFLAGS=["steam_api64.lib"])
+			env.Append(LIBPATH=["%s/sdk/redistributable_bin/win64" % module_path])
+			shutil.copy(os.path.join("%s/sdk/redistributable_bin/win64" % module_path, "steam_api64.dll"), bin_dir)
+	
+	# Mostly "GCC"
+	else:
+		if env['arch'] == "x86_32":
+			env.Append(LIBS=["steam_api"])
+			env.Append(LIBPATH=["%s/sdk/redistributable_bin" % module_path])
+			shutil.copy(os.path.join("%s/sdk/redistributable_bin" % module_path, "steam_api.dll"), bin_dir)
+		else: # 64 bit
+			env.Append(LIBS=["steam_api64"])
+			env.Append(LIBPATH=["%s/sdk/redistributable_bin/win64" % module_path])
+			shutil.copy(os.path.join("%s/sdk/redistributable_bin/win64" % module_path, "steam_api64.dll"), bin_dir)
+
+# If compiling OSX
+elif env["platform"] == "macos":
+	env.Append(LIBS=["steam_api"])
+	env.Append(LIBPATH=['%s/sdk/redistributable_bin/osx' % module_path])
+	shutil.copy(os.path.join("%s/sdk/redistributable_bin/osx" % module_path, "libsteam_api.dynlib"), bin_dir)
+
+env_steam = env.Clone()
+env_steam.disable_warnings()
+env_steam.add_source_files(env.modules_sources,"*.cpp")

@@ -4640,10 +4640,10 @@ Error GDScriptLanguage::generate_inline_info(const String &p_code, const String 
 	parser.parse(p_code, p_path, true);
 
 	GDScriptAnalyzer analyzer{ &parser };
-	analyzer.analyze();
+	Error err = analyzer.analyze();
 
 	GDScriptInlineInfoGenerator generator{ &parser };
-	Error err = generator.generate(r_inline_info);
+	err = MAX(err,generator.generate(r_inline_info));
 
 	return err;
 }

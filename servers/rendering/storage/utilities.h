@@ -171,6 +171,7 @@ public:
 	/* MISC */
 
 	virtual void update_dirty_resources() = 0;
+	virtual void update_dirty_materials() = 0;
 	virtual void set_debug_generate_wireframes(bool p_generate) = 0;
 
 	virtual bool has_os_feature(const String &p_feature) const = 0;

@@ -212,6 +212,7 @@ public:
 	/* MISC */
 
 	virtual void update_dirty_resources() override;
+	virtual void update_dirty_materials() override;
 	virtual void set_debug_generate_wireframes(bool p_generate) override;
 
 	virtual bool has_os_feature(const String &p_feature) const override;

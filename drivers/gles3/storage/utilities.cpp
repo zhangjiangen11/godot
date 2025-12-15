@@ -394,6 +394,9 @@ void Utilities::update_dirty_resources() {
 	MeshStorage::get_singleton()->_update_dirty_multimeshes();
 	TextureStorage::get_singleton()->update_texture_atlas();
 }
+void Utilities::update_dirty_materials() {
+	MaterialStorage::get_singleton()->_update_queued_materials();
+}
 
 void Utilities::set_debug_generate_wireframes(bool p_generate) {
 	Config *config = Config::get_singleton();

@@ -751,7 +751,7 @@ Ref<ArrayMesh> ImporterMesh::get_mesh(const Ref<ArrayMesh> &p_base) {
 
 	return mesh;
 }
-Array ImporterMesh::get_lod_meshes() {
+Array ImporterMesh::get_lod_meshes(bool is_result_import_mesh) {
 	int max_lod_count = 0;
 	for (int i = 0; i < surfaces.size(); i++) {
 		if (surfaces[i].lods.size() > max_lod_count) {
@@ -798,13 +798,26 @@ Array ImporterMesh::get_lod_meshes() {
 		Ref<ArrayMesh> lod_mesh;
 		lod_mesh.instantiate();
 		lod_mesh->set_name(get_name());
-		if (has_meta("import_id")) {
-			lod_mesh->set_meta("import_id", get_meta("import_id"));
+		Ref<ImporterMesh> lod_importer_mesh;
+		lod_importer_mesh.instantiate();
+		lod_importer_mesh->set_name(get_name());
+		if (is_result_import_mesh) {
+			if (has_meta("import_id")) {
+				lod_importer_mesh->set_meta("import_id", get_meta("import_id"));
+			}
+			for (int i = 0; i < blend_shapes.size(); i++) {
+				lod_importer_mesh->add_blend_shape(blend_shapes[i]);
+			}
+			lod_importer_mesh->set_blend_shape_mode(blend_shape_mode);
+		} else {
+			if (has_meta("import_id")) {
+				lod_mesh->set_meta("import_id", get_meta("import_id"));
+			}
+			for (int i = 0; i < blend_shapes.size(); i++) {
+				lod_mesh->add_blend_shape(blend_shapes[i]);
+			}
+			lod_mesh->set_blend_shape_mode(blend_shape_mode);
 		}
-		for (int i = 0; i < blend_shapes.size(); i++) {
-			lod_mesh->add_blend_shape(blend_shapes[i]);
-		}
-		lod_mesh->set_blend_shape_mode(blend_shape_mode);
 		for (int i = 0; i < surfaces.size(); i++) {
 			Array bs_data;
 			if (surfaces[i].blend_shape_data.size()) {
@@ -818,30 +831,49 @@ Array ImporterMesh::get_lod_meshes() {
 				arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod - 1].indices;
 			}
 
-			lod_mesh->add_surface_from_arrays(surfaces[i].primitive, arrays, bs_data, lods, surfaces[i].flags);
+			if (is_result_import_mesh) {
+				lod_importer_mesh->add_surface(surfaces[i].primitive, arrays, bs_data, lods, surfaces[i].material, surfaces[i].name, surfaces[i].flags);
+			} else {
+				lod_mesh->add_surface_from_arrays(surfaces[i].primitive, arrays, bs_data, lods, surfaces[i].flags);
+			}
 			if (surfaces[i].material.is_valid()) {
 				Ref<Material> material = surfaces[i].material;
 				Ref<ShaderMaterialInstance> shader_material = material;
 				if (shader_material.is_valid()) {
 					shader_material = shader_material->duplicate(false);
-					lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, shader_material);
+					if (is_result_import_mesh) {
+						lod_importer_mesh->set_surface_material(lod_mesh->get_surface_count() - 1, shader_material);
+					} else {
+						lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, shader_material);
+					}
 				} else {
 					String path = material->get_path();
 					Ref<ShaderMaterialInstance> smi;
 					smi.instantiate();
 					smi->set_base_material(material_map[material]);
-					lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
+					if (is_result_import_mesh) {
+						lod_importer_mesh->set_surface_material(lod_mesh->get_surface_count() - 1, smi);
+					} else {
+						lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
+					}
+				}
+				if (!surfaces[i].name.is_empty()) {
+					if (is_result_import_mesh) {
+						lod_importer_mesh->set_surface_name(lod_mesh->get_surface_count() - 1, surfaces[i].name);
+					} else {
+						lod_mesh->surface_set_name(lod_mesh->get_surface_count() - 1, surfaces[i].name);
+					}
 				}
 			}
-			if (!surfaces[i].name.is_empty()) {
-				lod_mesh->surface_set_name(lod_mesh->get_surface_count() - 1, surfaces[i].name);
-			}
 		}
-
-		lod_mesh->set_lightmap_size_hint(lightmap_size_hint);
-
-		lod_meshes.push_back(lod_mesh);
+		if (is_result_import_mesh) {
+			lod_meshes.push_back(lod_importer_mesh);
+		} else {
+			lod_mesh->set_lightmap_size_hint(lightmap_size_hint);
+			lod_meshes.push_back(lod_mesh);
+		}
 	}
+
 	// 数据已经全部破坏了，就不要留着了
 	clear();
 

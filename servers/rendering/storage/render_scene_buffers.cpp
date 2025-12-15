@@ -75,7 +75,7 @@ void RenderSceneBuffersConfiguration::_bind_methods() {
 void RenderSceneBuffers::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("configure", "config"), &RenderSceneBuffers::configure);
 
-	ClassDB::bind_method(D_METHOD("get_shadow_count", "index"), &RenderSceneBuffers::get_shadow_count);
+	ClassDB::bind_method(D_METHOD("get_shadow_count"), &RenderSceneBuffers::get_shadow_count);
 	ClassDB::bind_method(D_METHOD("get_light_instance", "index"), &RenderSceneBuffers::get_light_instance);
 	ClassDB::bind_method(D_METHOD("get_cascade_count", "index"), &RenderSceneBuffers::get_cascade_count);
 	ClassDB::bind_method(D_METHOD("get_caster_mask", "index"), &RenderSceneBuffers::get_caster_mask);

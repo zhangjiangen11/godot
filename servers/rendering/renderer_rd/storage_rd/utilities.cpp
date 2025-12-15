@@ -255,6 +255,9 @@ void Utilities::update_dirty_resources() {
 	MeshStorage::get_singleton()->_update_dirty_skeletons();
 	TextureStorage::get_singleton()->update_decal_atlas();
 }
+void Utilities::update_dirty_materials() {
+	MaterialStorage::get_singleton()->_update_queued_materials();
+}
 
 bool Utilities::has_os_feature(const String &p_feature) const {
 	if (!RD::get_singleton()) {
