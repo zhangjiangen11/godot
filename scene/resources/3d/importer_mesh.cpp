@@ -852,14 +852,14 @@ Array ImporterMesh::get_lod_meshes(bool is_result_import_mesh) {
 					smi.instantiate();
 					smi->set_base_material(material_map[material]);
 					if (is_result_import_mesh) {
-						lod_importer_mesh->set_surface_material(lod_mesh->get_surface_count() - 1, smi);
+						lod_importer_mesh->set_surface_material(lod_importer_mesh->get_surface_count() - 1, smi);
 					} else {
 						lod_mesh->surface_set_material(lod_mesh->get_surface_count() - 1, smi);
 					}
 				}
 				if (!surfaces[i].name.is_empty()) {
 					if (is_result_import_mesh) {
-						lod_importer_mesh->set_surface_name(lod_mesh->get_surface_count() - 1, surfaces[i].name);
+						lod_importer_mesh->set_surface_name(lod_importer_mesh->get_surface_count() - 1, surfaces[i].name);
 					} else {
 						lod_mesh->surface_set_name(lod_mesh->get_surface_count() - 1, surfaces[i].name);
 					}
