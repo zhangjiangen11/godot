@@ -229,6 +229,9 @@ Ref<Mesh> MultiMesh::get_mesh() const {
 }
 
 void MultiMesh::set_instance_count(int p_count) {
+	if (instance_count == p_count) {
+		return;
+	}
 	ERR_FAIL_COND(p_count < 0);
 	RenderingServer::get_singleton()->multimesh_allocate_data(multimesh, p_count, RS::MultimeshTransformFormat(transform_format), use_colors, use_custom_data);
 	instance_count = p_count;

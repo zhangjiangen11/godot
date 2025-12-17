@@ -826,9 +826,9 @@ Array ImporterMesh::get_lod_meshes(bool is_result_import_mesh) {
 				}
 			}
 			Dictionary lods;
-			Array arrays = surfaces[i].arrays;
+			Array arrays = surfaces[i].arrays.duplicate();
 			if (lod > 0 && surfaces[i].lods.size() > 0) {
-				arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod - 1].indices;
+				arrays[RS::ARRAY_INDEX] = surfaces[i].lods[lod - 1].indices.duplicate();
 			}
 
 			if (is_result_import_mesh) {
@@ -866,6 +866,8 @@ Array ImporterMesh::get_lod_meshes(bool is_result_import_mesh) {
 				}
 			}
 		}
+
+
 		if (is_result_import_mesh) {
 			lod_meshes.push_back(lod_importer_mesh);
 		} else {
@@ -873,10 +875,6 @@ Array ImporterMesh::get_lod_meshes(bool is_result_import_mesh) {
 			lod_meshes.push_back(lod_mesh);
 		}
 	}
-
-	// 数据已经全部破坏了，就不要留着了
-	clear();
-
 	return lod_meshes;
 }
 
