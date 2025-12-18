@@ -1086,7 +1086,7 @@ void TextureStorage::texture_3d_initialize(RID p_texture, Image::Format p_format
 	texture.width = p_width;
 	texture.height = p_height;
 	texture.depth = p_depth;
-	texture.mipmaps = mipmap_count;
+	texture.mipmaps = p_mipmaps? Image::get_image_required_mipmaps(p_width, p_height, p_format) + 1 : 1;
 	texture.format = p_data[0]->get_format();
 	texture.validated_format = validated_format;
 

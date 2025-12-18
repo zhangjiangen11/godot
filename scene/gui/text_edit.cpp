@@ -8310,6 +8310,9 @@ int TextEdit::_get_column_x_offset_for_line(int p_char, int p_line, int p_column
 	}
 
 	RID text_rid = text.get_line_data(p_line)->get_line_rid(wrap_index);
+	if (text_rid.is_null()) {
+		return 0;
+	}
 	bool rtl = is_layout_rtl();
 	const float wrap_indent = _get_wrap_indent_offset(p_line, wrap_index, rtl);
 

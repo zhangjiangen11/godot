@@ -858,6 +858,7 @@ void BaseMaterial3D::init_shaders() {
 
 	shader_names->ao_light_affect = "ao_light_affect";
 	shader_names->micro_shadows = "micro_shadows";
+	shader_names->hsv_adjust = "hsv_adjust";
 
 	shader_names->proximity_fade_distance = "proximity_fade_distance";
 	shader_names->distance_fade_min = "distance_fade_min";
@@ -1206,6 +1207,7 @@ void BaseMaterial3D::_update_shader() {
 	// Generate list of uniforms.
 	code += vformat(R"(
 uniform vec4 albedo : source_color;
+uniform vec3 hsv_adjust = vec3(0.0,0.0,0.0);
 uniform sampler2D texture_albedo : source_color, %s;
 uniform vec4 render_instance_data = vec4(0.0,0.0,0.0,0.0);
 uniform sampler2D render_instance_texture : hint_default_white, filter_nearest;
@@ -1763,6 +1765,20 @@ vec4 triplanar_texture(sampler2D p_sampler, vec3 p_weights, vec3 p_triplanar_pos
 
 	// Generate fragment shader.
 	code += R"(
+vec3 hsv_adjustment(vec3 col, vec3 hsv_offset) {
+	vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+	vec4 p = mix(vec4(col.bg, K.wz), vec4(col.gb, K.xy), step(col.b, col.g));
+	vec4 q = mix(vec4(p.xyw, col.r), vec4(col.r, p.yzx), step(p.x, col.r));
+	float d = q.x - min(q.w, q.y);
+	float e = 1.0e-10;
+	vec3 hsv = vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+	hsv.x += hsv_offset.x;
+	hsv.y += hsv_offset.y;
+	hsv.z += hsv_offset.z;
+	K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+	p.xyz = abs(fract(hsv.xxx + K.xyz) * 6.0 - K.www);
+	return hsv.z * mix(K.xxx, clamp(p.xyz - K.xxx, 0.0, 1.0), hsv.y);
+}
 void fragment() {)";
 
 	if (!flags[FLAG_UV1_USE_TRIPLANAR]) {
@@ -1923,6 +1939,9 @@ void fragment() {)";
 			lessThan(albedo_tex.rgb, vec3(0.04045)));
 )";
 	}
+	code += R"(
+		albedo_tex.rgb = hsv_adjustment(albedo_tex.rgb, hsv_adjust);
+	)";
 
 	if (flags[FLAG_ALBEDO_FROM_VERTEX_COLOR]) {
 		code += R"(
@@ -2548,6 +2567,13 @@ void BaseMaterial3D::set_micro_shadows(float p_micro_shadows) {
 
 float BaseMaterial3D::get_micro_shadows() const {
 	return micro_shadows;
+}
+void BaseMaterial3D::set_hsv_adjust(const Vector3 &p_hsv_adjust) {
+	hsv_adjust = p_hsv_adjust;
+	_material_set_param(shader_names->hsv_adjust, p_hsv_adjust);
+}
+Vector3 BaseMaterial3D::get_hsv_adjust() const {
+	return hsv_adjust;
 }
 
 void BaseMaterial3D::set_clearcoat(float p_clearcoat) {

@@ -575,6 +575,7 @@ private:
 		StringName distance_fade_max;
 		StringName ao_light_affect;
 		StringName micro_shadows;
+		StringName hsv_adjust;
 
 		StringName metallic_texture_channel;
 		StringName ao_texture_channel;
@@ -649,6 +650,7 @@ private:
 	bool grow_enabled = false;
 	float ao_light_affect = 0.0f;
 	float micro_shadows = 0.85f;
+	Vector3 hsv_adjust = Vector3(0.0f, 0.0f, 0.0f);
 	float grow = 0.0f;
 	int particles_anim_h_frames = 0;
 	int particles_anim_v_frames = 0;
@@ -769,6 +771,9 @@ public:
 
 	void set_micro_shadows(float p_micro_shadows);
 	float get_micro_shadows() const;
+
+	void set_hsv_adjust(const Vector3 &p_hsv_adjust);
+	Vector3 get_hsv_adjust() const;
 
 	void set_clearcoat(float p_clearcoat);
 	float get_clearcoat() const;

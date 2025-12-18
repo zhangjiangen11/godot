@@ -193,6 +193,9 @@ void TextParagraph::_shape_lines() const {
 			// Dropcap, flow around.
 			PackedInt32Array line_breaks = TS->shaped_text_get_line_breaks(rid, width - h_offset, 0, brk_flags);
 			for (int i = 0; i < line_breaks.size(); i = i + 2) {
+				if (line_breaks[i] > line_breaks[i + 1]) {
+					continue;
+				}
 				RID line = TS->shaped_text_substr(rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i]);
 				float h = (TS->shaped_text_get_orientation(line) == TextServer::ORIENTATION_HORIZONTAL) ? TS->shaped_text_get_size(line).y : TS->shaped_text_get_size(line).x;
 				h += line_spacing;
@@ -212,6 +215,9 @@ void TextParagraph::_shape_lines() const {
 		if (start == 0 || start < range.y) {
 			PackedInt32Array line_breaks = TS->shaped_text_get_line_breaks(rid, width, start, brk_flags);
 			for (int i = 0; i < line_breaks.size(); i = i + 2) {
+				if (line_breaks[i] > line_breaks[i + 1]) {
+					continue;
+				}
 				RID line = TS->shaped_text_substr(rid, line_breaks[i], line_breaks[i + 1] - line_breaks[i]);
 				if (!tab_stops.is_empty()) {
 					TS->shaped_text_tab_align(line, tab_stops);
@@ -305,7 +311,9 @@ RID TextParagraph::get_line_rid(int p_line) const {
 	_THREAD_SAFE_METHOD_
 
 	_shape_lines();
-	ERR_FAIL_COND_V(p_line < 0 || p_line >= (int)lines_rid.size(), RID());
+	if (p_line < 0 || p_line >= (int)lines_rid.size()) {
+		return RID();
+	}
 	return lines_rid[p_line];
 }
 

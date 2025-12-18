@@ -3192,15 +3192,8 @@ void EditorPropertyColor::set_live_changes_enabled(bool p_enabled) {
 }
 
 EditorPropertyColor::EditorPropertyColor() {
-	VBoxContainer *vb = memnew(VBoxContainer);
-	add_child(vb);
-
-	Control *c = memnew(Control);
-	c->set_custom_minimum_size(Vector2(0, 4));
-	vb->add_child(c);
-
 	picker = memnew(ColorPickerButton);
-	vb->add_child(picker);
+	add_child(picker);
 	picker->set_flat(true);
 	picker->set_theme_type_variation(SNAME("EditorInspectorButton"));
 	picker->connect("color_changed", callable_mp(this, &EditorPropertyColor::_color_changed));

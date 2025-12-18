@@ -399,8 +399,12 @@ Image::Image3DValidateError Image::validate_3d_image(Image::Format p_format, int
 	int d = p_depth;
 
 	int arr_ofs = 0;
+	int min_wid, min_hig;
+	get_format_min_pixel_size(p_format, min_wid, min_hig);
 
 	while (true) {
+		int mw = MAX(w, min_wid);
+		int mh = MAX(h, min_hig);
 		for (int i = 0; i < d; i++) {
 			int idx = i + arr_ofs;
 			if (idx >= p_images.size()) {
@@ -412,7 +416,7 @@ Image::Image3DValidateError Image::validate_3d_image(Image::Format p_format, int
 			if (p_images[idx]->get_format() != p_format) {
 				return VALIDATE_3D_ERR_IMAGE_FORMAT_MISMATCH;
 			}
-			if (p_images[idx]->get_width() != w || p_images[idx]->get_height() != h) {
+			if (p_images[idx]->get_width() != mw || p_images[idx]->get_height() != mh) {
 				return VALIDATE_3D_ERR_IMAGE_SIZE_MISMATCH;
 			}
 			if (p_images[idx]->has_mipmaps()) {
