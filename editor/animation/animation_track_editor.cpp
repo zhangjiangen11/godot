@@ -2362,11 +2362,7 @@ void AnimationTrackEdit::_notification(int p_what) {
 						int next_original_index = sorted_keys[i + 1].second;
 
 						draw_key_link(original_index, next_original_index, scale, int(offset), int(offset_n), limit, limit_end);
-<<<<<<< HEAD
-						draw_key(original_index, scale, int(offset), selected, limit, offset_n);
-=======
 						draw_key(original_index, scale, int(offset), selected, limit, MIN(offset_n, limit_end));
->>>>>>> 8a6408c1ceaac721f7594a864fa98234644a19d5
 					} else {
 						draw_key(original_index, scale, int(offset), selected, limit, limit_end);
 					}
