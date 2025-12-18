@@ -1591,17 +1591,7 @@ void FileDialog::_change_dir(const String &p_new_dir) {
 		dir_access->change_dir(OS::get_singleton()->get_resource_dir());
 	}
 	if (root_prefix.is_empty()) {
-		if (p_new_dir.begins_with("res://")) {
-			dir_access = DirAccess::open(p_new_dir);
-			access = ACCESS_RESOURCES;
-		}
-		else if (p_new_dir.begins_with("user://")) {
-			dir_access = DirAccess::open(p_new_dir);
-			access = ACCESS_USERDATA;
-		}
-		else {
-			dir_access->change_dir(p_new_dir);
-		}
+		dir_access->change_dir(p_new_dir);
 	} else {
 		String old_dir = dir_access->get_current_dir();
 		dir_access->change_dir(p_new_dir);

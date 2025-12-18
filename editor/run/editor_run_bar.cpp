@@ -128,8 +128,6 @@ void EditorRunBar::_reset_play_buttons() {
 	play_custom_scene_button->set_pressed(false);
 	play_custom_scene_button->set_button_icon(get_editor_theme_icon(SNAME("PlayCustom")));
 	play_custom_scene_button->set_tooltip_text(TTRC("Play a custom scene."));
-
-	run_editor_button->set_button_icon(get_editor_theme_icon(SNAME("Heart")));
 }
 
 void EditorRunBar::_update_play_buttons() {
@@ -373,11 +371,6 @@ void EditorRunBar::_run_native(const Ref<EditorExportPreset> &p_preset) {
 		emit_signal(SNAME("play_pressed"));
 		editor_run.run_native_notify();
 	}
-}
-void EditorRunBar::_run_editor(bool p_enabled) {
-	is_run_editor = p_enabled;
-	PhysicsServer3D::get_singleton()->set_active(is_run_editor);
-	_update_play_buttons();
 }
 
 void EditorRunBar::_profiler_autostart_indicator_pressed() {
@@ -714,13 +707,4 @@ EditorRunBar::EditorRunBar() {
 	write_movie_button->set_tooltip_text(TTRC("Enable Movie Maker mode.\nThe project will run at stable FPS and the visual and audio output will be recorded to a video file."));
 	write_movie_button->set_accessibility_name(TTRC("Enable Movie Maker Mode"));
 	write_movie_button->set_flat(false);
-
-	run_editor_button = memnew(Button);
-	main_hbox->add_child(run_editor_button);
-	run_editor_button->set_theme_type_variation("RunBarButton");
-	run_editor_button->set_toggle_mode(true);
-	run_editor_button->set_pressed(false);
-	run_editor_button->set_focus_mode(Control::FOCUS_NONE);
-	run_editor_button->set_tooltip_text(L"编辑器运行.");
-	run_editor_button->connect(SceneStringName(toggled), callable_mp(this, &EditorRunBar::_run_editor));
 }

@@ -233,7 +233,7 @@ private:
 	ItemList *scene_tiles_list = nullptr;
 
 	void _update_scenes_collection_view();
-	void _scene_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_index);
+	void _scene_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, int p_index);
 	void _scenes_list_multi_selected(int p_index, bool p_selected);
 	void _scenes_list_lmb_empty_clicked(const Vector2 &p_pos, MouseButton p_mouse_button_index);
 

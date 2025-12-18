@@ -30,7 +30,6 @@
 
 #pragma once
 
-#include "editor/docks/editor_dock.h"
 #include "editor/plugins/editor_plugin.h"
 #include "scene/gui/box_container.h"
 
@@ -71,8 +70,8 @@ public:
 	Dictionary undo_state;
 };
 
-class CanvasItemEditor : public EditorDock {
-	GDCLASS(CanvasItemEditor, EditorDock);
+class CanvasItemEditor : public VBoxContainer {
+	GDCLASS(CanvasItemEditor, VBoxContainer);
 
 public:
 	enum Tool {

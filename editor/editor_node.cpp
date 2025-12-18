@@ -7581,14 +7581,13 @@ void EditorNode::_resource_saved(const Ref<Resource> &p_resource, const String &
 	}
 
 	if (EditorFileSystem::get_singleton()) {
-		// TODO: 这个代码导致资源存储奇慢无比,后期再次进行优化
 		EditorFileSystem::get_singleton()->update_file(p_path);
 	}
 
 	singleton->editor_folding.save_resource_folding(p_resource, p_path);
 }
 
-void EditorNode::_resource_loaded(const Ref<Resource> &p_resource, const String &p_path) {
+void EditorNode::_resource_loaded(const Ref<Resource>& p_resource, const String &p_path) {
 	singleton->editor_folding.load_resource_folding(p_resource, p_path);
 }
 
@@ -8542,8 +8541,6 @@ EditorNode::EditorNode() {
 	editor_main_screen->set_draw_behind_parent(true);
 	srt->add_child(editor_main_screen);
 	editor_main_screen->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-
-	editor_dock_manager->register_dock_slot(DockConstants::DOCK_SLOT_MAIN_SCREEN, editor_main_screen, DockConstants::DOCK_LAYOUT_MAIN_SCREEN);
 
 	scene_root = memnew(SubViewport);
 	scene_root->set_auto_translate_mode(AUTO_TRANSLATE_MODE_ALWAYS);

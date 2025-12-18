@@ -100,7 +100,7 @@ public:
 	static bool is_global_class_abstract(const String &p_class);
 	static bool is_global_class_tool(const String &p_class);
 	static void get_global_class_list(LocalVector<StringName> &r_global_classes);
-	static void get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes);
+	static void get_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes, bool _it_al = true);
 	static void get_indirect_inheriters_list(const StringName &p_base_type, List<StringName> *r_classes);
 	static void save_global_classes();
 

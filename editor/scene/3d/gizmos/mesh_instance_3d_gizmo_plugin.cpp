@@ -61,7 +61,7 @@ void MeshInstance3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 	if (m.is_null()) {
 		return; //none
 	}
-	if(mesh->get_gizmo_show_box()) {
+	if (mesh->get_gizmo_show_box()) {
 		Vector<Vector3> lines;
 		AABB aabb = mesh->get_aabb();
 
@@ -72,9 +72,7 @@ void MeshInstance3DGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 			lines.push_back(b);
 		}
 		p_gizmo->add_collision_segments(lines);
-	}
-	else
-	{	
+	} else {
 		Ref<PlaneMesh> plane_mesh = mesh->get_mesh();
 		Ref<TriangleMesh> tm;
 		if (plane_mesh.is_valid() && (plane_mesh->get_subdivide_depth() > 0 || plane_mesh->get_subdivide_width() > 0)) {

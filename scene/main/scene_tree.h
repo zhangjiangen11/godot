@@ -81,6 +81,7 @@ public:
 
 	void release_connections();
 };
+
 class SceneTree : public MainLoop {
 	_THREAD_SAFE_CLASS_
 
@@ -450,7 +451,7 @@ public:
 	void set_multiplayer_poll_enabled(bool p_enabled);
 	bool is_multiplayer_poll_enabled() const;
 
-	static void add_idle_callback(IdleCallback p_callback, int p_level = 0);
+	static void add_idle_callback(IdleCallback p_callback);
 
 	void set_disable_node_threading(bool p_disable);
 	//default texture settings

@@ -462,9 +462,9 @@ void TileMapLayerEditorTilesPlugin::_update_scenes_collection_view() {
 	scene_tiles_list->set_fixed_icon_size(Vector2(int_size, int_size));
 }
 
-void TileMapLayerEditorTilesPlugin::_scene_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_index) {
+void TileMapLayerEditorTilesPlugin::_scene_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, int p_index) {
 	if (p_index >= 0 && p_index < scene_tiles_list->get_item_count()) {
-		scene_tiles_list->set_item_icon(p_index, ResourceLoader::load(p_preview));
+		scene_tiles_list->set_item_icon(p_index, p_preview);
 	}
 }
 
@@ -3704,7 +3704,7 @@ void TileMapLayerEditor::_notification(int p_what) {
 }
 
 void TileMapLayerEditor::_on_grid_toggled(bool p_pressed) {
-	EditorSettings::get_singleton()->set(SNAME("editors/tiles_editor/display_grid"), p_pressed);
+	EditorSettings::get_singleton()->set("editors/tiles_editor/display_grid", p_pressed);
 	CanvasItemEditor::get_singleton()->update_viewport();
 }
 
@@ -3881,7 +3881,7 @@ void TileMapLayerEditor::_highlight_selected_layer_button_toggled(bool p_pressed
 		return;
 	}
 
-	EditorSettings::get_singleton()->set(SNAME("editors/tiles_editor/highlight_selected_layer"), p_pressed);
+	EditorSettings::get_singleton()->set("editors/tiles_editor/highlight_selected_layer", p_pressed);
 	if (p_pressed) {
 		_update_all_layers_highlighting();
 	} else {

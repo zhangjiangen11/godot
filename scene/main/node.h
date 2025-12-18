@@ -396,6 +396,7 @@ protected:
 	virtual void _exit_tree() {}
 	virtual void _ready() {}
 	virtual void _physics_interpolated_changed();
+
 	virtual void add_child_notify(Node *p_child);
 	virtual void remove_child_notify(Node *p_child);
 	virtual void move_child_notify(Node *p_child);

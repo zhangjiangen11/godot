@@ -2007,7 +2007,7 @@ void SceneTree::_call_idle_callbacks() {
 	}
 }
 
-void SceneTree::add_idle_callback(IdleCallback p_callback, int p_level) {
+void SceneTree::add_idle_callback(IdleCallback p_callback) {
 	ERR_FAIL_COND(idle_callback_count >= MAX_IDLE_CALLBACKS);
 	idle_callbacks[idle_callback_count++] = p_callback;
 }

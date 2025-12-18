@@ -31,7 +31,6 @@
 #pragma once
 
 #include "core/math/dynamic_bvh.h"
-#include "editor/docks/editor_dock.h"
 #include "editor/plugins/editor_plugin.h"
 #include "editor/scene/3d/node_3d_editor_gizmos.h"
 #include "editor/themes/editor_scale.h"
@@ -653,8 +652,8 @@ public:
 	Node3DEditorViewportContainer();
 };
 
-class Node3DEditor : public EditorDock {
-	GDCLASS(Node3DEditor, EditorDock);
+class Node3DEditor : public VBoxContainer {
+	GDCLASS(Node3DEditor, VBoxContainer);
 
 public:
 	static const unsigned int VIEWPORTS_COUNT = 4;

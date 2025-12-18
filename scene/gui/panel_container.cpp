@@ -72,12 +72,7 @@ void PanelContainer::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
-			if(texture.is_valid()) {
-				draw_texture_rect(texture, Rect2(Point2(), get_size()));
-			}
-			else {
-				theme_cache.panel_style->draw(ci, Rect2(Point2(), get_size()));
-			}
+			theme_cache.panel_style->draw(ci, Rect2(Point2(), get_size()));
 		} break;
 
 		case NOTIFICATION_SORT_CHILDREN: {
@@ -102,10 +97,6 @@ void PanelContainer::_notification(int p_what) {
 
 void PanelContainer::_bind_methods() {
 	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, PanelContainer, panel_style, "panel");
-	ClassDB::bind_method(D_METHOD("set_texture", "texture"), &PanelContainer::set_texture);
-	ClassDB::bind_method(D_METHOD("get_texture"), &PanelContainer::get_texture);
-
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture"), "set_texture", "get_texture");
 }
 
 PanelContainer::PanelContainer() {

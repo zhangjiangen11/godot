@@ -944,11 +944,11 @@ void ColorPicker::_quick_open_palette_file_selected(const String &p_path) {
 	_palette_file_selected(p_path);
 }
 
-#endif // ifdef TOOLS_ENABLED
-
 GridContainer *ColorPicker::get_slider_container() {
 	return slider_gc;
 }
+
+#endif // ifdef TOOLS_ENABLED
 
 void ColorPicker::_palette_file_selected(const String &p_path) {
 	switch (file_dialog->get_file_mode()) {
@@ -2418,9 +2418,7 @@ void ColorPickerButton::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_DRAW: {
-			Rect2 r = Rect2(theme_cache.normal_style->get_offset(), get_size() - theme_cache.normal_style->get_minimum_size());
-
-
+			const Rect2 r = Rect2(theme_cache.normal_style->get_offset(), get_size() - theme_cache.normal_style->get_minimum_size());
 			draw_texture_rect(theme_cache.background_icon, r, true);
 			draw_rect(r, color);
 

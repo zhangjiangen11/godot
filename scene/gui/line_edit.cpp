@@ -1382,15 +1382,7 @@ void LineEdit::_notification(int p_what) {
 			Ref<Font> font = theme_cache.font;
 
 			if (!flat) {
-				Ref<Texture2D> bg = user_data.background;
-				if (!is_editable()) {
-					bg = user_data.background_read_only;
-				}
-				if (bg.is_valid()) {
-					bg->draw_rect(ci, Rect2(Point2(), size));
-				} else {
-					style->draw(ci, Rect2(Point2(), size));
-				}
+				style->draw(ci, Rect2(Point2(), size));
 			}
 
 			if (has_focus(Engine::get_singleton()->is_editor_hint() || GLOBAL_GET_CACHED(int, "gui/common/show_focus_state_on_pointer_event") != 1)) {
@@ -3410,15 +3402,6 @@ void LineEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_select_all_on_focus", "enabled"), &LineEdit::set_select_all_on_focus);
 	ClassDB::bind_method(D_METHOD("is_select_all_on_focus"), &LineEdit::is_select_all_on_focus);
 
-	ClassDB::bind_method(D_METHOD("set_background_texture", "texture"), &LineEdit::set_background_texture);
-	ClassDB::bind_method(D_METHOD("get_background_texture"), &LineEdit::get_background_texture);
-
-	ClassDB::bind_method(D_METHOD("set_background_read_only_texture", "texture"), &LineEdit::set_background_read_only_texture);
-	ClassDB::bind_method(D_METHOD("get_background_read_only_texture"), &LineEdit::get_background_read_only_texture);
-
-	ClassDB::bind_method(D_METHOD("set_focus_texture", "texture"), &LineEdit::set_focus_texture);
-	ClassDB::bind_method(D_METHOD("get_focus_texture"), &LineEdit::get_focus_texture);
-
 	ADD_SIGNAL(MethodInfo("text_changed", PropertyInfo(Variant::STRING, "new_text")));
 	ADD_SIGNAL(MethodInfo("text_change_rejected", PropertyInfo(Variant::STRING, "rejected_substring")));
 	ADD_SIGNAL(MethodInfo("text_submitted", PropertyInfo(Variant::STRING, "new_text")));
@@ -3486,9 +3469,6 @@ void LineEdit::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "selecting_enabled"), "set_selecting_enabled", "is_selecting_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "deselect_on_focus_loss_enabled"), "set_deselect_on_focus_loss_enabled", "is_deselect_on_focus_loss_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "drag_and_drop_selection_enabled"), "set_drag_and_drop_selection_enabled", "is_drag_and_drop_selection_enabled");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "background_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_background_texture", "get_background_texture");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "background_read_only_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_background_read_only_texture", "get_background_read_only_texture");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "focus_texture", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_focus_texture", "get_focus_texture");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flat"), "set_flat", "is_flat");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "draw_control_chars"), "set_draw_control_chars", "get_draw_control_chars");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "select_all_on_focus"), "set_select_all_on_focus", "is_select_all_on_focus");

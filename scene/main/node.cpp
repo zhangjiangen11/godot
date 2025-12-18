@@ -1727,9 +1727,7 @@ void Node::add_child(RequiredParam<Node> rp_child, bool p_force_readable_name, I
 #ifdef DEBUG_ENABLED
 	ERR_FAIL_COND_MSG(p_child->is_ancestor_of(this), vformat("Can't add child '%s' to '%s' as it would result in a cyclic dependency since '%s' is already a parent of '%s'.", p_child->get_name(), get_name(), p_child->get_name(), get_name()));
 #endif
-	if (data.blocked > 0) {
-		ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, `add_child()` failed. Consider using `add_child.call_deferred(child)` instead.");
-	}
+	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy setting up children, `add_child()` failed. Consider using `add_child.call_deferred(child)` instead.");
 
 	_validate_child_name(p_child, p_force_readable_name);
 
@@ -1758,9 +1756,7 @@ void Node::add_sibling(RequiredParam<Node> rp_sibling, bool p_force_readable_nam
 void Node::remove_child(RequiredParam<Node> rp_child) {
 	ERR_FAIL_COND_MSG(data.tree && !Thread::is_main_thread(), "Removing children from a node inside the SceneTree is only allowed from the main thread. Use call_deferred(\"remove_child\",node).");
 	EXTRACT_PARAM_OR_FAIL(p_child, rp_child);
-	if (data.blocked > 0) {
-		ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy adding/removing children, `remove_child()` can't be called at this time. Consider using `remove_child.call_deferred(child)` instead.");
-	}
+	ERR_FAIL_COND_MSG(data.blocked > 0, "Parent node is busy adding/removing children, `remove_child()` can't be called at this time. Consider using `remove_child.call_deferred(child)` instead.");
 	ERR_FAIL_COND(p_child->data.parent != this);
 
 	/**
@@ -3956,7 +3952,6 @@ void Node::_bind_methods() {
 		ClassDB::bind_vararg_method(METHOD_FLAGS_DEFAULT, "rpc_id", &Node::_rpc_id_bind, mi);
 	}
 
-#define RESOURCE_TYPE_HINT(m_type) vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, m_type)
 	ClassDB::bind_method(D_METHOD("update_configuration_warnings"), &Node::update_configuration_warnings);
 
 	{
@@ -3978,8 +3973,6 @@ void Node::_bind_methods() {
 	}
 	ClassDB::bind_method(D_METHOD("set_thread_safe", "property", "value"), &Node::set_thread_safe);
 	ClassDB::bind_method(D_METHOD("notify_thread_safe", "what"), &Node::notify_thread_safe);
-
-	ClassDB::bind_method(D_METHOD("log_node", "space"), &Node::log_node, DEFVAL(""));
 
 	BIND_CONSTANT(NOTIFICATION_ENTER_TREE);
 	BIND_CONSTANT(NOTIFICATION_EXIT_TREE);
@@ -4119,7 +4112,7 @@ void Node::_bind_methods() {
 	GDVIRTUAL_BIND(_unhandled_key_input, "event");
 	GDVIRTUAL_BIND(_get_focused_accessibility_element);
 }
-#undef RESOURCE_TYPE_HINT
+
 String Node::_get_name_num_separator() {
 	switch (GLOBAL_GET("editor/naming/node_name_num_separator").operator int()) {
 		case 0:

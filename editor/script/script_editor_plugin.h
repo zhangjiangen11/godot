@@ -31,7 +31,6 @@
 #pragma once
 
 #include "core/object/script_language.h"
-#include "editor/docks/editor_dock.h"
 #include "editor/plugins/editor_plugin.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/panel_container.h"
@@ -253,8 +252,8 @@ class EditorScriptCodeCompletionCache;
 class FindInFilesContainer;
 class FindInFilesDialog;
 
-class ScriptEditor : public EditorDock {
-	GDCLASS(ScriptEditor, EditorDock);
+class ScriptEditor : public PanelContainer {
+	GDCLASS(ScriptEditor, PanelContainer);
 
 	enum MenuOptions {
 		// File.
@@ -367,6 +366,8 @@ class ScriptEditor : public EditorDock {
 
 	FindInFilesDialog *find_in_files_dialog = nullptr;
 	FindInFilesContainer *find_in_files = nullptr;
+
+	WindowWrapper *window_wrapper = nullptr;
 
 #ifdef ANDROID_ENABLED
 	Control *virtual_keyboard_spacer = nullptr;
@@ -629,6 +630,7 @@ class ScriptEditorPlugin : public EditorPlugin {
 	GDCLASS(ScriptEditorPlugin, EditorPlugin);
 
 	ScriptEditor *script_editor = nullptr;
+	WindowWrapper *window_wrapper = nullptr;
 
 	String last_editor;
 
