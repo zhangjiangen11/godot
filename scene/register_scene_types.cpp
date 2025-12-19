@@ -531,6 +531,7 @@ void register_scene_types() {
 #ifndef ADVANCED_GUI_DISABLED
 	GDREGISTER_CLASS(AcceptDialog);
 	GDREGISTER_CLASS(ConfirmationDialog);
+	GDREGISTER_CLASS(ProssessWindowDialog);
 
 	GDREGISTER_CLASS(FileDialog);
 

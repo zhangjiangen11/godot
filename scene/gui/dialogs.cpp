@@ -186,19 +186,6 @@ bool AcceptDialog::get_hide_on_ok() const {
 	return hide_on_ok;
 }
 
-void AcceptDialog::set_hide_progress_bar(bool p_hide) {
-	if (progress_bar->is_visible() == !p_hide) {
-		return;
-	}
-	progress_bar->set_visible(!p_hide);
-	child_controls_changed();
-	if (is_visible()) {
-		_update_child_rects();
-	}
-}
-bool AcceptDialog::get_hide_progress_bar() const {
-	return !progress_bar->is_visible();
-}
 void AcceptDialog::set_close_on_escape(bool p_hide) {
 	close_on_escape = p_hide;
 }
@@ -423,10 +410,6 @@ void AcceptDialog::remove_button(Button *p_button) {
 }
 
 void AcceptDialog::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("get_message_vbox"), &AcceptDialog::get_message_vbox);
-	ClassDB::bind_method(D_METHOD("get_progress_bar"), &AcceptDialog::get_progress_bar);
-	ClassDB::bind_method(D_METHOD("set_hide_progress_bar", "hide"), &AcceptDialog::set_hide_progress_bar);
-	ClassDB::bind_method(D_METHOD("get_hide_progress_bar"), &AcceptDialog::get_hide_progress_bar);
 	ClassDB::bind_method(D_METHOD("get_ok_button"), &AcceptDialog::get_ok_button);
 	ClassDB::bind_method(D_METHOD("get_label"), &AcceptDialog::get_label);
 	ClassDB::bind_method(D_METHOD("set_hide_on_ok", "enabled"), &AcceptDialog::set_hide_on_ok);
@@ -444,11 +427,6 @@ void AcceptDialog::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_ok_button_text", "text"), &AcceptDialog::set_ok_button_text);
 	ClassDB::bind_method(D_METHOD("get_ok_button_text"), &AcceptDialog::get_ok_button_text);
 
-	ClassDB::bind_method(D_METHOD("set_progress_max", "max"), &AcceptDialog::set_progress_max);
-	ClassDB::bind_method(D_METHOD("get_progress_max"), &AcceptDialog::get_progress_max);
-	ClassDB::bind_method(D_METHOD("set_progress_value", "value"), &AcceptDialog::set_progress_value);
-	ClassDB::bind_method(D_METHOD("get_progress_value"), &AcceptDialog::get_progress_value);
-
 	ADD_SIGNAL(MethodInfo("confirmed"));
 	ADD_SIGNAL(MethodInfo("canceled"));
 	ADD_SIGNAL(MethodInfo("custom_action", PropertyInfo(Variant::STRING_NAME, "action")));
@@ -460,9 +438,6 @@ void AcceptDialog::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "dialog_hide_on_ok"), "set_hide_on_ok", "get_hide_on_ok");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "dialog_close_on_escape"), "set_close_on_escape", "get_close_on_escape");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "dialog_autowrap"), "set_autowrap", "has_autowrap");
-
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "progress_max"), "set_progress_max", "get_progress_max");
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "progress_value"), "set_progress_value", "get_progress_value");
 
 	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, AcceptDialog, panel_style, "panel");
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, AcceptDialog, buttons_separation);
@@ -502,22 +477,11 @@ AcceptDialog::AcceptDialog() {
 
 	buttons_hbox = memnew(HBoxContainer);
 
-	message_vbox = memnew(VBoxContainer);
-	message_vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
-	message_vbox->set_v_size_flags(Control::SIZE_EXPAND_FILL);
-	add_child(message_vbox);
-
 	message_label = memnew(Label);
 	message_label->set_focus_mode(Control::FOCUS_ACCESSIBILITY);
-	//message_label->set_anchor(SIDE_RIGHT, Control::ANCHOR_END);
-	//message_label->set_anchor(SIDE_BOTTOM, Control::ANCHOR_END);
-	message_vbox->add_child(message_label, false, INTERNAL_MODE_FRONT);
-
-	progress_bar = memnew(ProgressBar);
-	progress_bar->set_max(progress_max);
-	progress_bar->set_value(progress_value);
-	progress_bar->set_visible(false);
-	message_vbox->add_child(progress_bar, false, INTERNAL_MODE_BACK);
+	message_label->set_anchor(SIDE_RIGHT, Control::ANCHOR_END);
+	message_label->set_anchor(SIDE_BOTTOM, Control::ANCHOR_END);
+	add_child(message_label, false, INTERNAL_MODE_FRONT);
 
 	add_child(buttons_hbox, false, INTERNAL_MODE_BACK);
 
@@ -567,4 +531,45 @@ ConfirmationDialog::ConfirmationDialog() {
 	set_min_size(Size2(200, 70));
 
 	cancel = add_cancel_button();
+}
+//////////////////////////////////////////////
+void ProssessWindowDialog::set_hide_progress_bar(bool p_hide) {
+	if (progress_bar->is_visible() == !p_hide) {
+		return;
+	}
+	progress_bar->set_visible(!p_hide);
+	child_controls_changed();
+	if (is_visible()) {
+		_update_child_rects();
+	}
+}
+bool ProssessWindowDialog::get_hide_progress_bar() const {
+	return !progress_bar->is_visible();
+}
+ProssessWindowDialog::ProssessWindowDialog() {
+	message_vbox = memnew(VBoxContainer);
+	message_vbox->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	message_vbox->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	add_child(message_vbox);
+
+	progress_bar = memnew(ProgressBar);
+	progress_bar->set_max(progress_max);
+	progress_bar->set_value(progress_value);
+	progress_bar->set_visible(false);
+	message_vbox->add_child(progress_bar, false, INTERNAL_MODE_BACK);
+}
+
+void ProssessWindowDialog::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("get_message_vbox"), &ProssessWindowDialog::get_message_vbox);
+	ClassDB::bind_method(D_METHOD("get_progress_bar"), &ProssessWindowDialog::get_progress_bar);
+	ClassDB::bind_method(D_METHOD("set_hide_progress_bar", "hide"), &ProssessWindowDialog::set_hide_progress_bar);
+	ClassDB::bind_method(D_METHOD("get_hide_progress_bar"), &ProssessWindowDialog::get_hide_progress_bar);
+
+	ClassDB::bind_method(D_METHOD("set_progress_max", "max"), &ProssessWindowDialog::set_progress_max);
+	ClassDB::bind_method(D_METHOD("get_progress_max"), &ProssessWindowDialog::get_progress_max);
+	ClassDB::bind_method(D_METHOD("set_progress_value", "value"), &ProssessWindowDialog::set_progress_value);
+	ClassDB::bind_method(D_METHOD("get_progress_value"), &ProssessWindowDialog::get_progress_value);
+
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "progress_max"), "set_progress_max", "get_progress_max");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "progress_value"), "set_progress_value", "get_progress_value");
 }
