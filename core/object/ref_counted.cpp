@@ -161,6 +161,83 @@ RefCounted::RefCounted() :
 	refcount_init.init();
 }
 
+Ref<RefCountedNode> RefCountedNode::top() const {
+	RefCountedNode *bb = (RefCountedNode *)this;
+	while (bb->parent != nullptr) {
+		bb = bb->parent;
+	}
+	return bb;
+}
+void RefCountedNode::set_parent(const Ref<RefCountedNode> &p_parent) {
+	if (parent == p_parent.ptr()) {
+		return;
+	}
+	if (parent != nullptr) {
+		parent->children.erase(this);
+	}
+	Ref<RefCountedNode> p = p_parent;
+	while (p.is_valid()) {
+		if (p == this) {
+			ERR_PRINT("Cannot set parent to itself.");
+			return;
+		}
+		p = p->get_parent();
+	}
+	if (p_parent.is_null()) {
+		return;
+	}
+	if (!parent->child_type.is_empty()) {
+		if (!this->is_class(parent->child_type)) {
+			ERR_PRINT("Parent type mismatch.");
+			return;
+		}
+	}
+	parent = p_parent.ptr();
+	p_parent->children.push_back(this);
+}
+Ref<RefCountedNode> RefCountedNode::find_child(const StringName &p_name) const {
+	for (uint64_t i = 0; i < children.size(); i++) {
+		if (children[i]->get_name() == p_name) {
+			return children[i];
+		}
+	}
+	return Ref<RefCountedNode>();
+}
+void RefCountedNode::clear_child() {
+	for (uint64_t i = 0; i < children.size(); i++) {
+		children[i]->parent = nullptr;
+	}
+	children.clear();
+}
+Ref<RefCounted> RefCountedNode::duplicate(bool p_subresources) const {
+	Ref<RefCounted> ret = RefCounted::duplicate(p_subresources);
+	for (uint64_t i = 0; i < children.size(); i++) {
+		Ref<RefCountedNode> child = children[i]->duplicate(p_subresources);
+		child->set_parent(ret);
+	}
+	return ret;
+}
+void RefCountedNode::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_name", "name"), &RefCountedNode::set_name);
+	ClassDB::bind_method(D_METHOD("get_name"), &RefCountedNode::get_name);
+	ClassDB::bind_method(D_METHOD("set_parent", "blackboard"), &RefCountedNode::set_parent);
+	ClassDB::bind_method(D_METHOD("get_parent"), &RefCountedNode::get_parent);
+	ClassDB::bind_method(D_METHOD("set_child_type", "type"), &RefCountedNode::set_child_type);
+	ClassDB::bind_method(D_METHOD("get_child_type"), &RefCountedNode::get_child_type);
+	ClassDB::bind_method(D_METHOD("find_child", "var_name"), &RefCountedNode::find_child);
+	ClassDB::bind_method(D_METHOD("get_child_count"), &RefCountedNode::get_child_count);
+	ClassDB::bind_method(D_METHOD("clear_child"), &RefCountedNode::clear_child);
+	ClassDB::bind_method(D_METHOD("top"), &RefCountedNode::top);
+
+	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "name"), "set_name", "get_name");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "parent", PROPERTY_HINT_RESOURCE_TYPE, "RefCountedNode"), "set_parent", "get_parent");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING_NAME, "child_type"), "set_child_type", "get_child_type");
+}
+RefCountedNode::~RefCountedNode() {
+	set_parent(nullptr);
+	clear_child();
+}
+
 Variant WeakRef::get_ref() const {
 	if (ref.is_null()) {
 		return Variant();

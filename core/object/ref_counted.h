@@ -283,3 +283,32 @@ template <typename T>
 Ref<T> ObjectDB::get_ref(ObjectID p_instance_id) {
 	return Ref<T>(get_instance(p_instance_id));
 }
+
+class RefCountedNode : public RefCounted {
+	GDCLASS(RefCountedNode, RefCounted);
+
+	static void _bind_methods();
+
+protected:
+	StringName name;
+	StringName child_type;
+	RefCountedNode* parent = nullptr;
+	LocalVector<Ref<RefCountedNode>> children;
+
+public:
+	void set_name(const StringName& p_name) { name = p_name; }
+	const StringName& get_name() const { return name; }
+	void set_child_type(const StringName& p_child_type) { child_type = p_child_type; }
+	const StringName& get_child_type() const { return child_type; }
+	int64_t get_child_count() const { return children.size(); }
+
+	void set_parent(const Ref<RefCountedNode>& p_parent);
+	Ref<RefCountedNode> get_parent() const { return parent; }
+	Ref<RefCountedNode> find_child(const StringName& p_name) const;
+	void clear_child();
+	Ref<RefCountedNode> top() const;
+
+public:
+	virtual Ref<RefCounted> duplicate(bool p_subresources = false) const;
+	virtual ~RefCountedNode();
+};

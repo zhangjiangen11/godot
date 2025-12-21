@@ -337,7 +337,7 @@ void Button::_notification(int p_what) {
 				Size2 icon_size;
 
 				{ // Calculate the drawing size of the icon.
-					icon_size = _icon->get_size();
+					icon_size = _icon->get_size() * icon_scale;
 
 					if (expand_icon) {
 						const Size2 text_buf_size = text_buf->get_size();
@@ -495,7 +495,7 @@ Size2 Button::get_minimum_size_for_text_and_icon(const String &p_text, Ref<Textu
 	}
 
 	if (!expand_icon && p_icon.is_valid()) {
-		Size2 icon_size = _fit_icon_size(p_icon->get_size());
+		Size2 icon_size = _fit_icon_size(p_icon->get_size() * icon_scale);
 		if (vertical_icon_alignment == VERTICAL_ALIGNMENT_CENTER) {
 			minsize.height = MAX(minsize.height, icon_size.height);
 		} else {
@@ -696,6 +696,12 @@ Ref<Texture2D> Button::get_button_icon() const {
 	return icon;
 }
 
+void Button::set_icon_scale(float p_scale) {
+	icon_scale = p_scale;
+}
+float Button::get_icon_scale() const {
+	return icon_scale;
+}
 void Button::set_expand_icon(bool p_enabled) {
 	if (expand_icon != p_enabled) {
 		expand_icon = p_enabled;
@@ -793,6 +799,8 @@ void Button::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_language"), &Button::get_language);
 	ClassDB::bind_method(D_METHOD("set_button_icon", "texture"), &Button::set_button_icon);
 	ClassDB::bind_method(D_METHOD("get_button_icon"), &Button::get_button_icon);
+	ClassDB::bind_method(D_METHOD("set_icon_scale", "scale"), &Button::set_icon_scale);
+	ClassDB::bind_method(D_METHOD("get_icon_scale"), &Button::get_icon_scale);
 	ClassDB::bind_method(D_METHOD("set_flat", "enabled"), &Button::set_flat);
 	ClassDB::bind_method(D_METHOD("is_flat"), &Button::is_flat);
 	ClassDB::bind_method(D_METHOD("set_clip_text", "enabled"), &Button::set_clip_text);
@@ -808,6 +816,7 @@ void Button::_bind_methods() {
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "text", PROPERTY_HINT_MULTILINE_TEXT), "set_text", "get_text");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "icon", PROPERTY_HINT_RESOURCE_TYPE, "Texture2D"), "set_button_icon", "get_button_icon");
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "icon_scale"), "set_icon_scale", "get_icon_scale");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "flat"), "set_flat", "is_flat");
 
 	ADD_GROUP("Text Behavior", "");
