@@ -147,6 +147,7 @@ void register_core_types() {
 	GDREGISTER_CLASS(RefCountedNode);
 	GDREGISTER_CLASS(WeakRef);
 	GDREGISTER_CLASS(Resource);
+	GDREGISTER_CLASS(ResourceWeakReferences);
 
 	GDREGISTER_CLASS(Time);
 	_time = memnew(Time);

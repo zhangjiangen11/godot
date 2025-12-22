@@ -200,6 +200,25 @@ public:
 	Resource();
 	~Resource();
 };
+class ResourceWeakReferences : public Resource {
+	GDCLASS(ResourceWeakReferences, Resource);
+	static void _bind_methods();
+
+	StringName weak_resource_path;
+	StringName weak_resource_type;
+	Ref<Resource> weak_resource;
+
+public:
+	void set_weak_resource_path(const StringName &p_resource_path);
+	StringName get_weak_resource_path() const;
+
+	void set_weak_resource_type(const StringName &p_resource_type);
+	StringName get_weak_resource_type() const;
+
+	void set_weak_resource(const Ref<Resource> &p_resource);
+	Ref<Resource> get_weak_resource();
+	ResourceWeakReferences();
+};
 
 VARIANT_ENUM_CAST(Resource::DeepDuplicateMode);
 

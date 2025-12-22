@@ -1289,7 +1289,11 @@ void EditorAudioBuses::_server_save() {
 		edited_path = ResourceUID::path_to_uid(edited_path);
 		ProjectSettings::get_singleton()->set_setting("audio/buses/default_bus_layout", edited_path);
 	} else {
-		ResourceSaver::save(state, ResourceUID::ensure_path(edited_path));
+		String path = ResourceUID::ensure_path(edited_path);
+		if (path.is_empty()) {
+			path = "res://default_bus_layout.tres";
+		}
+		ResourceSaver::save(state, path);
 	}
 }
 

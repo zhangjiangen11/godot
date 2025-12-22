@@ -817,18 +817,63 @@ Resource::~Resource() {
 		ResourceCache::remove_ref(E->key);
 	}
 }
+////////////////////////////////////////////////////////////////////////////////////////////
+void ResourceWeakReferences::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_weak_resource_path", "path"), &ResourceWeakReferences::set_weak_resource_path);
+	ClassDB::bind_method(D_METHOD("get_weak_resource_path"), &ResourceWeakReferences::get_weak_resource_path);
+	ClassDB::bind_method(D_METHOD("set_weak_resource", "resource"), &ResourceWeakReferences::set_weak_resource);
+	ClassDB::bind_method(D_METHOD("get_weak_resource"), &ResourceWeakReferences::get_weak_resource);
+
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "weak_resource_path"), "set_weak_resource_path", "get_weak_resource_path");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "weak_resource", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene", PROPERTY_USAGE_EDITOR), "set_weak_resource", "get_weak_resource");
+}
+void ResourceWeakReferences::set_weak_resource_path(const StringName &p_resource_path) {
+	weak_resource_path = p_resource_path;
+}
+StringName ResourceWeakReferences::get_weak_resource_path() const {
+	return weak_resource_path;
+}
+
+void ResourceWeakReferences::set_weak_resource_type(const StringName &p_resource_type) {
+	weak_resource_type = p_resource_type;
+}
+StringName ResourceWeakReferences::get_weak_resource_type() const {
+	return weak_resource_type;
+}
+void ResourceWeakReferences::set_weak_resource(const Ref<Resource> &p_resource) {
+	weak_resource = p_resource;
+	if (p_resource.is_valid()) {
+		if (p_resource->is_class(weak_resource_path)) {
+			weak_resource_path = p_resource->get_path();
+		} else {
+			weak_resource_path = StringName();
+			weak_resource = Ref<Resource>();
+		}
+	} else {
+		weak_resource_path = StringName();
+	}
+}
+Ref<Resource> ResourceWeakReferences::get_weak_resource() {
+	if (weak_resource.is_null() && !weak_resource_path.is_empty()) {
+		weak_resource = ResourceLoader::load(weak_resource_path);
+	}
+	return weak_resource;
+}
+ResourceWeakReferences::ResourceWeakReferences() {
+	weak_resource_path = StringName("PackedScene");
+}
+////////////////////////////////////////////////////////////////////////////////////////////
 
 HashMap<String, Resource *> ResourceCache::resources;
 #ifdef TOOLS_ENABLED
-struct ResourcePathCache
-{
+struct ResourcePathCache {
 	int count = 0;
-	HashMap<String, Resource*> path_res;
-	_FORCE_INLINE_ void insert(const String& p_path, Resource* res) {
+	HashMap<String, Resource *> path_res;
+	_FORCE_INLINE_ void insert(const String &p_path, Resource *res) {
 		path_res.insert(p_path, res);
 		++count;
 	}
-	_FORCE_INLINE_ void erase(const String& p_path) {
+	_FORCE_INLINE_ void erase(const String &p_path) {
 		path_res.erase(p_path);
 		--count;
 	}
