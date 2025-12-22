@@ -1674,7 +1674,7 @@ void ThreadResourceLoader::_run_load_task(int index, const Ref<ThreadResourceLoa
 	}
 
 	token->resource = ResourceCache::get_ref(token->local_path);
-	bool ignoring = token->cache_mode == ResourceFormatLoader::CACHE_MODE_IGNORE || token->cache_mode == ResourceFormatLoader::CACHE_MODE_IGNORE_DEEP;
+	//bool ignoring = token->cache_mode == ResourceFormatLoader::CACHE_MODE_IGNORE || token->cache_mode == ResourceFormatLoader::CACHE_MODE_IGNORE_DEEP;
 	bool replacing = token->cache_mode == ResourceFormatLoader::CACHE_MODE_REPLACE || token->cache_mode == ResourceFormatLoader::CACHE_MODE_REPLACE_DEEP;
 	if (!replacing) {
 		// 如果不替换旧的资源,并且旧的资源存在,就直接返回

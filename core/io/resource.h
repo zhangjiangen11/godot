@@ -209,8 +209,8 @@ class ResourceWeakReferences : public Resource {
 	Ref<Resource> weak_resource;
 
 public:
-	void set_weak_resource_path(const StringName &p_resource_path);
-	StringName get_weak_resource_path() const;
+	void set_weak_resource_path(const String &p_resource_path);
+	String get_weak_resource_path() const;
 
 	void set_weak_resource_type(const StringName &p_resource_type);
 	StringName get_weak_resource_type() const;

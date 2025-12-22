@@ -1804,7 +1804,7 @@ Error RenderingDevice::texture_update_line(RID p_texture, uint32_t p_layer, uint
 
 	uint32_t width, height;
 	uint32_t tight_mip_size = get_image_format_required_size(texture->format, texture->width, texture->height, texture->depth, texture->mipmaps, &width, &height);
-	uint32_t required_size = tight_mip_size;
+	//uint32_t required_size = tight_mip_size;
 	uint32_t required_align = _texture_alignment(texture);
 
 	//ERR_FAIL_COND_V_MSG(required_size != (uint32_t)p_data.size(), ERR_INVALID_PARAMETER,
@@ -1838,7 +1838,7 @@ Error RenderingDevice::texture_update_line(RID p_texture, uint32_t p_layer, uint
 	uint32_t mipmap_offset = 0;
 
 	uint32_t logic_width = texture->width;
-	uint32_t logic_height = texture->height;
+	//uint32_t logic_height = texture->height;
 
 	uint32_t mm_i = p_mipmap;
 	uint32_t depth = 0;

@@ -824,17 +824,17 @@ void ResourceWeakReferences::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_weak_resource", "resource"), &ResourceWeakReferences::set_weak_resource);
 	ClassDB::bind_method(D_METHOD("get_weak_resource"), &ResourceWeakReferences::get_weak_resource);
 
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "weak_resource_path"), "set_weak_resource_path", "get_weak_resource_path");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "weak_resource_path",PROPERTY_HINT_FILE), "set_weak_resource_path", "get_weak_resource_path");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "weak_resource", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene", PROPERTY_USAGE_EDITOR), "set_weak_resource", "get_weak_resource");
 }
-void ResourceWeakReferences::set_weak_resource_path(const StringName &p_resource_path) {
+void ResourceWeakReferences::set_weak_resource_path(const String &p_resource_path) {
 	weak_resource_path = p_resource_path;
 }
-StringName ResourceWeakReferences::get_weak_resource_path() const {
+String ResourceWeakReferences::get_weak_resource_path() const {
 	return weak_resource_path;
 }
 
-void ResourceWeakReferences::set_weak_resource_type(const StringName &p_resource_type) {
+void ResourceWeakReferences::set_weak_resource_type(const StringName&p_resource_type) {
 	weak_resource_type = p_resource_type;
 }
 StringName ResourceWeakReferences::get_weak_resource_type() const {
@@ -843,14 +843,18 @@ StringName ResourceWeakReferences::get_weak_resource_type() const {
 void ResourceWeakReferences::set_weak_resource(const Ref<Resource> &p_resource) {
 	weak_resource = p_resource;
 	if (p_resource.is_valid()) {
-		if (p_resource->is_class(weak_resource_path)) {
+		if (p_resource->is_class(weak_resource_type)) {
 			weak_resource_path = p_resource->get_path();
 		} else {
-			weak_resource_path = StringName();
+			weak_resource_path = String();
 			weak_resource = Ref<Resource>();
 		}
 	} else {
 		weak_resource_path = StringName();
+	}
+	if (weak_resource_path.is_empty() || weak_resource_path.find("::") >= 0) {
+		weak_resource_path = StringName();
+		weak_resource = Ref<Resource>();
 	}
 }
 Ref<Resource> ResourceWeakReferences::get_weak_resource() {
@@ -860,7 +864,7 @@ Ref<Resource> ResourceWeakReferences::get_weak_resource() {
 	return weak_resource;
 }
 ResourceWeakReferences::ResourceWeakReferences() {
-	weak_resource_path = StringName("PackedScene");
+	weak_resource_type = StringName("PackedScene");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 
