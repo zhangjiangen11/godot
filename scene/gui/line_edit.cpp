@@ -1101,20 +1101,53 @@ Variant LineEdit::get_drag_data(const Point2 &p_point) {
 
 	return Variant();
 }
+static bool drop_data_to_string(const Variant &p_data, String &r_text) {
+	if (p_data.is_string()) {
+		r_text = p_data;
+		return true;
+	} else {
+		Dictionary drag_data = p_data;
+		if (drag_data.has("type")) {
+			if (drag_data["type"] == "resource") {
+				Ref<Resource> res = drag_data["resource"];
+				if (res.is_valid()) {
+					r_text = res->get_path();
+					return true;
+				}
+			} else if (drag_data["type"] == "files") {
+				Vector<String> files = drag_data["files"];
+				if (files.size() >= 1) {
+					r_text = files[0];
+					return true;
+				}
+			} else if (drag_data["type"] == "files_and_dirs") {
+				Vector<String> files = drag_data["files"];
+				if (files.size() >= 1) {
+					r_text = files[0];
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
 
 bool LineEdit::can_drop_data(const Point2 &p_point, const Variant &p_data) const {
 	bool drop_override = Control::can_drop_data(p_point, p_data); // In case user wants to drop custom data.
 	if (drop_override) {
 		return drop_override;
 	}
-
-	return is_editable() && p_data.is_string();
+	String text;
+	bool is_string = drop_data_to_string(p_data, text);
+	return is_editable() && is_string;
 }
 
 void LineEdit::drop_data(const Point2 &p_point, const Variant &p_data) {
 	Control::drop_data(p_point, p_data);
 
-	if (p_data.is_string() && is_editable()) {
+	String text;
+	bool is_string = drop_data_to_string(p_data, text);
+	if (is_string && is_editable()) {
 		apply_ime();
 
 		if (p_point != Vector2(Math::INF, Math::INF)) {
@@ -1136,16 +1169,16 @@ void LineEdit::drop_data(const Point2 &p_point, const Variant &p_data) {
 				}
 
 				set_caret_column(caret_column_tmp);
-				insert_text_at_caret(p_data);
+				insert_text_at_caret(text);
 			}
 		} else if (selection.enabled && caret_column >= selection.begin && caret_column <= selection.end) {
 			caret_column_tmp = selection.begin;
 			selection_delete();
 			set_caret_column(caret_column_tmp);
-			insert_text_at_caret(p_data);
+			insert_text_at_caret(text);
 			grab_focus(true);
 		} else {
-			insert_text_at_caret(p_data);
+			insert_text_at_caret(text);
 			grab_focus(true);
 		}
 		select(caret_column_tmp, caret_column);

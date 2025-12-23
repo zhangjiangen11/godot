@@ -30,6 +30,8 @@
 
 #include "camera_3d.h"
 
+#include "core/io/dir_access.h"
+#include "core/io/file_access.h"
 #include "core/math/projection.h"
 #include "core/math/transform_interpolator.h"
 #include "scene/main/viewport.h"
@@ -670,6 +672,9 @@ void Camera3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_cull_mask_value", "layer_number", "value"), &Camera3D::set_cull_mask_value);
 	ClassDB::bind_method(D_METHOD("get_cull_mask_value", "layer_number"), &Camera3D::get_cull_mask_value);
 
+	ClassDB::bind_method(D_METHOD("set_debug_save_path", "path"), &Camera3D::set_debug_save_path);
+	ClassDB::bind_method(D_METHOD("get_debug_save_path"), &Camera3D::get_debug_save_path);
+
 	//ClassDB::bind_method(D_METHOD("_camera_make_current"),&Camera::_camera_make_current );
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "keep_aspect", PROPERTY_HINT_ENUM, "Keep Width,Keep Height"), "set_keep_aspect_mode", "get_keep_aspect_mode");
@@ -687,6 +692,10 @@ void Camera3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "frustum_offset", PROPERTY_HINT_NONE, "suffix:m"), "set_frustum_offset", "get_frustum_offset");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "near", PROPERTY_HINT_RANGE, "0.001,10,0.001,or_greater,exp,suffix:m"), "set_near", "get_near");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "far", PROPERTY_HINT_RANGE, "0.01,4000,0.01,or_greater,exp,suffix:m"), "set_far", "get_far");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "debug_save_path", PROPERTY_HINT_DIR), "set_debug_save_path", "get_debug_save_path");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "depth_scale", PROPERTY_HINT_RANGE, "0.001,100,0.001,or_greater,suffix:m"), "set_depth_scale", "get_depth_scale");
+
+	ADD_MEMBER_BUTTON(bt_save_debug_image, L"保存调试图像(.exr)", Camera3D);
 
 	BIND_ENUM_CONSTANT(PROJECTION_PERSPECTIVE);
 	BIND_ENUM_CONSTANT(PROJECTION_ORTHOGONAL);
@@ -858,6 +867,37 @@ RID Camera3D::get_pyramid_shape_rid() {
 }
 #endif // PHYSICS_3D_DISABLED
 
+void Camera3D::set_debug_save_path(const String &p_path) {
+	debug_save_path = p_path;
+}
+String Camera3D::get_debug_save_path() const {
+	return debug_save_path;
+}
+
+void Camera3D::set_debug_save_file_name(const String &p_name) {
+	debug_save_file_name = p_name;
+}
+String Camera3D::get_debug_save_file_name() const {
+	return debug_save_file_name;
+}
+
+void Camera3D::bt_save_debug_image() {
+	if (debug_save_path.is_empty() || debug_save_file_name.is_empty()) {
+		return;
+	}
+	if (DirAccess::exists(debug_save_path) == false) {
+		DirAccess::make_dir_absolute(debug_save_path);
+	}
+	Viewport *vp = get_viewport();
+	if (vp) {
+		String path = debug_save_path.path_join(debug_save_file_name) + ".exr";
+		if (FileAccess::exists(path)) {
+			DirAccess::remove_absolute(path);
+		}
+		Ref<Image> img = vp->get_texture()->get_image();
+		img->save_exr(path);
+	}
+}
 Camera3D::Camera3D() {
 	camera = RenderingServer::get_singleton()->camera_create();
 	set_perspective(75.0, 0.05, 4000.0);

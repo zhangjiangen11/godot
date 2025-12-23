@@ -100,6 +100,9 @@ private:
 	Vector<Vector3> pyramid_shape_points;
 #endif // PHYSICS_3D_DISABLED
 
+	String debug_save_path;
+	String debug_save_file_name;
+
 	// These can be set by derived Cameras.
 	bool _desired_process_internal = false;
 	bool _desired_physics_process_internal = false;
@@ -209,6 +212,14 @@ public:
 #ifndef PHYSICS_3D_DISABLED
 	RID get_pyramid_shape_rid();
 #endif // PHYSICS_3D_DISABLED
+
+	void set_debug_save_path(const String &p_path);
+	String get_debug_save_path() const;
+
+	void set_debug_save_file_name(const String &p_name);
+	String get_debug_save_file_name() const;
+
+	DECL_MEMBER_BUTTON(bt_save_debug_image);
 
 	Camera3D();
 	~Camera3D();
