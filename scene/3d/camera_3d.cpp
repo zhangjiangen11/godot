@@ -693,7 +693,6 @@ void Camera3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "near", PROPERTY_HINT_RANGE, "0.001,10,0.001,or_greater,exp,suffix:m"), "set_near", "get_near");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "far", PROPERTY_HINT_RANGE, "0.01,4000,0.01,or_greater,exp,suffix:m"), "set_far", "get_far");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "debug_save_path", PROPERTY_HINT_DIR), "set_debug_save_path", "get_debug_save_path");
-	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "depth_scale", PROPERTY_HINT_RANGE, "0.001,100,0.001,or_greater,suffix:m"), "set_depth_scale", "get_depth_scale");
 
 	ADD_MEMBER_BUTTON(bt_save_debug_image, L"保存调试图像(.exr)", Camera3D);
 

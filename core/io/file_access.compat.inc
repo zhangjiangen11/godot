@@ -28,6 +28,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#define open_encrypted _id_acbbc349c1f67
+#define open_encrypted_pass _id_fh7833k39s
 #ifndef DISABLE_DEPRECATED
 
 Ref<FileAccess> FileAccess::_open_encrypted_bind_compat_98918(const String &p_path, ModeFlags p_mode_flags, const Vector<uint8_t> &p_key) {
@@ -119,3 +121,6 @@ void FileAccess::_bind_compatibility_methods() {
 }
 
 #endif
+
+#undef open_encrypted
+#undef open_encrypted_pass

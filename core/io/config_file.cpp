@@ -34,6 +34,8 @@
 #include "core/string/string_builder.h"
 #include "core/variant/variant_parser.h"
 
+#define open_encrypted _id_acbbc349c1f67
+#define open_encrypted_pass _id_fh7833k39s
 void ConfigFile::set_value(const String &p_section, const String &p_key, const Variant &p_value) {
 	if (p_value.get_type() == Variant::NIL) { // Erase key.
 		if (!values.has(p_section)) {
@@ -336,3 +338,6 @@ void ConfigFile::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("clear"), &ConfigFile::clear);
 }
+
+#undef open_encrypted
+#undef open_encrypted_pass

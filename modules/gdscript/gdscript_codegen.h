@@ -41,12 +41,12 @@ public:
 	struct Address {
 		enum AddressMode {
 			SELF,
-			CLASS,
-			MEMBER,
-			CONSTANT,
-			LOCAL_VARIABLE,
 			FUNCTION_PARAMETER,
+			CLASS,
+			LOCAL_VARIABLE,
+			MEMBER,
 			TEMPORARY,
+			CONSTANT,
 			NIL,
 		};
 		AddressMode mode = NIL;

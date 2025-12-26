@@ -36,8 +36,8 @@
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
 #include "scene/gui/box_container.h"
-#include "scene/gui/texture_button.h"
 #include "scene/gui/button.h"
+#include "scene/gui/texture_button.h"
 
 const String EditorPropertyVectorN::COMPONENT_LABELS[4] = { "x", "y", "z", "w" };
 
@@ -90,7 +90,7 @@ void EditorPropertyVectorN::update_property() {
 
 	bool is_dynamic_range = false;
 	Vector2 range;
-	if (get_edited_object()->has_method(name)) {
+	if (get_edited_object() && get_edited_object()->has_method(name)) {
 		Variant ret = get_edited_object()->call(name);
 		if (ret.get_type() == Variant::VECTOR2) {
 			range = ret;

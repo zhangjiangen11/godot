@@ -35,6 +35,8 @@
 #include "core/templates/hash_map.h"
 #include "core/variant/variant_parser.h"
 
+#define open_encrypted _id_acbbc349c1f67
+#define open_encrypted_pass _id_fh7833k39s
 class ConfigFile : public RefCounted {
 	GDCLASS(ConfigFile, RefCounted);
 
@@ -75,3 +77,6 @@ public:
 	Error save_encrypted(const String &p_path, const Vector<uint8_t> &p_key);
 	Error save_encrypted_pass(const String &p_path, const String &p_pass);
 };
+
+#undef open_encrypted
+#undef open_encrypted_pass

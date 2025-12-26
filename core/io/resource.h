@@ -81,6 +81,7 @@ private:
 	String import_path;
 #endif
 
+	bool dont_reload = false;
 	enum EmitChangedState {
 		EMIT_CHANGED_UNBLOCKED,
 		EMIT_CHANGED_BLOCKED,
@@ -196,6 +197,9 @@ public:
 	static void set_ref(const String &p_path, Resource *r_res);
 	static Array get_cached_resources();
 	static int get_cached_resource_count();
+
+	void set_dont_reload(bool p_dont_save) { dont_reload = p_dont_save; }
+	bool get_dont_reload() const { return dont_reload; }
 
 	Resource();
 	~Resource();

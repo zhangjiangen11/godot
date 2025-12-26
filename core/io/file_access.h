@@ -40,7 +40,8 @@
 /**
  * Multi-Platform abstraction for accessing to files.
  */
-
+#define open_encrypted _id_acbbc349c1f67
+#define open_encrypted_pass _id_fh7833k39s
 class FileAccess : public RefCounted {
 	GDCLASS(FileAccess, RefCounted);
 
@@ -303,6 +304,8 @@ public:
 	virtual ~FileAccess();
 };
 
+#undef open_encrypted
+#undef open_encrypted_pass
 VARIANT_ENUM_CAST(FileAccess::CompressionMode);
 VARIANT_ENUM_CAST(FileAccess::ModeFlags);
 VARIANT_BITFIELD_CAST(FileAccess::UnixPermissionFlags);

@@ -305,6 +305,10 @@ void EditorProperty::emit_changed(const StringName &p_property, const Variant &p
 	const Variant *argptrs[4] = { &args[0], &args[1], &args[2], &args[3] };
 
 	cache[p_property] = p_value;
+	// 使用手动值
+	if (using_manual_value) {
+		manual_value = p_value;
+	}
 	emit_signalp(SNAME("property_changed"), (const Variant **)argptrs, 4);
 	if (is_custom_property) {
 		Object *obj = get_edited_object();
@@ -531,9 +535,15 @@ void EditorProperty::_notification(int p_what) {
 				// for project settings feature tag overrides.
 				color.a = 0.5;
 			}
-			StringName pro_dis_name = get_edited_object()->get_property_display_name(get_edited_property());
+			StringName pro_dis_name;
+			if (get_edited_object()) {
+				pro_dis_name = get_edited_object()->get_property_display_name(get_edited_property());
+
+			} else {
+				pro_dis_name = label;
+			}
 			// 获取显示名称
-			if (pro_dis_name.is_empty()) {
+			if (get_edited_object() && pro_dis_name.is_empty()) {
 				pro_dis_name = get_object_property_display_name(get_edited_property());
 				if (get_edited_object()->has_method(pro_dis_name)) {
 					_draw_label = get_edited_object()->call(pro_dis_name);
@@ -775,6 +785,12 @@ Object *EditorProperty::get_edited_object() {
 
 StringName EditorProperty::get_edited_property() const {
 	return property;
+}
+void EditorProperty::set_manual_value(const Variant& p_value, bool enabled) {
+	manual_value = p_value;
+	cache[property] = p_value;
+	using_manual_value = enabled;
+	update_property();
 }
 
 Variant EditorProperty::get_edited_property_display_value() const {

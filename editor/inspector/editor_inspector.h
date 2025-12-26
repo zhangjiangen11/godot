@@ -208,6 +208,10 @@ private:
 
 	HashMap<StringName, Variant> cache;
 
+	// 手动值
+	Variant manual_value;
+	bool using_manual_value = false;
+
 	GDVIRTUAL0(_update_property)
 	GDVIRTUAL1(_set_read_only, bool)
 
@@ -256,7 +260,11 @@ public:
 
 	Object *get_edited_object();
 	StringName get_edited_property() const;
+	void set_manual_value(const Variant& p_value, bool enabled = true);
 	inline Variant get_edited_property_value() const {
+		if (using_manual_value) {
+			return manual_value;
+		}
 		ERR_FAIL_NULL_V(object, Variant());
 		return object->get(property);
 	}

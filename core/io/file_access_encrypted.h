@@ -34,6 +34,9 @@
 #include "core/io/file_access.h"
 
 #define ENCRYPTED_HEADER_MAGIC 0x43454447
+#define FileAccessEncrypted _ID_CFDDBBEAFA5
+#define open_and_parse_password _id_acbb87c1f67
+#define open_and_parse _id_f6734a2fck
 
 class FileAccessEncrypted : public FileAccess {
 	GDSOFTCLASS(FileAccessEncrypted, FileAccess);

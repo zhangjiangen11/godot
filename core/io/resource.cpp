@@ -255,6 +255,9 @@ Error Resource::copy_from(const Ref<Resource> &p_resource) {
 }
 
 void Resource::reload_from_file() {
+	if (dont_reload) {
+		return;
+	}
 	String path = get_path();
 	if (!path.is_resource_file()) {
 		return;
@@ -762,6 +765,9 @@ void Resource::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_id_for_path", "path", "id"), &Resource::set_id_for_path);
 	ClassDB::bind_method(D_METHOD("get_id_for_path", "path"), &Resource::get_id_for_path);
 
+	ClassDB::bind_method(D_METHOD("set_dont_reload", "enable"), &Resource::set_dont_reload);
+	ClassDB::bind_method(D_METHOD("get_dont_reload"), &Resource::get_dont_reload);
+
 	ClassDB::bind_method(D_METHOD("is_built_in"), &Resource::is_built_in);
 
 	ClassDB::bind_static_method("Resource", D_METHOD("generate_scene_unique_id"), &Resource::generate_scene_unique_id);
@@ -787,6 +793,7 @@ void Resource::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "resource_path", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "set_path", "get_path");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "resource_name"), "set_name", "get_name");
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "resource_scene_unique_id", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE), "set_scene_unique_id", "get_scene_unique_id");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "resource_dont_reload", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR), "set_dont_reload", "get_dont_reload");
 
 	ClassDB::bind_static_method("Resource", D_METHOD("has", "p_path"), &Resource::has);
 	ClassDB::bind_static_method("Resource", D_METHOD("get_ref", "p_path"), &Resource::get_ref);
@@ -824,7 +831,7 @@ void ResourceWeakReferences::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_weak_resource", "resource"), &ResourceWeakReferences::set_weak_resource);
 	ClassDB::bind_method(D_METHOD("get_weak_resource"), &ResourceWeakReferences::get_weak_resource);
 
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "weak_resource_path",PROPERTY_HINT_FILE), "set_weak_resource_path", "get_weak_resource_path");
+	ADD_PROPERTY(PropertyInfo(Variant::STRING, "weak_resource_path", PROPERTY_HINT_FILE), "set_weak_resource_path", "get_weak_resource_path");
 	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "weak_resource", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene", PROPERTY_USAGE_EDITOR), "set_weak_resource", "get_weak_resource");
 }
 void ResourceWeakReferences::set_weak_resource_path(const String &p_resource_path) {
@@ -834,7 +841,7 @@ String ResourceWeakReferences::get_weak_resource_path() const {
 	return weak_resource_path;
 }
 
-void ResourceWeakReferences::set_weak_resource_type(const StringName&p_resource_type) {
+void ResourceWeakReferences::set_weak_resource_type(const StringName &p_resource_type) {
 	weak_resource_type = p_resource_type;
 }
 StringName ResourceWeakReferences::get_weak_resource_type() const {

@@ -41,6 +41,8 @@
 #include "core/os/os.h"
 #include "core/os/time.h"
 
+#define open_encrypted _id_acbbc349c1f67
+#define open_encrypted_pass _id_fh7833k39s
 Ref<FileAccess> FileAccess::create(AccessType p_access) {
 	ERR_FAIL_INDEX_V(p_access, ACCESS_MAX, nullptr);
 	ERR_FAIL_NULL_V(create_func[p_access], nullptr);
@@ -1156,3 +1158,6 @@ void FileAccess::_bind_methods() {
 FileAccess::~FileAccess() {
 	_delete_temp();
 }
+
+#undef open_encrypted
+#undef open_encrypted_pass
