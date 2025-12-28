@@ -104,6 +104,8 @@ SmoothScrollContainer::SmoothScrollContainer() {
 	debug_gradient = memnew(Gradient);
 	debug_gradient->set_color(0.0f, Color(0, 1, 0)); // 绿色
 	debug_gradient->set_color(1.0f, Color(1, 0, 0)); // 红色
+
+	set_process(true);
 }
 
 // ------------------------------
@@ -111,8 +113,8 @@ SmoothScrollContainer::SmoothScrollContainer() {
 // ------------------------------
 void SmoothScrollContainer::_bind_methods() {
 	// 1. 绑定信号
-	ADD_SIGNAL(MethodInfo("scroll_started"));
-	ADD_SIGNAL(MethodInfo("scroll_ended"));
+	//ADD_SIGNAL(MethodInfo("scroll_started"));
+	//ADD_SIGNAL(MethodInfo("scroll_ended"));
 
 	// 2. 绑定属性（编辑器分组与可见性）
 	// 鼠标滚轮组
@@ -244,9 +246,6 @@ void SmoothScrollContainer::_ready() {
 }
 
 void SmoothScrollContainer::process(double delta) {
-	if (Engine::get_singleton()->is_editor_hint()) {
-		return;
-	}
 
 	// 处理滚动逻辑
 	scroll(true, velocity.y, pos.y, delta);
@@ -267,13 +266,15 @@ void SmoothScrollContainer::process(double delta) {
 // ------------------------------
 void SmoothScrollContainer::gui_input(const Ref<InputEvent> &event) {
 	// 鼠标移动时显示滚动条
-	if (hide_scrollbar_over_time && event->is_class("InputEventMouseMotion")) {
+	Ref<InputEventMouseMotion> drag_event = event;
+	Ref<InputEventScreenDrag> scene_drag_event = event;
+	if (hide_scrollbar_over_time && drag_event.is_valid()) {
 		show_scrollbars();
 	}
 
 	// 处理鼠标滚轮事件
-	if (event->is_class("InputEventMouseButton")) {
-		Ref<InputEventMouseButton> mouse_button = event;
+	Ref<InputEventMouseButton> mouse_button = event;
+	if (mouse_button.is_valid()) {
 		switch (mouse_button->get_button_index()) {
 			case MouseButton::WHEEL_DOWN:
 				if (mouse_button->is_pressed()) {
@@ -359,10 +360,9 @@ void SmoothScrollContainer::gui_input(const Ref<InputEvent> &event) {
 	}
 
 	// 处理拖动事件（鼠标或触摸）
-	bool is_drag_event = (event->is_class("InputEventScreenDrag") && drag_with_touch) ||
-			(event->is_class("InputEventMouseMotion") && drag_with_mouse);
+	bool is_drag_event = (scene_drag_event.is_valid() && drag_with_touch) ||
+			(drag_event.is_valid() && drag_with_mouse);
 	if (is_drag_event && content_dragging) {
-		Ref<InputEventMouseMotion> drag_event = event;
 		if (should_scroll_horizontal()) {
 			drag_temp_data[0] += drag_event->get_relative().x;
 		}
@@ -374,8 +374,8 @@ void SmoothScrollContainer::gui_input(const Ref<InputEvent> &event) {
 	}
 
 	// 处理触摸事件
-	if (event->is_class("InputEventScreenTouch")) {
-		Ref<InputEventScreenTouch> touch_event = event;
+	Ref<InputEventScreenTouch> touch_event = event;
+	if (touch_event.is_valid()) {
 		if (touch_event->is_pressed()) {
 			if (!drag_with_touch) {
 				return;
@@ -393,8 +393,8 @@ void SmoothScrollContainer::gui_input(const Ref<InputEvent> &event) {
 	}
 
 	// 处理手势事件
-	if (event->is_class("InputEventPanGesture")) {
-		Ref<InputEventPanGesture> pan_event = event;
+	Ref<InputEventPanGesture> pan_event = event;
+	if (pan_event.is_valid()) {
 		if (should_scroll_horizontal()) {
 			velocity.x = -pan_event->get_delta().x * speed;
 			kill_scroll_to_tweens();
@@ -513,8 +513,9 @@ void SmoothScrollContainer::_mouse_on_scroll_bar(bool entered) {
 }
 
 void SmoothScrollContainer::_scrollbar_input(const Ref<InputEvent> &event, bool vertical) {
-	if (event->is_class("InputEventMouseButton")) {
-		Ref<InputEventMouseButton> mouse_button = event;
+	Ref<InputEventMouseButton> mouse_button = event;
+	Ref<InputEventScreenTouch> touch_event = event;
+	if (mouse_button.is_valid()) {
 		// 转发滚轮事件到容器
 		if (mouse_button->get_button_index() >= MouseButton::WHEEL_DOWN &&
 				mouse_button->get_button_index() <= MouseButton::WHEEL_RIGHT) {
@@ -538,8 +539,7 @@ void SmoothScrollContainer::_scrollbar_input(const Ref<InputEvent> &event, bool 
 				}
 			}
 		}
-	} else if (event->is_class("InputEventScreenTouch")) {
-		Ref<InputEventScreenTouch> touch_event = event;
+	} else if (touch_event.is_valid()) {
 		if (touch_event->is_pressed()) {
 			if (vertical) {
 				v_scrollbar_dragging = true;
@@ -565,8 +565,8 @@ void SmoothScrollContainer::_on_focus_changed(Control *control) {
 }
 
 void SmoothScrollContainer::_on_node_added(Node *node) {
-	if (Engine::get_singleton()->is_editor_hint() && node->is_class("Control")) {
-		Control *control = Object::cast_to<Control>(node);
+	Control* control = Object::cast_to<Control>(node);
+	if (Engine::get_singleton()->is_editor_hint() && control) {
 		if (is_ancestor_of(control)) {
 			control->set_mouse_filter(Control::MOUSE_FILTER_PASS);
 		}
@@ -633,7 +633,7 @@ void SmoothScrollContainer::handle_content_dragging() {
 
 	// 更新X位置
 	if (should_scroll_horizontal()) {
-		float x_pos = calculate_position(
+		double x_pos = calculate_position(
 							  drag_temp_data[4], // 左距
 							  drag_temp_data[5], // 右距
 							  drag_temp_data[0] // x相对移动
@@ -645,7 +645,7 @@ void SmoothScrollContainer::handle_content_dragging() {
 
 	// 更新Y位置
 	if (should_scroll_vertical()) {
-		float y_pos = calculate_position(
+		double y_pos = calculate_position(
 							  drag_temp_data[6], // 上距
 							  drag_temp_data[7], // 下距
 							  drag_temp_data[1] // y相对移动
@@ -657,8 +657,8 @@ void SmoothScrollContainer::handle_content_dragging() {
 }
 
 void SmoothScrollContainer::remove_all_children_focus(Node *node) {
-	if (node->is_class("Control")) {
-		Control *control = Object::cast_to<Control>(node);
+	Control* control = Object::cast_to<Control>(node);
+	if (control) {
 		control->release_focus();
 	}
 	for (int i = 0; i < node->get_child_count(); i++) {
@@ -669,7 +669,8 @@ void SmoothScrollContainer::remove_all_children_focus(Node *node) {
 void SmoothScrollContainer::update_is_scrolling() {
 	bool new_scrolling = (content_dragging && !is_in_deadzone) ||
 			any_scroll_bar_dragged() ||
-			velocity.length_squared() > 0.001f;
+			velocity.length_squared() > 0.001f ||
+			has_active_scroll_tween();
 
 	if (is_scrolling != new_scrolling) {
 		is_scrolling = new_scrolling;
@@ -1012,7 +1013,11 @@ bool SmoothScrollContainer::is_outside_right_boundary(float x_pos) {
 	float size_x_diff = get_child_size_x_diff(content_node, true);
 	return get_child_right_dist(x_pos, size_x_diff) < 0.0f;
 }
+bool SmoothScrollContainer::has_active_scroll_tween() {
+	return (scroll_x_to_tween.is_valid() && scroll_x_to_tween->is_running())
+		|| (scroll_y_to_tween.is_valid() && scroll_y_to_tween->is_running());
 
+}
 // ------------------------------
 // 滚动条动画函数实现
 // ------------------------------
@@ -1022,13 +1027,13 @@ void SmoothScrollContainer::show_scrollbars(float time) {
 	}
 	scrollbar_hide_timer->start(scrollbar_hide_time);
 
-	// 停止隐藏动画
-	if (scrollbar_hide_tween.is_valid() && scrollbar_hide_tween->is_running()) {
-		scrollbar_hide_tween->kill();
-	}
 
 	// 启动显示动画
 	if ((get_v_scroll_bar()->get_modulate() != Color(1, 1, 1) || get_h_scroll_bar()->get_modulate() != Color(1, 1, 1))) {
+		// 停止隐藏动画
+		if (scrollbar_hide_tween.is_valid() && scrollbar_hide_tween->is_running()) {
+			scrollbar_hide_tween->kill();
+		}
 		scrollbar_show_tween = create_tween();
 		scrollbar_show_tween->set_parallel(true);
 		scrollbar_show_tween->tween_property(get_v_scroll_bar(), NodePath("modulate"), Color(1, 1, 1), time);
@@ -1041,13 +1046,13 @@ void SmoothScrollContainer::hide_scrollbars(float time) {
 		time = scrollbar_fade_out_time;
 	}
 
+	// 启动隐藏动画
+	if ((get_v_scroll_bar()->get_modulate() != Color(0, 0, 0, 0) || get_h_scroll_bar()->get_modulate() != Color(0, 0, 0, 0))) {
+
 	// 停止显示动画
 	if (scrollbar_show_tween.is_valid() && scrollbar_show_tween->is_running()) {
 		scrollbar_show_tween->kill();
 	}
-
-	// 启动隐藏动画
-	if ((get_v_scroll_bar()->get_modulate() != Color(0, 0, 0, 0) || get_h_scroll_bar()->get_modulate() != Color(0, 0, 0, 0))) {
 		scrollbar_hide_tween = create_tween();
 		scrollbar_hide_tween->set_parallel(true);
 		scrollbar_hide_tween->tween_property(get_v_scroll_bar(), NodePath("modulate"), Color(0, 0, 0, 0), time);

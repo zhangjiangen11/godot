@@ -82,17 +82,17 @@ private:
 	bool v_scrollbar_dragging = false;
 	bool content_dragging = false;
 	bool content_dragging_moved = false;
-	Timer *scrollbar_hide_timer;
+	Timer *scrollbar_hide_timer = nullptr;
 	Ref<Tween> scrollbar_show_tween;
 	Ref<Tween> scrollbar_hide_tween;
 	Ref<Tween> scroll_x_to_tween;
 	Ref<Tween> scroll_y_to_tween;
 	// drag_temp_data: [0]x相对移动, [1]y相对移动, [2]初始x, [3]初始y, [4]左距, [5]右距, [6]上距, [7]下距
-	LocalVector<float> drag_temp_data = { 8, 0.0f };
+	double drag_temp_data[8] = {0};
 	bool is_in_deadzone = false;
 	bool mouse_on_scrollbar = false;
 	bool is_scrolling = false;
-	ScrollType last_scroll_type = ScrollType::WHEEL;
+	ScrollType last_scroll_type = WHEEL;
 	Ref<Gradient> debug_gradient;
 	// 滚动死区（默认10像素，与GDScript隐含逻辑一致）
 	const float scroll_deadzone = 10.0f;
@@ -143,6 +143,7 @@ private:
 	bool is_outside_bottom_boundary(float y_pos = -1.0f);
 	bool is_outside_left_boundary(float x_pos = -1.0f);
 	bool is_outside_right_boundary(float x_pos = -1.0f);
+	bool has_active_scroll_tween();
 
 	// 滚动条动画函数
 	void show_scrollbars(float time = -1.0f);

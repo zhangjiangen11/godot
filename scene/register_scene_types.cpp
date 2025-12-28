@@ -92,6 +92,7 @@
 #include "scene/gui/texture_button.h"
 #include "scene/gui/texture_progress_bar.h"
 #include "scene/gui/texture_rect.h"
+#include "scene/gui/smooth_scroll_container.h"
 #include "scene/gui/tree.h"
 #include "scene/gui/video_stream_player.h"
 #include "scene/main/canvas_item.h"
@@ -494,6 +495,12 @@ void register_scene_types() {
 
 	OS::get_singleton()->yield(); // may take time to init
 
+
+	//GDREGISTER_ABSTRACT_CLASS(ScrollDamper);
+	//GDREGISTER_CLASS(LinearScrollDamper);
+	//GDREGISTER_CLASS(ExpoScrollDamper);
+	//GDREGISTER_CLASS(CubicScrollDamper);
+
 	GDREGISTER_CLASS(Container);
 	GDREGISTER_CLASS(TextureRect);
 	GDREGISTER_CLASS(ColorRect);
@@ -512,6 +519,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(GridContainer);
 	GDREGISTER_CLASS(CenterContainer);
 	GDREGISTER_CLASS(ScrollContainer);
+	//GDREGISTER_CLASS(SmoothScrollContainer);
 	GDREGISTER_CLASS(PanelContainer);
 	GDREGISTER_CLASS(FlowContainer);
 	GDREGISTER_CLASS(HFlowContainer);

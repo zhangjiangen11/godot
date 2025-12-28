@@ -2258,7 +2258,9 @@ void CodeEdit::update_inline_hints(const HashMap<int, TypedArray<Dictionary>> &p
 		int line_index = line - 1;
 		inline_hints.erase(line);
 		inline_hint_line_cache.erase(line_index);
-		invalidate_line_cache(line_index, false);
+		if (line_index >= 0 && line_index < get_line_count()) {
+			invalidate_line_cache(line_index, false);
+		}
 	}
 }
 

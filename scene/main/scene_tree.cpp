@@ -768,7 +768,9 @@ bool SceneTree::process(double p_time) {
 	}
 #endif // _3D_DISABLED
 #endif // TOOLS_ENABLED
-
+	if (MessageManager::get_singleton()) {
+		MessageManager::get_singleton()->process();
+	}
 	// Second pass of scene tree fixed timestep interpolation.
 	// ToDo: Possibly needs another flush_transform_notifications here
 	// depending on whether there are side effects to _call_idle_callbacks().
