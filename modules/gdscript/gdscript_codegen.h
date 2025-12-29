@@ -36,6 +36,8 @@
 #include "core/string/string_name.h"
 #include "core/variant/variant.h"
 
+#define GDScriptCodeGenerator _ID_789DFJJY9076A
+
 class GDScriptCodeGenerator {
 public:
 	struct Address {

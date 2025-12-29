@@ -37,8 +37,15 @@
 #include "core/templates/hash_map.h"
 #include "core/templates/hash_set.h"
 
-class GDScriptAnalyzer;
-class GDScriptParser;
+class _ID12FA4590XEAV;
+class _ID3HJSl4578A76FFG;//
+#ifndef GDScriptParser
+#define GDScriptParser _ID3HJSl4578A76FFG
+#endif
+
+#ifndef GDScriptAnalyzer
+#define GDScriptAnalyzer _ID12FA4590XEAV
+#endif
 
 class GDScriptParserRef : public RefCounted {
 	GDSOFTCLASS(GDScriptParserRef, RefCounted);

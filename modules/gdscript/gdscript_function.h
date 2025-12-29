@@ -42,6 +42,25 @@
 
 class GDScriptInstance;
 class GDScript;
+#ifndef GDScriptFunction
+#define GDScriptFunction _ID678DDB4872
+#endif
+
+#ifndef GDScriptCompiler
+#define GDScriptCompiler _ID_DCFA470XEAV
+#endif
+
+#ifndef GDScriptDataType
+#define GDScriptDataType _ID6GHEB4872AC
+#endif
+
+#ifndef GDScriptByteCodeGenerator
+#define GDScriptByteCodeGenerator _ID34HH7893AAVC
+#endif
+
+#ifndef GDScriptFunctionState
+#define GDScriptFunctionState _ID34UH7893LM2
+#endif
 
 class GDScriptDataType {
 public:

@@ -34,6 +34,8 @@
 #include "core/templates/list.h"
 #include "core/templates/vector.h"
 #include "core/variant/variant.h"
+#define GDScriptTokenizer _ID_7893AXS76A
+#define GDScriptTokenizerText _ID_34I93AXS76A
 
 class GDScriptTokenizer {
 public:

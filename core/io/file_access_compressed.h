@@ -32,6 +32,9 @@
 
 #include "core/io/compression.h"
 #include "core/io/file_access.h"
+#ifndef FileAccessCompressed
+#define FileAccessCompressed _ID489MN2HJ459GA
+#endif
 
 class FileAccessCompressed : public FileAccess {
 	GDSOFTCLASS(FileAccessCompressed, FileAccess);

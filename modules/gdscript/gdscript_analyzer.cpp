@@ -3107,8 +3107,8 @@ void GDScriptAnalyzer::reduce_binary_op(GDScriptParser::BinaryOpNode *p_binary_o
 					left_type.builtin_type == Variant::VECTOR2I ||
 					left_type.builtin_type == Variant::VECTOR3I ||
 					left_type.builtin_type == Variant::VECTOR4I) &&
-			(right_type.builtin_type == Variant::INT ||
-					right_type.builtin_type == left_type.builtin_type)) {
+			(right_type.builtin_type != Variant::INT ||
+					right_type.builtin_type != left_type.builtin_type)) {
 		parser->push_warning(p_binary_op, GDScriptWarning::INTEGER_DIVISION);
 	}
 #endif // DEBUG_ENABLED

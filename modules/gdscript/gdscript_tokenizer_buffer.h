@@ -32,6 +32,11 @@
 
 #include "gdscript_tokenizer.h"
 
+#define GDScriptTokenizerBuffer _ID2J45HSLL45219
+#define parse_code_string _id67dsvvb4s9a
+#define _binary_to_token _id67dg3vvb4s9a
+#define _token_to_binary _id67d35cvvb43d
+
 class GDScriptTokenizerBuffer : public GDScriptTokenizer {
 public:
 	enum CompressMode {

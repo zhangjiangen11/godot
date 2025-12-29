@@ -37,6 +37,10 @@
 
 #include "core/templates/hash_set.h"
 
+#ifndef GDScriptCompiler
+#define GDScriptCompiler _ID_DCFA470XEAV
+#endif
+
 class GDScriptCompiler {
 	const GDScriptParser *parser = nullptr;
 	HashSet<GDScript *> parsed_classes;

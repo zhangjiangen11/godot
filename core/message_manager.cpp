@@ -21,6 +21,10 @@ MessageManager::~MessageManager() {
 }
 
 void MessageManager::emit(const StringName &p_message, Array p_args) {
+	if (!Thread::is_main_thread()) {
+		ERR_PRINT("only call man thread,MessageManager::emit");
+		return;
+	}
 	List<Callable> *callables = messages.getptr(p_message);
 	if (callables == nullptr) {
 		return;
@@ -47,7 +51,10 @@ void MessageManager::emit(const StringName &p_message, Array p_args) {
 	}
 }
 void MessageManager::emit_deferred(const StringName &p_message, Array p_args) {
-	deferred_messages_list.push_back(Pair<StringName, Array>(p_message, p_args));
+	DeferredMessage msg;
+	msg.message = p_message;
+	msg.args = p_args;
+	deferred_messages_list.push(msg);
 }
 
 void MessageManager::emit_enum(int64_t p_message, Array p_args) {
@@ -77,27 +84,27 @@ void MessageManager::emit_enum(int64_t p_message, Array p_args) {
 	}
 }
 void MessageManager::emit_enum_deferred(int64_t p_message, Array p_args) {
-	deferred_enum_messages_list.push_back(Pair<int64_t, Array>(p_message, p_args));
+	DeferredMessage msg;
+	msg.id = p_message;
+	msg.args = p_args;
+	msg.is_enum = true;
+	deferred_messages_list.push(msg);
 }
 void MessageManager::process(int p_max_count) {
-	List<Pair<StringName, Array>>::Iterator it = deferred_messages_list.begin();
-	List<Pair<int64_t, Array>>::Iterator enum_it = deferred_enum_messages_list.begin();
-
 	bool processing = true;
+	DeferredMessage msg;
 	while (true) {
-		processing = false;
-		if (it != deferred_messages_list.end()) {
-			emit(it->first, it->second);
-			processing = true;
+		processing = deferred_messages_list.pop(msg);
+		if (processing) {
+			if (msg.is_enum) {
+				emit_enum(msg.id, msg.args);
+			} else {
+				emit(msg.message, msg.args);
+			}
 			p_max_count--;
 		}
 		if (p_max_count <= 0) {
 			break;
-		}
-		if (enum_it != deferred_enum_messages_list.end()) {
-			emit_enum(enum_it->first, enum_it->second);
-			p_max_count--;
-			processing = true;
 		}
 		if (p_max_count <= 0 || processing == false) {
 			break;
@@ -105,6 +112,10 @@ void MessageManager::process(int p_max_count) {
 	}
 }
 void MessageManager::register_message(const StringName &p_message, const Callable &p_callable) {
+	if (!Thread::is_main_thread()) {
+		ERR_PRINT("only call man thread,MessageManager::register_message");
+		return;
+	}
 	List<Callable> *callables = messages.getptr(p_message);
 	if (callables == nullptr) {
 		callables = memnew(List<Callable>);
@@ -117,6 +128,11 @@ void MessageManager::register_message(const StringName &p_message, const Callabl
 	}
 }
 void MessageManager::unregister_message(const StringName &p_message, const Callable &p_callable) {
+	if (!Thread::is_main_thread()) {
+		ERR_PRINT("only call man thread");
+		ERR_PRINT("only call man thread,MessageManager::unregister_message");
+		return;
+	}
 	List<Callable> *callables = messages.getptr(p_message);
 	if (callables == nullptr) {
 		return;

@@ -31,7 +31,37 @@
 #pragma once
 
 #include "core/object/ref_counted.h"
+#ifndef CryptoCore
+#define CryptoCore _IDLO8A76F128CM
+#endif
 
+#ifndef MD5Context
+#define MD5Context _IDLO8AN3290AMR
+#endif
+
+#ifndef RandomGenerator
+#define RandomGenerator _IDLLCNAOIPW3
+#endif
+
+#ifndef SHA1Context
+#define SHA1Context _IDLO8LK78NW34
+#endif
+
+#ifndef SHA256Context
+#define SHA256Context _IDPL903876HNA1
+#endif
+
+#ifndef AESContext
+#define AESContext _IDAMC9034J8A10LX
+#endif
+
+#ifndef set_encode_key
+#define set_encode_key _idanc673091ndf
+#endif
+
+#ifndef set_decode_key
+#define set_decode_key _idanc67309109
+#endif
 class CryptoCore {
 public:
 	class RandomGenerator {

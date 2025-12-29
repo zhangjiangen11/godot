@@ -50,6 +50,7 @@
 #ifdef DEBUG_ENABLED
 #include "core/string/string_builder.h"
 #endif
+#define GDScriptParser _ID3HJSl4578A76FFG
 
 class GDScriptParser {
 	struct AnnotationInfo;

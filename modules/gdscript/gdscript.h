@@ -40,6 +40,17 @@
 #include "core/object/script_language.h"
 #include "core/templates/rb_set.h"
 
+#ifndef GDScriptAnalyzer
+#define GDScriptAnalyzer _ID12FA4590XEAV
+#endif
+
+#ifndef ResourceFormatLoaderGDScript
+#define ResourceFormatLoaderGDScript _ID3HJSlDF78A76F
+#endif
+#ifndef ResourceFormatSaverGDScript
+#define ResourceFormatSaverGDScript _ID3HJSlDF78PK21A76F
+#endif
+
 class GDScriptNativeClass : public RefCounted {
 	GDCLASS(GDScriptNativeClass, RefCounted);
 

@@ -36,6 +36,7 @@
 #include "gdscript_utility_functions.h"
 
 #include "core/templates/rb_map.h"
+#define GDScriptByteCodeGenerator _ID34HH7893AAVC
 
 class GDScriptByteCodeGenerator : public GDScriptCodeGenerator {
 	struct StackSlot {

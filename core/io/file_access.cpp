@@ -80,6 +80,10 @@ Ref<FileAccess> FileAccess::create_for_path(const String &p_path) {
 
 	return ret;
 }
+String FileAccess::_fix_path(const String &p_path) {
+	Ref<FileAccess> f = create_for_path(p_path);
+	return f->fix_path(p_path);
+}
 
 Ref<FileAccess> FileAccess::create_temp(int p_mode_flags, const String &p_prefix, const String &p_extension, bool p_keep, Error *r_error) {
 	const String ERROR_COMMON_PREFIX = "Error while creating temporary file";
@@ -1108,6 +1112,7 @@ void FileAccess::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("close"), &FileAccess::close);
 
+	ClassDB::bind_static_method("FileAccess", D_METHOD("fix_path", "path"), &FileAccess::_fix_path);
 	ClassDB::bind_static_method("FileAccess", D_METHOD("file_exists", "path"), &FileAccess::exists);
 	ClassDB::bind_static_method("FileAccess", D_METHOD("get_modified_time", "file"), &FileAccess::get_modified_time);
 	ClassDB::bind_static_method("FileAccess", D_METHOD("get_access_time", "file"), &FileAccess::get_access_time);

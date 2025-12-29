@@ -33,7 +33,7 @@
 #include "core/crypto/crypto_core.h"
 #include "core/io/file_access.h"
 
-#define ENCRYPTED_HEADER_MAGIC 0x43454447
+#define ENCRYPTED_HEADER_MAGIC 0x73434427
 #define FileAccessEncrypted _ID_CFDDBBEAFA5
 #define open_and_parse_password _id_acbb87c1f67
 #define open_and_parse _id_f6734a2fck

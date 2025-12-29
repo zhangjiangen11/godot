@@ -35,6 +35,9 @@
 
 #include "core/object/object.h"
 #include "core/object/ref_counted.h"
+#ifndef GDScriptAnalyzer
+#define GDScriptAnalyzer _ID12FA4590XEAV
+#endif
 
 class GDScriptAnalyzer {
 	GDScriptParser *parser = nullptr;
