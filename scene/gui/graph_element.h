@@ -96,4 +96,5 @@ public:
 	}
 
 	virtual void on_selected(bool p_selected) {}
+	GDVIRTUAL1(_on_selected, bool)
 };

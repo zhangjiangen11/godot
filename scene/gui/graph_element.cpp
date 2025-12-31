@@ -119,6 +119,7 @@ void GraphElement::set_selected(bool p_selected) {
 	}
 	selected = p_selected;
 	on_selected(p_selected);
+	GDVIRTUAL_CALL(_on_selected, p_selected);
 	emit_signal(p_selected ? SNAME("node_selected") : SNAME("node_deselected"));
 	queue_redraw();
 }
@@ -260,4 +261,6 @@ void GraphElement::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("position_offset_changed"));
 
 	BIND_THEME_ITEM(Theme::DATA_TYPE_ICON, GraphElement, resizer);
+
+	GDVIRTUAL_BIND(_on_selected, "is_select");
 }

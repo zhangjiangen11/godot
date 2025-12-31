@@ -487,7 +487,7 @@ struct GDScriptUtilityFunctionsDefinitions {
 		*r_ret = "";
 	}
 
-	static inline void select(Variant *r_ret, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
+	static inline void val_select(Variant *r_ret, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) {
 		DEBUG_VALIDATE_ARG_COUNT(3, 3);
 		bool value = false;
 
@@ -689,7 +689,7 @@ void GDScriptUtilityFunctions::register_functions() {
 	REGISTER_FUNC( convert,        true,  RETVAR,             ARGS( ARGVAR("what"), ARGTYPE("type") ), false, varray(     ));
 #endif // DISABLE_DEPRECATED
 	REGISTER_FUNC( type_exists,    true,  RET(BOOL),          ARGS( ARG("type", STRING_NAME)        ), false, varray(     ));
-	REGISTER_FUNC( select,         true,  RETVAR,             ARGS( ARGVAR("v"), ARGVAR("a"), ARGVAR("b")), false, varray(     ));
+	REGISTER_FUNC( val_select,         true,  RETVAR,             ARGS( ARGVAR("v"), ARGVAR("a"), ARGVAR("b")), false, varray(     ));
 	REGISTER_FUNC( _char,          true,  RET(STRING),        ARGS( ARG("code", INT)                ), false, varray(     ));
 	REGISTER_FUNC( ord,            true,  RET(INT),           ARGS( ARG("char", STRING)             ), false, varray(     ));
 	REGISTER_FUNC( range,          false, RET(ARRAY),         NOARGS,                                  true,  varray(     ));
