@@ -50,6 +50,15 @@
 #ifndef ResourceFormatSaverGDScript
 #define ResourceFormatSaverGDScript _ID3HJSlDF78PK21A76F
 #endif
+#ifndef GDScriptInstance
+#define GDScriptInstance _IDO78HJSF78B789
+#endif
+#ifndef GDScriptNativeClass
+#define GDScriptNativeClass _IDLK90N8HD87OQ
+#endif
+#ifndef GDScriptLanguage
+#define GDScriptLanguage _ID290HI109CNQ00
+#endif
 
 class GDScriptNativeClass : public RefCounted {
 	GDCLASS(GDScriptNativeClass, RefCounted);

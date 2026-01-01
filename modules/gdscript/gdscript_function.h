@@ -40,8 +40,6 @@
 #include "core/templates/self_list.h"
 #include "core/variant/variant.h"
 
-class GDScriptInstance;
-class GDScript;
 #ifndef GDScriptFunction
 #define GDScriptFunction _ID678DDB4872
 #endif
@@ -61,7 +59,15 @@ class GDScript;
 #ifndef GDScriptFunctionState
 #define GDScriptFunctionState _ID34UH7893LM2
 #endif
+#ifndef GDScriptLanguage
+#define GDScriptLanguage _ID290HI109CNQ00
+#endif
+#ifndef GDScriptInstance
+#define GDScriptInstance _IDO78HJSF78B789
+#endif
 
+class GDScript;
+class GDScriptInstance;
 class GDScriptDataType {
 public:
 	Vector<GDScriptDataType> container_element_types;

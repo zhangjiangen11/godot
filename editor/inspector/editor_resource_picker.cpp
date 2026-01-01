@@ -93,8 +93,13 @@ void EditorResourcePicker::_update_resource() {
 
 		assign_button->set_custom_minimum_size(assign_button_min_size);
 		if (edited_resource == Ref<RefCounted>()) {
-			assign_button->set_button_icon(Ref<Texture2D>());
-			assign_button->set_text(String("(") + base_type + "):" + TTR("<empty>"));
+			String t = base_type;
+			if (t.is_empty()) {
+				t = "Resource";
+			}
+			Ref<Texture2D> icon = EditorNode::get_singleton()->get_class_icon(t);
+			assign_button->set_button_icon(icon);
+			assign_button->set_text(String("(") + t + "):" + TTR("<empty>"));
 			assign_button->set_tooltip_text("");
 			make_unique_button->set_disabled(true);
 			make_unique_button->set_visible(false);
@@ -104,7 +109,7 @@ void EditorResourcePicker::_update_resource() {
 			bool unique_recursive_enabled = _is_uniqueness_enabled(true);
 			bool is_internal = EditorNode::get_singleton()->is_resource_internal_to_scene(edited_resource);
 			int num_of_copies = EditorNode::get_singleton()->get_resource_count(edited_resource);
-			make_unique_button->set_button_icon(get_editor_theme_icon(SNAME("Instance")));
+			make_unique_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(resource.operator->()));
 			make_unique_button->set_visible((num_of_copies > 1 || !is_internal) && !Object::cast_to<Script>(edited_resource.ptr()));
 			make_unique_button->set_disabled((!unique_enable && !unique_recursive_enabled) || !editable);
 
@@ -166,7 +171,7 @@ void EditorResourcePicker::_update_resource() {
 			// Preview will override the above, so called at the end.
 			EditorResourcePreview::get_singleton()->queue_edited_resource_preview(resource, callable_mp(this, &EditorResourcePicker::_update_resource_preview).bind(resource->get_instance_id()));
 		} else {
-			make_unique_button->set_button_icon(get_editor_theme_icon(SNAME("Instance")));
+			make_unique_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
 			make_unique_button->set_visible(false);
 			make_unique_button->set_disabled(true);
 
@@ -181,10 +186,15 @@ void EditorResourcePicker::_update_resource() {
 
 			make_unique_button->set_tooltip_text(tooltip);
 			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
-			if (edited_resource->has_method("get_name")) {
-				assign_button->set_text(edited_resource->call("get_name"));
+			bool is_name = false;
+			StringName n = edited_resource->get("name",&is_name);
+			if (is_name) {
+				if (n.is_empty()) {
+					assign_button->set_text(class_name + "(Instance)");
+				}
+				assign_button->set_text(n);
 			} else {
-				assign_button->set_text(edited_resource->get_class());
+				assign_button->set_text(class_name);
 			}
 		}
 
