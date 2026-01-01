@@ -85,7 +85,7 @@ String FileAccess::_fix_path(const String &p_path) {
 	return f->fix_path(p_path);
 }
 
-Ref<FileAccess> FileAccess::create_temp(int p_mode_flags, const String &p_prefix, const String &p_extension, bool p_keep, Error *r_error) {
+Ref<FileAccess> FileAccess::create_temp(ModeFlags p_mode_flags, const String &p_prefix, const String &p_extension, bool p_keep, Error *r_error) {
 	const String ERROR_COMMON_PREFIX = "Error while creating temporary file";
 
 	if (!p_prefix.is_empty() && !p_prefix.is_valid_filename()) {
@@ -142,7 +142,7 @@ Ref<FileAccess> FileAccess::create_temp(int p_mode_flags, const String &p_prefix
 	return ret;
 }
 
-Ref<FileAccess> FileAccess::_create_temp(int p_mode_flags, const String &p_prefix, const String &p_extension, bool p_keep) {
+Ref<FileAccess> FileAccess::_create_temp(ModeFlags p_mode_flags, const String &p_prefix, const String &p_extension, bool p_keep) {
 	return create_temp(p_mode_flags, p_prefix, p_extension, p_keep, &last_file_open_error);
 }
 
