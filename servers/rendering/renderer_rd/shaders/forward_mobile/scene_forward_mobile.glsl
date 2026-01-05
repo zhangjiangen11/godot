@@ -1565,8 +1565,8 @@ void main() {
 	hvec3 ambient_light = hvec3(0.0);
 
 #ifndef MODE_UNSHADED
-	// Used in regular draw pass and when drawing SDFs for SDFGI and materials for VoxelGI.
-	emission *= half(scene_data.emissive_exposure_normalization);
+	// Used in regular draw pass and when drawing SDFs for HDDAGI and materials for VoxelGI.
+	emission *= scene_data.emissive_exposure_normalization;
 #endif
 
 #if !defined(MODE_RENDER_DEPTH) && !defined(MODE_UNSHADED)
