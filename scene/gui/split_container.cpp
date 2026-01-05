@@ -311,7 +311,14 @@ void ResetParentOffsetDragger::gui_input(const Ref<InputEvent> &p_event) {
 void ResetParentOffsetDragger::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_DRAW: {
-			draw_rect(Rect2(Vector2(0, 0), get_size()), dragging ? Color(1, 1, 0, 0.3) : Color(1, 0, 0, 0.3));
+			RID ci = get_canvas_item();
+			if (dragging && theme_cache.dragger_style.is_valid()) {
+				theme_cache.dragger_style->draw(ci, Rect2(Point2(), get_size()));
+			} else if (theme_cache.panel_style.is_valid()) {
+				theme_cache.panel_style->draw(ci, Rect2(Point2(), get_size()));
+			} else {
+				draw_rect(Rect2(Vector2(0, 0), get_size()), dragging ? Color(1, 1, 0, 0.3) : Color(1, 0, 0, 0.3));
+			}
 		} break;
 	}
 }
@@ -358,6 +365,9 @@ void ResetParentOffsetDragger::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "dragger_dir", PROPERTY_HINT_ENUM, "Left,Top,Right,Bottom"), "set_dragger_dir", "get_dragger_dir");
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "parent_name"), "set_parent_name", "get_parent_name");
+
+	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, ResetParentOffsetDragger, panel_style, "panel");
+	BIND_THEME_ITEM_CUSTOM(Theme::DATA_TYPE_STYLEBOX, ResetParentOffsetDragger, dragger_style, "dragger");
 }
 PackedStringArray ResetParentOffsetDragger::get_configuration_warnings() const {
 	PackedStringArray warnings = Node::get_configuration_warnings();

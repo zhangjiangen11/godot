@@ -187,12 +187,13 @@ void EditorResourcePicker::_update_resource() {
 			make_unique_button->set_tooltip_text(tooltip);
 			assign_button->set_button_icon(EditorNode::get_singleton()->get_object_icon(edited_resource.operator->()));
 			bool is_name = false;
-			StringName n = edited_resource->get("name",&is_name);
+			StringName n = edited_resource->get("name", &is_name);
 			if (is_name) {
 				if (n.is_empty()) {
 					assign_button->set_text(class_name + "(Instance)");
+				} else {
+					assign_button->set_text(n);
 				}
-				assign_button->set_text(n);
 			} else {
 				assign_button->set_text(class_name);
 			}

@@ -715,17 +715,11 @@ void ShaderMaterialInstance::set_base_material(const Ref<Material> &p_base) {
 		b = new_base;
 	}
 	if (base.is_valid()) {
-		base->disconnect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
-#ifdef TOOLS_ENABLED
-		base->disconnect("changed_base_local", callable_mp(this, &ShaderMaterialInstance::on_changed_base_local));
-#endif
+		base->disconnect(CoreStringName(changed), callable_mp(this, &ShaderMaterialInstance::_base_changed));
 	}
 	base = new_base;
 	if (base.is_valid()) {
-		base->connect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
-#ifdef TOOLS_ENABLED
-		base->connect("changed_base_local", callable_mp(this, &ShaderMaterialInstance::on_changed_base_local));
-#endif
+		base->connect(CoreStringName(changed), callable_mp(this, &ShaderMaterialInstance::_base_changed));
 		if (_get_material().is_valid()) {
 			RID shader_rid = get_shader_rid();
 
@@ -808,7 +802,7 @@ void ShaderMaterialInstance::on_changed_base_local(const Ref<Material> &p_old_ba
 
 ShaderMaterialInstance::~ShaderMaterialInstance() {
 	if (base.is_valid()) {
-		base->disconnect_changed(callable_mp(this, &ShaderMaterialInstance::_base_changed));
+		base->disconnect(CoreStringName(changed), callable_mp(this, &ShaderMaterialInstance::_base_changed));
 	}
 }
 

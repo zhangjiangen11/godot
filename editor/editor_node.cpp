@@ -3063,7 +3063,7 @@ void EditorNode::_edit_current(bool p_skip_foreign, bool p_skip_inspector_update
 
 	String editable_info; // None by default.
 	bool info_is_warning = false;
-	EditorPlugin* main_plugin = nullptr;
+
 	if (current_obj->has_method("_is_read_only")) {
 		if (current_obj->call("_is_read_only")) {
 			editable_info = TTR("This object is marked as read-only, so it's not editable.");
@@ -3135,7 +3135,6 @@ void EditorNode::_edit_current(bool p_skip_foreign, bool p_skip_inspector_update
 				info_is_warning = true;
 			}
 		}
-		main_plugin = editor_data.get_handling_main_editor(current_obj);
 	} else {
 		Node *selected_node = nullptr;
 
@@ -3189,9 +3188,7 @@ void EditorNode::_edit_current(bool p_skip_foreign, bool p_skip_inspector_update
 	// Take care of the main editor plugin.
 
 	if (!inspector_only) {
-		if (!main_plugin) {
-			main_plugin = editor_data.get_handling_main_editor(current_obj);
-		}
+		EditorPlugin *main_plugin = editor_data.get_handling_main_editor(current_obj);
 
 		int plugin_index = editor_main_screen->get_plugin_index(main_plugin);
 		if (main_plugin && plugin_index >= 0 && !editor_main_screen->is_button_enabled(plugin_index)) {
@@ -7604,7 +7601,7 @@ void EditorNode::_resource_saved(const Ref<Resource> &p_resource, const String &
 	singleton->editor_folding.save_resource_folding(p_resource, p_path);
 }
 
-void EditorNode::_resource_loaded(const Ref<Resource>& p_resource, const String &p_path) {
+void EditorNode::_resource_loaded(const Ref<Resource> &p_resource, const String &p_path) {
 	singleton->editor_folding.load_resource_folding(p_resource, p_path);
 }
 

@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "scene/gui/container.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/container.h"
 
 class TextureRect;
 
@@ -72,21 +72,27 @@ public:
 };
 // 拖拽父节点的偏移量信息,父节点必须是描点模式
 class ResetParentOffsetDragger : public Control {
-
 	GDCLASS(ResetParentOffsetDragger, Control);
 	static void _bind_methods();
+
 protected:
 	void _notification(int p_what);
 	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+
 private:
+	struct ThemeCache {
+		Ref<StyleBox> panel_style;
+		Ref<StyleBox> dragger_style;
+	} theme_cache;
 	bool dragging = false;
 	int drag_from = 0;
 	int drag_ofs = 0;
 	bool mouse_inside = false;
 	Side dragger_dir = SIDE_LEFT;
 	String parent_name;
-	Control* get_parent_control() const;
+	Control *get_parent_control() const;
 	PackedStringArray get_configuration_warnings() const override;
+
 public:
 	void set_dragger_dir(Side p_dir) {
 		dragger_dir = p_dir;
