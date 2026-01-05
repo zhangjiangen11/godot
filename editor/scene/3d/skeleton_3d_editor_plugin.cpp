@@ -1326,6 +1326,7 @@ void Skeleton3DEditor::_node_removed(Node *p_node) {
 }
 
 void Skeleton3DEditor::_disconnect_from_skeleton() {
+	Skeleton3D* skeleton = get_skeleton();
 	if (!skeleton) {
 		return;
 	}
@@ -1619,12 +1620,12 @@ void Skeleton3DEditor::_bone_enabled_changed(const int p_bone_id) {
 }
 
 void Skeleton3DEditor::_update_gizmo_visible() {
+	Skeleton3D* skeleton = get_skeleton();
 	if (!skeleton) {
 		return;
 	}
 
 	_subgizmo_selection_change();
-	Skeleton3D *skeleton = get_skeleton();
 	if (skeleton == nullptr) {
 		return;
 	}
