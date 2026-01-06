@@ -140,6 +140,7 @@ public:
 	String get_base_type() const;
 	Vector<String> get_allowed_types() const;
 
+	bool is_resource_allowed(const Ref<RefCounted> &p_resource);
 	void set_edited_resource(Ref<RefCounted> p_resource);
 	void set_edited_resource_no_check(Ref<RefCounted> p_resource);
 	Ref<RefCounted> get_edited_resource();

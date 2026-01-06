@@ -1513,11 +1513,13 @@ void SceneImportSettingsDialog::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_THEME_CHANGED: {
-			batch_menu->begin_bulk_theme_override();
-			batch_menu->add_theme_style_override(CoreStringName(normal), get_theme_stylebox(CoreStringName(normal), "Button"));
-			batch_menu->add_theme_style_override(SceneStringName(hover), get_theme_stylebox(SceneStringName(hover), "Button"));
-			batch_menu->add_theme_style_override(SceneStringName(pressed), get_theme_stylebox(SceneStringName(pressed), "Button"));
-			batch_menu->end_bulk_theme_override();
+			if (batch_menu) {
+				batch_menu->begin_bulk_theme_override();
+				batch_menu->add_theme_style_override(CoreStringName(normal), get_theme_stylebox(CoreStringName(normal), "Button"));
+				batch_menu->add_theme_style_override(SceneStringName(hover), get_theme_stylebox(SceneStringName(hover), "Button"));
+				batch_menu->add_theme_style_override(SceneStringName(pressed), get_theme_stylebox(SceneStringName(pressed), "Button"));
+				batch_menu->end_bulk_theme_override();
+			}
 
 			if (animation_player != nullptr && animation_player->is_playing()) {
 				animation_play_button->set_button_icon(get_editor_theme_icon(SNAME("Pause")));

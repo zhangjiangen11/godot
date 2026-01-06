@@ -1280,6 +1280,13 @@ void EditorResourcePicker::set_edited_resource(Ref<RefCounted> p_resource) {
 		_update_resource();
 		return;
 	}
+	edited_resource = p_resource;
+	_update_resource();
+}
+bool EditorResourcePicker::is_resource_allowed(const Ref<RefCounted> &p_resource) {
+	if (p_resource.is_null()) {
+		return true;
+	}
 
 	if (!base_type.is_empty()) {
 		_ensure_allowed_types();
@@ -1293,11 +1300,10 @@ void EditorResourcePicker::set_edited_resource(Ref<RefCounted> p_resource) {
 		}
 
 		if (!is_custom && !_is_type_valid(p_resource->get_class(), allowed_types)) {
-			String class_str = (custom_class == StringName() ? p_resource->get_class() : vformat("%s (%s)", custom_class, p_resource->get_class()));
-			ERR_FAIL_MSG(vformat("Failed to set a resource of the type '%s' because this EditorResourcePicker only accepts '%s' and its derivatives.", class_str, base_type));
+			return false;
 		}
 	}
-	set_edited_resource_no_check(p_resource);
+	return true;
 }
 
 void EditorResourcePicker::set_edited_resource_no_check(Ref<RefCounted> p_resource) {
