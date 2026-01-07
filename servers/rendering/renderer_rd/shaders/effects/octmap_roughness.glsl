@@ -30,13 +30,8 @@ void main() {
 			float roughness2 = params.roughness * params.roughness;
 			float roughness4 = roughness2 * roughness2;
 
-			// https://jcgt.org/published/0006/01/01/
-			float side = N.z >= 0.0f ? 1.0f : -1.0f;
-			float a = -1.0f / (side + N.z);
-			float b = N.x * N.y * a;
-			mat3 T;
-			T[0] = vec3(1.0f + side * N.x * N.x * a, side * b, -side * N.x);
-			T[1] = vec3(b, side + N.y * N.y * a, -N.y);
+			T[0] = normalize(cross(UpVector, N));
+			T[1] = cross(N, T[0]);
 			T[2] = N;
 
 			for (uint sampleNum = 0u; sampleNum < params.sample_count; sampleNum++) {
