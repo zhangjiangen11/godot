@@ -832,7 +832,7 @@ void ResourceWeakReferences::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_weak_resource"), &ResourceWeakReferences::get_weak_resource);
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "weak_resource_path", PROPERTY_HINT_FILE), "set_weak_resource_path", "get_weak_resource_path");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "weak_resource", PROPERTY_HINT_RESOURCE_TYPE, "PackedScene", PROPERTY_USAGE_EDITOR), "set_weak_resource", "get_weak_resource");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "weak_resource", PROPERTY_HINT_RESOURCE_TYPE, "Resource", PROPERTY_USAGE_EDITOR), "set_weak_resource", "get_weak_resource");
 }
 void ResourceWeakReferences::set_weak_resource_path(const String &p_resource_path) {
 	weak_resource_path = p_resource_path;
@@ -871,7 +871,7 @@ Ref<Resource> ResourceWeakReferences::get_weak_resource() {
 	return weak_resource;
 }
 ResourceWeakReferences::ResourceWeakReferences() {
-	weak_resource_type = StringName("PackedScene");
+	weak_resource_type = StringName("Resource");
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 

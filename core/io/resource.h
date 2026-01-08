@@ -204,8 +204,8 @@ public:
 	Resource();
 	~Resource();
 };
-class ResourceWeakReferences : public Resource {
-	GDCLASS(ResourceWeakReferences, Resource);
+class ResourceWeakReferences : public RefCounted {
+	GDCLASS(ResourceWeakReferences, RefCounted);
 	static void _bind_methods();
 
 	StringName weak_resource_path;
@@ -221,6 +221,7 @@ public:
 
 	void set_weak_resource(const Ref<Resource> &p_resource);
 	Ref<Resource> get_weak_resource();
+	void clear_cache() { weak_resource = Ref<Resource>(); }
 	ResourceWeakReferences();
 };
 

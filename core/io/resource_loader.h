@@ -197,7 +197,7 @@ private:
 		bool use_sub_threads : 1;
 
 		struct ResourceChangedConnection {
-			Resource *source = nullptr;
+			Ref<Resource> source = nullptr;
 			Callable callable;
 			uint32_t flags = 0;
 		};

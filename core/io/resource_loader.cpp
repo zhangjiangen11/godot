@@ -984,7 +984,7 @@ Ref<Resource> ResourceLoader::_load_complete_inner(LoadToken &p_load_token, Erro
 				if (!load_task_ptr->resource_changed_connections.is_empty()) {
 					for (const ThreadLoadTask::ResourceChangedConnection &rcc : load_task_ptr->resource_changed_connections) {
 						if (rcc.callable.is_valid()) {
-							MessageQueue::get_main_singleton()->push_callable(callable_mp(rcc.source, &Resource::connect_changed).bind(rcc.callable, rcc.flags));
+							MessageQueue::get_main_singleton()->push_callable(callable_mp(rcc.source.ptr(), &Resource::connect_changed).bind(rcc.callable, rcc.flags));
 						}
 					}
 					// 大傻逼写的代码,真几把恶心
