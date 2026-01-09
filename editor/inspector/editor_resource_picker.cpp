@@ -291,7 +291,7 @@ void EditorResourcePicker::_update_resource_preview(const String &p_path, const 
 				assign_button->set_custom_minimum_size(assign_button_min_size.max(Size2(1, thumbnail_size)));
 			}
 			preview_rect->set_texture(ResourceLoader::load(p_preview));
-			assign_button->set_text("");
+			//assign_button->set_text("");
 
 			if (preview_rect->get_size().x <= thumbnail_size) {
 				assign_button->set_button_icon(Ref<Texture2D>());
@@ -1589,6 +1589,7 @@ EditorResourcePicker::EditorResourcePicker(bool p_hide_assign_button_controls) {
 	assign_button->set_accessibility_name(TTRC("Assign Resource"));
 	assign_button->set_expand_icon(true);
 	assign_button->set_clip_text(true);
+	assign_button->set_text_alignment(HORIZONTAL_ALIGNMENT_LEFT);
 	assign_button->set_theme_type_variation(SNAME("EditorInspectorButton"));
 	assign_button->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	SET_DRAG_FORWARDING_GCD(assign_button, EditorResourcePicker);
