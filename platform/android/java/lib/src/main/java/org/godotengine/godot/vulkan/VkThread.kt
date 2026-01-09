@@ -33,8 +33,7 @@ package org.godotengine.godot.vulkan
 
 import android.os.Build
 import android.util.Log
-import java.io.BufferedReader
-import java.io.FileReader
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -143,10 +142,34 @@ internal class VkThread(private val vkSurfaceView: VkSurfaceView, private val vk
 				try {
 					Log.i(TAG, "Waiting on exit for $name")
 					lockCondition.await()
-				} catch (ex: InterruptedException) {
+				} catch (_: InterruptedException) {
 					currentThread().interrupt()
 				}
 			}
+		}
+	}
+
+	/**
+	 * Request the thread to exit and block up to the given [timeInMs] until it's done.
+	 *
+	 * @return true if the thread exited, false otherwise.
+	 */
+	fun requestExitAndWait(timeInMs: Long): Boolean {
+		lock.withLock {
+			shouldExit = true
+			lockCondition.signalAll()
+
+			var remainingTimeInNanos = TimeUnit.MILLISECONDS.toNanos(timeInMs)
+			while (!exited && remainingTimeInNanos > 0) {
+				try {
+					Log.i(TAG, "Waiting on exit for $name for $remainingTimeInNanos")
+					remainingTimeInNanos = lockCondition.awaitNanos(remainingTimeInNanos)
+				} catch (_: InterruptedException) {
+					currentThread().interrupt()
+				}
+			}
+
+			return exited
 		}
 	}
 
