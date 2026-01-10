@@ -35,11 +35,17 @@
 class JoltConcavePolygonShape3D final : public JoltShape3D {
 	AABB aabb;
 	PackedVector3Array faces;
+	PackedByteArray byte_buffer;
+	Mutex byte_buffer_mutex;
 	bool back_face_collision = false;
+	bool using_byte_buffer = false;
+
+	bool is_need_rebuld = true;
 
 	virtual JPH::ShapeRefC _build() const override;
 
 	AABB _calculate_aabb() const;
+	void _update_byte_buffer();
 
 public:
 	virtual ShapeType get_type() const override { return ShapeType::SHAPE_CONCAVE_POLYGON; }

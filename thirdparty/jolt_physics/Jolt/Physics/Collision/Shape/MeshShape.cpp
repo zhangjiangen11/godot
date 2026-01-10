@@ -111,6 +111,12 @@ ShapeSettings::ShapeResult MeshShapeSettings::Create() const {
 	}
 	return mCachedResult;
 }
+ShapeSettings::ShapeResult MeshShapeSettings::CreateByBinaryState(StreamIn &inStream) {
+	if (mCachedResult.IsEmpty()) {
+		Ref<Shape> shape = new MeshShape(*this, mCachedResult, inStream);
+	}
+	return mCachedResult;
+}
 
 MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult) :
 		Shape(EShapeType::Mesh, EShapeSubType::Mesh, inSettings, outResult) {
@@ -221,6 +227,15 @@ MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult
 		return;
 	}
 	AABBTreeBuilder::Return(&builder);
+
+	outResult.Set(this);
+}
+
+MeshShape::MeshShape(const MeshShapeSettings &inSettings, ShapeResult &outResult, StreamIn &inStream) :
+		Shape(EShapeType::Mesh, EShapeSubType::Mesh, inSettings, outResult) {
+	RestoreBinaryState(inStream);
+	// Copy materials
+	mMaterials = inSettings.mMaterials;
 
 	outResult.Set(this);
 }

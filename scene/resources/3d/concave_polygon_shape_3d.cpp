@@ -88,22 +88,50 @@ real_t ConcavePolygonShape3D::get_enclosing_radius() const {
 }
 
 void ConcavePolygonShape3D::_update_shape() {
-	Dictionary d;
-	d["faces"] = faces;
-	d["backface_collision"] = backface_collision;
-	PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
+	if (is_form_physics_data()) {
+		if (!physics_data.has("faces")) {
+			physics_data["faces"] = faces;
+		}
+		if (!physics_data.has("backface_collision")) {
+			physics_data["backface_collision"] = backface_collision;
+		}
+		PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), physics_data);
+	} else {
+		Dictionary d;
+		d["faces"] = faces;
+		d["backface_collision"] = backface_collision;
+		PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
+	}
 
 	Shape3D::_update_shape();
 }
 
 void ConcavePolygonShape3D::set_faces(const Vector<Vector3> &p_faces) {
 	faces = p_faces;
-	_update_shape();
-	emit_changed();
+	if (!is_form_physics_data()) {
+		_update_shape();
+		emit_changed();
+	}
 }
 
 Vector<Vector3> ConcavePolygonShape3D::get_faces() const {
 	return faces;
+}
+void ConcavePolygonShape3D::set_physics_data(const Dictionary &pdata) {
+	physics_data = pdata;
+	if (!physics_data.has("faces")) {
+		physics_data["faces"] = faces;
+	}
+	if (!physics_data.has("backface_collision")) {
+		physics_data["backface_collision"] = backface_collision;
+	}
+	if (is_form_physics_data()) {
+		_update_shape();
+		emit_changed();
+	}
+}
+const Dictionary &ConcavePolygonShape3D::get_physics_data() {
+	return physics_data;
 }
 
 void ConcavePolygonShape3D::set_backface_collision_enabled(bool p_enabled) {
@@ -120,14 +148,22 @@ bool ConcavePolygonShape3D::is_backface_collision_enabled() const {
 }
 
 void ConcavePolygonShape3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_form_physics_data", "p_form_data"), &ConcavePolygonShape3D::set_form_physics_data);
+	ClassDB::bind_method(D_METHOD("is_form_physics_data"), &ConcavePolygonShape3D::is_form_physics_data);
+
 	ClassDB::bind_method(D_METHOD("set_faces", "faces"), &ConcavePolygonShape3D::set_faces);
 	ClassDB::bind_method(D_METHOD("get_faces"), &ConcavePolygonShape3D::get_faces);
 
 	ClassDB::bind_method(D_METHOD("set_backface_collision_enabled", "enabled"), &ConcavePolygonShape3D::set_backface_collision_enabled);
 	ClassDB::bind_method(D_METHOD("is_backface_collision_enabled"), &ConcavePolygonShape3D::is_backface_collision_enabled);
 
+	ClassDB::bind_method(D_METHOD("set_physics_data", "data"), &ConcavePolygonShape3D::set_physics_data);
+	ClassDB::bind_method(D_METHOD("get_physics_data"), &ConcavePolygonShape3D::get_physics_data);
+
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "form_physics_data"), "set_form_physics_data", "is_form_physics_data");
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR3_ARRAY, "data", PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NO_EDITOR | PROPERTY_USAGE_INTERNAL), "set_faces", "get_faces");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "backface_collision"), "set_backface_collision_enabled", "is_backface_collision_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "physics_data"), "set_physics_data", "get_physics_data");
 }
 
 ConcavePolygonShape3D::ConcavePolygonShape3D() :

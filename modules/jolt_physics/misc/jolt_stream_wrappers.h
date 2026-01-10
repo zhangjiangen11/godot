@@ -75,4 +75,43 @@ public:
 	}
 };
 
+class JoltByteBufferOutputWrapper final : public JPH::StreamOut {
+public:
+	Vector<uint8_t> *file_access = nullptr;
+	explicit JoltByteBufferOutputWrapper(Vector<uint8_t> *p_file_access) :
+			file_access(p_file_access) {}
+
+	virtual void WriteBytes(const void *p_data, size_t p_bytes) override {
+		uint64_t last_size = file_access->size();
+		file_access->resize(last_size + p_bytes);
+		memcpy(file_access->ptrw() + last_size, p_data, p_bytes);
+	}
+
+	virtual bool IsFailed() const override {
+		return false;
+	}
+};
+
+class JoltByteBufferInputWrapper final : public JPH::StreamIn {
+public:
+	const Vector<uint8_t> *file_access = nullptr;
+	uint64_t position = 0;
+	explicit JoltByteBufferInputWrapper(const Vector<uint8_t> *p_file_access) :
+			file_access(p_file_access) {}
+
+	virtual void ReadBytes(void *p_data, size_t p_bytes) override {
+		ERR_FAIL_COND(position + p_bytes > file_access->size());
+		memcpy(p_data, file_access->ptr() + position, p_bytes);
+		position += p_bytes;
+	}
+
+	virtual bool IsEOF() const override {
+		return position >= file_access->size();
+	}
+
+	virtual bool IsFailed() const override {
+		return false;
+	}
+};
+
 #endif

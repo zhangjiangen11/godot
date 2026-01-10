@@ -38,7 +38,9 @@ class ConcavePolygonShape3D : public Shape3D {
 	GDCLASS(ConcavePolygonShape3D, Shape3D);
 
 	Vector<Vector3> faces;
+	Dictionary physics_data;
 	bool backface_collision = false;
+	bool is_physics_data = false;
 
 	struct DrawEdge {
 		Vector3 a;
@@ -68,6 +70,15 @@ protected:
 public:
 	void set_faces(const Vector<Vector3> &p_faces);
 	Vector<Vector3> get_faces() const;
+	void set_physics_data(const Dictionary &pdata);
+	const Dictionary &get_physics_data();
+
+	void set_form_physics_data(bool p_form_data) {
+		is_physics_data = p_form_data;
+	}
+	bool is_form_physics_data() {
+		return is_physics_data;
+	}
 
 	void set_backface_collision_enabled(bool p_enabled);
 	bool is_backface_collision_enabled() const;

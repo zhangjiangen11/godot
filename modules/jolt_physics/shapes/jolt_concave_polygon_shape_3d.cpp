@@ -31,11 +31,19 @@
 #include "jolt_concave_polygon_shape_3d.h"
 
 #include "../jolt_project_settings.h"
+#include "../misc/jolt_stream_wrappers.h"
 #include "../misc/jolt_type_conversions.h"
 
 #include "Jolt/Physics/Collision/Shape/MeshShape.h"
 
 JPH::ShapeRefC JoltConcavePolygonShape3D::_build() const {
+	if (using_byte_buffer) {
+		JPH::TriangleList jolt_faces;
+		JPH::MeshShapeSettings shape_settings(jolt_faces);
+		JoltByteBufferInputWrapper wrapper(&byte_buffer);
+		const JPH::ShapeSettings::ShapeResult shape_result = shape_settings.CreateByBinaryState(wrapper);
+		return JoltShape3D::with_double_sided(shape_result.Get(), back_face_collision);
+	}
 	const int vertex_count = (int)faces.size();
 	const int face_count = vertex_count / 3;
 	const int excess_vertex_count = vertex_count % 3;
@@ -93,11 +101,39 @@ AABB JoltConcavePolygonShape3D::_calculate_aabb() const {
 
 	return result;
 }
+void JoltConcavePolygonShape3D::_update_byte_buffer() {
+	if (!is_need_rebuld) {
+		return;
+	}
+	is_need_rebuld = false;
+	using_byte_buffer = false;
+	if (faces.size() == 0) {
+		return;
+	}
+	byte_buffer_mutex.lock();
+	JPH::ShapeRefC shape = try_build();
+	if (shape) {
+		using_byte_buffer = true;
+		JoltByteBufferOutputWrapper wrapper(&byte_buffer);
+		shape->SaveBinaryState(wrapper);
+	} else {
+		using_byte_buffer = false;
+	}
+	byte_buffer_mutex.unlock();
+}
 
 Variant JoltConcavePolygonShape3D::get_data() const {
 	Dictionary data;
 	data["faces"] = faces;
 	data["backface_collision"] = back_face_collision;
+	JoltConcavePolygonShape3D* self = (JoltConcavePolygonShape3D*)this;
+	self->_update_byte_buffer();
+	if (using_byte_buffer) {
+		data["aabb"] = aabb;
+		data["byte_buffer"] = byte_buffer;
+	}
+	data["using_byte_buffer"] = using_byte_buffer;
+
 	return data;
 }
 
@@ -111,11 +147,20 @@ void JoltConcavePolygonShape3D::set_data(const Variant &p_data) {
 
 	const Variant maybe_back_face_collision = data.get("backface_collision", Variant());
 	ERR_FAIL_COND(maybe_back_face_collision.get_type() != Variant::BOOL);
-
+	using_byte_buffer = data.get("using_byte_buffer", false);
 	faces = maybe_faces;
 	back_face_collision = maybe_back_face_collision;
 
-	aabb = _calculate_aabb();
+	if (using_byte_buffer) {
+		byte_buffer_mutex.lock();
+		byte_buffer = data.get("byte_buffer", PackedByteArray());
+		aabb = data.get("aabb", AABB());
+		byte_buffer_mutex.unlock();
+		is_need_rebuld = false;
+	} else {
+		aabb = _calculate_aabb();
+		is_need_rebuld = true;
+	}
 
 	destroy();
 }
