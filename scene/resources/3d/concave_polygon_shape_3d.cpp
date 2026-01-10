@@ -100,7 +100,16 @@ void ConcavePolygonShape3D::_update_shape() {
 		Dictionary d;
 		d["faces"] = faces;
 		d["backface_collision"] = backface_collision;
+#if TOOLS_ENABLED
+		if (Engine::get_singleton()->is_editor_hint()) {
+			// 編輯器模式下,更新物理数据
+			physics_data = PhysicsServer3D::get_singleton()->edit_build_shape(get_shape(), d);
+		} else {
+			PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
+		}
+#else
 		PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
+#endif
 	}
 
 	Shape3D::_update_shape();

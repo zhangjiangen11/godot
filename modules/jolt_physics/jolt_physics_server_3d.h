@@ -138,6 +138,7 @@ public:
 
 	virtual void shape_set_data(RID p_shape, const Variant &p_data) override;
 	virtual Variant shape_get_data(RID p_shape) const override;
+	virtual Dictionary edit_build_shape(RID p_shape, const Variant &p_data) override;
 
 	virtual void shape_set_custom_solver_bias(RID p_shape, real_t p_bias) override;
 

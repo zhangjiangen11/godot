@@ -53,7 +53,7 @@
 #define MAIN_THREAD_SYNC_WARN
 #endif
 #endif
-
+// 大傻逼寫的物理引擎,根本做不到多綫程,就是個蠢逼
 class PhysicsServer3DWrapMT : public PhysicsServer3D {
 	GDSOFTCLASS(PhysicsServer3DWrapMT, PhysicsServer3D);
 
@@ -102,6 +102,11 @@ public:
 	FUNC1RC(ShapeType, shape_get_type, RID);
 	FUNC1RC(Variant, shape_get_data, RID);
 	FUNC1RC(real_t, shape_get_custom_solver_bias, RID);
+
+	virtual Dictionary edit_build_shape(RID p_shape, const Variant &p_data) {
+		server_name->shape_set_data(p_shape, p_data);
+		return server_name->shape_get_data(p_shape);
+	}
 #if 0
 	//these work well, but should be used from the main thread only
 	bool shape_collide(RID p_shape_A, const Transform &p_xform_A, const Vector3 &p_motion_A, RID p_shape_B, const Transform &p_xform_B, const Vector3 &p_motion_B, Vector3 *r_results, int p_result_max, int &r_result_count) {

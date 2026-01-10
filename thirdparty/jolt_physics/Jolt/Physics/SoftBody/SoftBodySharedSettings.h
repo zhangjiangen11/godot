@@ -1,6 +1,6 @@
-// Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
-// SPDX-FileCopyrightText: 2023 Jorrit Rouwe
-// SPDX-License-Identifier: MIT
+// Jolt Physics 物理引擎库 (https://github.com/jrouwe/JoltPhysics)
+// 版权声明文本：2023 Jorrit Rouwe
+// 开源协议：MIT
 
 #pragma once
 
@@ -10,98 +10,99 @@
 
 JPH_NAMESPACE_BEGIN
 
-/// This class defines the setup of all particles and their constraints.
-/// It is used during the simulation and can be shared between multiple soft bodies.
+/// 此类定义了所有粒子及其约束的配置。
+/// 该类在模拟过程中使用，可在多个软体之间共享。
 class JPH_EXPORT SoftBodySharedSettings : public RefTarget<SoftBodySharedSettings>
 {
 	JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, SoftBodySharedSettings)
 
 public:
-	/// Which type of bend constraint should be created
+	/// 要创建的弯曲约束类型
 	enum class EBendType
 	{
-		None,														///< No bend constraints will be created
-		Distance,													///< A simple distance constraint
-		Dihedral,													///< A dihedral bend constraint (most expensive, but also supports triangles that are initially not in the same plane)
+		None,														///< 不创建任何弯曲约束
+		Distance,													///< 简单的距离约束（用于弯曲限制）
+		Dihedral,													///< 二面角弯曲约束（计算开销最大，但支持初始不在同一平面的三角形）
 	};
 
-	/// The type of long range attachment constraint to create
+	/// 要创建的长距离附着约束（LRA）类型
 	enum class ELRAType
 	{
-		None,														///< Don't create a LRA constraint
-		EuclideanDistance,											///< Create a LRA constraint based on Euclidean distance between the closest kinematic vertex and this vertex
-		GeodesicDistance,											///< Create a LRA constraint based on the geodesic distance between the closest kinematic vertex and this vertex (follows the edge constraints)
+		None,														///< 不创建LRA约束
+		EuclideanDistance,											///< 基于「最近运动学顶点与当前顶点的欧几里得距离」创建LRA约束
+		GeodesicDistance,											///< 基于「最近运动学顶点与当前顶点的测地距离」创建LRA约束（沿边约束路径计算）
 	};
 
-	/// Per vertex attributes used during the CreateConstraints function.
-	/// For an edge or shear constraint, the compliance is averaged between the two attached vertices.
-	/// For a bend constraint, the compliance is averaged between the two vertices on the shared edge.
+	/// CreateConstraints函数执行时使用的每个顶点的属性。
+	/// 对于边约束或剪切约束，柔度（Compliance）会取两个关联顶点的平均值。
+	/// 对于弯曲约束，柔度会取共享边上两个顶点的平均值。
 	struct JPH_EXPORT VertexAttributes
 	{
-		/// Constructor
+		/// 构造函数
 						VertexAttributes() = default;
-						VertexAttributes(float inCompliance, float inShearCompliance, float inBendCompliance, ELRAType inLRAType = ELRAType::None, float inLRAMaxDistanceMultiplier = 1.0f) : mCompliance(inCompliance), mShearCompliance(inShearCompliance), mBendCompliance(inBendCompliance), mLRAType(inLRAType), mLRAMaxDistanceMultiplier(inLRAMaxDistanceMultiplier) { }
+						VertexAttributes(float inCompliance, float inShearCompliance, float inBendCompliance, ELRAType inLRAType = ELRAType::None, float inLRAMaxDistanceMultiplier = 1.0f) 
+							: mCompliance(inCompliance), mShearCompliance(inShearCompliance), mBendCompliance(inBendCompliance), mLRAType(inLRAType), mLRAMaxDistanceMultiplier(inLRAMaxDistanceMultiplier) { }
 
-		float			mCompliance = 0.0f;							///< The compliance of the normal edges. Set to FLT_MAX to disable regular edges for any edge involving this vertex.
-		float			mShearCompliance = 0.0f;					///< The compliance of the shear edges. Set to FLT_MAX to disable shear edges for any edge involving this vertex.
-		float			mBendCompliance = FLT_MAX;					///< The compliance of the bend edges. Set to FLT_MAX to disable bend edges for any bend constraint involving this vertex.
-		ELRAType		mLRAType = ELRAType::None;					///< The type of long range attachment constraint to create.
-		float			mLRAMaxDistanceMultiplier = 1.0f;			///< Multiplier for the max distance of the LRA constraint, e.g. 1.01 means the max distance is 1% longer than the calculated distance in the rest pose.
+		float			mCompliance = 0.0f;							///< 普通边约束的柔度（柔度=刚度的倒数）。设为FLT_MAX可禁用所有涉及该顶点的普通边约束。
+		float			mShearCompliance = 0.0f;					///< 剪切边约束的柔度。设为FLT_MAX可禁用所有涉及该顶点的剪切边约束。
+		float			mBendCompliance = FLT_MAX;					///< 弯曲边约束的柔度。设为FLT_MAX可禁用所有涉及该顶点的弯曲约束。
+		ELRAType		mLRAType = ELRAType::None;					///< 要创建的长距离附着约束（LRA）类型。
+		float			mLRAMaxDistanceMultiplier = 1.0f;			///< LRA约束最大距离的乘数，例如1.01表示最大距离比静息姿态下的计算距离长1%。
 	};
 
-	/// Automatically create constraints based on the faces of the soft body
-	/// @param inVertexAttributes A list of attributes for each vertex (1-on-1 with mVertices, note that if the list is smaller than mVertices the last element will be repeated). This defines the properties of the constraints that are created.
-	/// @param inVertexAttributesLength The length of inVertexAttributes
-	/// @param inBendType The type of bend constraint to create
-	/// @param inAngleTolerance Shear edges are created when two connected triangles form a quad (are roughly in the same plane and form a square with roughly 90 degree angles). This defines the tolerance (in radians).
+	/// 基于软体的面自动创建约束
+	/// @param inVertexAttributes 每个顶点的属性列表（与mVertices一一对应，若列表长度小于mVertices则重复最后一个元素）。该参数定义了要创建的约束的属性。
+	/// @param inVertexAttributesLength inVertexAttributes的长度
+	/// @param inBendType 要创建的弯曲约束类型
+	/// @param inAngleTolerance 当两个相连的三角形构成四边形（大致在同一平面且形成近似90度角的正方形）时，会创建剪切边。该参数定义角度容差（单位：弧度）。
 	void				CreateConstraints(const VertexAttributes *inVertexAttributes, uint inVertexAttributesLength, EBendType inBendType = EBendType::Distance, float inAngleTolerance = DegreesToRadians(8.0f));
 
-	/// Calculate the initial lengths of all springs of the edges of this soft body (if you use CreateConstraint, this is already done)
+	/// 计算该软体所有边弹簧的初始长度（若调用CreateConstraint，此步骤已自动完成）
 	void				CalculateEdgeLengths();
 
-	/// Calculate the properties of the rods
-	/// Note that this can swap mVertex of the RodStretchShear constraints if two rods are connected through a RodBendTwist constraint but point in opposite directions.
+	/// 计算杆（Rod）的属性
+	/// 注意：若两个杆通过RodBendTwist约束连接但指向相反方向，此函数可能会交换RodStretchShear约束的mVertex顺序。
 	void				CalculateRodProperties();
 
-	/// Calculate the max lengths for the long range attachment constraints based on Euclidean distance (if you use CreateConstraints, this is already done)
-	/// @param inMaxDistanceMultiplier Multiplier for the max distance of the LRA constraint, e.g. 1.01 means the max distance is 1% longer than the calculated distance in the rest pose.
+	/// 基于欧几里得距离计算长距离附着约束（LRA）的最大长度（若调用CreateConstraints，此步骤已自动完成）
+	/// @param inMaxDistanceMultiplier LRA约束最大距离的乘数，例如1.01表示最大距离比静息姿态下的计算距离长1%。
 	void				CalculateLRALengths(float inMaxDistanceMultiplier = 1.0f);
 
-	/// Calculate the constants for the bend constraints (if you use CreateConstraints, this is already done)
+	/// 计算弯曲约束的常量（若调用CreateConstraints，此步骤已自动完成）
 	void				CalculateBendConstraintConstants();
 
-	/// Calculates the initial volume of all tetrahedra of this soft body
+	/// 计算该软体所有四面体的初始体积
 	void				CalculateVolumeConstraintVolumes();
 
-	/// Calculate information needed to be able to calculate the skinned constraint normals at run-time
+	/// 计算运行时计算蒙皮约束法线所需的信息
 	void				CalculateSkinnedConstraintNormals();
 
-	/// Information about the optimization of the soft body, the indices of certain elements may have changed.
+	/// 软体优化相关信息（部分元素的索引可能已变更）
 	class OptimizationResults
 	{
 	public:
-		Array<uint>		mEdgeRemap;									///< Maps old edge index to new edge index
-		Array<uint>		mLRARemap;									///< Maps old LRA index to new LRA index
-		Array<uint>		mRodStretchShearConstraintRemap;			///< Maps old rod stretch shear constraint index to new stretch shear rod constraint index
-		Array<uint>		mRodBendTwistConstraintRemap;				///< Maps old rod bend twist constraint index to new bend twist rod constraint index
-		Array<uint>		mDihedralBendRemap;							///< Maps old dihedral bend index to new dihedral bend index
-		Array<uint>		mVolumeRemap;								///< Maps old volume constraint index to new volume constraint index
-		Array<uint>		mSkinnedRemap;								///< Maps old skinned constraint index to new skinned constraint index
+		Array<uint>		mEdgeRemap;									///< 旧边索引到新边索引的映射表
+		Array<uint>		mLRARemap;									///< 旧LRA约束索引到新LRA约束索引的映射表
+		Array<uint>		mRodStretchShearConstraintRemap;			///< 旧杆拉伸-剪切约束索引到新杆拉伸-剪切约束索引的映射表
+		Array<uint>		mRodBendTwistConstraintRemap;				///< 旧杆弯曲-扭转约束索引到新杆弯曲-扭转约束索引的映射表
+		Array<uint>		mDihedralBendRemap;							///< 旧二面角弯曲约束索引到新二面角弯曲约束索引的映射表
+		Array<uint>		mVolumeRemap;								///< 旧体积约束索引到新体积约束索引的映射表
+		Array<uint>		mSkinnedRemap;								///< 旧蒙皮约束索引到新蒙皮约束索引的映射表
 	};
 
-	/// Optimize the soft body settings for simulation. This will reorder constraints so they can be executed in parallel.
+	/// 优化软体配置以适配模拟。该函数会重新排序约束，使其可并行执行。
 	void				Optimize(OptimizationResults &outResults);
 
-	/// Optimize the soft body settings without results
+	/// 无返回结果的软体配置优化
 	void				Optimize()									{ OptimizationResults results; Optimize(results); }
 
-	/// Clone this object
+	/// 克隆当前对象
 	Ref<SoftBodySharedSettings> Clone() const;
 
-	/// Saves the state of this object in binary form to inStream. Doesn't store the material list.
+	/// 将当前对象的状态以二进制形式保存到inStream。不存储材质列表。
 	void				SaveBinaryState(StreamOut &inStream) const;
 
-	/// Restore the state of this object from inStream. Doesn't restore the material list.
+	/// 从inStream恢复当前对象的状态。不恢复材质列表。
 	void				RestoreBinaryState(StreamIn &inStream);
 
 	using SharedSettingsToIDMap = StreamUtils::ObjectToIDMap<SoftBodySharedSettings>;
@@ -109,282 +110,280 @@ public:
 	using MaterialToIDMap = StreamUtils::ObjectToIDMap<PhysicsMaterial>;
 	using IDToMaterialMap = StreamUtils::IDToObjectMap<PhysicsMaterial>;
 
-	/// Save this shared settings and its materials. Pass in an empty map ioSettingsMap / ioMaterialMap or reuse the same map while saving multiple settings objects to the same stream in order to avoid writing duplicates.
+	/// 保存该共享配置及其材质。传入空的ioSettingsMap/ioMaterialMap，或在向同一流保存多个配置对象时复用同一映射表，以避免重复写入。
 	void				SaveWithMaterials(StreamOut &inStream, SharedSettingsToIDMap &ioSettingsMap, MaterialToIDMap &ioMaterialMap) const;
 
 	using SettingsResult = Result<Ref<SoftBodySharedSettings>>;
 
-	/// Restore a shape and materials. Pass in an empty map in ioSettingsMap / ioMaterialMap or reuse the same map while reading multiple settings objects from the same stream in order to restore duplicates.
+	/// 恢复软体配置及材质。传入空的ioSettingsMap/ioMaterialMap，或在从同一流读取多个配置对象时复用同一映射表，以恢复重复的对象。
 	static SettingsResult sRestoreWithMaterials(StreamIn &inStream, IDToSharedSettingsMap &ioSettingsMap, IDToMaterialMap &ioMaterialMap);
 
-	/// Create a cube. This can be used to create a simple soft body for testing purposes.
-	/// It will contain edge constraints, volume constraints and faces.
-	/// @param inGridSize Number of points along each axis
-	/// @param inGridSpacing Distance between points
+	/// 创建立方体软体。可用于创建简单的测试用软体。
+	/// 该立方体包含边约束、体积约束和面。
+	/// @param inGridSize 每个轴向上的点数
+	/// @param inGridSpacing 点之间的间距
 	static Ref<SoftBodySharedSettings> sCreateCube(uint inGridSize, float inGridSpacing);
 
-	/// A vertex is a particle, the data in this structure is only used during creation of the soft body and not during simulation
+	/// 顶点代表一个粒子，该结构体中的数据仅在软体创建阶段使用，模拟阶段不使用
 	struct JPH_EXPORT Vertex
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, Vertex)
 
-		/// Constructor
+		/// 构造函数
 						Vertex() = default;
 						Vertex(const Float3 &inPosition, const Float3 &inVelocity = Float3(0, 0, 0), float inInvMass = 1.0f) : mPosition(inPosition), mVelocity(inVelocity), mInvMass(inInvMass) { }
 
-		Float3			mPosition { 0, 0, 0 };						///< Initial position of the vertex
-		Float3			mVelocity { 0, 0, 0 };						///< Initial velocity of the vertex
-		float			mInvMass = 1.0f;							///< Initial inverse of the mass of the vertex
+		Float3			mPosition { 0, 0, 0 };						///< 顶点的初始位置
+		Float3			mVelocity { 0, 0, 0 };						///< 顶点的初始速度
+		float			mInvMass = 1.0f;							///< 顶点的初始质量的倒数
 	};
 
-	/// A face defines the surface of the body
+	/// 面定义了软体的表面
 	struct JPH_EXPORT Face
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, Face)
 
-		/// Constructor
+		/// 构造函数
 						Face() = default;
 						Face(uint32 inVertex1, uint32 inVertex2, uint32 inVertex3, uint32 inMaterialIndex = 0) : mVertex { inVertex1, inVertex2, inVertex3 }, mMaterialIndex(inMaterialIndex) { }
 
-		/// Check if this is a degenerate face (a face which points to the same vertex twice)
+		/// 检查该面是否为退化面（指向同一顶点两次的面）
 		bool			IsDegenerate() const						{ return mVertex[0] == mVertex[1] || mVertex[0] == mVertex[2] || mVertex[1] == mVertex[2]; }
 
-		uint32			mVertex[3];									///< Indices of the vertices that form the face
-		uint32			mMaterialIndex = 0;							///< Index of the material of the face in SoftBodySharedSettings::mMaterials
+		uint32			mVertex[3];									///< 构成该面的顶点索引
+		uint32			mMaterialIndex = 0;							///< 该面的材质在SoftBodySharedSettings::mMaterials中的索引
 	};
 
-	/// An edge keeps two vertices at a constant distance using a spring: |x1 - x2| = rest length
+	/// 边约束通过弹簧保持两个顶点的距离恒定：|x1 - x2| = 静息长度
 	struct JPH_EXPORT Edge
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, Edge)
 
-		/// Constructor
+		/// 构造函数
 						Edge() = default;
 						Edge(uint32 inVertex1, uint32 inVertex2, float inCompliance = 0.0f) : mVertex { inVertex1, inVertex2 }, mCompliance(inCompliance) { }
 
-		/// Return the lowest vertex index of this constraint
+		/// 返回该约束的最小顶点索引
 		uint32			GetMinVertexIndex() const					{ return min(mVertex[0], mVertex[1]); }
 
-		uint32			mVertex[2];									///< Indices of the vertices that form the edge
-		float			mRestLength = 1.0f;							///< Rest length of the spring, calculated by CalculateEdgeLengths
-		float			mCompliance = 0.0f;							///< Inverse of the stiffness of the spring
+		uint32			mVertex[2];									///< 构成该边的顶点索引
+		float			mRestLength = 1.0f;							///< 弹簧的静息长度，由CalculateEdgeLengths计算
+		float			mCompliance = 0.0f;							///< 弹簧刚度的倒数（柔度）
 	};
 
 	/**
-	 * A dihedral bend constraint keeps the angle between two triangles constant along their shared edge.
+	 * 二面角弯曲约束用于保持两个三角形沿其共享边的夹角恒定。
 	 *
 	 *        x2
 	 *       /  \
 	 *      / t0 \
-	 *     x0----x1
+	 *     x0----x1  （共享边：x0-x1）
 	 *      \ t1 /
 	 *       \  /
 	 *        x3
 	 *
-	 * x0..x3 are the vertices, t0 and t1 are the triangles that share the edge x0..x1
+	 * x0..x3为顶点，t0和t1为共享边x0..x1的两个三角形
 	 *
-	 * Based on:
-	 * - "Position Based Dynamics" - Matthias Muller et al.
-	 * - "Strain Based Dynamics" - Matthias Muller et al.
-	 * - "Simulation of Clothing with Folds and Wrinkles" - R. Bridson et al.
+	 * 实现基于：
+	 * - 《Position Based Dynamics》 - Matthias Muller 等人
+	 * - 《Strain Based Dynamics》 - Matthias Muller 等人
+	 * - 《Simulation of Clothing with Folds and Wrinkles》 - R. Bridson 等人
 	 */
 	struct JPH_EXPORT DihedralBend
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, DihedralBend)
 
-		/// Constructor
+		/// 构造函数
 						DihedralBend() = default;
 						DihedralBend(uint32 inVertex1, uint32 inVertex2, uint32 inVertex3, uint32 inVertex4, float inCompliance = 0.0f) : mVertex { inVertex1, inVertex2, inVertex3, inVertex4 }, mCompliance(inCompliance) { }
 
-		/// Return the lowest vertex index of this constraint
+		/// 返回该约束的最小顶点索引
 		uint32			GetMinVertexIndex() const					{ return min(min(mVertex[0], mVertex[1]), min(mVertex[2], mVertex[3])); }
 
-		uint32			mVertex[4];									///< Indices of the vertices of the 2 triangles that share an edge (the first 2 vertices are the shared edge)
-		float			mCompliance = 0.0f;							///< Inverse of the stiffness of the constraint
-		float			mInitialAngle = 0.0f;						///< Initial angle between the normals of the triangles (pi - dihedral angle), calculated by CalculateBendConstraintConstants
+		uint32			mVertex[4];									///< 共享一条边的两个三角形的顶点索引（前两个顶点为共享边）
+		float			mCompliance = 0.0f;							///< 约束刚度的倒数（柔度）
+		float			mInitialAngle = 0.0f;						///< 三角形法向量之间的初始夹角（π - 二面角），由CalculateBendConstraintConstants计算
 	};
 
-	/// Volume constraint, keeps the volume of a tetrahedron constant
+	/// 体积约束，保持四面体的体积恒定
 	struct JPH_EXPORT Volume
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, Volume)
 
-		/// Constructor
+		/// 构造函数
 						Volume() = default;
 						Volume(uint32 inVertex1, uint32 inVertex2, uint32 inVertex3, uint32 inVertex4, float inCompliance = 0.0f) : mVertex { inVertex1, inVertex2, inVertex3, inVertex4 }, mCompliance(inCompliance) { }
 
-		/// Return the lowest vertex index of this constraint
+		/// 返回该约束的最小顶点索引
 		uint32			GetMinVertexIndex() const					{ return min(min(mVertex[0], mVertex[1]), min(mVertex[2], mVertex[3])); }
 
-		uint32			mVertex[4];									///< Indices of the vertices that form the tetrahedron
-		float			mSixRestVolume = 1.0f;						///< 6 times the rest volume of the tetrahedron, calculated by CalculateVolumeConstraintVolumes
-		float			mCompliance = 0.0f;							///< Inverse of the stiffness of the constraint
+		uint32			mVertex[4];									///< 构成四面体的顶点索引
+		float			mSixRestVolume = 1.0f;						///< 四面体静息体积的6倍，由CalculateVolumeConstraintVolumes计算
+		float			mCompliance = 0.0f;							///< 约束刚度的倒数（柔度）
 	};
 
-	/// An inverse bind matrix take a skinned vertex from its bind pose into joint local space
+	/// 逆绑定矩阵：将蒙皮顶点从绑定姿态转换到关节局部空间
 	class JPH_EXPORT InvBind
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, InvBind)
 
 	public:
-		/// Constructor
+		/// 构造函数
 						InvBind() = default;
 						InvBind(uint32 inJointIndex, Mat44Arg inInvBind) : mJointIndex(inJointIndex), mInvBind(inInvBind) { }
 
-		uint32			mJointIndex = 0;							///< Joint index to which this is attached
-		Mat44			mInvBind = Mat44::sIdentity();				///< The inverse bind matrix, this takes a vertex in its bind pose (Vertex::mPosition) to joint local space
+		uint32			mJointIndex = 0;							///< 该逆绑定矩阵关联的关节索引
+		Mat44			mInvBind = Mat44::sIdentity();				///< 逆绑定矩阵，将绑定姿态下的顶点（Vertex::mPosition）转换到关节局部空间
 	};
 
-	/// A joint and its skin weight
+	/// 关节及其蒙皮权重
 	class JPH_EXPORT SkinWeight
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, SkinWeight)
 
 	public:
-		/// Constructor
+		/// 构造函数
 						SkinWeight() = default;
 						SkinWeight(uint32 inInvBindIndex, float inWeight) : mInvBindIndex(inInvBindIndex), mWeight(inWeight) { }
 
-		uint32			mInvBindIndex = 0;							///< Index in mInvBindMatrices
-		float			mWeight = 0.0f;								///< Weight with which it is skinned
+		uint32			mInvBindIndex = 0;							///< mInvBindMatrices中的索引
+		float			mWeight = 0.0f;								///< 蒙皮权重值
 	};
 
-	/// A constraint that skins a vertex to joints and limits the distance that the simulated vertex can travel from this vertex
+	/// 蒙皮约束：将顶点绑定到多个关节，并限制模拟顶点与蒙皮顶点的最大距离
 	class JPH_EXPORT Skinned
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, Skinned)
 
 	public:
-		/// Constructor
+		/// 构造函数
 						Skinned() = default;
 						Skinned(uint32 inVertex, float inMaxDistance, float inBackStopDistance, float inBackStopRadius) : mVertex(inVertex), mMaxDistance(inMaxDistance), mBackStopDistance(inBackStopDistance), mBackStopRadius(inBackStopRadius) { }
 
-		/// Normalize the weights so that they add up to 1
+		/// 归一化权重，使权重总和为1
 		void			NormalizeWeights()
 		{
-			// Get the total weight
+			// 计算总权重
 			float total = 0.0f;
 			for (const SkinWeight &w : mWeights)
 				total += w.mWeight;
 
-			// Normalize
+			// 归一化
 			if (total > 0.0f)
 				for (SkinWeight &w : mWeights)
 					w.mWeight /= total;
 		}
 
-		/// Maximum number of skin weights
+		/// 最大蒙皮权重数量
 		static constexpr uint cMaxSkinWeights = 4;
 
-		uint32			mVertex = 0;								///< Index in mVertices which indicates which vertex is being skinned
-		SkinWeight		mWeights[cMaxSkinWeights];					///< Skin weights, the bind pose of the vertex is assumed to be stored in Vertex::mPosition. The first weight that is zero indicates the end of the list. Weights should add up to 1.
-		float			mMaxDistance = FLT_MAX;						///< Maximum distance that this vertex can reach from the skinned vertex, disabled when FLT_MAX. 0 when you want to hard skin the vertex to the skinned vertex.
-		float			mBackStopDistance = FLT_MAX;				///< Disabled if mBackStopDistance >= mMaxDistance. The faces surrounding mVertex determine an average normal. mBackStopDistance behind the vertex in the opposite direction of this normal, the back stop sphere starts. The simulated vertex will be pushed out of this sphere and it can be used to approximate the volume of the skinned mesh behind the skinned vertex.
-		float			mBackStopRadius = 40.0f;					///< Radius of the backstop sphere. By default this is a fairly large radius so the sphere approximates a plane.
-		uint32			mNormalInfo = 0;							///< Information needed to calculate the normal of this vertex, lowest 24 bit is start index in mSkinnedConstraintNormals, highest 8 bit is number of faces (generated by CalculateSkinnedConstraintNormals)
+		uint32			mVertex = 0;								///< mVertices中被蒙皮的顶点索引
+		SkinWeight		mWeights[cMaxSkinWeights];					///< 蒙皮权重列表，顶点的绑定姿态默认存储在Vertex::mPosition中。第一个权重为0的元素表示列表结束。权重总和应等于1。
+		float			mMaxDistance = FLT_MAX;						///< 该顶点与蒙皮顶点的最大距离限制，设为FLT_MAX时禁用。设为0时表示将顶点硬绑定到蒙皮顶点。
+		float			mBackStopDistance = FLT_MAX;				///< 若mBackStopDistance >= mMaxDistance则禁用。mVertex周围的面会计算平均法线，在该法线反方向、顶点后方mBackStopDistance处，会生成一个后挡球（BackStop Sphere）。模拟顶点会被推出该球体，可用于近似蒙皮顶点后方的蒙皮网格体积。
+		float			mBackStopRadius = 40.0f;					///< 后挡球的半径。默认值较大，使球体近似为平面。
+		uint32			mNormalInfo = 0;							///< 计算该顶点法线所需的信息：低24位为mSkinnedConstraintNormals中的起始索引，高8位为面的数量（由CalculateSkinnedConstraintNormals生成）
 	};
 
-	/// A long range attachment constraint, this is a constraint that sets a max distance between a kinematic vertex and a dynamic vertex
-	/// See: "Long Range Attachments - A Method to Simulate Inextensible Clothing in Computer Games", Tae-Yong Kim, Nuttapong Chentanez and Matthias Mueller-Fischer
+	/// 长距离附着约束（LRA）：限制运动学顶点与动态顶点之间的最大距离
+	/// 参考论文：《Long Range Attachments - A Method to Simulate Inextensible Clothing in Computer Games》, Tae-Yong Kim, Nuttapong Chentanez and Matthias Mueller-Fischer
 	class JPH_EXPORT LRA
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, LRA)
 
 	public:
-		/// Constructor
+		/// 构造函数
 						LRA() = default;
 						LRA(uint32 inVertex1, uint32 inVertex2, float inMaxDistance) : mVertex { inVertex1, inVertex2 }, mMaxDistance(inMaxDistance) { }
 
-		/// Return the lowest vertex index of this constraint
+		/// 返回该约束的最小顶点索引
 		uint32			GetMinVertexIndex() const					{ return min(mVertex[0], mVertex[1]); }
 
-		uint32			mVertex[2];									///< The vertices that are connected. The first vertex should be kinematic, the 2nd dynamic.
-		float			mMaxDistance = 0.0f;						///< The maximum distance between the vertices, calculated by CalculateLRALengths
+		uint32			mVertex[2];									///< 相连的两个顶点。第一个顶点应为运动学顶点，第二个为动态顶点。
+		float			mMaxDistance = 0.0f;						///< 顶点间的最大距离，由CalculateLRALengths计算
 	};
 
-	/// A discrete Cosserat rod connects two particles with a rigid rod that has fixed length and inertia.
-	/// A rod can be used instead of an Edge to constraint two vertices. The orientation of the rod can be
-	/// used to orient geometry attached to the rod (e.g. a plant leaf). Note that each rod needs to be constrained
-	/// by at least one RodBendTwist constraint in order to constrain the rotation of the rod. If you don't do
-	/// this then the orientation is likely to rotate around the rod axis with constant velocity.
-	/// Based on "Position and Orientation Based Cosserat Rods" - Kugelstadt and Schoemer - SIGGRAPH 2016
-	/// See: https://www.researchgate.net/publication/325597548_Position_and_Orientation_Based_Cosserat_Rods
+	/// 离散科塞拉特杆（Cosserat Rod）：用刚性杆连接两个粒子，杆具有固定长度和转动惯量。
+	/// 杆可替代Edge约束来限制两个顶点的位置。杆的朝向可用于确定附着在杆上的几何体（如植物叶片）的朝向。
+	/// 注意：每个杆至少需要一个RodBendTwist约束来限制杆的旋转。若不添加该约束，杆的朝向可能会绕杆轴以恒定速度旋转。
+	/// 实现基于：《Position and Orientation Based Cosserat Rods》 - Kugelstadt and Schoemer - SIGGRAPH 2016
+	/// 参考链接：https://www.researchgate.net/publication/325597548_Position_and_Orientation_Based_Cosserat_Rods
 	struct JPH_EXPORT RodStretchShear
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, RodStretchShear)
 
-		/// Constructor
+		/// 构造函数
 						RodStretchShear() = default;
 						RodStretchShear(uint32 inVertex1, uint32 inVertex2, float inCompliance = 0.0f) : mVertex { inVertex1, inVertex2 }, mCompliance(inCompliance) { }
 
-		/// Return the lowest vertex index of this constraint
+		/// 返回该约束的最小顶点索引
 		uint32			GetMinVertexIndex() const					{ return min(mVertex[0], mVertex[1]); }
 
-		uint32			mVertex[2];									///< Indices of the vertices that form the rod
-		float			mLength = 1.0f;								///< Fixed length of the rod, calculated by CalculateRodProperties
-		float			mInvMass = 1.0f;							///< Inverse of the mass of the rod (0 for static rods), calculated by CalculateRodProperties but can be overridden afterwards
-		float			mCompliance = 0.0f;							///< Inverse of the stiffness of the rod
-		Quat			mBishop	= Quat::sZero();					///< The Bishop frame of the rod (the rotation of the rod in its rest pose so that it has zero twist towards adjacent rods), calculated by CalculateRodProperties
+		uint32			mVertex[2];									///< 构成杆的顶点索引
+		float			mLength = 1.0f;								///< 杆的固定长度，由CalculateRodProperties计算
+		float			mInvMass = 1.0f;							///< 杆的质量的倒数（静态杆设为0），由CalculateRodProperties计算，后续可手动覆盖
+		float			mCompliance = 0.0f;							///< 杆刚度的倒数（柔度）
+		Quat			mBishop	= Quat::sZero();					///< 杆的毕晓普坐标系（静息姿态下杆的旋转，使其相对于相邻杆无扭转），由CalculateRodProperties计算
 	};
 
-	/// A constraint that connects two Cosserat rods and limits bend and twist between the rods.
+	/// 杆弯曲-扭转约束：连接两个科塞拉特杆，限制杆之间的弯曲和扭转
 	struct JPH_EXPORT RodBendTwist
 	{
 		JPH_DECLARE_SERIALIZABLE_NON_VIRTUAL(JPH_EXPORT, RodBendTwist)
 
-		/// Constructor
+		/// 构造函数
 						RodBendTwist() = default;
 						RodBendTwist(uint32 inRod1, uint32 inRod2, float inCompliance = 0.0f) : mRod { inRod1, inRod2 }, mCompliance(inCompliance) { }
 
-		uint32			mRod[2];									///< Indices of rods that are constrained (index in mRodStretchShearConstraints)
-		float			mCompliance = 0.0f;							///< Inverse of the stiffness of the rod
-		Quat			mOmega0 = Quat::sZero();					///< The initial rotation between the rods: rod1.mBishop.Conjugated() * rod2.mBishop, calculated by CalculateRodProperties
+		uint32			mRod[2];									///< 被约束的杆的索引（mRodStretchShearConstraints中的索引）
+		float			mCompliance = 0.0f;							///< 杆约束刚度的倒数（柔度）
+		Quat			mOmega0 = Quat::sZero();					///< 杆之间的初始旋转：rod1.mBishop.Conjugated() * rod2.mBishop，由CalculateRodProperties计算
 	};
 
-	/// Add a face to this soft body
+	/// 向软体添加一个面
 	void				AddFace(const Face &inFace)					{ JPH_ASSERT(!inFace.IsDegenerate()); mFaces.push_back(inFace); }
 
-	Array<Vertex>		mVertices;									///< The list of vertices or particles of the body
-	Array<Face>			mFaces;										///< The list of faces of the body
-	Array<Edge>			mEdgeConstraints;							///< The list of edges or springs of the body
-	Array<DihedralBend>	mDihedralBendConstraints;					///< The list of dihedral bend constraints of the body
-	Array<Volume>		mVolumeConstraints;							///< The list of volume constraints of the body that keep the volume of tetrahedra in the soft body constant
-	Array<Skinned>		mSkinnedConstraints;						///< The list of vertices that are constrained to a skinned vertex
-	Array<InvBind>		mInvBindMatrices;							///< The list of inverse bind matrices for skinning vertices
-	Array<LRA>			mLRAConstraints;							///< The list of long range attachment constraints
-	Array<RodStretchShear>	mRodStretchShearConstraints;			///< The list of Cosserat rod constraints that connect two vertices and that limit stretch and shear
-	Array<RodBendTwist>	mRodBendTwistConstraints;					///< The list of Cosserat rod constraints that connect two rods and limit the bend and twist
-	PhysicsMaterialList mMaterials { PhysicsMaterial::sDefault };	///< The materials of the faces of the body, referenced by Face::mMaterialIndex
+	Array<Vertex>		mVertices;									///< 软体的顶点/粒子列表
+	Array<Face>			mFaces;										///< 软体的面列表
+	Array<Edge>			mEdgeConstraints;							///< 软体的边/弹簧约束列表
+	Array<DihedralBend>	mDihedralBendConstraints;					///< 软体的二面角弯曲约束列表
+	Array<Volume>		mVolumeConstraints;							///< 软体的体积约束列表（保持软体中四面体的体积恒定）
+	Array<Skinned>		mSkinnedConstraints;						///< 绑定到蒙皮顶点的约束列表
+	Array<InvBind>		mInvBindMatrices;							///< 顶点蒙皮用的逆绑定矩阵列表
+	Array<LRA>			mLRAConstraints;							///< 长距离附着约束（LRA）列表
+	Array<RodStretchShear>	mRodStretchShearConstraints;			///< 科塞拉特杆拉伸-剪切约束列表（连接两个顶点，限制拉伸和剪切）
+	Array<RodBendTwist>	mRodBendTwistConstraints;					///< 科塞拉特杆弯曲-扭转约束列表（连接两个杆，限制弯曲和扭转）
+	PhysicsMaterialList mMaterials { PhysicsMaterial::sDefault };	///< 软体面的材质列表，由Face::mMaterialIndex引用
 
 private:
 	friend class SoftBodyMotionProperties;
 
-	/// Calculate the closest kinematic vertex array
+	/// 计算最近的运动学顶点数组
 	void				CalculateClosestKinematic();
 
-	/// Tracks the closest kinematic vertex
+	/// 跟踪最近的运动学顶点
 	struct ClosestKinematic
 	{
-		uint32			mVertex = 0xffffffff;						///< Vertex index of closest kinematic vertex
-		uint32			mHops = 0xffffffff;							///< Number of hops to the closest kinematic vertex
-		float			mDistance = FLT_MAX;						///< Distance to the closest kinematic vertex
+		uint32			mVertex = 0xffffffff;						///< 最近运动学顶点的索引
+		uint32			mHops = 0xffffffff;							///< 到最近运动学顶点的跳数
+		float			mDistance = FLT_MAX;						///< 到最近运动学顶点的距离
 	};
 
-	/// Tracks the end indices of the various constraint groups
+	/// 跟踪各约束组的结束索引
 	struct UpdateGroup
 	{
-		uint			mEdgeEndIndex;								///< The end index of the edge constraints in this group
-		uint			mLRAEndIndex;								///< The end index of the LRA constraints in this group
-		uint			mRodStretchShearEndIndex;					///< The end index of the rod stretch shear constraints in this group
-		uint			mRodBendTwistEndIndex;						///< The end index of the rod bend twist constraints in this group
-		uint			mDihedralBendEndIndex;						///< The end index of the dihedral bend constraints in this group
-		uint			mVolumeEndIndex;							///< The end index of the volume constraints in this group
-		uint			mSkinnedEndIndex;							///< The end index of the skinned constraints in this group
+		uint			mEdgeEndIndex;								///< 本组中边约束的结束索引
+		uint			mLRAEndIndex;								///< 本组中LRA约束的结束索引
+		uint			mRodStretchShearEndIndex;					///< 本组中杆拉伸-剪切约束的结束索引
+		uint			mRodBendTwistEndIndex;						///< 本组中杆弯曲-扭转约束的结束索引
+		uint			mDihedralBendEndIndex;						///< 本组中二面角弯曲约束的结束索引
+		uint			mVolumeEndIndex;							///< 本组中体积约束的结束索引
+		uint			mSkinnedEndIndex;							///< 本组中蒙皮约束的结束索引
 	};
 
-	Array<ClosestKinematic> mClosestKinematic;						///< The closest kinematic vertex to each vertex in mVertices
-	Array<UpdateGroup>	mUpdateGroups;								///< The end indices for each group of constraints that can be updated in parallel
-	Array<uint32>		mSkinnedConstraintNormals;					///< A list of indices in the mFaces array used by mSkinnedConstraints, calculated by CalculateSkinnedConstraintNormals
+	Array<ClosestKinematic> mClosestKinematic;						///< mVertices中每个顶点对应的最近运动学顶点
+	Array<UpdateGroup>	mUpdateGroups;								///< 可并行更新的各约束组的结束索引
+	Array<uint32>		mSkinnedConstraintNormals;					///< mSkinnedConstraints使用的mFaces数组索引列表，由CalculateSkinnedConstraintNormals计算
 };
 
 JPH_NAMESPACE_END

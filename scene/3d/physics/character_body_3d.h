@@ -113,11 +113,6 @@ public:
 
 	CharacterBody3D();
 
-	virtual void update_world_transform(const Transform3D & trans)
-	{
-		set_global_transform(trans);
-	}
-
 private:
 	real_t margin = 0.001;
 	MotionMode motion_mode = MOTION_MODE_GROUNDED;
@@ -169,8 +164,8 @@ private:
 	Vector<PhysicsServer3D::MotionResult> motion_results;
 	Vector<Ref<KinematicCollision3D>> slide_colliders;
 
-	void _move_and_slide_floating(const Vector3& motion);
-	void _move_and_slide_grounded(const Vector3& motion, bool p_was_on_floor);
+	void _move_and_slide_floating(const Vector3 &motion);
+	void _move_and_slide_grounded(const Vector3 &motion, bool p_was_on_floor);
 
 	Ref<KinematicCollision3D> _get_slide_collision(int p_bounce);
 	Ref<KinematicCollision3D> _get_last_slide_collision();

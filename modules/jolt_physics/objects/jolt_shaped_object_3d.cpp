@@ -175,7 +175,6 @@ void JoltShapedObject3D::_shapes_committed() {
 
 void JoltShapedObject3D::_space_changing() {
 	JoltObject3D::_space_changing();
-
 	_dequeue_shapes_changed();
 	_dequeue_needs_optimization();
 
@@ -184,6 +183,7 @@ void JoltShapedObject3D::_space_changing() {
 	if (in_space()) {
 		jolt_settings = new JPH::BodyCreationSettings(jolt_body->GetBodyCreationSettings());
 	}
+	commit_shapes(true);
 }
 
 JoltShapedObject3D::JoltShapedObject3D(ObjectType p_object_type) :
