@@ -245,6 +245,10 @@ public:
 	/// @param outRemainder What remains of the sub shape ID after removing the path to the leaf shape (could e.g. refer to a triangle within a MeshShape)
 	/// @return The shape or null if the sub shape ID is invalid
 	virtual const Shape *			GetLeafShape([[maybe_unused]] const SubShapeID &inSubShapeID, SubShapeID &outRemainder) const;
+	
+	
+	/// Access to the decorated inner shape
+	virtual const Shape *					GetInnerShape() const									{ return nullptr; }
 
 	/// Get the material assigned to a particular sub shape ID
 	virtual const PhysicsMaterial *	GetMaterial(const SubShapeID &inSubShapeID) const = 0;

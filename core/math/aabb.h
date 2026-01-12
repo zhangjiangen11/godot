@@ -411,6 +411,10 @@ inline void AABB::expand_to(const Vector3 &p_vector) {
 		ERR_PRINT("AABB size is negative, this is not supported. Use AABB.abs() to get an AABB with a positive size.");
 	}
 #endif
+	if (position.x == 0 && position.y == 0 && position.z == 0 && size.x == 0 && size.y == 0 && size.z == 0) {
+		position = p_vector;
+		return;
+	}
 	Vector3 begin = position;
 	Vector3 end = position + size;
 

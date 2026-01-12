@@ -38,6 +38,8 @@ class Image;
 class HeightMapShape3D : public Shape3D {
 	GDCLASS(HeightMapShape3D, Shape3D);
 
+	Vector3 offset;
+	Vector3 scale = Vector3(1.0,1.0,1.0);
 	int map_width = 2;
 	int map_depth = 2;
 	Vector<real_t> map_data;
@@ -59,7 +61,15 @@ public:
 	real_t get_min_height() const;
 	real_t get_max_height() const;
 
+	void set_offset(Vector3 p_offset);
+	void set_scale(Vector3 p_scale);
+
+	Vector3 get_offset() const;
+	Vector3 get_scale() const;
+
 	void update_map_data_from_image(const Ref<Image> &p_image, real_t p_height_min, real_t p_height_max);
+
+	void update_map_data_from_image_range(const Ref<Image> &p_image, real_t p_height_min, real_t p_height_max, const Rect2i &p_range);
 
 	virtual Vector<Vector3> get_debug_mesh_lines() const override;
 	virtual Ref<ArrayMesh> get_debug_arraymesh_faces(const Color &p_modulate) const override;

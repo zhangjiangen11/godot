@@ -599,6 +599,7 @@ Ref<ConcavePolygonShape3D> Mesh::create_trimesh_shape() const {
 
 	Ref<ConcavePolygonShape3D> shape = memnew(ConcavePolygonShape3D);
 	shape->set_faces(face_points);
+	shape->set_form_physics_data(true);
 	return shape;
 }
 #endif // PHYSICS_3D_DISABLED

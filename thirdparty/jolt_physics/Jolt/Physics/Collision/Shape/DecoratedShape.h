@@ -37,7 +37,7 @@ public:
 									DecoratedShape(EShapeSubType inSubType, const DecoratedShapeSettings &inSettings, ShapeResult &outResult);
 
 	/// Access to the decorated inner shape
-	const Shape *					GetInnerShape() const									{ return mInnerShape; }
+	virtual const Shape *					GetInnerShape() const override					{ return mInnerShape; }
 
 	// See Shape::MustBeStatic
 	virtual bool					MustBeStatic() const override							{ return mInnerShape->MustBeStatic(); }

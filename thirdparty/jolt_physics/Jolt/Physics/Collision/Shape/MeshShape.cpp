@@ -442,6 +442,9 @@ void MeshShape::GetSupportingFace(const SubShapeID &inSubShapeID, Vec3Arg inDire
 
 AABox MeshShape::GetLocalBounds() const {
 	const NodeCodec::Header *header = sGetNodeHeader(mTree);
+	if (header == nullptr) {
+		return AABox();
+	}
 	return AABox(Vec3::sLoadFloat3Unsafe(header->mRootBoundsMin), Vec3::sLoadFloat3Unsafe(header->mRootBoundsMax));
 }
 
@@ -452,6 +455,9 @@ uint MeshShape::GetSubShapeIDBitsRecursive() const {
 template <class Visitor>
 JPH_INLINE void MeshShape::WalkTree(Visitor &ioVisitor) const {
 	const NodeCodec::Header *header = sGetNodeHeader(mTree);
+	if (header == nullptr) {
+		return;
+	}
 	NodeCodec::DecodingContext node_ctx(header);
 
 	const TriangleCodec::DecodingContext triangle_ctx(sGetTriangleHeader(mTree));
