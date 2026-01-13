@@ -210,14 +210,25 @@ void JoltHeightMapShape3D::_update_byte_buffer() {
 	}
 	is_need_rebuld = false;
 	using_byte_buffer = false;
+
+	const int block_size = 2; // Default of JPH::HeightFieldShapeSettings::mBlockSize
+	const int block_count = width / block_size;
+
+	if (block_count < 2) {
+		using_byte_buffer = false;
+		return;
+	}
 	byte_buffer_mutex.lock();
 	JPH::ShapeRefC shape = try_build();
 	if (shape) {
 		JoltByteBufferOutputWrapper wrapper(&byte_buffer);
 		const JPH::Shape *mesh_shape = shape->GetInnerShape();
 		if (mesh_shape != nullptr) {
-			mesh_shape->SaveBinaryState(wrapper);
-			using_byte_buffer = true;
+			mesh_shape = mesh_shape->GetInnerShape();
+			if (mesh_shape) {
+				mesh_shape->SaveBinaryState(wrapper);
+				using_byte_buffer = true;
+			}
 		} else {
 			using_byte_buffer = false;
 		}
@@ -263,6 +274,8 @@ void JoltHeightMapShape3D::set_data(const Variant &p_data) {
 	heights = maybe_heights;
 	width = maybe_width;
 	depth = maybe_depth;
+	byte_buffer.clear();
+	using_byte_buffer = data.get("using_byte_buffer", false);
 
 	is_need_rebuld = true;
 	if (using_byte_buffer) {

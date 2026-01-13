@@ -45,7 +45,8 @@ class HeightMapShape3D : public Shape3D {
 	Vector<real_t> map_data;
 	real_t min_height = 0.0;
 	real_t max_height = 0.0;
-	Dictionary physics_data;
+	Vector<uint8_t> physics_data;
+	AABB aabb;
 	bool is_physics_data = false;
 
 protected:
@@ -69,14 +70,20 @@ public:
 	Vector3 get_offset() const;
 	Vector3 get_scale() const;
 
-	void set_physics_data(const Dictionary &pdata);
-	const Dictionary &get_physics_data();
+	void set_physics_data(const Vector<uint8_t> &pdata);
+	const Vector<uint8_t> &get_physics_data();
 
 	void set_form_physics_data(bool p_form_data) {
 		is_physics_data = p_form_data;
 	}
 	bool is_form_physics_data() {
 		return is_physics_data;
+	}
+	void set_aabb(const AABB &p_aabb) {
+		aabb = p_aabb;
+	}
+	const AABB &get_aabb() {
+		return aabb;
 	}
 
 	void update_map_data_from_image(const Ref<Image> &p_image, real_t p_height_min, real_t p_height_max);

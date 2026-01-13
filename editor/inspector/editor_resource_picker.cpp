@@ -1521,9 +1521,15 @@ bool EditorResourcePicker::_is_uniqueness_enabled(bool p_check_recursive) {
 	if (force_allow_unique) {
 		return true;
 	}
+	Ref<Resource> resource = edited_resource;
+	if (resource.is_null()) {
+		return true;
+	}
 	Ref<Resource> parent_resource = _has_parent_resource();
 	EditorNode *en = EditorNode::get_singleton();
-	bool internal_to_scene = edited_resource->is_built_in();
+	bool internal_to_scene = true; 
+	if (parent_resource.is_valid())
+		parent_resource->is_built_in();
 	List<Node *> node_list = en->get_editor_selection()->get_full_selected_node_list();
 
 	// Todo: Implement a more elegant solution for multiple selected Nodes. This should suffice for the time being.
