@@ -39,12 +39,14 @@ class HeightMapShape3D : public Shape3D {
 	GDCLASS(HeightMapShape3D, Shape3D);
 
 	Vector3 offset;
-	Vector3 scale = Vector3(1.0,1.0,1.0);
+	Vector3 scale = Vector3(1.0, 1.0, 1.0);
 	int map_width = 2;
 	int map_depth = 2;
 	Vector<real_t> map_data;
 	real_t min_height = 0.0;
 	real_t max_height = 0.0;
+	Dictionary physics_data;
+	bool is_physics_data = false;
 
 protected:
 	static void _bind_methods();
@@ -66,6 +68,16 @@ public:
 
 	Vector3 get_offset() const;
 	Vector3 get_scale() const;
+
+	void set_physics_data(const Dictionary &pdata);
+	const Dictionary &get_physics_data();
+
+	void set_form_physics_data(bool p_form_data) {
+		is_physics_data = p_form_data;
+	}
+	bool is_form_physics_data() {
+		return is_physics_data;
+	}
 
 	void update_map_data_from_image(const Ref<Image> &p_image, real_t p_height_min, real_t p_height_max);
 

@@ -54,6 +54,7 @@ public:
 
 	// See: ShapeSettings
 	virtual ShapeResult				Create() const override;
+	ShapeSettings::ShapeResult CreateByBinaryState(StreamIn &inStream);
 
 	/// Determine the minimal and maximal value of mHeightSamples (will ignore cNoCollisionValue)
 	/// @param outMinValue The minimal value of mHeightSamples or FLT_MAX if no samples have collision
@@ -114,6 +115,7 @@ public:
 /// If a query is still working on the old shape, it will have taken a reference and keep the old shape alive until the query finishes.
 class JPH_EXPORT HeightFieldShape final : public Shape
 {
+	friend class HeightFieldShapeSettings;
 public:
 	JPH_OVERRIDE_NEW_DELETE
 

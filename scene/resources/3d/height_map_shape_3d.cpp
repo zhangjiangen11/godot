@@ -147,13 +147,31 @@ real_t HeightMapShape3D::get_enclosing_radius() const {
 }
 
 void HeightMapShape3D::_update_shape() {
-	Dictionary d;
-	d["width"] = map_width;
-	d["depth"] = map_depth;
-	d["heights"] = map_data;
-	d["min_height"] = min_height;
-	d["max_height"] = max_height;
-	PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
+	if (is_form_physics_data()) {
+		physics_data["width"] = map_width;
+		physics_data["depth"] = map_depth;
+		physics_data["heights"] = map_data;
+		physics_data["min_height"] = min_height;
+		physics_data["max_height"] = max_height;
+		PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), physics_data);
+	} else {
+		Dictionary d;
+		d["width"] = map_width;
+		d["depth"] = map_depth;
+		d["heights"] = map_data;
+		d["min_height"] = min_height;
+		d["max_height"] = max_height;
+#if TOOLS_ENABLED
+		if (Engine::get_singleton()->is_editor_hint()) {
+			// 編輯器模式下,更新物理数据
+			physics_data = PhysicsServer3D::get_singleton()->edit_build_shape(get_shape(), d);
+		} else {
+			PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
+		}
+#else
+		PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
+#endif
+	}
 	Shape3D::_update_shape();
 }
 
@@ -246,6 +264,31 @@ real_t HeightMapShape3D::get_min_height() const {
 
 real_t HeightMapShape3D::get_max_height() const {
 	return max_height;
+}
+void HeightMapShape3D::set_physics_data(const Dictionary &pdata) {
+	physics_data = pdata;
+	if (!physics_data.has("width")) {
+		physics_data["width"] = map_width;
+	}
+	if (!physics_data.has("depth")) {
+		physics_data["depth"] = map_depth;
+	}
+	if (!physics_data.has("heights")) {
+		physics_data["heights"] = map_data;
+	}
+	if (!physics_data.has("min_height")) {
+		physics_data["min_height"] = min_height;
+	}
+	if (!physics_data.has("max_height")) {
+		physics_data["max_height"] = max_height;
+	}
+	if (is_form_physics_data()) {
+		_update_shape();
+		emit_changed();
+	}
+}
+const Dictionary &HeightMapShape3D::get_physics_data() {
+	return physics_data;
 }
 
 static void thread_build_height_map_rf(int index, int64_t dest_ptr, int64_t src_ptr, float min_height, float max_height) {
@@ -503,6 +546,8 @@ Vector3 HeightMapShape3D::get_scale() const {
 }
 
 void HeightMapShape3D::_bind_methods() {
+	ClassDB::bind_method(D_METHOD("set_form_physics_data", "p_form_data"), &HeightMapShape3D::set_form_physics_data);
+	ClassDB::bind_method(D_METHOD("is_form_physics_data"), &HeightMapShape3D::is_form_physics_data);
 	ClassDB::bind_method(D_METHOD("set_map_width", "width"), &HeightMapShape3D::set_map_width);
 	ClassDB::bind_method(D_METHOD("get_map_width"), &HeightMapShape3D::get_map_width);
 	ClassDB::bind_method(D_METHOD("set_map_depth", "height"), &HeightMapShape3D::set_map_depth);
@@ -512,13 +557,17 @@ void HeightMapShape3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_min_height"), &HeightMapShape3D::get_min_height);
 	ClassDB::bind_method(D_METHOD("get_max_height"), &HeightMapShape3D::get_max_height);
 
+	ClassDB::bind_method(D_METHOD("set_physics_data", "data"), &HeightMapShape3D::set_physics_data);
+	ClassDB::bind_method(D_METHOD("get_physics_data"), &HeightMapShape3D::get_physics_data);
 
 	ClassDB::bind_method(D_METHOD("update_map_data_from_image", "image", "height_min", "height_max"), &HeightMapShape3D::update_map_data_from_image);
 	ClassDB::bind_method(D_METHOD("update_map_data_from_image_range", "image", "height_min", "height_max", "rect"), &HeightMapShape3D::update_map_data_from_image_range);
 
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "form_physics_data"), "set_form_physics_data", "is_form_physics_data");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "map_width", PROPERTY_HINT_RANGE, "1,100,1,or_greater"), "set_map_width", "get_map_width");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "map_depth", PROPERTY_HINT_RANGE, "1,100,1,or_greater"), "set_map_depth", "get_map_depth");
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_FLOAT32_ARRAY, "map_data"), "set_map_data", "get_map_data");
+	ADD_PROPERTY(PropertyInfo(Variant::DICTIONARY, "physics_data"), "set_physics_data", "get_physics_data");
 }
 
 HeightMapShape3D::HeightMapShape3D() :

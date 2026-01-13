@@ -31,6 +31,7 @@
 #include "jolt_height_map_shape_3d.h"
 
 #include "../jolt_project_settings.h"
+#include "../misc/jolt_stream_wrappers.h"
 #include "../misc/jolt_type_conversions.h"
 
 #include "Jolt/Physics/Collision/Shape/HeightFieldShape.h"
@@ -73,6 +74,17 @@ JPH::ShapeRefC JoltHeightMapShape3D::_build() const {
 }
 
 JPH::ShapeRefC JoltHeightMapShape3D::_build_height_field() const {
+	if (using_byte_buffer) {
+		JPH::HeightFieldShapeSettings shape_settings;
+		shape_settings.mBitsPerSample = shape_settings.CalculateBitsPerSampleForError(0.0f);
+		shape_settings.mActiveEdgeCosThresholdAngle = JoltProjectSettings::active_edge_threshold_cos;
+		byte_buffer_mutex.lock();
+		JoltByteBufferInputWrapper wrapper(&byte_buffer);
+		const JPH::ShapeSettings::ShapeResult shape_result = shape_settings.CreateByBinaryState(wrapper);
+		ERR_FAIL_COND_V_MSG(shape_result.HasError(), nullptr, vformat("Failed to build Jolt Physics height map shape with %s. It returned the following error: '%s'. This shape belongs to %s.", to_string(), to_godot(shape_result.GetError()), _owners_to_string()));
+		byte_buffer_mutex.unlock();
+		return with_scale(shape_result.Get(), Vector3(1, 1, -1));
+	}
 	const int quad_count_x = width - 1;
 	const int quad_count_y = depth - 1;
 
@@ -192,11 +204,40 @@ AABB JoltHeightMapShape3D::_calculate_aabb() const {
 	return result;
 }
 
+void JoltHeightMapShape3D::_update_byte_buffer() {
+	if (!is_need_rebuld) {
+		return;
+	}
+	is_need_rebuld = false;
+	using_byte_buffer = false;
+	byte_buffer_mutex.lock();
+	JPH::ShapeRefC shape = try_build();
+	if (shape) {
+		JoltByteBufferOutputWrapper wrapper(&byte_buffer);
+		const JPH::Shape *mesh_shape = shape->GetInnerShape();
+		if (mesh_shape != nullptr) {
+			mesh_shape->SaveBinaryState(wrapper);
+			using_byte_buffer = true;
+		} else {
+			using_byte_buffer = false;
+		}
+	} else {
+		using_byte_buffer = false;
+	}
+	byte_buffer_mutex.unlock();
+}
 Variant JoltHeightMapShape3D::get_data() const {
 	Dictionary data;
 	data["width"] = width;
 	data["depth"] = depth;
 	data["heights"] = heights;
+	JoltHeightMapShape3D *self = (JoltHeightMapShape3D *)this;
+	self->_update_byte_buffer();
+	if (using_byte_buffer) {
+		data["aabb"] = aabb;
+		data["byte_buffer"] = byte_buffer;
+	}
+	data["using_byte_buffer"] = using_byte_buffer;
 	return data;
 }
 
@@ -223,7 +264,20 @@ void JoltHeightMapShape3D::set_data(const Variant &p_data) {
 	width = maybe_width;
 	depth = maybe_depth;
 
-	aabb = _calculate_aabb();
+	is_need_rebuld = true;
+	if (using_byte_buffer) {
+		byte_buffer_mutex.lock();
+		byte_buffer = data.get("byte_buffer", PackedByteArray());
+		if (byte_buffer.size() > 9) {
+			aabb = data.get("aabb", AABB());
+		} else {
+			using_byte_buffer = false;
+		}
+		byte_buffer_mutex.unlock();
+	}
+	if (!using_byte_buffer) {
+		aabb = _calculate_aabb();
+	}
 
 	destroy();
 }

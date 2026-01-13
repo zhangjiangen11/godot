@@ -106,6 +106,16 @@ ShapeSettings::ShapeResult HeightFieldShapeSettings::Create() const
 		Ref<Shape> shape = new HeightFieldShape(*this, mCachedResult);
 	return mCachedResult;
 }
+ShapeSettings::ShapeResult HeightFieldShapeSettings::CreateByBinaryState(StreamIn &inStream)
+{
+	if (mCachedResult.IsEmpty())
+	{
+		Ref<HeightFieldShape> shape = new HeightFieldShape();
+		shape->RestoreBinaryState(inStream);		
+		mCachedResult.Set(shape.GetPtr());
+	}
+	return mCachedResult;
+}
 
 void HeightFieldShapeSettings::DetermineMinAndMaxSample(float &outMinValue, float &outMaxValue, float &outQuantizationScale) const
 {

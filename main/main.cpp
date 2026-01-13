@@ -77,6 +77,7 @@
 #include "servers/rendering/rendering_server_default.h"
 #include "servers/text/text_server.h"
 #include "servers/text/text_server_dummy.h"
+#include "core/message_manager.h"
 
 // 2D
 #ifndef NAVIGATION_2D_DISABLED
@@ -4921,6 +4922,7 @@ bool Main::iteration() {
 	NavigationServer3D::get_singleton()->process(process_step * time_scale);
 #endif // NAVIGATION_3D_DISABLED
 
+	MessageManager::get_singleton()->emit(SNAME("RenderingServerPredraw"), Array());
 	GodotProfileZoneGrouped(_profile_zone, "RenderingServer::sync");
 	RenderingServer::get_singleton()->sync(); //sync if still drawing from previous frames.
 

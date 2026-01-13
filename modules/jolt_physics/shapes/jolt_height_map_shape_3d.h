@@ -43,12 +43,17 @@ class JoltHeightMapShape3D final : public JoltShape3D {
 
 	int width = 0;
 	int depth = 0;
+	Mutex byte_buffer_mutex;
+	PackedByteArray byte_buffer;
+	bool is_need_rebuld = true;
+	bool using_byte_buffer = false;
 
 	virtual JPH::ShapeRefC _build() const override;
 	JPH::ShapeRefC _build_height_field() const;
 	JPH::ShapeRefC _build_mesh() const;
 
 	AABB _calculate_aabb() const;
+	void _update_byte_buffer();
 
 public:
 	virtual ShapeType get_type() const override { return ShapeType::SHAPE_HEIGHTMAP; }
