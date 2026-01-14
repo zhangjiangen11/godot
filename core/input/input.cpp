@@ -1328,11 +1328,13 @@ bool Input::has_joy_gyroscope(int p_device) const {
 	_THREAD_SAFE_METHOD_
 	return joy_motion.has(p_device) && joy_motion[p_device].has_gyroscope;
 }
-bool Input::set_joy_light(int p_device, Color p_color) {
-	if (!joy_names.has(p_device) || joy_names[p_device].features == nullptr) {
-		return false;
+void Input::set_joy_light(int p_device, Color p_color) {
+	Joypad *joypad = joy_names.getptr(p_device);
+	if (!joypad || !joypad->has_light || joypad->features == nullptr) {
+		return;
 	}
-	return joy_names[p_device].features->set_joy_light(p_color);
+	Color linear = p_color.srgb_to_linear();
+	joypad->features->set_joy_light(linear);
 }
 
 bool Input::has_joy_light(int p_device) const {

@@ -94,7 +94,7 @@ public:
 		virtual bool set_joy_gyroscope_enabled(bool p_enable) { return false; }
 		virtual bool send_joy_packet(const void *p_data, int p_size) { return false; }
 		virtual bool has_joy_light() const { return false; }
-		virtual bool set_joy_light(Color p_color) { return false; }
+		virtual void set_joy_light(const Color &p_color) {}
 	};
 
 	static constexpr int32_t JOYPADS_MAX = 16;
@@ -437,7 +437,7 @@ public:
 
 	bool has_joy_accelerometer(int p_device) const;
 	bool has_joy_gyroscope(int p_device) const;
-	bool set_joy_light(int p_device, Color p_color);
+	void set_joy_light(int p_device, Color p_color);
 	bool has_joy_light(int p_device) const;
 
 	void start_joy_vibration(int p_device, float p_weak_magnitude, float p_strong_magnitude, float p_duration = 0);
