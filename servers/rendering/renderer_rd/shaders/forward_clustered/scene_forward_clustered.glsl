@@ -84,7 +84,6 @@ void axis_angle_to_tbn(vec3 axis, float angle, out vec3 tangent, out vec3 binorm
 /* Varyings */
 
 layout(location = 0) out vec3 vertex_interp;
-layout(location = 14) out vec3 vertex_interp_cam_relative;
 
 #ifdef NORMAL_USED
 layout(location = 1) out vec3 normal_interp;
@@ -493,12 +492,6 @@ void vertex_shader(vec3 vertex_input,
 
 	vertex_interp = vertex;
 
-	// Store camera-relative world position for soft shadow calculations.
-	// This avoids precision issues when world coordinates are large.
-	vec3 world_vertex = (scene_data.inv_view_matrix * vec4(vertex, 1.0)).xyz;
-	vec3 camera_pos = scene_data.inv_view_matrix[3].xyz;
-	vertex_interp_cam_relative = world_vertex - camera_pos;
-
 	// Normalize TBN vectors before interpolation, per MikkTSpace.
 	// See: http://www.mikktspace.com/
 #ifdef NORMAL_USED
@@ -889,7 +882,6 @@ void main() {
 /* Varyings */
 
 layout(location = 0) in vec3 vertex_interp;
-layout(location = 14) in vec3 vertex_interp_cam_relative;
 
 #ifdef NORMAL_USED
 layout(location = 1) in vec3 normal_interp;
@@ -1217,6 +1209,7 @@ void fragment_shader(in SceneData scene_data) {
 #endif // PREMUL_ALPHA_USED
 	//lay out everything, whatever is unused is optimized away anyway
 	vec3 vertex = vertex_interp;
+	vec3 vertex_interp_cam_relative = vertex;
 #ifdef USE_MULTIVIEW
 	vec3 eye_offset = scene_data.eye_offset[ViewIndex].xyz;
 	vec3 view_highp = -normalize(vertex_interp - eye_offset);
@@ -1387,7 +1380,6 @@ void fragment_shader(in SceneData scene_data) {
 #else
 	vec3 view = view_highp;
 #endif //LIGHT_VERTEX_USED
-
 #ifdef NORMAL_USED
 	vec3 geo_normal = normalize(normal);
 #endif // NORMAL_USED
@@ -2350,7 +2342,7 @@ void fragment_shader(in SceneData scene_data) {
 						uint blend_count = 0;
 						const uint blend_max = directional_lights.data[i].blend_splits ? 2 : 1;
 
-						vec3 light_dir_world = normalize((scene_data.inv_view_matrix * vec4(light_dir, 0.0)).xyz);
+						vec3 light_dir_world = normalize((inv_view_matrix * vec4(light_dir, 0.0)).xyz);
 
 						if (depth_z < directional_lights.data[i].shadow_split_offsets.x) {
 							vec4 v = vec4(vertex, 1.0);
@@ -2362,7 +2354,7 @@ void fragment_shader(in SceneData scene_data) {
 
 							vec3 v_world_camera_rel = vertex_interp_cam_relative + (v.xyz - vertex);
 							float range_pos = dot(light_dir_world, v_world_camera_rel);
-							float range_begin = directional_lights.data[i].shadow_range_begin.x - dot(light_dir_world, scene_data.inv_view_matrix[3].xyz);
+							float range_begin = directional_lights.data[i].shadow_range_begin.x - dot(light_dir_world, inv_view_matrix[3].xyz);
 							float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 							vec2 tex_scale = directional_lights.data[i].uv_scale1 * test_radius;
 							shadow = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_frame_count);
@@ -2379,7 +2371,7 @@ void fragment_shader(in SceneData scene_data) {
 
 							vec3 v_world_camera_rel = vertex_interp_cam_relative + (v.xyz - vertex);
 							float range_pos = dot(light_dir_world, v_world_camera_rel);
-							float range_begin = directional_lights.data[i].shadow_range_begin.y - dot(light_dir_world, scene_data.inv_view_matrix[3].xyz);
+							float range_begin = directional_lights.data[i].shadow_range_begin.y - dot(light_dir_world, inv_view_matrix[3].xyz);
 							float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 							vec2 tex_scale = directional_lights.data[i].uv_scale2 * test_radius;
 							float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_frame_count);
@@ -2405,7 +2397,7 @@ void fragment_shader(in SceneData scene_data) {
 
 							vec3 v_world_camera_rel = vertex_interp_cam_relative + (v.xyz - vertex);
 							float range_pos = dot(light_dir_world, v_world_camera_rel);
-							float range_begin = directional_lights.data[i].shadow_range_begin.z - dot(light_dir_world, scene_data.inv_view_matrix[3].xyz);
+							float range_begin = directional_lights.data[i].shadow_range_begin.z - dot(light_dir_world, inv_view_matrix[3].xyz);
 							float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 							vec2 tex_scale = directional_lights.data[i].uv_scale3 * test_radius;
 							float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_frame_count);
@@ -2431,7 +2423,7 @@ void fragment_shader(in SceneData scene_data) {
 
 							vec3 v_world_camera_rel = vertex_interp_cam_relative + (v.xyz - vertex);
 							float range_pos = dot(light_dir_world, v_world_camera_rel);
-							float range_begin = directional_lights.data[i].shadow_range_begin.w - dot(light_dir_world, scene_data.inv_view_matrix[3].xyz);
+							float range_begin = directional_lights.data[i].shadow_range_begin.w - dot(light_dir_world, inv_view_matrix[3].xyz);
 							float test_radius = (range_pos - range_begin) * directional_lights.data[i].softshadow_angle;
 							vec2 tex_scale = directional_lights.data[i].uv_scale4 * test_radius;
 							float s = sample_directional_soft_shadow(directional_shadow_atlas, pssm_coord.xyz, tex_scale * directional_lights.data[i].soft_shadow_scale, scene_data.taa_frame_count);

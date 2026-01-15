@@ -44,6 +44,7 @@ void MessageManager::emit(const StringName &p_message, Array p_args) {
 
 		it->callp(p_args_ptr, p_args.size(), rs, r_error);
 		if (r_error.error != Callable::CallError::CALL_OK) {
+			print_line("MessageManager::emit error! \n  message :", p_message, " Callable :", *it, "\n  arg :", p_args, "\n  error :", Callable::CallErrorToString(r_error.error));
 			it = callables->erase(it);
 		} else {
 			++it;
@@ -77,6 +78,7 @@ void MessageManager::emit_enum(int64_t p_message, Array p_args) {
 
 		it->callp(p_args_ptr, p_args.size(), rs, r_error);
 		if (r_error.error != Callable::CallError::CALL_OK) {
+			print_line("MessageManager::emit_enum error!\n  enum :", String::num_int64(p_message), "\n  Callable :", *it,"\n  arg :", p_args, "\n  error :", Callable::CallErrorToString(r_error.error));
 			it = callables->erase(it);
 		} else {
 			++it;

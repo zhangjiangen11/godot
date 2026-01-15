@@ -68,6 +68,7 @@ public:
 		int expected = 0;
 	};
 
+	static String CallErrorToString(Callable::CallError::Error error);
 	template <typename... VarArgs>
 	Variant call(VarArgs... p_args) const;
 	void callp(const Variant **p_arguments, int p_argcount, Variant &r_return_value, CallError &r_call_error) const;

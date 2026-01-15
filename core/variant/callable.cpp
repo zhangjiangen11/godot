@@ -375,6 +375,25 @@ Callable::operator String() const {
 	}
 }
 
+String Callable::CallErrorToString(Callable::CallError::Error error) {
+	switch (error)
+	{
+	case Callable::CallError::CALL_ERROR_INVALID_METHOD:
+		return L"无效方法（方法不存在）";
+	case Callable::CallError::CALL_ERROR_INVALID_ARGUMENT:
+		return L"参数类型无效（expected 存储期望的 Variant 类型）";
+	case Callable::CallError::CALL_ERROR_TOO_MANY_ARGUMENTS:
+		return L"参数过多（expected 存储期望的参数数量）";
+	case Callable::CallError::CALL_ERROR_TOO_FEW_ARGUMENTS:
+		return L"参数过少（expected 存储期望的参数数量）";
+	case Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL:
+		return L"调用的对象实例为空";
+	case Callable::CallError::CALL_ERROR_METHOD_NOT_CONST:
+		return L"调用非 const 方法（但上下文要求 const）";
+	}
+	return "";
+}
+
 Callable Callable::create(const Variant &p_variant, const StringName &p_method) {
 	ERR_FAIL_COND_V_MSG(p_method == StringName(), Callable(), "Method argument to Callable::create method must be a non-empty string.");
 
