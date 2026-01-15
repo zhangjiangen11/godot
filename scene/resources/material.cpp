@@ -997,7 +997,7 @@ void BaseMaterial3D::_update_shader() {
 	}
 
 	// Add a comment to describe the shader origin (useful when converting to ShaderMaterial).
-	String &code = shader_code;
+	String code ;
 	code = vformat(
 			"// NOTE: Shader automatically converted from " GODOT_VERSION_NAME " " GODOT_VERSION_FULL_CONFIG "'s %s.\n\n",
 			orm ? "ORMMaterial3D" : "StandardMaterial3D");
@@ -2444,11 +2444,6 @@ void BaseMaterial3D::update_material(RID p_material) const {
 	}
 }
 
-void BaseMaterial3D::set_shader_code(const String &p_code) {
-}
-String BaseMaterial3D::get_shader_code() const {
-	return shader_code;
-}
 void BaseMaterial3D::set_albedo(const Color &p_albedo) {
 	albedo = p_albedo;
 	_material_set_param(shader_names->albedo, p_albedo);
@@ -3913,10 +3908,6 @@ void BaseMaterial3D::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_stencil_effect_outline_thickness", "stencil_outline_thickness"), &BaseMaterial3D::set_stencil_effect_outline_thickness);
 	ClassDB::bind_method(D_METHOD("get_stencil_effect_outline_thickness"), &BaseMaterial3D::get_stencil_effect_outline_thickness);
 
-	ClassDB::bind_method(D_METHOD("set_shader_code", "code"), &BaseMaterial3D::set_shader_code);
-	ClassDB::bind_method(D_METHOD("get_shader_code"), &BaseMaterial3D::get_shader_code);
-	ADD_PROPERTY(PropertyInfo(Variant::STRING, "shader_code", PROPERTY_HINT_MULTILINE_TEXT, "", PROPERTY_USAGE_EDITOR), "set_shader_code", "get_shader_code");
-
 	ADD_GROUP("Transparency", "");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "transparency", PROPERTY_HINT_ENUM, "Disabled,Alpha,Alpha Scissor,Alpha Hash,Depth Pre-Pass"), "set_transparency", "get_transparency");
 	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "alpha_scissor_threshold", PROPERTY_HINT_RANGE, "0,1,0.001"), "set_alpha_scissor_threshold", "get_alpha_scissor_threshold");
@@ -4297,7 +4288,7 @@ void BaseMaterial3D::bt_change_shader_material() {
 		return;
 	}
 	_update_shader();
-	String code = shader_code;
+	String code;
 	Ref<Shader> shader;
 	shader.instantiate();
 	shader->set_code(code);

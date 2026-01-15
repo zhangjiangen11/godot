@@ -26,7 +26,7 @@ void MessageManager::emit(const StringName &p_message, Array p_args) {
 		return;
 	}
 	List<Callable> *callables = messages.getptr(p_message);
-	if (callables == nullptr) {
+	if (callables == nullptr || callables->size() == 0) {
 		return;
 	}
 	const Variant **p_args_ptr = (const Variant **)alloca(sizeof(Variant *) * p_args.size());

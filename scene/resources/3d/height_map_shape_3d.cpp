@@ -153,11 +153,11 @@ void HeightMapShape3D::_update_shape() {
 	d["heights"] = map_data;
 	d["min_height"] = min_height;
 	d["max_height"] = max_height;
-	d["byte_buffer"] = physics_data;
+	d["byte_buffer"] = physics_data ;
 	d["aabb"] = aabb;
-	bool _using_byte_buffer = is_form_physics_data();
-	d["using_byte_buffer"] = physics_data;
-	if (is_form_physics_data()) {
+	bool _using_byte_buffer = is_form_physics_data() && physics_data.size() > 0;
+	d["using_byte_buffer"] = _using_byte_buffer;
+	if (_using_byte_buffer) {
 		PhysicsServer3D::get_singleton()->shape_set_data(get_shape(), d);
 	} else {
 #if TOOLS_ENABLED
@@ -187,17 +187,6 @@ void HeightMapShape3D::set_map_width(int p_new) {
 	} else if (map_width != p_new) {
 		int was_size = map_width * map_depth;
 		map_width = p_new;
-
-		int new_size = map_width * map_depth;
-		map_data.resize(map_width * map_depth);
-
-		real_t *w = map_data.ptrw();
-		while (was_size < new_size) {
-			w[was_size++] = 0.0;
-		}
-
-		_update_shape();
-		emit_changed();
 	}
 }
 
@@ -211,17 +200,6 @@ void HeightMapShape3D::set_map_depth(int p_new) {
 	} else if (map_depth != p_new) {
 		int was_size = map_width * map_depth;
 		map_depth = p_new;
-
-		int new_size = map_width * map_depth;
-		map_data.resize(new_size);
-
-		real_t *w = map_data.ptrw();
-		while (was_size < new_size) {
-			w[was_size++] = 0.0;
-		}
-
-		_update_shape();
-		emit_changed();
 	}
 }
 
@@ -235,8 +213,12 @@ void HeightMapShape3D::set_map_data(Vector<real_t> p_new) {
 		// fail
 		return;
 	}
-
+	if (is_form_physics_data()) {
+		return;
+	}
 	// copy
+	int new_size = map_width * map_depth;
+	map_data.resize(map_width* map_depth);
 	real_t *w = map_data.ptrw();
 	const real_t *r = p_new.ptr();
 	for (int i = 0; i < size; i++) {
@@ -520,13 +502,9 @@ void HeightMapShape3D::update_map_data_from_image_range(const Ref<Image> &p_imag
 }
 void HeightMapShape3D::set_offset(Vector3 p_offset) {
 	offset = p_offset;
-	_update_shape();
-	emit_changed();
 }
 void HeightMapShape3D::set_scale(Vector3 p_scale) {
 	scale = p_scale;
-	_update_shape();
-	emit_changed();
 }
 
 Vector3 HeightMapShape3D::get_offset() const {
@@ -560,10 +538,10 @@ void HeightMapShape3D::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "form_physics_data"), "set_form_physics_data", "is_form_physics_data");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "map_width", PROPERTY_HINT_RANGE, "1,100,1,or_greater"), "set_map_width", "get_map_width");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "map_depth", PROPERTY_HINT_RANGE, "1,100,1,or_greater"), "set_map_depth", "get_map_depth");
-	ADD_PROPERTY(PropertyInfo(Variant::PACKED_FLOAT32_ARRAY, "map_data"), "set_map_data", "get_map_data");
-	ADD_PROPERTY(PropertyInfo(Variant::PACKED_BYTE_ARRAY, "physics_data"), "set_physics_data", "get_physics_data");
-
 	ADD_PROPERTY(PropertyInfo(Variant::AABB, "aabb"), "set_aabb", "get_aabb");
+	ADD_PROPERTY(PropertyInfo(Variant::PACKED_BYTE_ARRAY, "physics_data"), "set_physics_data", "get_physics_data");
+	//ADD_PROPERTY(PropertyInfo(Variant::PACKED_FLOAT32_ARRAY, "map_data"), "set_map_data", "get_map_data");
+
 }
 
 HeightMapShape3D::HeightMapShape3D() :

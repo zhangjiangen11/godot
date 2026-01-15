@@ -51,25 +51,28 @@ bool _is_triangle_hole(const JPH::VertexList &p_vertices, int p_index0, int p_in
 } // namespace
 
 JPH::ShapeRefC JoltHeightMapShape3D::_build() const {
-	const int height_count = (int)heights.size();
-	if (unlikely(height_count == 0)) {
-		return nullptr;
+	if (!using_byte_buffer) {
+		const int height_count = (int)heights.size();
+		if (unlikely(height_count == 0)) {
+			return nullptr;
+		}
+
+		ERR_FAIL_COND_V_MSG(height_count != width * depth, nullptr, vformat("Failed to build Jolt Physics height map shape with %s. Height count must be the product of width and depth. This shape belongs to %s.", to_string(), _owners_to_string()));
+		ERR_FAIL_COND_V_MSG(width < 2 || depth < 2, nullptr, vformat("Failed to build Jolt Physics height map shape with %s. The height map must be at least 2x2. This shape belongs to %s.", to_string(), _owners_to_string()));
+
+		if (width != depth) {
+			return JoltShape3D::with_double_sided(_build_mesh(), true);
+		}
+
+		const int block_size = 2; // Default of JPH::HeightFieldShapeSettings::mBlockSize
+		const int block_count = width / block_size;
+
+		if (block_count < 2) {
+			return JoltShape3D::with_double_sided(_build_mesh(), true);
+		}
+
+		return JoltShape3D::with_double_sided(_build_height_field(), true);
 	}
-
-	ERR_FAIL_COND_V_MSG(height_count != width * depth, nullptr, vformat("Failed to build Jolt Physics height map shape with %s. Height count must be the product of width and depth. This shape belongs to %s.", to_string(), _owners_to_string()));
-	ERR_FAIL_COND_V_MSG(width < 2 || depth < 2, nullptr, vformat("Failed to build Jolt Physics height map shape with %s. The height map must be at least 2x2. This shape belongs to %s.", to_string(), _owners_to_string()));
-
-	if (width != depth) {
-		return JoltShape3D::with_double_sided(_build_mesh(), true);
-	}
-
-	const int block_size = 2; // Default of JPH::HeightFieldShapeSettings::mBlockSize
-	const int block_count = width / block_size;
-
-	if (block_count < 2) {
-		return JoltShape3D::with_double_sided(_build_mesh(), true);
-	}
-
 	return JoltShape3D::with_double_sided(_build_height_field(), true);
 }
 
@@ -227,6 +230,7 @@ void JoltHeightMapShape3D::_update_byte_buffer() {
 			mesh_shape = mesh_shape->GetInnerShape();
 			if (mesh_shape) {
 				mesh_shape->SaveBinaryState(wrapper);
+				heights.clear();
 				using_byte_buffer = true;
 			}
 		} else {
@@ -241,13 +245,13 @@ Variant JoltHeightMapShape3D::get_data() const {
 	Dictionary data;
 	data["width"] = width;
 	data["depth"] = depth;
-	data["heights"] = heights;
 	JoltHeightMapShape3D *self = (JoltHeightMapShape3D *)this;
 	self->_update_byte_buffer();
+	data["aabb"] = aabb;
 	if (using_byte_buffer) {
-		data["aabb"] = aabb;
 		data["byte_buffer"] = byte_buffer;
 	}
+	data["heights"] = heights;
 	data["using_byte_buffer"] = using_byte_buffer;
 	return data;
 }
@@ -283,6 +287,7 @@ void JoltHeightMapShape3D::set_data(const Variant &p_data) {
 		byte_buffer = data.get("byte_buffer", PackedByteArray());
 		if (byte_buffer.size() > 9) {
 			aabb = data.get("aabb", AABB());
+			heights.clear();
 		} else {
 			using_byte_buffer = false;
 		}

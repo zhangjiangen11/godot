@@ -719,7 +719,6 @@ private:
 	bool features[FEATURE_MAX] = {};
 
 	Ref<Texture2D> textures[TEXTURE_MAX];
-	String shader_code;
 
 	void _prepare_stencil_effect();
 	Ref<BaseMaterial3D> _get_stencil_next_pass() const;
@@ -733,8 +732,6 @@ protected:
 	virtual bool _can_use_render_priority() const override { return true; }
 
 public:
-	void set_shader_code(const String &p_code);
-	String get_shader_code() const;
 
 	void set_albedo(const Color &p_albedo);
 	Color get_albedo() const;
