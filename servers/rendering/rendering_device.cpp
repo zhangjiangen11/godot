@@ -4984,7 +4984,7 @@ void RenderingDevice::draw_list_bind_uniform_set(DrawListID p_list, RID p_unifor
 	ERR_FAIL_COND(!draw_list.active);
 
 	const UniformSet *uniform_set = uniform_set_owner.get_or_null(p_uniform_set);
-	ERR_FAIL_NULL(uniform_set);
+	ERR_FAIL_NULL_MSG(uniform_set,String::num_int64(p_index));
 
 	if (p_index > draw_list.state.set_count) {
 		draw_list.state.set_count = p_index;
