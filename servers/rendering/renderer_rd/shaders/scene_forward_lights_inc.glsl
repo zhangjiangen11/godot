@@ -405,14 +405,23 @@ half sample_directional_soft_shadow(texture2D shadow, vec3 pssm_coord, vec2 tex_
 		float cr = cos(r);
 		disk_rotation = mat2(vec2(cr, -sr), vec2(sr, cr));
 	}
-
-	SPEC_CONSTANT_LOOP_ANNOTATION
-	for (uint i = 0; i < sc_directional_penumbra_shadow_samples(); i++) {
-		vec2 suv = pssm_coord.xy + (disk_rotation * scene_data_block.data.directional_penumbra_shadow_kernel[i].xy) * tex_scale;
+	{
+		vec2 suv = pssm_coord.xy;
 		float d = textureLod(sampler2D(shadow, SAMPLER_LINEAR_CLAMP), suv, 0.0).r;
 		if (d > pssm_coord.z) {
-			blocker_average += d;
-			blocker_count += 1.0;
+			blocker_average = d;
+			blocker_count = 1.0;
+		}
+	}
+	if (blocker_count > 0.0) {
+		SPEC_CONSTANT_LOOP_ANNOTATION
+		for (uint i = 1; i < sc_directional_penumbra_shadow_samples(); i++) {
+			vec2 suv = pssm_coord.xy + (disk_rotation * scene_data_block.data.directional_penumbra_shadow_kernel[i].xy) * tex_scale;
+			float d = textureLod(sampler2D(shadow, SAMPLER_LINEAR_CLAMP), suv, 0.0).r;
+			if (d > pssm_coord.z) {
+				blocker_average += d;
+				blocker_count += 1.0;
+			}
 		}
 	}
 

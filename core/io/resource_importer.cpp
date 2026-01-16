@@ -51,8 +51,9 @@ Error ResourceFormatImporter::_get_path_and_type(const String &p_path, PathAndTy
 		return err;
 	}
 
-	VariantParser::StreamFile stream;
-	stream.f = f;
+	VariantParser::StreamString stream;
+	stream.s = f->get_as_text();
+	f = Ref<FileAccess>();
 
 	String assign;
 	Variant value;
