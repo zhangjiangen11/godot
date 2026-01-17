@@ -65,6 +65,9 @@ public:
 		prop_values.clear();
 	}
 
+	String get_type_name() const { return type_name; }
+	bool has_class(const StringName &p_class) const;
+
 	void update() { notify_property_list_changed(); }
 };
 

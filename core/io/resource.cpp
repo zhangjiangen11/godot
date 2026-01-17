@@ -972,6 +972,11 @@ void ResourceCache::set_ref(const String &p_path, Resource *r_res) {
 	if (r_res == nullptr) {
 		return;
 	}
+#ifdef TOOLS_ENABLED
+	if (!r_res->is_class("Resource")) {
+		ERR_FAIL_MSG(true,"dont resource");
+	}
+#endif
 	MutexLock mutex_lock(lock);
 	r_res->set_path_cache(p_path);
 	r_res->cache_class_name = r_res->get_class_name();

@@ -423,9 +423,6 @@ half sample_directional_soft_shadow(texture2D shadow, vec3 pssm_coord, vec2 tex_
 				blocker_count += 1.0;
 			}
 		}
-	}
-
-	if (blocker_count > 0.0) {
 		//blockers found, do soft shadow
 		blocker_average /= blocker_count;
 		float penumbra = (-pssm_coord.z + blocker_average) / (1.0 - blocker_average);
@@ -537,11 +534,8 @@ void light_process_omni(uint idx, vec3 vertex, hvec3 eye_vec, hvec3 normal, vec3
 			tangent *= omni_lights.data[idx].soft_shadow_size * omni_lights.data[idx].soft_shadow_scale;
 			bitangent *= omni_lights.data[idx].soft_shadow_size * omni_lights.data[idx].soft_shadow_scale;
 
-			SPEC_CONSTANT_LOOP_ANNOTATION
-			for (uint i = 0; i < sc_penumbra_shadow_samples(); i++) {
-				vec2 disk = disk_rotation * scene_data_block.data.penumbra_shadow_kernel[i].xy;
-
-				vec3 pos = local_vert + tangent * disk.x + bitangent * disk.y;
+			{
+				vec3 pos = local_vert;
 
 				pos = normalize(pos);
 
@@ -556,15 +550,40 @@ void light_process_omni(uint idx, vec3 vertex, hvec3 eye_vec, hvec3 normal, vec3
 
 				pos.xy = pos.xy * 0.5 + 0.5;
 				pos.xy = uv_rect.xy + pos.xy * uv_rect.zw;
-
 				float d = textureLod(sampler2D(shadow_atlas, SAMPLER_LINEAR_CLAMP), pos.xy, 0.0).r;
 				if (d > z_norm) {
-					blocker_average += d;
-					blocker_count += 1.0;
+					blocker_average = d;
+					blocker_count = 1.0;
 				}
 			}
-
 			if (blocker_count > 0.0) {
+				SPEC_CONSTANT_LOOP_ANNOTATION
+				for (uint i = 1; i < sc_penumbra_shadow_samples(); i++) {
+					vec2 disk = disk_rotation * scene_data_block.data.penumbra_shadow_kernel[i].xy;
+
+					vec3 pos = local_vert + tangent * disk.x + bitangent * disk.y;
+
+					pos = normalize(pos);
+
+					vec4 uv_rect = base_uv_rect;
+
+					if (pos.z >= 0.0) {
+						uv_rect.xy += flip_offset;
+					}
+
+					pos.z = 1.0 + abs(pos.z);
+					pos.xy /= pos.z;
+
+					pos.xy = pos.xy * 0.5 + 0.5;
+					pos.xy = uv_rect.xy + pos.xy * uv_rect.zw;
+
+					float d = textureLod(sampler2D(shadow_atlas, SAMPLER_LINEAR_CLAMP), pos.xy, 0.0).r;
+					if (d > z_norm) {
+						blocker_average += d;
+						blocker_count += 1.0;
+					}
+				}
+
 				//blockers found, do soft shadow
 				blocker_average /= blocker_count;
 				float penumbra = (-z_norm + blocker_average) / (1.0 - blocker_average);
@@ -831,19 +850,27 @@ void light_process_spot(uint idx, vec3 vertex, hvec3 eye_vec, hvec3 normal, vec3
 
 			float uv_size = spot_lights.data[idx].soft_shadow_size * z_norm * spot_lights.data[idx].soft_shadow_scale;
 			vec2 clamp_max = spot_lights.data[idx].atlas_rect.xy + spot_lights.data[idx].atlas_rect.zw;
-
-			SPEC_CONSTANT_LOOP_ANNOTATION
-			for (uint i = 0; i < sc_penumbra_shadow_samples(); i++) {
-				vec2 suv = shadow_uv + (disk_rotation * scene_data_block.data.penumbra_shadow_kernel[i].xy) * uv_size;
+			{
+				vec2 suv = shadow_uv;
 				suv = clamp(suv, spot_lights.data[idx].atlas_rect.xy, clamp_max);
 				float d = textureLod(sampler2D(shadow_atlas, SAMPLER_LINEAR_CLAMP), suv, 0.0).r;
 				if (d > splane.z) {
-					blocker_average += d;
-					blocker_count += 1.0;
+					blocker_average = d;
+					blocker_count = 1.0;
 				}
 			}
 
 			if (blocker_count > 0.0) {
+				SPEC_CONSTANT_LOOP_ANNOTATION
+				for (uint i = 1; i < sc_penumbra_shadow_samples(); i++) {
+					vec2 suv = shadow_uv + (disk_rotation * scene_data_block.data.penumbra_shadow_kernel[i].xy) * uv_size;
+					suv = clamp(suv, spot_lights.data[idx].atlas_rect.xy, clamp_max);
+					float d = textureLod(sampler2D(shadow_atlas, SAMPLER_LINEAR_CLAMP), suv, 0.0).r;
+					if (d > splane.z) {
+						blocker_average += d;
+						blocker_count += 1.0;
+					}
+				}
 				//blockers found, do soft shadow
 				blocker_average /= blocker_count;
 				float penumbra = (-z_norm + blocker_average) / (1.0 - blocker_average);

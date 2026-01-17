@@ -613,6 +613,10 @@ bool SpinBox::is_editable() const {
 	return line_edit->is_editable();
 }
 
+void SpinBox::set_value(double p_val) {
+	super_type::set_value(p_val);
+	_update_text(true);
+}
 void SpinBox::apply() {
 	_text_submitted(line_edit->get_text());
 }

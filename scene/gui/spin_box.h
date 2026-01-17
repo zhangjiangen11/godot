@@ -178,6 +178,7 @@ public:
 	void set_select_all_on_focus(bool p_enabled);
 	bool is_select_all_on_focus() const;
 
+	virtual void set_value(double p_val) override;
 	void apply();
 	void set_custom_arrow_step(const double p_custom_arrow_step);
 	double get_custom_arrow_step() const;

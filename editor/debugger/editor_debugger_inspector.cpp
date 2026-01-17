@@ -120,8 +120,18 @@ Variant EditorDebuggerRemoteObjects::get_variant(const StringName &p_name) {
 	return var;
 }
 
+bool EditorDebuggerRemoteObjects::has_class(const StringName &p_class) const {
+	for (const PropertyInfo &prop : prop_list) {
+		if (prop.type == Variant::NIL && prop.usage == PROPERTY_USAGE_CATEGORY && prop.name == p_class) {
+			return true;
+		}
+	}
+	return false;
+}
 void EditorDebuggerRemoteObjects::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_title"), &EditorDebuggerRemoteObjects::get_title);
+	ClassDB::bind_method("get_type_name", &EditorDebuggerRemoteObjects::get_type_name);
+	ClassDB::bind_method(D_METHOD("has_class", "class"), &EditorDebuggerRemoteObjects::has_class);
 	ClassDB::bind_method("_hide_script_from_inspector", &EditorDebuggerRemoteObjects::_hide_script_from_inspector);
 	ClassDB::bind_method("_hide_metadata_from_inspector", &EditorDebuggerRemoteObjects::_hide_metadata_from_inspector);
 

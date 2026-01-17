@@ -79,7 +79,7 @@ protected:
 	GDVIRTUAL1(_value_changed, double)
 
 public:
-	void set_value(double p_val);
+	virtual void set_value(double p_val);
 	void set_value_no_signal(double p_val);
 	void set_min(double p_min);
 	void set_max(double p_max);
