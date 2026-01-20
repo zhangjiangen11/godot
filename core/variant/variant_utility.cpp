@@ -1160,8 +1160,14 @@ Variant VariantUtilityFunctions::create_signaling_null() {
 String VariantUtilityFunctions::join_string(const Variant **p_args, int p_arg_count) {
 	String s;
 	for (int i = 0; i < p_arg_count; i++) {
-		String os = p_args[i]->operator String();
-		s += os;
+		if (p_args[i] == nullptr) {
+
+			s += "nullptr";
+		}
+		else {
+			String os = p_args[i]->operator String();
+			s += os;
+		}
 	}
 	return s;
 }

@@ -1521,19 +1521,19 @@ static void register_builtin_compat_method(const Vector<String> &p_argnames, con
 void Variant::callp(const StringName &p_method, const Variant **p_args, int p_argcount, Variant &r_ret, Callable::CallError &r_error) {
 	if (type == Variant::OBJECT) {
 		//call object
-		Object *obj = _get_obj().obj;
+		Object *obj = ObjectDB::get_instance(_get_obj().id);
 		if (!obj) {
 			r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
 			return;
 		}
 #ifdef DEBUG_ENABLED
-		if (EngineDebugger::is_active() && !_get_obj().id.is_ref_counted() && ObjectDB::get_instance(_get_obj().id) == nullptr) {
+		if (EngineDebugger::is_active() && !_get_obj().id.is_ref_counted() && obj == nullptr) {
 			r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
 			return;
 		}
 
 #endif // DEBUG_ENABLED
-		r_ret = _get_obj().obj->callp(p_method, p_args, p_argcount, r_error);
+		r_ret = obj->callp(p_method, p_args, p_argcount, r_error);
 
 	} else {
 		r_error.error = Callable::CallError::CALL_OK;
@@ -1552,19 +1552,19 @@ void Variant::callp(const StringName &p_method, const Variant **p_args, int p_ar
 void Variant::call_const(const StringName &p_method, const Variant **p_args, int p_argcount, Variant &r_ret, Callable::CallError &r_error) {
 	if (type == Variant::OBJECT) {
 		//call object
-		Object *obj = _get_obj().obj;
+		Object* obj = ObjectDB::get_instance(_get_obj().id);
 		if (!obj) {
 			r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
 			return;
 		}
 #ifdef DEBUG_ENABLED
-		if (EngineDebugger::is_active() && !_get_obj().id.is_ref_counted() && ObjectDB::get_instance(_get_obj().id) == nullptr) {
+		if (EngineDebugger::is_active() && !_get_obj().id.is_ref_counted() && obj == nullptr) {
 			r_error.error = Callable::CallError::CALL_ERROR_INSTANCE_IS_NULL;
 			return;
 		}
 
 #endif // DEBUG_ENABLED
-		r_ret = _get_obj().obj->call_const(p_method, p_args, p_argcount, r_error);
+		r_ret = obj->call_const(p_method, p_args, p_argcount, r_error);
 
 		//else if (type==Variant::METHOD) {
 	} else {

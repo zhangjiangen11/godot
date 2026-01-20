@@ -2463,7 +2463,7 @@ void main() {
 			break;
 		}
 
-		light_process_spot(spot_light_indices[i], vertex, (inv_view_matrix * vec4(view, 0.0)).xyz, normal, f0, roughness, metallic, 1.0, albedo, alpha, screen_uv,
+		light_process_spot(spot_light_indices[i], vertex, view, normal, f0, roughness, metallic, 1.0, albedo, alpha, screen_uv,
 #ifdef LIGHT_BACKLIGHT_USED
 				backlight,
 #endif
