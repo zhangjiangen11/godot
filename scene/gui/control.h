@@ -325,7 +325,6 @@ private:
 	void _update_layout_mode();
 	LayoutMode _get_layout_mode() const;
 	LayoutMode _get_default_layout_mode() const;
-	void _set_anchors_layout_preset(int p_preset);
 	int _get_anchors_layout_preset() const;
 
 	void _update_minimum_size_cache() const;
@@ -438,6 +437,7 @@ public:
 
 	// Editor plugin interoperability.
 
+	void _set_anchors_layout_preset(int p_preset);
 	// TODO: Decouple controls from their editor plugin and get rid of this.
 #ifdef TOOLS_ENABLED
 	virtual Dictionary _edit_get_state() const override;
