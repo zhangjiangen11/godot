@@ -2373,7 +2373,9 @@ void GDScriptAnalyzer::resolve_for(GDScriptParser::ForNode *p_for) {
 }
 
 void GDScriptAnalyzer::resolve_while(GDScriptParser::WhileNode *p_while) {
-	resolve_node(p_while->condition, false);
+	if (p_while->condition) {
+		resolve_node(p_while->condition, false);
+	}
 
 	resolve_suite(p_while->loop);
 	p_while->set_datatype(p_while->loop->get_datatype());
