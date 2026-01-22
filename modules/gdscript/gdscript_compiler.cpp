@@ -3043,7 +3043,7 @@ Error GDScriptCompiler::_compile_class(GDScript *p_script, const GDScriptParser:
 		}
 	}
 
-#ifdef DEBUG_ENABLED
+#if defined(DEBUG_ENABLED) || defined(TOOLS_ENABLED)
 
 	//validate instances if keeping state
 

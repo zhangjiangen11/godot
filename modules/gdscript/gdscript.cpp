@@ -897,6 +897,11 @@ Error GDScript::reload(bool p_keep_state) {
 		// Update the properties in the inspector.
 		update_exports();
 	}
+	for (Object* ins : instances) {
+		ScriptInstance* si = ins->get_script_instance();
+		GDScriptInstance* gsi = (GDScriptInstance*)si;
+		gsi->reload_members();
+	}
 #endif
 
 	reloading = false;
@@ -2012,7 +2017,7 @@ const Variant GDScriptInstance::get_rpc_config() const {
 }
 
 void GDScriptInstance::reload_members() {
-#ifdef DEBUG_ENABLED
+#if defined(DEBUG_ENABLED) || defined(TOOLS_ENABLED)
 
 	Vector<Variant> new_members;
 	new_members.resize(script->member_indices.size());
@@ -2022,6 +2027,17 @@ void GDScriptInstance::reload_members() {
 		if (member_indices_cache.has(E.key)) {
 			Variant value = members[member_indices_cache[E.key]];
 			new_members.write[E.value.index] = value;
+			if (E.value.property_info.type != Variant::NIL) {
+				if (value.get_type() != E.value.property_info.type) {
+					if (value.get_type() == Variant::NIL && E.value.property_info.type == Variant::OBJECT) {
+						new_members.write[E.value.index] = (Object*)nullptr;
+					} else {
+						script->get_property_default_value(E.key, new_members.write[E.value.index]);
+					}
+				}
+			}
+		} else {
+			script->get_property_default_value(E.key, new_members.write[E.value.index]);
 		}
 	}
 
