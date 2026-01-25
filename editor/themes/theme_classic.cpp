@@ -1189,6 +1189,19 @@ void ThemeClassic::populate_standard_styles(const Ref<EditorTheme> &p_theme, Edi
 		p_theme->set_stylebox("grabber_area_highlight", "VSlider", EditorThemeManager::make_flat_stylebox(p_config.contrast_color_1, background_margin, 0, background_margin, 0));
 		p_theme->set_constant("center_grabber", "VSlider", 0);
 		p_theme->set_constant("grabber_offset", "VSlider", 0);
+
+		Ref<StyleBoxFlat> editor_spin_label_bg = p_config.base_style->duplicate();
+		editor_spin_label_bg->set_bg_color(p_config.dark_color_3);
+		editor_spin_label_bg->set_border_width_all(0);
+
+		p_theme->set_font(SceneStringName(font), "SpinSlider", p_theme->get_font(SceneStringName(font), SNAME("HeaderSmall")));
+		p_theme->set_stylebox("style_normal", "SpinSlider", EditorThemeManager::make_flat_stylebox(p_config.dark_color_3, 0, background_margin, 0, background_margin, p_config.corner_radius));
+		p_theme->set_stylebox("style_focus", "SpinSlider", EditorThemeManager::make_flat_stylebox(p_config.contrast_color_1, 0, background_margin, 0, background_margin, p_config.corner_radius));
+		p_theme->set_stylebox("style_readonly", "SpinSlider", EditorThemeManager::make_flat_stylebox(p_config.contrast_color_1, 0, background_margin, 0, background_margin));
+
+		p_theme->set_stylebox("label_bg", "SpinSlider", editor_spin_label_bg);
+		p_theme->set_icon("grabber_highlight", "SpinSlider", p_theme->get_icon(SNAME("GuiSliderGrabberHl"), EditorStringName(EditorIcons)));
+		p_theme->set_icon("grabber", "SpinSlider", p_theme->get_icon(SNAME("GuiSliderGrabber"), EditorStringName(EditorIcons)));
 	}
 
 	// Labels.
@@ -1762,6 +1775,7 @@ void ThemeClassic::populate_editor_styles(const Ref<EditorTheme> &p_theme, Edito
 		editor_spin_label_bg->set_bg_color(p_config.dark_color_3);
 		editor_spin_label_bg->set_border_width_all(0);
 		p_theme->set_stylebox("label_bg", "EditorSpinSlider", editor_spin_label_bg);
+		p_theme->set_stylebox("label_bg", "SpinSlider", editor_spin_label_bg);
 
 		// TODO: Use separate arrows instead like on SpinBox. Planned for a different PR.
 		p_theme->set_icon("updown", "EditorSpinSlider", p_theme->get_icon(SNAME("GuiSpinboxUpdown"), EditorStringName(EditorIcons)));

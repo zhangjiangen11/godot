@@ -69,6 +69,7 @@ bool CharacterBody2D::move_and_slide() {
 	}
 
 	motion_results.clear();
+	slide_colliders.clear();
 	last_motion = Vector2();
 
 	bool was_on_floor = on_floor;
@@ -659,6 +660,7 @@ void CharacterBody2D::_notification(int p_what) {
 			on_ceiling = false;
 			on_wall = false;
 			motion_results.clear();
+			slide_colliders.clear();
 			platform_velocity = Vector2();
 		} break;
 	}

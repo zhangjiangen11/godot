@@ -91,6 +91,7 @@ bool CharacterBody3D::move_and_slide(float delta) {
 	}
 
 	motion_results.clear();
+	slide_colliders.clear();
 
 	bool was_on_floor = collision_state.floor;
 	collision_state.state = 0;
@@ -860,6 +861,7 @@ void CharacterBody3D::_notification(int p_what) {
 			platform_rid = RID();
 			platform_object_id = ObjectID();
 			motion_results.clear();
+			slide_colliders.clear();
 			platform_velocity = Vector3();
 			platform_angular_velocity = Vector3();
 		} break;

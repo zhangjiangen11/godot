@@ -481,6 +481,20 @@ void fill_default_theme(Ref<Theme> &theme, const Ref<Font> &default_font, const 
 	theme->set_constant("caret_width", "TextEdit", 1);
 	theme->set_constant("wrap_offset", "TextEdit", 10);
 
+	// SpinSlider
+	theme->set_stylebox(CoreStringName(normal), "SpinSlider", style_line_edit);
+	theme->set_stylebox("focus", "SpinSlider", focus);
+	theme->set_stylebox("style_normal", "SpinSlider", style_line_edit_read_only);
+	theme->set_stylebox("style_focus", "SpinSlider", style_line_edit_read_only);
+	theme->set_stylebox("style_readonly", "SpinSlider", style_line_edit_read_only);
+
+	theme->set_icon("updown_icon", "SpinSlider", icons["arrow_down"]);
+	theme->set_icon("updown_disabled_icon", "SpinSlider", icons["arrow_down"]);
+	theme->set_icon("grabber", "SpinSlider", icons["slider_grabber"]);
+	theme->set_icon("grabber_highlight", "SpinSlider", icons["slider_grabber_hl"]);
+
+	theme->set_font(SceneStringName(font), "SpinSlider", Ref<Font>());
+	theme->set_font_size(SceneStringName(font_size), "SpinSlider", -1);
 	// CodeEdit
 
 	theme->set_stylebox(CoreStringName(normal), "CodeEdit", style_line_edit);

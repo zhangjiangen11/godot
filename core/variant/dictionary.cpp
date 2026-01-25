@@ -230,6 +230,9 @@ int Dictionary::size() const {
 }
 
 bool Dictionary::is_empty() const {
+	if (_p == nullptr) {
+		return true;
+	}
 	return !_p->variant_map.size();
 }
 

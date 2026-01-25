@@ -83,7 +83,9 @@
 #include "scene/gui/scroll_container.h"
 #include "scene/gui/separator.h"
 #include "scene/gui/slider.h"
+#include "scene/gui/smooth_scroll_container.h"
 #include "scene/gui/spin_box.h"
+#include "scene/gui/spin_slider.h"
 #include "scene/gui/split_container.h"
 #include "scene/gui/subviewport_container.h"
 #include "scene/gui/tab_bar.h"
@@ -92,7 +94,6 @@
 #include "scene/gui/texture_button.h"
 #include "scene/gui/texture_progress_bar.h"
 #include "scene/gui/texture_rect.h"
-#include "scene/gui/smooth_scroll_container.h"
 #include "scene/gui/tree.h"
 #include "scene/gui/video_stream_player.h"
 #include "scene/main/canvas_item.h"
@@ -495,7 +496,6 @@ void register_scene_types() {
 
 	OS::get_singleton()->yield(); // may take time to init
 
-
 	//GDREGISTER_ABSTRACT_CLASS(ScrollDamper);
 	//GDREGISTER_CLASS(LinearScrollDamper);
 	//GDREGISTER_CLASS(ExpoScrollDamper);
@@ -556,6 +556,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(MenuButton);
 	GDREGISTER_CLASS(OptionButton);
 	GDREGISTER_CLASS(SpinBox);
+	GDREGISTER_CLASS(SpinSlider);
 	GDREGISTER_CLASS(ColorPicker);
 	GDREGISTER_CLASS(ColorPickerButton);
 	GDREGISTER_CLASS(RichTextLabel);

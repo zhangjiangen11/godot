@@ -897,10 +897,14 @@ Error GDScript::reload(bool p_keep_state) {
 		// Update the properties in the inspector.
 		update_exports();
 	}
-	for (Object* ins : instances) {
-		ScriptInstance* si = ins->get_script_instance();
-		GDScriptInstance* gsi = (GDScriptInstance*)si;
+	for (Object *ins : instances) {
+		ScriptInstance *si = ins->get_script_instance();
+		GDScriptInstance *gsi = (GDScriptInstance *)si;
 		gsi->reload_members();
+		StringName reload_method = SNAME("_tools_reload_script");
+		if (gsi->has_method(reload_method)) {
+			ins->call(reload_method);
+		}
 	}
 #endif
 
@@ -2030,7 +2034,7 @@ void GDScriptInstance::reload_members() {
 			if (E.value.property_info.type != Variant::NIL) {
 				if (value.get_type() != E.value.property_info.type) {
 					if (value.get_type() == Variant::NIL && E.value.property_info.type == Variant::OBJECT) {
-						new_members.write[E.value.index] = (Object*)nullptr;
+						new_members.write[E.value.index] = (Object *)nullptr;
 					} else {
 						script->get_property_default_value(E.key, new_members.write[E.value.index]);
 					}
@@ -2038,6 +2042,18 @@ void GDScriptInstance::reload_members() {
 			}
 		} else {
 			script->get_property_default_value(E.key, new_members.write[E.value.index]);
+		}
+		if (new_members.write[E.value.index].get_type() == Variant::DICTIONARY) {
+			Dictionary dict = new_members.write[E.value.index];
+			if (dict.is_empty()) {
+				new_members.write[E.value.index] = Dictionary();
+			}
+		}
+		if (new_members.write[E.value.index].get_type() == Variant::ARRAY) {
+			Array arr = new_members.write[E.value.index];
+			if (arr.is_empty()) {
+				new_members.write[E.value.index] = Array();
+			}
 		}
 	}
 
