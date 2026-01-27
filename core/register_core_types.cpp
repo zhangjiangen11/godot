@@ -387,6 +387,7 @@ void register_early_core_singletons() {
 
 	MessageManager::singleton = memnew(MessageManager);
 	Engine::get_singleton()->add_singleton(Engine::Singleton("MessageManager", MessageManager::singleton));
+	Engine::get_singleton()->add_singleton(Engine::Singleton("ClassDB", _classdb));
 }
 
 void register_core_singletons() {
@@ -397,7 +398,6 @@ void register_core_singletons() {
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Geometry3D", CoreBind::Geometry3D::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("ResourceLoader", CoreBind::ResourceLoader::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("ResourceSaver", CoreBind::ResourceSaver::get_singleton()));
-	Engine::get_singleton()->add_singleton(Engine::Singleton("ClassDB", _classdb));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Marshalls", CoreBind::Marshalls::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("TranslationServer", TranslationServer::get_singleton()));
 	Engine::get_singleton()->add_singleton(Engine::Singleton("Input", Input::get_singleton()));
