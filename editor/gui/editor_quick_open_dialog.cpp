@@ -690,8 +690,8 @@ void QuickOpenResultContainer::_add_candidate(QuickOpenResultCandidate &p_candid
 
 	String file_path = ResourceUID::get_singleton()->get_id_path(p_candidate.uid);
 	EditorResourcePreview::PreviewItem item = EditorResourcePreview::get_singleton()->get_resource_preview_if_available(file_path);
-	if (item.preview.is_valid()) {
-		p_candidate.thumbnail = item.preview;
+	if (item.preview_path.length() > 0) {
+		p_candidate.thumbnail = ResourceLoader::load(item.preview_path);
 	} else if (file_type_icons.has(actual_type)) {
 		p_candidate.thumbnail = *file_type_icons.getptr(actual_type);
 	} else if (has_theme_icon(actual_type, EditorStringName(EditorIcons))) {
