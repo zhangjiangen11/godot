@@ -42,7 +42,7 @@ public:
 	JoypadSDL();
 	~JoypadSDL();
 
-	static JoypadSDL *get_singleton();
+	static JoypadSDL* get_singleton();
 
 	Error initialize();
 	void process_events();
@@ -67,15 +67,15 @@ private:
 		virtual bool set_joy_accelerometer_enabled(bool p_enable) override;
 		virtual bool set_joy_gyroscope_enabled(bool p_enable) override;
 
-		virtual bool send_joy_packet(const void *p_data, int p_size) override;
+		virtual bool send_joy_packet(const void* p_data, int p_size) override;
 		virtual bool has_joy_light() const override;
 		virtual void set_joy_light(const Color& p_color) override;
 
-		SDL_Joystick *get_sdl_joystick() const;
-		SDL_Gamepad *get_sdl_gamepad() const;
+		SDL_Joystick* get_sdl_joystick() const;
+		SDL_Gamepad* get_sdl_gamepad() const;
 	};
 
-	static JoypadSDL *singleton;
+	static JoypadSDL* singleton;
 
 	Joypad joypads[Input::JOYPADS_MAX];
 	HashMap<SDL_JoystickID, int> sdl_instance_id_to_joypad_id;

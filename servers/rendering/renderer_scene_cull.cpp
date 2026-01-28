@@ -31,6 +31,7 @@
 #include "renderer_scene_cull.h"
 
 #include "core/config/project_settings.h"
+#include "core/math/geometry_3d.h"
 #include "core/message_manager.h"
 #include "core/object/worker_thread_pool.h"
 #include "rendering_light_culler.h"
