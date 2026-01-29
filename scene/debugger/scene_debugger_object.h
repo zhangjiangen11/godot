@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  fog_material.h                                                        */
+/*  scene_debugger_object.h                                               */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -30,56 +30,63 @@
 
 #pragma once
 
-#include "scene/resources/material.h"
-#include "scene/resources/texture.h"
+#ifdef DEBUG_ENABLED
 
-class FogMaterial : public Material {
-	GDCLASS(FogMaterial, Material);
+#include "scene/main/node.h"
 
+class SceneDebuggerObject {
 private:
-	float density = 1.0;
-	Color albedo = Color(1, 1, 1, 1);
-	Color emission = Color(0, 0, 0, 0);
-
-	float height_falloff = 0.0;
-
-	float edge_fade = 0.1;
-
-	Ref<Texture3D> density_texture;
-
-	static Mutex shader_mutex;
-	static RID shader;
-	static void _update_shader();
-	mutable bool shader_set = false;
-
-protected:
-	static void _bind_methods();
+	void _parse_script_properties(Script *p_script, ScriptInstance *p_instance);
 
 public:
-	void set_density(float p_density);
-	float get_density() const;
+	typedef Pair<PropertyInfo, Variant> SceneDebuggerProperty;
+	ObjectID id;
+	String class_name;
+	List<SceneDebuggerProperty> properties;
 
-	void set_albedo(Color p_color);
-	Color get_albedo() const;
+	SceneDebuggerObject(ObjectID p_id);
+	SceneDebuggerObject(Object *p_obj);
+	SceneDebuggerObject() {}
 
-	void set_emission(Color p_color);
-	Color get_emission() const;
-
-	void set_height_falloff(float p_falloff);
-	float get_height_falloff() const;
-
-	void set_edge_fade(float p_edge_fade);
-	float get_edge_fade() const;
-
-	void set_density_texture(const Ref<Texture3D> &p_texture);
-	Ref<Texture3D> get_density_texture() const;
-
-	virtual Shader::Mode get_shader_mode() const override;
-	virtual RID get_shader_rid() const override;
-	virtual RID get_rid() const override;
-
-	static void cleanup_shader();
-
-	FogMaterial();
-	virtual ~FogMaterial();
+	void serialize(Array &r_arr, int p_max_size = 1 << 20);
+	void deserialize(const Array &p_arr);
+	void deserialize(uint64_t p_id, const String &p_class_name, const Array &p_props);
 };
+
+class SceneDebuggerTree {
+public:
+	struct RemoteNode {
+		int child_count = 0;
+		String name;
+		String type_name;
+		ObjectID id;
+		String scene_file_path;
+		uint8_t view_flags = 0;
+
+		enum ViewFlags {
+			VIEW_HAS_VISIBLE_METHOD = 1 << 1,
+			VIEW_VISIBLE = 1 << 2,
+			VIEW_VISIBLE_IN_TREE = 1 << 3,
+		};
+
+		RemoteNode(int p_child, const String &p_name, const String &p_type, ObjectID p_id, const String p_scene_file_path, int p_view_flags) {
+			child_count = p_child;
+			name = p_name;
+			type_name = p_type;
+			id = p_id;
+
+			scene_file_path = p_scene_file_path;
+			view_flags = p_view_flags;
+		}
+
+		RemoteNode() {}
+	};
+
+	List<RemoteNode> nodes;
+
+	void serialize(Array &r_arr);
+	void deserialize(const Array &p_arr);
+	SceneDebuggerTree(Node *p_root);
+	SceneDebuggerTree() {}
+};
+#endif // DEBUG_ENABLED
