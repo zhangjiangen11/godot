@@ -1,6 +1,7 @@
 #include "spin_slider.h"
 
 #include "core/math/expression.h"
+#include "core/input/input.h"
 #include "core/string/translation_server.h"
 #include "scene/theme/theme_db.h"
 
@@ -79,7 +80,7 @@ void SpinSlider::gui_input(const Ref<InputEvent> &p_event) {
 			grabbing_spinner_dist_cache += diff_x * grabbing_spinner_speed;
 
 			if (!grabbing_spinner && Math::abs(grabbing_spinner_dist_cache) > 4 * grabbing_spinner_speed) {
-				Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_CAPTURED);
+				Input::get_singleton()->set_mouse_mode(Input::MouseMode::MOUSE_MODE_CAPTURED);
 				grabbing_spinner = true;
 			}
 
@@ -130,7 +131,7 @@ void SpinSlider::_grab_start() {
 void SpinSlider::_grab_end() {
 	if (grabbing_spinner_attempt) {
 		if (grabbing_spinner) {
-			Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_VISIBLE);
+			Input::get_singleton()->set_mouse_mode(Input::MouseMode::MOUSE_MODE_VISIBLE);
 			Input::get_singleton()->warp_mouse(grabbing_spinner_mouse_pos);
 			mouse_over_grabber = true;
 			queue_redraw();
@@ -456,7 +457,7 @@ void SpinSlider::_notification(int p_what) {
 		case NOTIFICATION_EXIT_TREE: {
 			if (grabbing_spinner) {
 				grabber->hide();
-				Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_VISIBLE);
+				Input::get_singleton()->set_mouse_mode(Input::MouseMode::MOUSE_MODE_VISIBLE);
 				Input::get_singleton()->warp_mouse(grabbing_spinner_mouse_pos);
 				grabbing_spinner = false;
 				grabbing_spinner_attempt = false;

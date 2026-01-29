@@ -477,11 +477,7 @@ public:
 	CursorShape get_default_cursor_shape() const;
 	void set_default_cursor_shape(CursorShape p_shape);
 	CursorShape get_current_cursor_shape() const;
-<<<<<<< HEAD
-	void set_custom_mouse_cursor(const Ref<Resource> &p_cursor, CursorShape p_shape = Input::CURSOR_ARROW, const Vector2 &p_hotspot = Vector2());
-=======
 	void set_custom_mouse_cursor(const Ref<Resource> &p_cursor, CursorShape p_shape = Input::CursorShape::CURSOR_ARROW, const Vector2 &p_hotspot = Vector2());
->>>>>>> 5ad8b27d8db0776700c2b08bf68fbea5e0a4680d
 
 	void parse_mapping(const String &p_mapping);
 	void joy_button(int p_device, JoyButton p_button, bool p_pressed);
