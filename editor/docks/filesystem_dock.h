@@ -367,7 +367,6 @@ private:
 	void _preview_invalidated(const String &p_path);
 	void _file_list_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_index, const String &p_filename);
 	void _tree_thumbnail_done(const String &p_path, const String &p_preview, const String &p_small_preview, int p_update_id, ObjectID p_item);
-
 	void _update_display_mode(bool p_force = false);
 
 	Vector<String> _tree_get_selected(bool remove_self_inclusion = true, bool p_include_unselected_cursor = false) const;
