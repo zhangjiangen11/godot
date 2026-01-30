@@ -161,6 +161,9 @@ public:
 		virtual void set_code(const String &p_Code);
 		virtual bool is_animated() const;
 		virtual bool casts_shadows() const;
+		virtual bool uses_alpha_pass() const {
+			return true;
+		}
 		virtual RS::ShaderNativeSourceCode get_native_source_code() const;
 		virtual Pair<ShaderRD *, RID> get_native_shader_and_version() const;
 
@@ -180,7 +183,11 @@ public:
 
 		virtual void set_render_priority(int p_priority) {}
 		virtual void set_next_pass(RID p_pass) {}
-		virtual bool update_parameters(const HashMap<StringName, Variant> &p_parameters, bool p_uniform_dirty, bool p_textures_dirty);
+		virtual bool update_parameters(const HashMap<StringName, Variant>& p_parameters, const HashMap<StringName, PackedByteArray>& p_buffer_params, bool p_uniform_dirty, bool p_textures_dirty, bool p_buffer_dirty);
+
+		virtual bool uses_alpha_pass() const {
+			return true;
+		}
 		virtual ~TexBlitMaterialData();
 	};
 

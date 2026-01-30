@@ -1190,7 +1190,12 @@ void MaterialStorage::MaterialData::free_parameters_uniform_set(RID p_uniform_se
 	}
 }
 
-bool MaterialStorage::MaterialData::update_parameters_uniform_set(const HashMap<StringName, Variant> &p_parameters, bool p_uniform_dirty, bool p_textures_dirty, bool p_buffer_dirty, const HashMap<StringName, ShaderLanguage::ShaderNode::Uniform> &p_uniforms, const uint32_t *p_uniform_offsets, const Vector<ShaderCompiler::GeneratedCode::Texture> &p_texture_uniforms, const HashMap<StringName, HashMap<int, RID>> &p_default_texture_params, const HashMap<StringName, PackedByteArray> &p_buffer_params, const Vector<ShaderCompiler::GeneratedCode::Buffer> &p_uniform_buffers, const Vector<ShaderCompiler::GeneratedCode::Buffer> &p_storage_buffers, uint32_t p_ubo_size, RID &uniform_set, RID p_shader, uint32_t p_shader_uniform_set, bool p_use_linear_color, bool p_3d_material) {
+bool MaterialStorage::MaterialData::update_parameters_uniform_set(const HashMap<StringName, Variant> &p_parameters, bool p_uniform_dirty, bool p_textures_dirty,\
+	bool p_buffer_dirty, const HashMap<StringName, ShaderLanguage::ShaderNode::Uniform> &p_uniforms, const uint32_t *p_uniform_offsets, \
+	const Vector<ShaderCompiler::GeneratedCode::Texture> &p_texture_uniforms, const HashMap<StringName, HashMap<int, RID>> &p_default_texture_params,
+	const HashMap<StringName, PackedByteArray> &p_buffer_params, const Vector<ShaderCompiler::GeneratedCode::Buffer> &p_uniform_buffers, \
+	const Vector<ShaderCompiler::GeneratedCode::Buffer> &p_storage_buffers, \
+	uint32_t p_ubo_size, RID &uniform_set, RID p_shader, uint32_t p_shader_uniform_set, bool p_use_linear_color, bool p_3d_material) {
 	if (uniform_set.is_valid() && !RD::get_singleton()->uniform_set_is_valid(uniform_set)) {
 		uniform_set = RID();
 	}
@@ -1529,10 +1534,10 @@ MaterialStorage::ShaderData *MaterialStorage::_create_tex_blit_shader_func() {
 	return shader_data;
 }
 
-bool MaterialStorage::TexBlitMaterialData::update_parameters(const HashMap<StringName, Variant> &p_parameters, bool p_uniform_dirty, bool p_textures_dirty) {
+bool MaterialStorage::TexBlitMaterialData::update_parameters(const HashMap<StringName, Variant>& p_parameters, const HashMap<StringName, PackedByteArray>& p_buffer_params, bool p_uniform_dirty, bool p_textures_dirty, bool p_buffer_dirty) {
 	uniform_set_updated = true;
 
-	return update_parameters_uniform_set(p_parameters, p_uniform_dirty, p_textures_dirty, shader_data->uniforms, shader_data->ubo_offsets.ptr(), shader_data->texture_uniforms, shader_data->default_texture_params, shader_data->ubo_size, uniform_set, TextureStorage::get_singleton()->tex_blit_shader.shader.version_get_shader(shader_data->version, 0), 1, true, false);
+	return update_parameters_uniform_set(p_parameters, p_uniform_dirty, p_textures_dirty, p_buffer_dirty, shader_data->uniforms, shader_data->ubo_offsets.ptr(), shader_data->texture_uniforms, shader_data->default_texture_params, p_buffer_params, shader_data->uniform_buffers, shader_data->storage_buffers, shader_data->ubo_size, uniform_set, TextureStorage::get_singleton()->tex_blit_shader.shader.version_get_shader(shader_data->version, 0), 1, true, true);
 }
 
 MaterialStorage::TexBlitMaterialData::~TexBlitMaterialData() {

@@ -33,6 +33,7 @@
 #include "core/input/shortcut.h"
 #include "core/io/config_file.h"
 #include "core/io/resource.h"
+#include "core/os/keyboard.h"
 #include "core/os/thread_safe.h"
 
 class EditorPlugin;
@@ -114,6 +115,7 @@ private:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _initial_set(const StringName &p_name, const Variant &p_value, bool p_basic = false);
 	void _get_property_list(List<PropertyInfo> *p_list) const;
+
 public:
 	void _add_property_info_bind(const Dictionary &p_info);
 	bool _property_can_revert(const StringName &p_name) const;
@@ -150,12 +152,12 @@ public:
 	static void destroy();
 	void set_optimize_save(bool p_optimize);
 
-	bool has_default_value(const StringName&p_setting) const;
-	void set_setting(const StringName&p_setting, const Variant &p_value);
-	Variant get_setting(const StringName&p_setting) const;
-	bool has_setting(const StringName&p_setting) const;
-	void erase(const StringName&p_setting);
-	void raise_order(const StringName&p_setting);
+	bool has_default_value(const StringName &p_setting) const;
+	void set_setting(const StringName &p_setting, const Variant &p_value);
+	Variant get_setting(const StringName &p_setting) const;
+	bool has_setting(const StringName &p_setting) const;
+	void erase(const StringName &p_setting);
+	void raise_order(const StringName &p_setting);
 	void set_initial_value(const StringName &p_setting, const Variant &p_value, bool p_update_current = false);
 	void set_restart_if_changed(const StringName &p_setting, bool p_restart);
 	void set_basic(const StringName &p_setting, bool p_basic);

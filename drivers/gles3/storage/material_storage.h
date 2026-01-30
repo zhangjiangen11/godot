@@ -465,6 +465,9 @@ struct TexBlitShaderData : public ShaderData {
 	virtual void set_code(const String &p_code);
 	virtual bool is_animated() const;
 	virtual bool casts_shadows() const;
+	virtual bool uses_alpha_pass() const {
+		return true;
+	}
 	virtual RS::ShaderNativeSourceCode get_native_source_code() const;
 
 	TexBlitShaderData();

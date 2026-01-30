@@ -36,6 +36,7 @@
 #include "material_storage.h"
 #include "particles_storage.h"
 #include "texture_storage.h"
+#include "scene/resources/texture.h"
 
 #include "drivers/gles3/rasterizer_canvas_gles3.h"
 #include "drivers/gles3/rasterizer_gles3.h"

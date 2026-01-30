@@ -4612,7 +4612,7 @@ void EditorInspector::update_tree() {
 
 		// Only used for boolean types. Makes the section header a checkable group and adds tooltips.
 		if (p.hint == PROPERTY_HINT_GROUP_ENABLE) {
-			if (p.type == Variant::BOOL && (p.name.begins_with(group_base) || p.name.begins_with(subgroup_base))) {
+			if (p.type == Variant::BOOL && (p.name.begins_with("__") || p.name.begins_with(group_base) || p.name.begins_with(subgroup_base))) {
 				EditorInspectorSection *last_created_section = Object::cast_to<EditorInspectorSection>(current_vbox->get_parent());
 				if (last_created_section) {
 					bool valid = false;
