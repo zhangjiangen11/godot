@@ -34,7 +34,6 @@
 #include "core/templates/self_list.h"
 #include "core/variant/typed_dictionary.h"
 #include "scene/resources/shader.h"
-#include "scene/resources/texture.h"
 #include "servers/rendering/rendering_server.h"
 
 class Material : public Resource {
