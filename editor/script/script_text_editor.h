@@ -57,6 +57,29 @@ public:
 class ScriptTextEditor : public ScriptEditorBase {
 	GDCLASS(ScriptTextEditor, ScriptEditorBase);
 
+	class EditMenusSTE : public HBoxContainer {
+		GDCLASS(EditMenusSTE, HBoxContainer);
+		MenuButton *edit_menu = nullptr;
+		MenuButton *search_menu = nullptr;
+		MenuButton *goto_menu = nullptr;
+		PopupMenu *bookmarks_menu = nullptr;
+		PopupMenu *breakpoints_menu = nullptr;
+		PopupMenu *highlighter_menu = nullptr;
+
+		ScriptTextEditor *_get_active_editor();
+		void _edit_option(int p_op);
+		void _prepare_edit_menu();
+		void _update_highlighter_menu();
+		void _change_syntax_highlighter(int p_idx);
+		void _update_bookmark_list();
+		void _bookmark_item_pressed(int p_idx);
+		void _update_breakpoint_list();
+		void _breakpoint_item_pressed(int p_idx);
+
+	public:
+		EditMenusSTE();
+	};
+
 	CodeTextEditor *code_editor = nullptr;
 	RichTextLabel *warnings_panel = nullptr;
 	RichTextLabel *errors_panel = nullptr;
@@ -75,14 +98,7 @@ class ScriptTextEditor : public ScriptEditorBase {
 
 	List<Connection> missing_connections;
 
-	HBoxContainer *edit_hb = nullptr;
-
-	MenuButton *edit_menu = nullptr;
-	MenuButton *search_menu = nullptr;
-	MenuButton *goto_menu = nullptr;
-	PopupMenu *bookmarks_menu = nullptr;
-	PopupMenu *breakpoints_menu = nullptr;
-	PopupMenu *highlighter_menu = nullptr;
+	static inline EditMenusSTE *edit_menus = nullptr;
 	PopupMenu *context_menu = nullptr;
 
 	GotoLinePopup *goto_line_popup = nullptr;
@@ -108,6 +124,8 @@ class ScriptTextEditor : public ScriptEditorBase {
 	String color_args;
 
 	bool theme_loaded = false;
+
+	LocalVector<Ref<EditorSyntaxHighlighter>> highlighters;
 
 	enum {
 		EDIT_UNDO,
@@ -186,8 +204,6 @@ class ScriptTextEditor : public ScriptEditorBase {
 	void _assign_dragged_export_variables();
 
 protected:
-	void _update_breakpoint_list();
-	void _breakpoint_item_pressed(int p_idx);
 	void _breakpoint_toggled(int p_row);
 
 	void _on_caret_moved();
@@ -217,15 +233,11 @@ protected:
 
 	void _notification(int p_what);
 
-	HashMap<String, Ref<EditorSyntaxHighlighter>> highlighters;
-	void _change_syntax_highlighter(int p_idx);
-
 	void _edit_option(int p_op);
 	void _edit_option_toggle_inline_comment();
 	void _make_context_menu(bool p_selection, bool p_color, bool p_foldable, bool p_open_docs, bool p_goto_definition, Vector2 p_pos);
 	void _text_edit_gui_input(const Ref<InputEvent> &ev);
 	void _color_changed(const Color &p_color);
-	void _prepare_edit_menu();
 
 	void _goto_line(int p_line) { goto_line(p_line); }
 	void _lookup_symbol(const String &p_symbol, int p_row, int p_column);
@@ -251,7 +263,7 @@ public:
 	virtual void apply_code() override;
 	virtual Ref<Resource> get_edited_resource() const override;
 	virtual void set_edited_resource(const Ref<Resource> &p_res) override;
-	virtual void enable_editor(Control *p_shortcut_context = nullptr) override;
+	virtual void enable_editor() override;
 	virtual Vector<String> get_functions() override;
 	virtual void reload_text() override;
 	virtual String get_name() override;
@@ -287,8 +299,7 @@ public:
 
 	virtual void set_debugger_active(bool p_active) override;
 
-	Control *get_edit_menu() override;
-	virtual void clear_edit_menu() override;
+	virtual Control *get_edit_menu() override;
 	virtual void set_find_replace_bar(FindReplaceBar *p_bar) override;
 
 	static void register_editor();
