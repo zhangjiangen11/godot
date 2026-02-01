@@ -113,15 +113,15 @@ public:
 	void update_ik();
 	void update_placement(float delta);
 
-	void apply_ik_map(HashMap<BoneId, Quaternion> ik_map, Transform3D global_parent,
+	void apply_ik_map(const HashMap<BoneId, Quaternion> &ik_map, Transform3D global_parent,
 			Vector<BoneId> apply_order);
-	void apply_ik_map(HashMap<BoneId, Basis> ik_map, Transform3D global_parent,
+	void apply_ik_map(const HashMap<BoneId, Basis> &ik_map, Transform3D global_parent,
 			Vector<BoneId> apply_order);
 	Vector<BoneId> bone_id_order(Ref<RenIKChain> chain);
 	Vector<BoneId> bone_id_order(Ref<RenIKLimb> limb);
 
 	Transform3D get_global_parent_pose(BoneId child,
-			HashMap<BoneId, Quaternion> ik_map,
+			const HashMap<BoneId, Quaternion> &ik_map,
 			Transform3D map_global_parent);
 
 	SpineTransforms perform_torso_ik();

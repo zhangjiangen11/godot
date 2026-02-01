@@ -432,6 +432,10 @@ Callable::Callable(ObjectID p_object, const StringName &p_method) {
 }
 
 Callable::Callable(CallableCustom *p_custom) {
+	if (p_custom == nullptr) {
+		object = 0;
+		return;
+	}
 	if (unlikely(p_custom->referenced)) {
 		object = 0;
 		ERR_FAIL_MSG("Callable custom is already referenced.");

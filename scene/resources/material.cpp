@@ -4308,7 +4308,7 @@ void BaseMaterial3D::bt_change_shader_material() {
 	shader->set_path(shader_path);
 	save_tres(shader_path, shader);
 
-	HashMap<StringName, Variant> new_param_cache = param_cache;
+	HashMap<StringName, Variant> new_param_cache(param_cache);
 
 	Ref<Texture2D> new_textures[TEXTURE_MAX];
 	for (int i = 0; i < TEXTURE_MAX; i++) {

@@ -1008,7 +1008,7 @@ void RenIK::update_placement(float delta) {
 	}
 }
 
-void RenIK::apply_ik_map(HashMap<BoneId, Quaternion> ik_map,
+void RenIK::apply_ik_map(const HashMap<BoneId, Quaternion> &ik_map,
 		Transform3D global_parent,
 		Vector<BoneId> apply_order) {
 	if (skeleton) {
@@ -1019,7 +1019,7 @@ void RenIK::apply_ik_map(HashMap<BoneId, Quaternion> ik_map,
 	}
 }
 
-void RenIK::apply_ik_map(HashMap<BoneId, Basis> ik_map, Transform3D global_parent,
+void RenIK::apply_ik_map(const HashMap<BoneId, Basis> &ik_map, Transform3D global_parent,
 		Vector<BoneId> apply_order) {
 	if (skeleton) {
 		for (int i = 0; i < apply_order.size(); i++) {
@@ -1030,7 +1030,7 @@ void RenIK::apply_ik_map(HashMap<BoneId, Basis> ik_map, Transform3D global_paren
 }
 
 Transform3D RenIK::get_global_parent_pose(BoneId child,
-		HashMap<BoneId, Quaternion> ik_map,
+		const HashMap<BoneId, Quaternion> &ik_map,
 		Transform3D map_global_parent) {
 	Transform3D full_transform;
 	BoneId parent_id = skeleton->get_bone_parent(child);
