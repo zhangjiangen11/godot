@@ -319,10 +319,10 @@ void ImageTexture::set_path(const String &p_path, bool p_take_over) {
 void ImageTexture::_bind_methods() {
 	ClassDB::bind_static_method("ImageTexture", D_METHOD("create_from_image", "image"), &ImageTexture::create_from_image);
 	ClassDB::bind_method(D_METHOD("get_format"), &ImageTexture::get_format);
-
-	ClassDB::bind_method(D_METHOD("set_image", "image"), &ImageTexture::set_image);
 	ClassDB::bind_method(D_METHOD("update", "image"), &ImageTexture::update);
 	ClassDB::bind_method(D_METHOD("set_size_override", "size"), &ImageTexture::set_size_override);
+
+	ClassDB::bind_method(D_METHOD("set_image", "image"), &ImageTexture::set_image);
 
 	ClassDB::bind_method(D_METHOD("set_nine_draw", "nine_draw"), &ImageTexture::set_nine_draw);
 	ClassDB::bind_method(D_METHOD("get_nine_draw"), &ImageTexture::get_nine_draw);
@@ -347,7 +347,7 @@ void ImageTexture::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_nine_vertical_fill", "nine_vertical_fill"), &ImageTexture::set_nine_vertical_fill);
 	ClassDB::bind_method(D_METHOD("get_nine_vertical_fill"), &ImageTexture::get_nine_vertical_fill);
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, "Image", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "set_image", "get_image");
+	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, Image::get_class_static(), PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "set_image", "get_image");
 
 	ADD_GROUP("Nine Patch", "nine_");
 
@@ -360,7 +360,6 @@ void ImageTexture::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_top"), "set_nine_top", "get_nine_top");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_right"), "set_nine_right", "get_nine_right");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "nine_bottom"), "set_nine_bottom", "get_nine_bottom");
-	ADD_PROPERTY(PropertyInfo(Variant::OBJECT, "image", PROPERTY_HINT_RESOURCE_TYPE, Image::get_class_static(), PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_INTERNAL | PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT), "_set_image", "get_image");
 }
 
 ImageTexture::~ImageTexture() {
