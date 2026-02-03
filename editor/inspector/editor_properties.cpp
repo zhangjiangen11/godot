@@ -1179,6 +1179,7 @@ void EditorPropertyEnum::setup(const Vector<String> &p_options) {
 		options->add_item(String(", ").join(K.value));
 		options->set_item_metadata(-1, K.key);
 	}
+	options->set_popup_pressed_cb(callable_mp(this, &EditorPropertyEnum::cb_update_options));
 }
 
 void EditorPropertyEnum::set_option_button_clip(bool p_enable) {
@@ -1187,6 +1188,36 @@ void EditorPropertyEnum::set_option_button_clip(bool p_enable) {
 
 OptionButton *EditorPropertyEnum::get_option_button() {
 	return options;
+}
+
+void EditorPropertyEnum::cb_update_options(OptionButton *p_ob) {
+	if (get_edited_object() == nullptr) {
+		return;
+	}
+	StringName name = get_object_enum_property_name_list(get_edited_property());
+	if (get_edited_object()->has_method(name)) {
+		Array options_array = get_edited_object()->call(name);
+		p_ob->clear();
+		for (int i = 0; i < options_array.size(); i++) {
+			String opt = options_array[i];
+			p_ob->add_item(options_array[i], i);
+		}
+		int current_value = get_edited_property_value();
+		options->select(current_value);
+	} else if (is_dynamic_options) {
+		if (!get_edited_object()->has_method(dyn_options_method)) {
+			return;
+		}
+
+		p_ob->clear();
+		Array options_array = get_edited_object()->call(dyn_options_method);
+		for (int i = 0; i < options_array.size(); i++) {
+			String opt = options_array[i];
+			p_ob->add_item(options_array[i], i);
+		}
+		int current_value = get_edited_property_value();
+		options->select(current_value);
+	}
 }
 
 EditorPropertyEnum::EditorPropertyEnum() {
@@ -4120,6 +4151,20 @@ EditorProperty *EditorInspectorDefaultPlugin::get_editor_for_property(Object *p_
 				editor->setup(options);
 				return editor;
 
+			} else if (p_hint == PROPERTY_HINT_ENUM_DYNAMIC_LIST) {
+				EditorPropertyEnum *editor = memnew(EditorPropertyEnum);
+				Vector<String> options;
+				Vector<String> option_names;
+				if (p_object->has_method(p_hint_text)) {
+					Array options_array = p_object->call(p_hint_text);
+					for (int i = 0; i < options_array.size(); i++) {
+						String opt = options_array[i];
+						options.push_back(opt);
+					}
+				}
+				editor->setup(options);
+				editor->set_dynamic(true, p_hint_text);
+				return editor;
 			} else if (p_hint == PROPERTY_HINT_FLAGS) {
 				EditorPropertyFlags *editor = memnew(EditorPropertyFlags);
 				Vector<String> options = p_hint_text.split(",");

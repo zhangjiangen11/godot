@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include "editor/inspector/editor_inspector.h"
 #include "core/math/expression.h"
+#include "editor/inspector/editor_inspector.h"
 
 class CheckBox;
 class ColorPickerButton;
@@ -365,18 +365,25 @@ public:
 class EditorPropertyEnum : public EditorProperty {
 	GDCLASS(EditorPropertyEnum, EditorProperty);
 	OptionButton *options = nullptr;
+	String dyn_options_method;
+	bool is_dynamic_options = false;
 
 	void _option_selected(int p_which);
 
 protected:
 	virtual void _set_read_only(bool p_read_only) override;
+	void cb_update_options(OptionButton *p_ob);
 
 public:
 	void setup(const Vector<String> &p_options);
 	virtual void update_property() override;
 	void set_option_button_clip(bool p_enable);
 	OptionButton *get_option_button(); // Hack to allow setting icons.
-	EditorPropertyEnum();
+	void set_dynamic(bool p_is_dynamic, const String &p_method) {
+		is_dynamic_options = p_is_dynamic;
+		dyn_options_method = p_method;
+	}
+	EditorPropertyEnum(); // Hack to allow setting icons.
 };
 
 class EditorPropertyFlags : public EditorProperty {
