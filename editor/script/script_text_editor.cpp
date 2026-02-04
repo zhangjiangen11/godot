@@ -732,14 +732,15 @@ void ScriptTextEditor::_update_color_text() {
 
 void ScriptTextEditor::update_settings() {
 	code_editor->get_text_editor()->set_gutter_draw(connection_gutter, EDITOR_GET("text_editor/appearance/gutters/show_info_gutter"));
-	if (EDITOR_GET("text_editor/appearance/enable_inline_color_picker")) {
-		code_editor->get_text_editor()->set_inline_object_handlers(
-				callable_mp(this, &ScriptTextEditor::_inline_object_parse),
-				callable_mp(this, &ScriptTextEditor::_inline_object_draw),
-				callable_mp(this, &ScriptTextEditor::_inline_object_handle_click));
-	} else {
-		code_editor->get_text_editor()->set_inline_object_handlers(Callable(), Callable(), Callable());
-	}
+	//if (EDITOR_GET("text_editor/appearance/enable_inline_color_picker")) {
+	//	code_editor->get_text_editor()->set_inline_object_handlers(
+	//			callable_mp(this, &ScriptTextEditor::_inline_object_parse),
+	//			callable_mp(this, &ScriptTextEditor::_inline_object_draw),
+	//			callable_mp(this, &ScriptTextEditor::_inline_object_handle_click));
+	//} else {
+	//	code_editor->get_text_editor()->set_inline_object_handlers(Callable(), Callable(), Callable());
+	//}
+	code_editor->get_text_editor()->set_inline_object_handlers(Callable(), Callable(), Callable());
 	TextEditorBase::update_settings();
 }
 

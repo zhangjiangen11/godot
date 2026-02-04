@@ -3200,6 +3200,7 @@ void RendererSceneCull::_scene_cull(CullData &cull_data, InstanceCullResult &cul
 
 		for (uint32_t j = 0; j < cull_data.cull->sdfgi.region_count; j++) {
 			if (is_ignore_all_culling) {
+				uint32_t base_type = idata.flags & InstanceData::FLAG_BASE_TYPE_MASK;
 				// ignore all culling
 				if ((1 << base_type) & RS::INSTANCE_GEOMETRY_MASK) {
 					if (idata.flags & InstanceData::FLAG_USES_BAKED_LIGHT) {
