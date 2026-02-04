@@ -135,7 +135,7 @@ void ResourceImporterTexture::update_imports() {
 
 			String compress_string;
 			if (compress_to == 1) {
-				cf->set_value("params", "compress/mode", COMPRESS_VRAM_COMPRESSED);
+				cf->set_value("params", "compress/mode", COMPRESS_BASIS_UNIVERSAL);
 				compress_string = "VRAM Compressed (S3TC/ETC/BPTC)";
 
 			} else if (compress_to == 2) {
