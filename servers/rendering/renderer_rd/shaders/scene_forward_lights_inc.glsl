@@ -61,14 +61,14 @@ hvec3 F0(half metallic, half specular, hvec3 albedo) {
 
 half V_Kelemen(half LdotH) {
 	// Kelemen 2001, "A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling"
-	return saturateHalf(half(0.25) / (LdotH * LdotH + 1e-4));
+	return saturateHalf(half(0.25) / (LdotH * LdotH + half(1e-4)));
 }
 
 hvec3 f0_Clear_Coat_To_Surface(hvec3 f0) {
 	// Approximation of iorTof0(f0ToIor(f0), 1.5)
 	// This assumes that the clear coat layer has an IOR of 1.5
 	// see https://github.com/google/filament/blob/837b2715a05f4656d4f524bce50d1b23ff8f84c9/shaders/src/surface_material.fs#L54-L62
-	return clamp(f0 * (f0 * (0.941892 - 0.263008 * f0) + 0.346479) - 0.0285998, hvec3(0.0), hvec3(1.0));
+	return clamp(f0 * (f0 * (half(0.941892) - half(0.263008) * f0) + half(0.346479)) - half(0.0285998), half(0.0), half(1.0));
 }
 
 void light_compute(hvec3 N, hvec3 L, hvec3 V, half A, hvec3 light_color, bool is_directional, half attenuation, hvec3 f0, half roughness, half metallic, half specular_amount, hvec3 albedo, inout half alpha, vec2 screen_uv, hvec3 energy_compensation,
@@ -198,8 +198,7 @@ void light_compute(hvec3 N, hvec3 L, hvec3 V, half A, hvec3 light_color, bool is
 		half Gr = V_Kelemen(cLdotH);
 		half Fr = mix(half(0.04), half(1.0), cLdotH5) * clearcoat;
 		cc_attenuation = half(1.0) - Fr;
-		half clearcoat_specular_brdf_NL = clearcoat * Gr * Fr * Dr * ccNdotL;
-
+		half clearcoat_specular_brdf_NL = Dr * Gr * Fr * ccNdotL;
 		specular_light += clearcoat_specular_brdf_NL * light_color * attenuation * specular_amount;
 #endif // LIGHT_CLEARCOAT_USED
 
@@ -1041,12 +1040,14 @@ void reflection_process(uint ref_index, vec3 vertex, hvec3 ref_vec, hvec3 normal
 		local_cc_ref_vec = posonbox - reflections.data[ref_index].box_offset;
 	}
 
-	vec3 cc_reflection = textureLod(samplerCubeArray(reflection_atlas, DEFAULT_SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP), vec4(local_cc_ref_vec, reflections.data[ref_index].index), cc_roughness * MAX_ROUGHNESS_LOD).rgb * sc_luminance_multiplier();
-	cc_reflection *= reflections.data[ref_index].exposure_normalization;
+	float cc_roughness_lod = sqrt(cc_roughness) * MAX_ROUGHNESS_LOD;
+	vec2 cc_reflection_uv = vec3_to_oct_with_border(local_cc_ref_vec, border_size);
+	hvec3 cc_reflection = hvec3(textureLod(sampler2DArray(reflection_atlas, DEFAULT_SAMPLER_LINEAR_WITH_MIPMAPS_CLAMP), vec3(cc_reflection_uv, reflections.data[ref_index].index), cc_roughness_lod).rgb) * REFLECTION_MULTIPLIER;
+	cc_reflection *= half(reflections.data[ref_index].exposure_normalization);
 	if (reflections.data[ref_index].exterior) {
 		cc_reflection = mix(cc_specular_light, cc_reflection, blend);
 	}
-	cc_reflection *= reflections.data[ref_index].intensity * blend;
+	cc_reflection *= half(reflections.data[ref_index].intensity) * blend;
 	cc_reflection_accum += cc_reflection;
 #endif // LIGHT_CLEARCOAT_USED
 
