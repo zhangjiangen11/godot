@@ -3698,12 +3698,12 @@ void EditorPropertyResource::_resource_changed(const Ref<RefCounted> &p_resource
 		}
 	}
 
-	if (p_resource.is_valid() && p_resource->is_local_to_scene()) {
+	if (r && r->is_local_to_scene()) {
 		// Attempting to configure the local scene.
 		Node *local_scene = _get_base_node();
 		if (local_scene) {
 			HashMap<Ref<Resource>, Ref<Resource>> remap;
-			p_resource->configure_for_local_scene(local_scene, remap);
+			r->configure_for_local_scene(local_scene, remap);
 		} else {
 			WARN_PRINT("You are attempting to assign a local-to-scene resource outside the scene.");
 		}
