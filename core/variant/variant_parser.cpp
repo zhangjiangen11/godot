@@ -36,6 +36,8 @@
 #include "core/object/script_language.h"
 #include "core/string/string_buffer.h"
 
+#include "scene/property_utils.h"
+
 char32_t VariantParser::Stream::get_char() {
 	// is within buffer?
 	if (readahead_pointer < readahead_filled) {
@@ -2220,6 +2222,13 @@ Error VariantWriter::write(const Variant &p_variant, StoreStringFunc p_store_str
 				//if (E.usage & PROPERTY_USAGE_STORAGE || E.usage & PROPERTY_USAGE_SCRIPT_VARIABLE) {
 				if (E.usage & PROPERTY_USAGE_STORAGE) {
 					//must be serialized
+					Variant v = obj->get(E.name);
+					StringName key = E.name;
+					bool is_script = key == CoreStringName(script);
+					Variant default_value = is_script ? Variant() : PropertyUtils::get_property_default_value(obj, E.name);
+					if (default_value.get_type() != Variant::NIL && bool(Variant::evaluate(Variant::OP_EQUAL, v, default_value))) {
+						continue;
+					}
 
 					if (first) {
 						first = false;
@@ -2228,7 +2237,7 @@ Error VariantWriter::write(const Variant &p_variant, StoreStringFunc p_store_str
 					}
 
 					p_store_string_func(p_store_string_ud, "\"" + E.name + "\":");
-					write(obj->get(E.name), p_store_string_func, p_store_string_ud, p_encode_res_func, p_encode_res_ud, p_recursion_count, p_compat);
+					write(v, p_store_string_func, p_store_string_ud, p_encode_res_func, p_encode_res_ud, p_recursion_count, p_compat);
 				}
 			}
 

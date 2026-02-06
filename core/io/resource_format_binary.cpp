@@ -1925,6 +1925,13 @@ void ResourceFormatSaverBinaryInstance::write_variant(Ref<FileAccess> f, const V
 				// 存储属性的数量
 				f->store_32(uint32_t(property_dict.size()));
 				for (const KeyValue<Variant, Variant> &kv : property_dict) {
+
+					StringName key = kv.key;
+					bool is_script = key == CoreStringName(script);
+					Variant default_value = is_script ? Variant() : PropertyUtils::get_property_default_value(ref.ptr(), key);
+					if (default_value.get_type() != Variant::NIL && bool(Variant::evaluate(Variant::OP_EQUAL, kv.value, default_value))) {
+						continue;
+					}
 					write_variant(f, kv.key, resource_map, external_resources, string_map);
 					write_variant(f, kv.value, resource_map, external_resources, string_map);
 				}
