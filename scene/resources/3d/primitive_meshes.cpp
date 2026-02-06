@@ -441,9 +441,9 @@ void CapsuleMesh::create_mesh_array(Array &p_arr, const float radius, const floa
 	point = 0;
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	// Note, this has been aligned with our collision shape but I've left the descriptions as top/middle/bottom.
@@ -761,9 +761,9 @@ void BoxMesh::create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w, int
 	point = 0;
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	// front + back
@@ -1114,9 +1114,9 @@ void CylinderMesh::create_mesh_array(Array &p_arr, float top_radius, float botto
 	point = 0;
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	thisrow = 0;
@@ -1450,9 +1450,9 @@ void PlaneMesh::_create_mesh_array(Array &p_arr) const {
 	point = 0;
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	/* top + bottom */
@@ -1698,9 +1698,9 @@ void PrismMesh::_create_mesh_array(Array &p_arr) const {
 	point = 0;
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	/* front + back */
@@ -2056,9 +2056,9 @@ void SphereMesh::create_mesh_array(Array &p_arr, float radius, float height, int
 	point = 0;
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	thisrow = 0;
@@ -2267,9 +2267,9 @@ void TorusMesh::_create_mesh_array(Array &p_arr) const {
 	indices.reserve(rings * ring_segments * 6);
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	ERR_FAIL_COND_MSG(inner_radius == outer_radius, "Inner radius and outer radius cannot be the same.");
@@ -2570,9 +2570,9 @@ void TubeTrailMesh::_create_mesh_array(Array &p_arr) const {
 	int point = 0;
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	int thisrow = 0;
@@ -2945,9 +2945,9 @@ void RibbonTrailMesh::_create_mesh_array(Array &p_arr) const {
 	indices.reserve(total_segments * 6 * (shape == SHAPE_CROSS ? 2 : 1));
 
 #define ADD_TANGENT(m_x, m_y, m_z, m_d) \
-	tangents.push_back(m_x);            \
-	tangents.push_back(m_y);            \
-	tangents.push_back(m_z);            \
+	tangents.push_back(m_x); \
+	tangents.push_back(m_y); \
+	tangents.push_back(m_z); \
 	tangents.push_back(m_d);
 
 	for (int j = 0; j <= total_segments; j++) {

@@ -391,16 +391,16 @@ void ImporterMesh::correct_terrain_vertex_normal(const HashMap<Vector2, Vector3>
 }
 
 #define VERTEX_SKIN_FUNC(bone_count, vert_idx, read_array, write_array, transform_array, bone_array, weight_array) \
-	Vector3 transformed_vert;                                                                                      \
-	for (unsigned int weight_idx = 0; weight_idx < bone_count; weight_idx++) {                                     \
-		int bone_idx = bone_array[vert_idx * bone_count + weight_idx];                                             \
-		float w = weight_array[vert_idx * bone_count + weight_idx];                                                \
-		if (w < FLT_EPSILON) {                                                                                     \
-			continue;                                                                                              \
-		}                                                                                                          \
-		ERR_FAIL_INDEX(bone_idx, static_cast<int>(transform_array.size()));                                        \
-		transformed_vert += transform_array[bone_idx].xform(read_array[vert_idx]) * w;                             \
-	}                                                                                                              \
+	Vector3 transformed_vert; \
+	for (unsigned int weight_idx = 0; weight_idx < bone_count; weight_idx++) { \
+		int bone_idx = bone_array[vert_idx * bone_count + weight_idx]; \
+		float w = weight_array[vert_idx * bone_count + weight_idx]; \
+		if (w < FLT_EPSILON) { \
+			continue; \
+		} \
+		ERR_FAIL_INDEX(bone_idx, static_cast<int>(transform_array.size())); \
+		transformed_vert += transform_array[bone_idx].xform(read_array[vert_idx]) * w; \
+	} \
 	write_array[vert_idx] = transformed_vert;
 
 void ImporterMesh::generate_lods(float p_normal_merge_angle, Array p_bone_transform_array) {
