@@ -75,6 +75,7 @@ public:
 	}
 };
 
+#endif
 class JoltByteBufferOutputWrapper final : public JPH::StreamOut {
 public:
 	Vector<uint8_t> *file_access = nullptr;
@@ -113,5 +114,3 @@ public:
 		return false;
 	}
 };
-
-#endif

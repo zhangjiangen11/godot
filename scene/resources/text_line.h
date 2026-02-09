@@ -66,7 +66,7 @@ public:
 	RID get_rid() const;
 
 	void clear();
-	Ref<TextLine> duplicate() const;
+	Ref<TextLine> duplicate() const override;
 
 	void set_direction(TextServer::Direction p_direction);
 	TextServer::Direction get_direction() const;

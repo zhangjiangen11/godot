@@ -2229,7 +2229,9 @@ Error VariantWriter::write(const Variant &p_variant, StoreStringFunc p_store_str
 					if (default_value.get_type() != Variant::NIL && bool(Variant::evaluate(Variant::OP_EQUAL, v, default_value))) {
 						continue;
 					}
-
+					if (E.type == Variant::OBJECT && v.is_zero()) {
+						continue;
+					}
 					if (first) {
 						first = false;
 					} else {

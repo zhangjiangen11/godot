@@ -1917,6 +1917,9 @@ void ResourceFormatSaverBinaryInstance::write_variant(Ref<FileAccess> f, const V
 
 					if (pi.usage & PROPERTY_USAGE_STORAGE) {
 						Variant v = ref->get(I->get().name);
+						if (pi.type == Variant::OBJECT && v.is_zero()) {
+							continue;
+						}
 						property_dict[I->get().name] = v;
 					}
 

@@ -974,7 +974,7 @@ void ResourceCache::set_ref(const String &p_path, Resource *r_res) {
 	}
 #ifdef TOOLS_ENABLED
 	if (!r_res->is_class("Resource")) {
-		ERR_FAIL_MSG(true,"dont resource");
+		ERR_FAIL_MSG("dont resource");
 	}
 #endif
 	MutexLock mutex_lock(lock);

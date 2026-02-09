@@ -45,9 +45,9 @@ String EditorSpinSlider::get_tooltip(const Point2 &p_pos) const {
 		String tooltip = value;
 		Key key = OS::prefer_meta_over_ctrl() ? Key::META : Key::CTRL;
 		if (!editing_integer) {
-			tooltip += "\n\n" + vformat(TTR("Hold %s to round to integers."), find_keycode_name(key));
+			tooltip += "\n\n" + vformat(TTRC("Hold %s to round to integers."), find_keycode_name(key));
 		}
-		return tooltip + "\n" + TTR("Hold Shift for more precise changes.");
+		return tooltip + "\n" + TTRC("Hold Shift for more precise changes.");
 	}
 	return value;
 }

@@ -59,14 +59,14 @@ tests/data/crypto/out*
 *.a
 *.ax
 *.d
-*.dll
+bin/*.dll
 *.lib
 *.lo
 *.o
 *.os
 *.ox
 *.Plo
-*.so
+bin/*.so
 # Binutils tmp linker output of the form "stXXXXXX" where "X" is alphanumeric
 st[A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9][A-Za-z0-9]
 
