@@ -324,9 +324,9 @@ Error DirAccessWindows::remove(String p_path) {
 		return RemoveDirectoryW((LPCWSTR)(path_utf16.get_data())) != 0 ? OK : FAILED;
 	} else {
 		BOOL rs = DeleteFileW((LPCWSTR)(path_utf16.get_data()));
-		if (rs == 0) {
-			DWORD err = GetLastError();
-		}
+		//if (rs == 0) {
+		//	DWORD err = GetLastError();
+		//}
 		return rs != 0 ? OK : FAILED;
 	}
 }

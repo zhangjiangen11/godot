@@ -151,7 +151,7 @@ void TextLine::clear() {
 	TS->shaped_text_clear(rid);
 }
 
-Ref<TextLine> TextLine::duplicate() const {
+Ref<RefCounted> TextLine::duplicate(bool p_subresources) const {
 	Ref<TextLine> copy;
 	copy.instantiate();
 	if (rid.is_valid()) {

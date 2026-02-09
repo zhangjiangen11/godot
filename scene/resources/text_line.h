@@ -66,7 +66,7 @@ public:
 	RID get_rid() const;
 
 	void clear();
-	Ref<TextLine> duplicate() const override;
+	Ref<RefCounted> duplicate(bool p_subresources = false) const override;
 
 	void set_direction(TextServer::Direction p_direction);
 	TextServer::Direction get_direction() const;

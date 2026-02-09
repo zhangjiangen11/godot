@@ -708,7 +708,7 @@ Error CompressedTextureLayered::_load_data(const String &p_path, Vector<Ref<Imag
 	}
 
 	uint32_t layer_count = f->get_32(); //layer count
-	uint32_t type = f->get_32(); //layer count
+	//uint32_t type = f->get_32(); //layer count
 	//ERR_FAIL_COND_V((int)type != layered_type, ERR_INVALID_DATA);
 
 	uint32_t df = f->get_32(); //data format

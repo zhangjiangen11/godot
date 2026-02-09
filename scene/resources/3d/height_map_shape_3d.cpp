@@ -185,7 +185,7 @@ void HeightMapShape3D::set_map_width(int p_new) {
 	if (p_new < 1) {
 		// ignore
 	} else if (map_width != p_new) {
-		int was_size = map_width * map_depth;
+		//int was_size = map_width * map_depth;
 		map_width = p_new;
 	}
 }
@@ -198,7 +198,7 @@ void HeightMapShape3D::set_map_depth(int p_new) {
 	if (p_new < 1) {
 		// ignore
 	} else if (map_depth != p_new) {
-		int was_size = map_width * map_depth;
+		//int was_size = map_width * map_depth;
 		map_depth = p_new;
 	}
 }
@@ -217,7 +217,7 @@ void HeightMapShape3D::set_map_data(Vector<real_t> p_new) {
 		return;
 	}
 	// copy
-	int new_size = map_width * map_depth;
+	//int new_size = map_width * map_depth;
 	map_data.resize(map_width* map_depth);
 	real_t *w = map_data.ptrw();
 	const real_t *r = p_new.ptr();

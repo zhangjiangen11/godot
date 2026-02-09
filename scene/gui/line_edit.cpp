@@ -1138,16 +1138,16 @@ bool LineEdit::can_drop_data(const Point2 &p_point, const Variant &p_data) const
 	if (drop_override) {
 		return drop_override;
 	}
-	String text;
-	bool is_string = drop_data_to_string(p_data, text);
+	String _text;
+	bool is_string = drop_data_to_string(p_data, _text);
 	return is_editable() && is_string;
 }
 
 void LineEdit::drop_data(const Point2 &p_point, const Variant &p_data) {
 	Control::drop_data(p_point, p_data);
 
-	String text;
-	bool is_string = drop_data_to_string(p_data, text);
+	String _text;
+	bool is_string = drop_data_to_string(p_data, _text);
 	if (is_string && is_editable()) {
 		apply_ime();
 
@@ -1179,7 +1179,7 @@ void LineEdit::drop_data(const Point2 &p_point, const Variant &p_data) {
 			insert_text_at_caret(text);
 			grab_focus(true);
 		} else {
-			insert_text_at_caret(text);
+			insert_text_at_caret(_text);
 			grab_focus(true);
 		}
 		select(caret_column_tmp, caret_column);
