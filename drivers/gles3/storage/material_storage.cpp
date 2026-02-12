@@ -41,6 +41,7 @@
 #include "drivers/gles3/rasterizer_canvas_gles3.h"
 #include "drivers/gles3/rasterizer_gles3.h"
 #include "servers/rendering/storage/variant_converters.h"
+#include "servers/rendering/rendering_device.h"
 
 using namespace GLES3;
 

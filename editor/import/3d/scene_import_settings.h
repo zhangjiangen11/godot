@@ -83,7 +83,7 @@ class SceneImportSettingsDialog : public ConfirmationDialog {
 	EditorInspector *inspector = nullptr;
 
 	SubViewportContainer *vp_container = nullptr;
-	SubViewport *scene_viewport = nullptr;
+	SubViewport * base_viewport = nullptr;
 
 	struct MeshInstanceSort {
 		MeshInstance3D *mesh_instance;
