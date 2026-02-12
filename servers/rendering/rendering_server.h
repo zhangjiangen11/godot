@@ -37,7 +37,7 @@
 #include "core/variant/typed_dictionary.h"
 #include "core/variant/variant.h"
 #include "servers/display/display_server.h"
-#include "servers/rendering/rendering_device.h"
+#include "servers/rendering/rendering_device_enums.h"
 
 namespace Geometry3D {
 struct MeshData;
@@ -86,6 +86,8 @@ protected:
 			const Vector<float> &pre_color_data,
 			const Vector<float> &pre_custom_data) {}
 };
+class RenderingDevice;
+
 class RenderingServer : public Object {
 	GDCLASS(RenderingServer, Object);
 
@@ -1887,7 +1889,7 @@ public:
 	virtual uint64_t get_rendering_info(RenderingInfo p_info) = 0;
 	virtual String get_video_adapter_name() const = 0;
 	virtual String get_video_adapter_vendor() const = 0;
-	virtual RenderingDevice::DeviceType get_video_adapter_type() const = 0;
+	virtual RenderingDeviceEnums::DeviceType get_video_adapter_type() const = 0;
 	virtual String get_video_adapter_api_version() const = 0;
 
 	struct FrameProfileArea {

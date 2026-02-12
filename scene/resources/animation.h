@@ -656,8 +656,7 @@ public:
 	void copy_track(int p_track, Ref<Animation> p_to_animation);
 
 	void set_human_bone_mapping(const Dictionary &p_mapping, bool is_only_enable_human = false);
-
-	void track_get_key_indices_in_range(int p_track, double p_time, double p_delta, List<int> *p_indices, Animation::LoopedFlag p_looped_flag = Animation::LOOPED_FLAG_NONE) const;
+	void track_get_key_indices_in_range(int p_track, double p_time, double p_delta, double p_start, double p_end, List<int> *p_indices, Animation::LoopedFlag p_looped_flag = Animation::LOOPED_FLAG_NONE) const;
 
 	void set_track_info(const TypedArray<StringName> &p_track_info);
 	TypedArray<StringName> get_track_info() const;

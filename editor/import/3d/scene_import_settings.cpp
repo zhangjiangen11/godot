@@ -814,7 +814,7 @@ void SceneImportSettingsDialog::open_settings(const String &p_path, const String
 
 	_update_scene();
 
-	scene_viewport->add_child(scene);
+	base_viewport ->add_child(scene);
 
 	inspector->edit(nullptr);
 
@@ -1271,7 +1271,7 @@ void SceneImportSettingsDialog::_viewport_input(const Ref<InputEvent> &p_input) 
 			Vector3 ray_from = camera->project_ray_origin(mb->get_position());
 			Vector3 ray_dir = camera->project_ray_normal(mb->get_position());
 
-			Vector<ObjectID> instances = RenderingServer::get_singleton()->instances_cull_ray(ray_from, ray_from + ray_dir * 10000, scene_viewport->find_world_3d()->get_scenario());
+			Vector<ObjectID> instances = RenderingServer::get_singleton()->instances_cull_ray(ray_from, ray_from + ray_dir * 10000, base_viewport ->find_world_3d()->get_scenario());
 
 			if (instances.is_empty()) {
 				return;
@@ -2006,8 +2006,8 @@ SceneImportSettingsDialog::SceneImportSettingsDialog() {
 	vp_container->connect(SceneStringName(gui_input), callable_mp(this, &SceneImportSettingsDialog::_viewport_input));
 	vp_vb->add_child(vp_container);
 
-	scene_viewport = memnew(SubViewport);
-	vp_container->add_child(scene_viewport);
+	base_viewport  = memnew(SubViewport);
+	vp_container->add_child(base_viewport );
 
 	animation_preview = memnew(PanelContainer);
 	animation_preview->set_h_size_flags(Control::SIZE_EXPAND_FILL);
@@ -2052,7 +2052,7 @@ SceneImportSettingsDialog::SceneImportSettingsDialog() {
 
 	animation_toggle_skeleton_visibility->connect(SceneStringName(pressed), callable_mp(this, &SceneImportSettingsDialog::_animation_update_skeleton_visibility));
 
-	scene_viewport->set_use_own_world_3d(true);
+	base_viewport ->set_use_own_world_3d(true);
 
 	HBoxContainer *viewport_hbox = memnew(HBoxContainer);
 	vp_container->add_child(viewport_hbox);
@@ -2089,7 +2089,7 @@ SceneImportSettingsDialog::SceneImportSettingsDialog() {
 	vb_light->add_child(light_2_switch);
 
 	camera = memnew(Camera3D);
-	scene_viewport->add_child(camera);
+	base_viewport ->add_child(camera);
 	camera->make_current();
 
 	if (GLOBAL_GET("rendering/lights_and_shadows/use_physical_light_units")) {
@@ -2160,7 +2160,7 @@ SceneImportSettingsDialog::SceneImportSettingsDialog() {
 		node_selected = memnew(MeshInstance3D);
 		node_selected->set_mesh(selection_mesh);
 		node_selected->set_cast_shadows_setting(GeometryInstance3D::SHADOW_CASTING_SETTING_OFF);
-		scene_viewport->add_child(node_selected);
+		base_viewport ->add_child(node_selected);
 		node_selected->hide();
 	}
 
@@ -2175,7 +2175,7 @@ SceneImportSettingsDialog::SceneImportSettingsDialog() {
 		bones_mesh_preview = memnew(MeshInstance3D);
 		bones_mesh_preview->set_cast_shadows_setting(GeometryInstance3D::SHADOW_CASTING_SETTING_OFF);
 		bones_mesh_preview->set_skeleton_path(NodePath());
-		scene_viewport->add_child(bones_mesh_preview);
+		base_viewport ->add_child(bones_mesh_preview);
 	}
 
 	VSplitContainer *inspector_vb = memnew(VSplitContainer);
@@ -2258,9 +2258,14 @@ SceneImportSettingsDialog::SceneImportSettingsDialog() {
 	update_view_timer->connect("timeout", callable_mp(this, &SceneImportSettingsDialog::_update_view_gizmos));
 	add_child(update_view_timer);
 
-	pick_menu = memnew(PopupMenu);
-	add_child(pick_menu);
-	pick_menu->connect("id_pressed", callable_mp(this, &SceneImportSettingsDialog::_popup_menu_pressed));
+	ProjectSettings::get_singleton()->connect("settings_changed", callable_mp(this, &SceneImportSettingsDialog::_project_settings_changed));
+	_project_settings_changed();
+}
+
+void SceneImportSettingsDialog::_project_settings_changed() {
+	const bool hdr_requested = GLOBAL_GET("display/window/hdr/request_hdr_output");
+	const bool hdr_2d_enabled = GLOBAL_GET("rendering/viewport/hdr_2d");
+	base_viewport ->set_use_hdr_2d(hdr_2d_enabled || hdr_requested);
 }
 
 SceneImportSettingsDialog::~SceneImportSettingsDialog() {
