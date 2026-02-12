@@ -1928,7 +1928,6 @@ void ResourceFormatSaverBinaryInstance::write_variant(Ref<FileAccess> f, const V
 				// 存储属性的数量
 				f->store_32(uint32_t(property_dict.size()));
 				for (const KeyValue<Variant, Variant> &kv : property_dict) {
-
 					StringName key = kv.key;
 					bool is_script = key == CoreStringName(script);
 					Variant default_value = is_script ? Variant() : PropertyUtils::get_property_default_value(ref.ptr(), key);
@@ -2151,7 +2150,8 @@ void ResourceFormatSaverBinaryInstance::_find_resources(const Variant &p_variant
 
 			ref->get_property_list(&property_list);
 
-			for (const PropertyInfo &E : property_list) {
+			for (PropertyInfo &E : property_list) {
+				ref->validate_property(E);
 				if (E.usage & PROPERTY_USAGE_STORAGE) {
 					Variant value = ref->get(E.name);
 					if (E.usage & PROPERTY_USAGE_RESOURCE_NOT_PERSISTENT) {
@@ -2345,14 +2345,14 @@ Error ResourceFormatSaverBinaryInstance::save(const String &p_path, const Ref<Re
 			List<PropertyInfo> property_list;
 			E->get_property_list(&property_list);
 
-			for (const PropertyInfo &F : property_list) {
+			for (PropertyInfo &F : property_list) {
 				if (skip_editor && F.name.begins_with("__editor")) {
 					continue;
 				}
 				if (F.name == META_PROPERTY_MISSING_RESOURCES) {
 					continue;
 				}
-
+				E->validate_property(F);
 				if ((F.usage & PROPERTY_USAGE_STORAGE) || missing_resource_properties.has(F.name)) {
 					Property p;
 					p.name_idx = get_string_index(F.name);
