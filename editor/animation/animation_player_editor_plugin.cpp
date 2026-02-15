@@ -338,7 +338,9 @@ void AnimationPlayerEditor::_play_from_pressed() {
 	String current = _get_current();
 
 	if (!current.is_empty()) {
-		double time = player->get_current_animation_position();
+		double time = 0.0;
+		if(player->is_playing())
+			time = player->get_current_animation_position();
 		if (current == player->get_assigned_animation() && player->is_playing()) {
 			player->clear_caches(); //so it won't blend with itself
 		}
