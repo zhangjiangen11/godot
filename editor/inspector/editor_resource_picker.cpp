@@ -1186,7 +1186,7 @@ void EditorResourcePicker::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_SORT_CHILDREN: {
-			_update_resource();
+			//_update_resource();
 		} break;
 
 		case NOTIFICATION_DRAG_BEGIN: {
