@@ -45,7 +45,7 @@ public:
 		}
 	}
 
-	JPH_INLINE void FinishVertex(const CollideSoftBodyVertexIterator &ioVertex, int inCollidingShapeIndex) const {
+	JPH_INLINE void FinishVertex(const CollideSoftBodyVertexIterator& ioVertex, int inCollidingShapeIndex) const {
 		if (mClosestDistanceSq < FLT_MAX) {
 			// Convert triangle to world space
 			Vec3 v0 = mTransform * mV0;
@@ -61,16 +61,17 @@ public:
 					ioVertex.SetCollision(Plane::sFromPointAndNormal(v0, triangle_normal), inCollidingShapeIndex);
 				}
 			}
-		} else {
-			// Closest point is on an edge or vertex, use closest point as collision plane
-			Vec3 closest_point = mTransform * (mLocalPosition + mClosestPoint);
-			Vec3 normal = ioVertex.GetPosition() - closest_point;
-			if (normal.Dot(triangle_normal) > 0.0f) // Ignore back facing edges
-			{
-				float normal_length = normal.Length();
-				float penetration = -normal_length;
-				if (ioVertex.UpdatePenetration(penetration)) {
-					ioVertex.SetCollision(Plane::sFromPointAndNormal(closest_point, normal_length > 0.0f ? normal / normal_length : triangle_normal), inCollidingShapeIndex);
+			else {
+				// Closest point is on an edge or vertex, use closest point as collision plane
+				Vec3 closest_point = mTransform * (mLocalPosition + mClosestPoint);
+				Vec3 normal = ioVertex.GetPosition() - closest_point;
+				if (normal.Dot(triangle_normal) > 0.0f) // Ignore back facing edges
+				{
+					float normal_length = normal.Length();
+					float penetration = -normal_length;
+					if (ioVertex.UpdatePenetration(penetration)) {
+						ioVertex.SetCollision(Plane::sFromPointAndNormal(closest_point, normal_length > 0.0f ? normal / normal_length : triangle_normal), inCollidingShapeIndex);
+					}
 				}
 			}
 		}

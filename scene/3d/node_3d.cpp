@@ -1484,7 +1484,7 @@ void Node3D::bt_conver_child_to_multi_mesh() {
 		mm->set_transform_format(MultiMesh::TRANSFORM_3D);
 		int32_t mesh_count = E.value.size();
 		if (mm_to_mmi.has(E.key)) {
-			List<MultiMeshInstance3D *> mmi_list = mm_to_mmi[E.key];
+			List<MultiMeshInstance3D *>& mmi_list = mm_to_mmi[E.key];
 			for (auto &mmi : mmi_list) {
 				mesh_count += mmi->get_multimesh()->get_instance_count();
 			}
@@ -1508,7 +1508,7 @@ void Node3D::bt_conver_child_to_multi_mesh() {
 			index++;
 		}
 		if (mm_to_mmi.has(E.key)) {
-			List<MultiMeshInstance3D *> mmi_list = mm_to_mmi[E.key];
+			List<MultiMeshInstance3D *>& mmi_list = mm_to_mmi[E.key];
 			for (auto &mmi : mmi_list) {
 				for (int i = 0; i < mmi->get_multimesh()->get_instance_count(); i++) {
 					Transform3D t = mmi->get_multimesh()->get_instance_transform(i);

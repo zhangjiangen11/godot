@@ -95,6 +95,7 @@ public:
 	};
 
 	/// Constructor
+	AABBTreeBuilder(){}
 	explicit AABBTreeBuilder(TriangleSplitter &inSplitter, uint inMaxTrianglesPerLeaf = 16);
 
 	/// Recursively build tree, returns the root node of the tree
