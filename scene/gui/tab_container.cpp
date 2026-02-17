@@ -35,17 +35,6 @@
 #include "scene/gui/popup.h"
 #include "scene/theme/theme_db.h"
 
-Rect2 TabContainer::_get_tab_rect() const {
-	Rect2 rect;
-	if (tabs_visible && get_tab_count() > 0) {
-		rect = Rect2(theme_cache.tabbar_style->get_offset(), tab_bar->get_size());
-		rect.position.x += is_layout_rtl() ? theme_cache.menu_icon->get_width() : theme_cache.side_margin;
-		rect.position += tab_bar->get_global_position() - get_global_position();
-	}
-
-	return rect;
-}
-
 TabContainer::CachedTab &TabContainer::get_pending_tab(int p_idx) const {
 	if (p_idx >= pending_tabs.size()) {
 		pending_tabs.resize(p_idx + 1);
@@ -174,7 +163,6 @@ void TabContainer::_notification(int p_what) {
 				theme_cache.panel_style->draw(canvas, Rect2(0, 0, size.width, size.height));
 				return;
 			}
-			Rect2 tabbar_rect = _get_tab_rect();
 			int header_height = _get_tab_height();
 			int header_voffset = int(tabs_position == POSITION_BOTTOM) * (size.height - header_height);
 
@@ -328,28 +316,28 @@ void TabContainer::_update_margins() {
 		SWAP(left_margin, right_margin);
 	}
 
-	// if (get_tab_count() == 0) {
-	internal_container->set_offset(SIDE_LEFT, left_margin);
-	internal_container->set_offset(SIDE_RIGHT, -right_margin);
-	return;
-	// }
+	if (get_tab_count() == 0) {
+		internal_container->set_offset(SIDE_LEFT, left_margin);
+		internal_container->set_offset(SIDE_RIGHT, -right_margin);
+		return;
+	}
 
 	switch (get_tab_alignment()) {
 		case TabBar::ALIGNMENT_LEFT: {
-			tab_bar->set_offset(SIDE_LEFT, left_margin + theme_cache.side_margin);
-			tab_bar->set_offset(SIDE_RIGHT, -right_margin);
+			internal_container->set_offset(SIDE_LEFT, left_margin + theme_cache.side_margin);
+			internal_container->set_offset(SIDE_RIGHT, -right_margin);
 		} break;
 
 		case TabBar::ALIGNMENT_CENTER: {
-			tab_bar->set_offset(SIDE_LEFT, left_margin);
-			tab_bar->set_offset(SIDE_RIGHT, -right_margin);
+			internal_container->set_offset(SIDE_LEFT, left_margin);
+			internal_container->set_offset(SIDE_RIGHT, -right_margin);
 		} break;
 
 		case TabBar::ALIGNMENT_RIGHT: {
-			tab_bar->set_offset(SIDE_LEFT, left_margin);
+			internal_container->set_offset(SIDE_LEFT, left_margin);
 
 			if (has_popup) {
-				tab_bar->set_offset(SIDE_RIGHT, -right_margin);
+				internal_container->set_offset(SIDE_RIGHT, -right_margin);
 				return;
 			}
 
@@ -359,9 +347,9 @@ void TabContainer::_update_margins() {
 
 			// Calculate if all the tabs would still fit if the margin was present.
 			if (get_clip_tabs() && (tab_bar->get_offset_buttons_visible() || (get_tab_count() > 1 && (total_tabs_width + theme_cache.side_margin) > get_size().width))) {
-				tab_bar->set_offset(SIDE_RIGHT, -right_margin);
+				internal_container->set_offset(SIDE_RIGHT, -right_margin);
 			} else {
-				tab_bar->set_offset(SIDE_RIGHT, -right_margin - theme_cache.side_margin);
+				internal_container->set_offset(SIDE_RIGHT, -right_margin - theme_cache.side_margin);
 			}
 		} break;
 
@@ -410,11 +398,11 @@ void TabContainer::_drag_move_tab(int p_from_index, int p_to_index) {
 }
 
 void TabContainer::_drag_move_tab_from(TabBar *p_from_tabbar, int p_from_index, int p_to_index) {
-	Node *parent = p_from_tabbar->get_parent();
+	HBoxContainer *parent = Object::cast_to<HBoxContainer>(p_from_tabbar->get_parent()); // The internal container.
 	if (!parent) {
 		return;
 	}
-	TabContainer *from_tab_container = Object::cast_to<TabContainer>(parent);
+	TabContainer *from_tab_container = Object::cast_to<TabContainer>(parent->get_parent());
 	if (!from_tab_container) {
 		return;
 	}
@@ -1169,6 +1157,7 @@ void TabContainer::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "deselect_enabled"), "set_deselect_enabled", "get_deselect_enabled");
 
 	ADD_CLASS_DEPENDENCY("TabBar");
+	ADD_CLASS_DEPENDENCY("Button");
 
 	BIND_ENUM_CONSTANT(POSITION_TOP);
 	BIND_ENUM_CONSTANT(POSITION_BOTTOM);
@@ -1228,8 +1217,9 @@ void TabContainer::_bind_methods() {
 
 TabContainer::TabContainer() {
 	internal_container = memnew(HBoxContainer);
-	internal_container->add_theme_constant_override("separation", 0);
+	internal_container->add_theme_constant_override(SNAME("separation"), 0);
 	internal_container->set_anchors_and_offsets_preset(Control::PRESET_TOP_WIDE);
+	internal_container->set_use_parent_material(true);
 	add_child(internal_container, false, INTERNAL_MODE_FRONT);
 
 	tab_bar = memnew(TabBar);

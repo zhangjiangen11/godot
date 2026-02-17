@@ -131,7 +131,7 @@ public:
 
 		/// 构造函数
 						Vertex() = default;
-						Vertex(const Float3 &inPosition, const Float3 &inVelocity = Float3(0, 0, 0), float inInvMass = 1.0f) : mPosition(inPosition), mVelocity(inVelocity), mInvMass(inInvMass) { }
+		explicit		Vertex(const Float3 &inPosition, const Float3 &inVelocity = Float3(0, 0, 0), float inInvMass = 1.0f) : mPosition(inPosition), mVelocity(inVelocity), mInvMass(inInvMass) { }
 
 		Float3			mPosition { 0, 0, 0 };						///< 顶点的初始位置
 		Float3			mVelocity { 0, 0, 0 };						///< 顶点的初始速度
