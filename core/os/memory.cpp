@@ -31,6 +31,7 @@
 #include "memory.h"
 #include "mutex.h"
 
+#include "core/math/math_funcs_binary.h"
 #include "core/profiling/profiling.h"
 #include "core/templates/safe_refcount.h"
 
@@ -114,13 +115,13 @@ struct SmallMemory {
 
 struct SmallMemoryManager {
 #define SAMLL_MEMORY_MEMBER(count) SmallMemory<count> small_memory_##count
-#define SAMLL_MEMORY_MEMBER_BREAH(value, count)       \
-	if (value <= count) {                             \
+#define SAMLL_MEMORY_MEMBER_BREAH(value, count) \
+	if (value <= count) { \
 		return small_memory_##count.alloc_mem(count); \
 	}
 #define SAMLL_MEMORY_MEMBER_BREAH_FREE(ptr, value, count, max_cache_count) \
-	if (value <= count) {                                                  \
-		small_memory_##count.free_mem(ptr, max_cache_count);               \
+	if (value <= count) { \
+		small_memory_##count.free_mem(ptr, max_cache_count); \
 	}
 
 #define SAMLL_MEMORY_MEMBER_BREAH_ELSE(value, count) \
@@ -128,8 +129,8 @@ struct SmallMemoryManager {
 #define SAMLL_MEMORY_MEMBER_BREAH_FREE_ELSE(ptr, value, count, max_cache_count) \
 	else SAMLL_MEMORY_MEMBER_BREAH_FREE(ptr, value, count, max_cache_count)
 #define SAMLL_MEMORY_MEMBER_BREAH_INDEX(value, count, index) \
-	if (value <= count) {                                    \
-		return index;                                        \
+	if (value <= count) { \
+		return index; \
 	}
 
 #define SAMLL_MEMORY_MEMBER_BREAH_INDEX_ELSE(value, count, index) \
@@ -298,7 +299,7 @@ void *Memory::alloc_aligned_static(size_t p_bytes, size_t p_alignment) {
 #if SAMLL_MEMORY_MANAGER
 	return get_small_memory_manager().alloc_mem(p_bytes);
 #endif
-	DEV_ASSERT(is_power_of_2(p_alignment));
+	DEV_ASSERT(Math::is_power_of_2(p_alignment));
 
 	void *p1, *p2;
 	if ((p1 = (void *)malloc(p_bytes + p_alignment - 1 + sizeof(uint32_t))) == nullptr) {
