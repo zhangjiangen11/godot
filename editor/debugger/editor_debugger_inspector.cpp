@@ -33,6 +33,7 @@
 #include "core/debugger/debugger_marshalls.h"
 #include "core/io/marshalls.h"
 #include "core/io/resource_loader.h"
+#include "core/variant/typed_dictionary.h"
 #include "editor/docks/inspector_dock.h"
 #include "editor/editor_node.h"
 #include "editor/editor_undo_redo_manager.h"
@@ -121,6 +122,12 @@ bool EditorDebuggerRemoteObjects::has_class(const StringName &p_class) const {
 	}
 	return false;
 }
+
+void EditorDebuggerRemoteObjects::clear() {
+	prop_list.clear();
+	prop_values.clear();
+}
+
 void EditorDebuggerRemoteObjects::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_title"), &EditorDebuggerRemoteObjects::get_title);
 	ClassDB::bind_method("get_type_name", &EditorDebuggerRemoteObjects::get_type_name);
