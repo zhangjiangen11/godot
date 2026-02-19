@@ -53,6 +53,7 @@ private:
 		SDL_JoystickID sdl_instance_idx;
 
 		bool supports_force_feedback = false;
+		bool supports_motion_sensors = false;
 		uint64_t ff_effect_timestamp = 0;
 		Vector3 accelerometer_gravity = Vector3();
 
