@@ -1105,7 +1105,7 @@ void WorkerTaskPool::_thread_scheduler_function(void *p_user) {
 			hand->taskMax = hand->depend_task_counter->get_task_count();
 		}
 		if (hand->taskMax > 0) {
-			for (int i = 0; i < hand->taskMax; i += hand->batch_count) {
+			for (uint32_t i = 0; i < hand->taskMax; i += hand->batch_count) {
 				ThreadTaskGroup *task = singleton->allocal_task_data();
 				task->handle = hand;
 				task->callable = hand->callable;
