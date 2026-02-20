@@ -88,11 +88,9 @@ public:
 	~GDScriptParserRef();
 };
 
-#ifdef TESTS_ENABLED
 namespace GDScriptTests {
 class TestGDScriptCacheAccessor;
 }
-#endif // TESTS_ENABLED
 
 class GDScriptCache {
 	// String key is full path.
@@ -107,9 +105,7 @@ class GDScriptCache {
 	friend class GDScript;
 	friend class GDScriptParserRef;
 	friend class GDScriptInstance;
-#ifdef TESTS_ENABLED
 	friend class GDScriptTests::TestGDScriptCacheAccessor;
-#endif // TESTS_ENABLED
 
 	static GDScriptCache *singleton;
 

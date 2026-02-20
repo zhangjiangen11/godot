@@ -147,6 +147,9 @@ void Input::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_connected_joypads"), &Input::get_connected_joypads);
 	ClassDB::bind_method(D_METHOD("get_joy_vibration_strength", "device"), &Input::get_joy_vibration_strength);
 	ClassDB::bind_method(D_METHOD("get_joy_vibration_duration", "device"), &Input::get_joy_vibration_duration);
+	ClassDB::bind_method(D_METHOD("get_joy_vibration_remaining_duration", "device"), &Input::get_joy_vibration_remaining_duration);
+	ClassDB::bind_method(D_METHOD("is_joy_vibrating", "device"), &Input::is_joy_vibrating);
+	ClassDB::bind_method(D_METHOD("has_joy_vibration", "device"), &Input::has_joy_vibration);
 	ClassDB::bind_method(D_METHOD("start_joy_vibration", "device", "weak_magnitude", "strong_magnitude", "duration"), &Input::start_joy_vibration, DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("stop_joy_vibration", "device"), &Input::stop_joy_vibration);
 	ClassDB::bind_method(D_METHOD("vibrate_handheld", "duration_ms", "amplitude"), &Input::vibrate_handheld, DEFVAL(500), DEFVAL(-1.0));
@@ -641,6 +644,33 @@ float Input::get_joy_vibration_duration(int p_device) {
 	}
 }
 
+float Input::get_joy_vibration_remaining_duration(int p_device) {
+	_THREAD_SAFE_METHOD_
+	const Joypad *joypad = joy_names.getptr(p_device);
+	if (joypad == nullptr || !joypad->has_vibration) {
+		return 0.f;
+	}
+	const VibrationInfo *vibration = joy_vibration.getptr(p_device);
+	if (vibration == nullptr || (vibration->weak_magnitude == 0.f && vibration->strong_magnitude == 0.f) || vibration->duration < 0.f) {
+		return 0.f;
+	}
+	float vibration_duration = vibration->duration;
+	if (vibration_duration > 0xFFFF / 1000.f || vibration_duration == 0.f) {
+		vibration_duration = 0xFFFF / 1000.f; // SDL_MAX_RUMBLE_DURATION_MS / 1000.f
+	}
+	return MAX(vibration_duration - (OS::get_singleton()->get_ticks_usec() - vibration->timestamp) / 1e6, 0.f);
+}
+
+bool Input::is_joy_vibrating(int p_device) {
+	return get_joy_vibration_remaining_duration(p_device) > 0.0f;
+}
+
+bool Input::has_joy_vibration(int p_device) const {
+	_THREAD_SAFE_METHOD_
+	const Joypad *joypad = joy_names.getptr(p_device);
+	return joypad != nullptr && joypad->has_vibration;
+}
+
 static String _hex_str(uint8_t p_byte) {
 	static const char *dict = "0123456789abcdef";
 	char ret[3];
@@ -869,32 +899,32 @@ Vector3 Input::get_joy_gyroscope(int p_device) const {
 	return value;
 }
 
-#define CALIBRATION_SETUP            \
+#define CALIBRATION_SETUP \
 	if (!joy_motion.has(p_device)) { \
-		return;                      \
-	}                                \
+		return; \
+	} \
 	auto &calibration = joy_motion[p_device].calibration;
 
 #define CALIBRATION_SETUP_RETURN(m_return) \
-	if (!joy_motion.has(p_device)) {       \
-		return m_return;                   \
-	}                                      \
+	if (!joy_motion.has(p_device)) { \
+		return m_return; \
+	} \
 	auto &calibration = joy_motion[p_device].calibration;
 
-#define CALIBRATE_SENSOR(m_sensor)                              \
-	vector_sum = Vector3();                                     \
-	for (Vector3 step : calibration.m_sensor##_steps) {         \
-		vector_sum += step;                                     \
-	}                                                           \
-	vector_sum /= calibration.m_sensor##_steps.size();          \
-                                                                \
-	deadzone = 0.0f;                                            \
-	for (Vector3 step : calibration.m_sensor##_steps) {         \
+#define CALIBRATE_SENSOR(m_sensor) \
+	vector_sum = Vector3(); \
+	for (Vector3 step : calibration.m_sensor##_steps) { \
+		vector_sum += step; \
+	} \
+	vector_sum /= calibration.m_sensor##_steps.size(); \
+\
+	deadzone = 0.0f; \
+	for (Vector3 step : calibration.m_sensor##_steps) { \
 		deadzone = MAX(deadzone, (step - vector_sum).length()); \
-	}                                                           \
-                                                                \
-	calibration.m_sensor##_offset = vector_sum;                 \
-	calibration.m_sensor##_deadzone = deadzone;                 \
+	} \
+\
+	calibration.m_sensor##_offset = vector_sum; \
+	calibration.m_sensor##_deadzone = deadzone; \
 	calibration.m_sensor##_steps.clear();
 
 void Input::start_joy_motion_calibration(int p_device) {
@@ -1394,16 +1424,16 @@ typedef struct
 	uint8_t ucLedBlue; /* 46 */
 } DS5EffectsState_t;
 
-#define DUALSENSE_CHECK_TRIGGER                                                                                          \
-	ERR_FAIL_COND_MSG(!joy_names.has(p_device), "Joypad not connected.");                                                \
+#define DUALSENSE_CHECK_TRIGGER \
+	ERR_FAIL_COND_MSG(!joy_names.has(p_device), "Joypad not connected."); \
 	ERR_FAIL_COND_MSG(joy_names[p_device].features == nullptr, "Adaptive triggers are not supported on this platform."); \
-	ERR_FAIL_COND_MSG(p_axis != JoyAxis::TRIGGER_LEFT && p_axis != JoyAxis::TRIGGER_RIGHT,                               \
+	ERR_FAIL_COND_MSG(p_axis != JoyAxis::TRIGGER_LEFT && p_axis != JoyAxis::TRIGGER_RIGHT, \
 			"Invalid trigger axis, please specify either JOY_AXIS_TRIGGER_LEFT or JOY_AXIS_TRIGGER_RIGHT.");
 
-#define DUALSENSE_SETUP_TRIGGER_EFFECT                                                                              \
-	DS5EffectsState_t state;                                                                                        \
+#define DUALSENSE_SETUP_TRIGGER_EFFECT \
+	DS5EffectsState_t state; \
 	uint8_t *values = p_axis == JoyAxis::TRIGGER_LEFT ? state.rgucLeftTriggerEffect : state.rgucRightTriggerEffect; \
-	memset(&state, 0, sizeof(state));                                                                               \
+	memset(&state, 0, sizeof(state)); \
 	state.ucEnableBits1 |= p_axis == JoyAxis::TRIGGER_LEFT ? 0x08 : 0x04;
 
 #define DUALSENSE_SEND_EFFECT \
@@ -2120,11 +2150,6 @@ void Input::_update_action_cache(const StringName &p_action_name, ActionState &r
 void Input::_update_joypad_features(int p_device) {
 	if (!joy_names.has(p_device) || joy_names[p_device].features == nullptr) {
 		return;
-	}
-	// Do something based on the features. For example, we can save the information about
-	// the joypad having motion sensors, LED light, etc.
-	if (joy_names[p_device].features->has_joy_accelerometer()) {
-		joy_motion[p_device].has_accelerometer = true;
 	}
 	if (joy_names[p_device].features->has_joy_gyroscope()) {
 		joy_motion[p_device].has_gyroscope = true;
