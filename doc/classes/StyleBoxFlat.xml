@@ -168,6 +168,15 @@
 		<member name="shadow_size" type="int" setter="set_shadow_size" getter="get_shadow_size" default="0">
 			The shadow size in pixels.
 		</member>
+		<member name="gaussian_approximate_gaussian" type="bool" setter="set_approximate_gaussian" getter="get_approximate_gaussian" default="false">
+			Toggle to switch to a shadow that approximates Gaussian falloff by using multiple "rings" of linear shadows. Tends to take more processing power. 
+		</member>
+		<member name="gaussian_rings" type="int" setter="set_gaussian_rings" getter="get_gaussian_rings" default="6">
+			The amount of shadow "rings" used to approximate a Gaussian falloff. More rings tend to look better but take more processing power. 
+		</member>
+		<member name="gaussian_spread" type="float" setter="set_gaussian_spread" getter="get_gaussian_spread" default="0">
+			Grow or shrink the whole shadow while keeping the falloff the same.
+		</member>
 		<member name="skew" type="Vector2" setter="set_skew" getter="get_skew" default="Vector2(0, 0)">
 			If set to a non-zero value on either axis, [member skew] distorts the StyleBox horizontally and/or vertically. This can be used for "futuristic"-style UIs. Positive values skew the StyleBox towards the right (X axis) and upwards (Y axis), while negative values skew the StyleBox towards the left (X axis) and downwards (Y axis).
 			[b]Note:[/b] To ensure text does not touch the StyleBox's edges, consider increasing the [StyleBox]'s content margin (see [member StyleBox.content_margin_bottom]). It is preferable to increase the content margin instead of the expand margin (see [member expand_margin_bottom]), as increasing the expand margin does not increase the size of the clickable area for [Control]s.

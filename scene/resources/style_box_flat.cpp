@@ -135,6 +135,34 @@ int StyleBoxFlat::get_corner_detail() const {
 	return corner_detail;
 }
 
+void StyleBoxFlat::set_approximate_gaussian(const bool &p_approximate_gaussian) {
+	approximate_gaussian = p_approximate_gaussian;
+	emit_changed();
+	notify_property_list_changed();
+}
+
+bool StyleBoxFlat::get_approximate_gaussian() const {
+	return approximate_gaussian;
+}
+
+void StyleBoxFlat::set_gaussian_rings(const int &p_gaussian_rings) {
+	gaussian_rings = CLAMP(p_gaussian_rings, 1, 30);
+	emit_changed();
+}
+
+int StyleBoxFlat::get_gaussian_rings() const {
+	return gaussian_rings;
+}
+
+void StyleBoxFlat::set_gaussian_spread(const real_t &p_gaussian_spread) {
+	gaussian_spread = p_gaussian_spread;
+	emit_changed();
+}
+
+real_t StyleBoxFlat::get_gaussian_spread() const {
+	return gaussian_spread;
+}
+
 void StyleBoxFlat::set_expand_margin(Side p_side, float p_size) {
 	ERR_FAIL_INDEX((int)p_side, 4);
 	expand_margin[p_side] = p_size;
@@ -526,6 +554,18 @@ void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 	adapt_values(CORNER_TOP_LEFT, CORNER_TOP_RIGHT, adapted_corner, corner_radius_animated, width, width - adapted_border[SIDE_RIGHT], width - adapted_border[SIDE_LEFT]);
 	adapt_values(CORNER_BOTTOM_LEFT, CORNER_BOTTOM_RIGHT, adapted_corner, corner_radius_animated, width, width - adapted_border[SIDE_RIGHT], width - adapted_border[SIDE_LEFT]);
 
+	real_t shadow_corner[4] = { 1000000.0, 1000000.0, 1000000.0, 1000000.0 };
+	real_t shadow_corner_radius = MAX(shadow_size / 2.8, 1.0);
+	real_t shadow_corner_radius_arr[4];
+	const real_t smallest_shadow_radius = MAX(style_rect.size.height - shadow_size / 2.0 + gaussian_spread * 2.0, 2.0);
+	for (int i = 0; i < 4; i++) {
+		shadow_corner_radius_arr[i] = MIN(MAX(MAX(1.0, shadow_size / 2.8), adapted_corner[i]), smallest_shadow_radius / 2.0);
+	}
+	adapt_values(CORNER_TOP_RIGHT, CORNER_BOTTOM_RIGHT, shadow_corner, shadow_corner_radius_arr, height, height - adapted_border[SIDE_BOTTOM], height - adapted_border[SIDE_TOP]);
+	adapt_values(CORNER_TOP_LEFT, CORNER_BOTTOM_LEFT, shadow_corner, shadow_corner_radius_arr, height, height - adapted_border[SIDE_BOTTOM], height - adapted_border[SIDE_TOP]);
+	adapt_values(CORNER_TOP_LEFT, CORNER_TOP_RIGHT, shadow_corner, shadow_corner_radius_arr, width, width - adapted_border[SIDE_RIGHT], width - adapted_border[SIDE_LEFT]);
+	adapt_values(CORNER_BOTTOM_LEFT, CORNER_BOTTOM_RIGHT, shadow_corner, shadow_corner_radius_arr, width, width - adapted_border[SIDE_RIGHT], width - adapted_border[SIDE_LEFT]);
+
 	Rect2 infill_rect = style_rect.grow_individual(-adapted_border[SIDE_LEFT], -adapted_border[SIDE_TOP], -adapted_border[SIDE_RIGHT], -adapted_border[SIDE_BOTTOM]);
 
 	Rect2 border_style_rect = style_rect;
@@ -562,16 +602,57 @@ void StyleBoxFlat::draw(RID p_canvas_item, const Rect2 &p_rect) const {
 		Rect2 shadow_inner_rect = style_rect;
 		shadow_inner_rect.position += shadow_offset_animated;
 
-		Rect2 shadow_rect = style_rect.grow(shadow_size_animated);
-		shadow_rect.position += shadow_offset_animated;
+		if (approximate_gaussian) {
+			// Shrink inner rect so the shadow doesn't start at the edge of the shape.
+			real_t start_shadow_size = -shadow_size / 4.0 + gaussian_spread;
+			if (start_shadow_size * 2.0 + style_rect.size.height <= 2.0) {
+				start_shadow_size = (-style_rect.size.height / 2.0) + 1;
+			}
+			shadow_inner_rect = shadow_inner_rect.grow(start_shadow_size);
 
-		Color shadow_color_transparent = Color(shadow_color_animated.r, shadow_color_animated.g, shadow_color_animated.b, 0);
+			// If there are more rings than the size of the shadow in pixels, we get weird artefacts.
+			int real_gaussian_rings = MAX(shadow_size / 2 > gaussian_rings ? gaussian_rings : shadow_size / 2, 1);
+			float ring_size = shadow_size / real_gaussian_rings;
 
-		draw_rounded_rectangle(verts, indices, colors, shadow_inner_rect, adapted_corner,
-				shadow_rect, shadow_inner_rect, shadow_color_animated, shadow_color_transparent, corner_detail, skew);
+			// Error function approximation, gives a Gaussian-like transition.
+			auto erf_approx = [&](float x) {
+				x = x / ((shadow_size / 2.6) * 1.41421f);
+				x = 1 + 0.278393 * x + 0.230389 * x * x + 0.000972 * x * x * x + 0.078108 * x * x * x * x;
+				return 1.0 / (x * x * x * x);
+			};
 
-		if (draw_center) {
+			// Avoid hard shadow edges by scaling the rings smaller the farther away they get.
+			auto dist_at = [&](int i) {
+				float t = float(i) / float(real_gaussian_rings);
+				return shadow_size * Math::pow(t, 0.9f);
+			};
+
+			for (int r = 0; r < real_gaussian_rings; r++) {
+				real_t inner_dist = dist_at(r);
+				real_t outer_dist = dist_at(r + 1);
+				Color inner_col = shadow_color_animated;
+				Color outer_col = shadow_color_animated;
+				inner_col.a *= erf_approx(inner_dist);
+				outer_col.a *= erf_approx(outer_dist);
+
+				Rect2 inner = style_rect.grow(start_shadow_size + inner_dist);
+				inner.position += shadow_offset;
+				Rect2 outer = style_rect.grow(start_shadow_size + outer_dist);
+				outer.position += shadow_offset;
+				draw_rounded_rectangle(verts, indices, colors, shadow_inner_rect, shadow_corner,
+						outer, inner, inner_col, outer_col, corner_detail, skew);
+			}
+		} else {
+			Rect2 shadow_rect = style_rect.grow(shadow_size);
+			shadow_rect.position += shadow_offset;
+
+			Color shadow_color_transparent = Color(shadow_color_animated.r, shadow_color_animated.g, shadow_color_animated.b, 0);
+
 			draw_rounded_rectangle(verts, indices, colors, shadow_inner_rect, adapted_corner,
+					shadow_rect, shadow_inner_rect, shadow_color, shadow_color_transparent, corner_detail, skew);
+		}
+		if (draw_center) {
+			draw_rounded_rectangle(verts, indices, colors, shadow_inner_rect, approximate_gaussian ? shadow_corner : adapted_corner,
 					shadow_inner_rect, shadow_inner_rect, shadow_color_animated, shadow_color_animated, corner_detail, skew, true);
 		}
 	}
@@ -730,6 +811,15 @@ void StyleBoxFlat::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_corner_detail", "detail"), &StyleBoxFlat::set_corner_detail);
 	ClassDB::bind_method(D_METHOD("get_corner_detail"), &StyleBoxFlat::get_corner_detail);
 
+	ClassDB::bind_method(D_METHOD("set_gaussian_rings", "rings"), &StyleBoxFlat::set_gaussian_rings);
+	ClassDB::bind_method(D_METHOD("get_gaussian_rings"), &StyleBoxFlat::get_gaussian_rings);
+
+	ClassDB::bind_method(D_METHOD("set_approximate_gaussian", "approximate_gaussian"), &StyleBoxFlat::set_approximate_gaussian);
+	ClassDB::bind_method(D_METHOD("get_approximate_gaussian"), &StyleBoxFlat::get_approximate_gaussian);
+
+	ClassDB::bind_method(D_METHOD("set_gaussian_spread", "spread"), &StyleBoxFlat::set_gaussian_spread);
+	ClassDB::bind_method(D_METHOD("get_gaussian_spread"), &StyleBoxFlat::get_gaussian_spread);
+
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "bg_color"), "set_bg_color", "get_bg_color");
 
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "draw_center"), "set_draw_center", "is_draw_center_enabled");
@@ -764,6 +854,10 @@ void StyleBoxFlat::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::COLOR, "shadow_color"), "set_shadow_color", "get_shadow_color");
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "shadow_size", PROPERTY_HINT_RANGE, "0,100,1,or_greater,suffix:px"), "set_shadow_size", "get_shadow_size");
 	ADD_PROPERTY(PropertyInfo(Variant::VECTOR2, "shadow_offset", PROPERTY_HINT_NONE, "suffix:px"), "set_shadow_offset", "get_shadow_offset");
+	ADD_SUBGROUP("Gaussian", "gaussian_");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "gaussian_approximate_gaussian", PROPERTY_HINT_GROUP_ENABLE), "set_approximate_gaussian", "get_approximate_gaussian");
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "gaussian_rings", PROPERTY_HINT_RANGE, "1,30,1"), "set_gaussian_rings", "get_gaussian_rings");
+	ADD_PROPERTY(PropertyInfo(Variant::FLOAT, "gaussian_spread", PROPERTY_HINT_RANGE, "-100,100,0.1,or_greater,suffix:px"), "set_gaussian_spread", "get_gaussian_spread");
 
 	ADD_GROUP("Anti Aliasing", "anti_aliasing_");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "anti_aliasing"), "set_anti_aliased", "is_anti_aliased");
